@@ -1,7 +1,7 @@
 ---
 name: Core Feature Request
 about: Describe a feature that needs to be built
-title: "[CORE]"
+title: "[CORE] "
 labels: core feature
 assignees: ''
 ---
