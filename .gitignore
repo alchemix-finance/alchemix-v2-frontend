@@ -102,3 +102,15 @@ dist
 
 # TernJS port file
 .tern-port
+
+# IDE/Editor configs folder
+.idea/
+.vscode/
+
+# lock files, since this repo uses 'install' instead of 'ci'
+yarn.lock
+package-lock.json
+
+# misc file stuff
+.DS_Store
+.history

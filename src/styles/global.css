@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Reem+Kufi&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: linear-gradient(171.08deg, #010101 -11.16%, #141921 6.1%, #0A0D11 49.05%, #000000 93.22%) no-repeat fixed;
+  color: #f5f5f5;
+}
