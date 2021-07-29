@@ -12,15 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Assign to One Project
     steps:
-      - name: Assign new core issues to core project board
-        uses: srggrs/assign-one-project-github-action@1.2.1
-        if: |
-          github.event.action == 'opened' &&
-          contains(github.event.issue.labels.*.name, 'core feature')
-        with:
-          project: 'https://github.com/alchemix-finance/alchemix-v2-frontend/projects/1'
-
-      - name: Assign existing issues with new label to core project board
+      - name: Assign issue to core project board
         uses: srggrs/assign-one-project-github-action@1.2.1
         if: contains(github.event.issue.labels.*.name, 'core feature')
         with:
