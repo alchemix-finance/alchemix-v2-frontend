@@ -1,12 +1,12 @@
 <script>
-import { link } from 'svelte-spa-router';
+import { Link } from 'svelte-routing';
 </script>
 
 <ul>
   <li>
-    <a href="/" use:link>Home</a>
+    <Link to="/">Home</Link>
   </li>
   <li>
-    <a href="/components" use:link>Components</a>
+    <Link to="/components">Components</Link>
   </li>
 </ul>

@@ -7,8 +7,8 @@ Repository for the v2 UI of Alchemix.
 ## Setup
 
 ```bash
-git clone https://github.com/alchemix-finance/alchemix-v2-ui
-cd alchemix-v2-ui
+git clone https://github.com/alchemix-finance/alchemix-v2-frontend
+cd alchemix-v2-frontend
 cp .env.demo .env
 yarn install
 ```
