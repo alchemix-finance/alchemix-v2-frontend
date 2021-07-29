@@ -17,7 +17,8 @@ module.exports = {
       white2: '#f5f5f5',
     },
     fontFamily: {
-      alcx: ['Reem Kufi', 'sans-serif'],
+      alcxTitles: ['Reem Kufi', 'sans-serif'],
+      alcxFlow: ['Montserrat', 'sans-serif'],
     },
   },
   variants: {
