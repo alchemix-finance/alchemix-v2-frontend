@@ -24,9 +24,9 @@ const clickEvent = () => {
     px-3
     py-1
     select-none
-    font-alcx
+    font-alcxTitles
     text-{textColor}
-    {solid ? `bg-${backgroundColor}` : ''}
+    {solid ? `bg-${backgroundColor}` : `bg-${backgroundColor} bg-opacity-30`}
     hover:{disabled ? `bg-${backgroundColor}` : `bg-${hoverColor}`}
     hover:{disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
     disabled:opacity-50

@@ -23,7 +23,7 @@ export let url = '';
 
 <Modal>
   <Router url="{url}">
-    <div class="wrapper max-w-none grid grid-cols-12">
+    <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
       <div class="col-span-12">
         <HeaderBar />
       </div>
