@@ -1,4 +1,5 @@
 <script>
+import { Link } from 'svelte-routing';
 import Dropdown from '../elements/Dropdown.svelte';
 
 const currencies = ['USD', 'EUR', 'JPY', 'AUSD'];
@@ -8,9 +9,9 @@ const eventTest = (event) => {
 };
 </script>
 
-<div class="bg-grey30 pl-8 pt-5 pb-5">
-  <div class="relative flex items-center justify-between">
-    <div class="flex-1 flex items-center">
+<div class="relative flex items-center justify-between">
+  <div class="flex-1 flex items-center">
+    <Link to="/">
       <div class="flex-shrink-0 flex items-center">
         <img
           src="images/alchemix_logo.png"
@@ -19,9 +20,9 @@ const eventTest = (event) => {
         />
         <p class="font-alcxTitles uppercase ml-4 text-2xl">Alchemix</p>
       </div>
-    </div>
-    <div class="absolute inset-y-0 right-0 flex items-center pr-8">
-      <Dropdown on:selected="{eventTest}" options="{currencies}" />
-    </div>
+    </Link>
+  </div>
+  <div class="absolute inset-y-0 right-0 flex items-center pr-8">
+    <Dropdown on:selected="{eventTest}" options="{currencies}" />
   </div>
 </div>

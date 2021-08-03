@@ -27,37 +27,55 @@ const selectEvent = () => {
 };
 </script>
 
-<div class="select-wrapper">
+<div
+  class="
+  space-x-0
+    "
+>
   <select
     name="`${label}`"
     id="label"
     disabled="{disabled}"
-    class="border{borderSize === '1' ? '' : `-${borderSize}`}
-    border-{borderColor}
-    rounded-lg
+    bind:value="{selectedOption}"
+    on:change="{selectEvent}"
+    class="appearance-none
     px-3
     py-1
     select-none
     font-alcxTitles
     text-xs
     uppercase
-    appearance-none
+    overflow-hidden
+    border{borderSize === '1' ? '' : `-${borderSize}`}
+    border-{borderColor}
+    rounded-l
     text-{textColor}
     {solid
       ? `bg-${backgroundColor}`
       : `bg-${backgroundColor} bg-opacity-30 text-opacity-50`}
     hover:{disabled ? `bg-${backgroundColor}` : `bg-${hoverColor}`}
     hover:{disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
-    disabled:opacity-50
-    "
-    bind:value="{selectedOption}"
-    on:change="{selectEvent}"
+    disabled:opacity-50"
   >
     {#each options as option}
       <option value="{option}">{option}</option>
     {/each}
   </select>
-  <span class="{solid ? '' : 'opacity-50'} pointer-events-none select-none">
-    ▾
-  </span>
+  <span
+    class="
+    px-2
+    pb-1
+    py-0.5
+    select-none
+    rounded-r
+    border-l-0
+    border{borderSize === '1' ? '' : `-${borderSize}`}
+    border-{borderColor}
+    text-{textColor}
+    {solid
+      ? `bg-${backgroundColor}`
+      : `bg-${backgroundColor} bg-opacity-30 text-opacity-50`}
+    hover:{disabled ? `bg-${backgroundColor}` : `bg-${hoverColor}`}
+    hover:{disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">▾</span
+  >
 </div>
