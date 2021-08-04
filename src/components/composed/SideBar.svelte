@@ -75,19 +75,19 @@ const routerGuard = async (path) => {
   Navigation
 </p>
 <ul>
-  <li class="mb-5">
-    <Link to="/accounts">My Accounts</Link>
+  <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('accounts')}">
+    <span>My Account</span>
   </li>
-  <li class="mb-5">
-    <Link to="/vaults">Vaults</Link>
+  <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('vaults')}">
+    <span>Vaults</span>
   </li>
-  <li class="mb-5">
-    <Link to="/transmuter">Transmuter</Link>
+  <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('transmuter')}">
+    <span>Transmuter</span>
   </li>
-  <li class="mb-5">
-    <Link to="/farms">Farms</Link>
+  <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('farms')}">
+    <span>Farms</span>
   </li>
-  <li>
-    <Link to="/governance">Governance</Link>
+  <li class="cursor-pointer" on:click="{() => routerGuard('governance')}">
+    <span>Governance</span>
   </li>
 </ul>
