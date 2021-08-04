@@ -15,6 +15,7 @@ module.exports = {
       grey20: '#10141A',
       grey30: '#0E1116',
       lightgrey1: '#b7b7b7',
+      lightgrey5: '#b0b0b0',
       lightgrey20: '#4d5466',
       red1: '#fc4544',
       orange1: '#ec8339',
@@ -29,6 +30,7 @@ module.exports = {
     extend: {
       cursor: ['hover'],
       opacity: ['disabled'],
+      block: ['group-hover'],
     },
   },
 };

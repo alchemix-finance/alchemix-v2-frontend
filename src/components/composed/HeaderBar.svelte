@@ -1,6 +1,6 @@
 <script>
 import { Link } from 'svelte-routing';
-import Dropdown from '../elements/Dropdown.svelte';
+import Dropdown from '../elements/DropdownLegacy.svelte';
 
 const currencies = ['USD', 'EUR', 'JPY', 'AUSD'];
 

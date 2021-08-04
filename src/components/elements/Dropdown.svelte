@@ -1,81 +1,35 @@
 <script>
-import { createEventDispatcher } from 'svelte';
-
-export let label = 'Choose';
-export let options = ['Choice 1', 'Choice 2'];
-export let disabled = false;
 export let borderColor = 'grey5';
-export let backgroundColor = 'grey10';
-export let hoverColor = 'grey1';
-export let textColor = 'white2';
-export let solid = false;
+export let backgroundColor = 'grey15';
 export let borderSize = '1';
 
 let selectedOption;
-
-const dispatch = createEventDispatcher();
-
-/*
- * @dev emits an event 'selected' the parent component can listen to
- * @returns the selected value string
- * */
-const selectEvent = () => {
-  console.log(selectedOption);
-  dispatch('selected', {
-    selection: selectedOption,
-  });
-};
 </script>
 
-<div
-  class="
-  space-x-0
-    "
->
-  <select
-    name="`${label}`"
-    id="label"
-    disabled="{disabled}"
-    bind:value="{selectedOption}"
-    on:change="{selectEvent}"
-    class="appearance-none
-    px-3
-    py-1
+<style>
+.dropdown:hover .dropdown-menu,
+.dropdown-menu:hover {
+  display: block;
+}
+</style>
+
+<div class="dropdown inline-block relative">
+  <slot name="label" />
+  <div
+    class="dropdown-menu absolute hidden border{borderSize === '1'
+      ? ''
+      : `-${borderSize}`}
+    border-{borderColor}
+    right-0
+    rounded-lg
     select-none
     font-alcxTitles
-    text-xs
-    uppercase
-    overflow-hidden
-    border{borderSize === '1' ? '' : `-${borderSize}`}
-    border-{borderColor}
-    rounded-l
-    text-{textColor}
-    {solid
-      ? `bg-${backgroundColor}`
-      : `bg-${backgroundColor} bg-opacity-30 text-opacity-50`}
-    hover:{disabled ? `bg-${backgroundColor}` : `bg-${hoverColor}`}
-    hover:{disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
-    disabled:opacity-50"
+    overflow-ellipsis
+    bg-{backgroundColor}
+    shadow-lg
+    z-50
+    "
   >
-    {#each options as option}
-      <option value="{option}">{option}</option>
-    {/each}
-  </select>
-  <span
-    class="
-    px-2
-    pb-1
-    py-0.5
-    select-none
-    rounded-r
-    border-l-0
-    border{borderSize === '1' ? '' : `-${borderSize}`}
-    border-{borderColor}
-    text-{textColor}
-    {solid
-      ? `bg-${backgroundColor}`
-      : `bg-${backgroundColor} bg-opacity-30 text-opacity-50`}
-    hover:{disabled ? `bg-${backgroundColor}` : `bg-${hoverColor}`}
-    hover:{disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">▾</span
-  >
+    <slot name="options" />
+  </div>
 </div>

@@ -3,7 +3,7 @@
  * View to display all available element components
  * */
 import Button from '../components/elements/Button.svelte';
-import Dropdown from '../components/elements/Dropdown.svelte';
+import Dropdown from '../components/elements/DropdownLegacy.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
 </script>
 

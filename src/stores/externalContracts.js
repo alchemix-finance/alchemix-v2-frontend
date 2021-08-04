@@ -1,3 +1,4 @@
+// @dev abi has to contain name(), symbol(), and balanceOf(address)
 const genericAbi = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
@@ -8,7 +9,6 @@ const genericAbi = [
 const externalContracts = {
   tokens: [
     {
-      // @dev abi has to contain name(), symbol(), and balanceOf(address)
       abi: [...genericAbi],
       // @dev address my be ENS or actual address
       address: 'dai.tokens.ethers.eth',
