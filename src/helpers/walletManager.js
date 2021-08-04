@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { navigate } from 'svelte-routing';
 import Onboard from 'bnc-onboard';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
@@ -33,6 +34,7 @@ const disconnect = () => {
   onboard.walletReset();
   account.set({ address: undefined, signer: undefined });
   walletBalance.set({ tokens: [] });
+  navigate('/', { replace: true });
 };
 
 export { connect, disconnect };
