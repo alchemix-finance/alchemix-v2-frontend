@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
@@ -93,6 +94,13 @@ module.exports = {
     // take our environment variable in .env file
     // And it does a text replace in the resulting bundle for any instances of process.env.
     new Dotenv(),
+
+    // webpack update broke some compatibility
+    // keep this in here or I'll come and find you I swear on me mum
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
   ],
   // Config for webpack-dev-server module
   devServer: {
