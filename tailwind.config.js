@@ -1,9 +1,11 @@
 module.exports = {
   theme: {
     colors: {
-      bronze: '#F5C59F',
+      bronze1: '#F5C59F',
+      bronze2: '#F7C19B',
       blue1: '#0E8AD0',
       blue2: '#0557e8',
+      blue3: '#6C93C7',
       green1: '#2ecc94',
       grey1: '#282D3A',
       grey5: '#20242C',
@@ -13,7 +15,10 @@ module.exports = {
       grey20: '#10141A',
       grey30: '#0E1116',
       lightgrey1: '#b7b7b7',
+      lightgrey5: '#b0b0b0',
+      lightgrey20: '#4d5466',
       red1: '#fc4544',
+      orange1: '#ec8339',
       white2: '#f5f5f5',
     },
     fontFamily: {
@@ -25,6 +30,7 @@ module.exports = {
     extend: {
       cursor: ['hover'],
       opacity: ['disabled'],
+      block: ['group-hover'],
     },
   },
 };

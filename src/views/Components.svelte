@@ -3,11 +3,21 @@
  * View to display all available element components
  * */
 import Button from '../components/elements/Button.svelte';
+import Dropdown from '../components/elements/DropdownLegacy.svelte';
+import BorderContainer from '../components/elements/BorderContainer.svelte';
 </script>
 
 <div>
   <p>Labels</p>
-
+  <h1>Container with border (non-styleable)</h1>
+  <BorderContainer width="w-40">
+    <span>
+      This component will draw a rounded border around any content that exists
+      in it's slot.
+    </span>
+    <br />
+    <p>Multiple elements can be placed inside.</p>
+  </BorderContainer>
   <hr />
 
   <h1>Buttons</h1>
@@ -20,6 +30,8 @@ import Button from '../components/elements/Button.svelte';
     borderSize="2"
     hoverColor="blue1"
     textColor="red1"
+    fontSize="text-lg"
+    width="w-80"
     on:clicked="{() => alert('clicked second button')}"
   />
   <p>Disabled button</p>
@@ -29,10 +41,31 @@ import Button from '../components/elements/Button.svelte';
     disabled="{true}"
     on:clicked="{() => alert('impossible alert')}"
   />
+  <p>Button with container</p>
+  <BorderContainer>
+    <Button />
+  </BorderContainer>
   <hr />
 
   <p>Input Fields</p>
-
+  <h1>Select</h1>
+  <p>Dropdown select with default styling</p>
+  <Dropdown on:selected="{() => alert('selected new value')}" />
+  <p>Dropdown select with custom styling</p>
+  <Dropdown
+    label="A very long custom label"
+    borderColor="blue2"
+    borderSize="2"
+    hoverColor="blue1"
+    textColor="red1"
+    solid="true"
+    on:clicked="{() => alert('selected new value')}"
+  />
+  <p>Disabled select</p>
+  <Dropdown
+    disabled="{true}"
+    on:selected="{() => alert('selected new value')}"
+  />
   <hr />
 
   <p>Input Groups</p>
