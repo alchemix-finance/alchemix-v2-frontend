@@ -1,13 +1,8 @@
 <script>
 import { Link } from 'svelte-routing';
-import Dropdown from '../elements/DropdownLegacy.svelte';
 import account from '../../stores/account';
-
-const currencies = ['USD', 'EUR', 'JPY', 'AUSD'];
-
-const eventTest = (event) => {
-  console.log(event);
-};
+import settings from '../../stores/settings';
+import Dropdown from '../elements/Dropdown.svelte';
 </script>
 
 <div class="relative flex items-center justify-between">
@@ -24,6 +19,35 @@ const eventTest = (event) => {
     </Link>
   </div>
   <div class="absolute inset-y-0 right-0 flex items-center pr-8">
-    <Dropdown on:selected="{eventTest}" options="{currencies}" />
+    <Dropdown>
+      <div
+        slot="label"
+        class="px-3
+        flex
+        justify-between
+        w-20
+        py-1
+        text-opacity-50
+        hover:text-opacity-100
+        select-none font-alcxTitles text-xs uppercase rounded-l overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
+      >
+        <p>{$settings.baseCurrency.symbol}</p>
+        <p>▾</p>
+      </div>
+      <ul slot="options" class="w-20">
+        {#each $settings.allCurrencies as currency}
+          <li
+            class="cursor-pointer h-8 hover:bg-grey10"
+            on:click="{() => ($settings.baseCurrency = currency)}"
+          >
+            <p
+              class="text-center text-opacity-50 hover:text-opacity-100 w-full"
+            >
+              {currency.symbol}
+            </p>
+          </li>
+        {/each}
+      </ul>
+    </Dropdown>
   </div>
 </div>

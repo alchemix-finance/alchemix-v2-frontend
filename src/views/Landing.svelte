@@ -4,6 +4,7 @@ import BorderContainer from '../components/elements/BorderContainer.svelte';
 import AssetCard from '../components/elements/AssetCard.svelte';
 import { connect } from '../helpers/walletManager';
 import account from '../stores/account';
+import settings from '../stores/settings';
 import { navigate } from 'svelte-routing';
 
 const alAssets = [
@@ -11,7 +12,6 @@ const alAssets = [
     name: 'Alchemix USD',
     ticker: 'alUSD',
     price: '0.99',
-    currency: '$',
     icon: 'alusd.png',
     color: 'bronze2',
   },
@@ -19,7 +19,6 @@ const alAssets = [
     name: 'Alchemix ETH',
     ticker: 'alETH',
     price: '2,171.88',
-    currency: '$',
     icon: 'aleth.png',
     color: 'blue3',
   },
@@ -27,7 +26,6 @@ const alAssets = [
     name: 'Alchemix BTC',
     ticker: 'alBTC',
     price: '34,096.11',
-    currency: '$',
     icon: 'albtc.png',
     color: 'orange1',
   },
@@ -98,7 +96,7 @@ const startApplication = async () => {
         assetName="{asset.name}"
         assetTicker="{asset.ticker}"
         assetPrice="{asset.price}"
-        currency="{asset.currency}"
+        currency="{$settings.baseCurrency.ticker}"
         assetIcon="{asset.icon}"
         assetColor="{asset.color}"
       />
