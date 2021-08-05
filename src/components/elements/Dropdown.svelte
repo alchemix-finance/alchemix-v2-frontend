@@ -2,8 +2,6 @@
 export let borderColor = 'grey5';
 export let backgroundColor = 'grey15';
 export let borderSize = '1';
-
-let selectedOption;
 </script>
 
 <style>

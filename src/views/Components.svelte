@@ -3,7 +3,6 @@
  * View to display all available element components
  * */
 import Button from '../components/elements/Button.svelte';
-import Dropdown from '../components/elements/DropdownLegacy.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
 </script>
 
@@ -48,25 +47,6 @@ import BorderContainer from '../components/elements/BorderContainer.svelte';
   <hr />
 
   <p>Input Fields</p>
-  <h1>Select</h1>
-  <p>Dropdown select with default styling</p>
-  <Dropdown on:selected="{() => alert('selected new value')}" />
-  <p>Dropdown select with custom styling</p>
-  <Dropdown
-    label="A very long custom label"
-    borderColor="blue2"
-    borderSize="2"
-    hoverColor="blue1"
-    textColor="red1"
-    solid="true"
-    on:clicked="{() => alert('selected new value')}"
-  />
-  <p>Disabled select</p>
-  <Dropdown
-    disabled="{true}"
-    on:selected="{() => alert('selected new value')}"
-  />
-  <hr />
 
   <p>Input Groups</p>
 </div>
