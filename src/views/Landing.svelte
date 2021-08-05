@@ -12,18 +12,24 @@ const alAssets = [
     ticker: 'alUSD',
     price: '0.99',
     currency: '$',
+    icon: 'alusd.png',
+    color: 'bronze2',
   },
   {
     name: 'Alchemix ETH',
     ticker: 'alETH',
     price: '2,171.88',
     currency: '$',
+    icon: 'aleth.png',
+    color: 'blue3',
   },
   {
     name: 'Alchemix BTC',
     ticker: 'alBTC',
     price: '34,096.11',
     currency: '$',
+    icon: 'albtc.png',
+    color: 'orange1',
   },
 ];
 
@@ -55,13 +61,34 @@ const startApplication = async () => {
   </p>
 </div>
 <div class="flex justify-center mt-14">
-  <BorderContainer width="w-60">
+  <BorderContainer width="w-80">
     <Button
       label="Enter Alchemix"
       fontSize="text-md"
       borderSize="1"
       on:clicked="{startApplication}"
-    />
+    >
+      <img
+        src="images/token-icons/ALCX.png"
+        slot="leftSlot"
+        class="w-6 h-6"
+        alt="The Alchemix Logo"
+      />
+      <svg
+        slot="rightSlot"
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+      </svg>
+    </Button>
   </BorderContainer>
 </div>
 <div class="grid grid-cols-3 gap-14 mt-14">
@@ -72,6 +99,8 @@ const startApplication = async () => {
         assetTicker="{asset.ticker}"
         assetPrice="{asset.price}"
         currency="{asset.currency}"
+        assetIcon="{asset.icon}"
+        assetColor="{asset.color}"
       />
     </div>
   {/each}

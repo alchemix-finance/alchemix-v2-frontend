@@ -1,6 +1,7 @@
 <script>
 import { Link } from 'svelte-routing';
 import Dropdown from '../elements/DropdownLegacy.svelte';
+import account from '../../stores/account';
 
 const currencies = ['USD', 'EUR', 'JPY', 'AUSD'];
 
@@ -11,7 +12,7 @@ const eventTest = (event) => {
 
 <div class="relative flex items-center justify-between">
   <div class="flex-1 flex items-center">
-    <Link to="/">
+    <Link to="{$account.signer ? '/accounts' : '/'}">
       <div class="flex-shrink-0 flex items-center">
         <img
           src="images/alchemix_logo.png"

@@ -8,7 +8,7 @@ export let assetColor = 'bronze2';
 </script>
 
 <div
-  class="w-80 rounded-3xl bg-grey10 bg-opacity-30 border border-lightgrey20 p-8"
+  class="flex flex-col w-80 rounded-3xl bg-grey10 bg-opacity-30 border border-lightgrey20 p-8 pb-0"
 >
   <p class="font-alcxTitles text-sm opacity-50">{assetName}</p>
   <p class="text-3xl">{assetTicker}</p>
@@ -16,5 +16,9 @@ export let assetColor = 'bronze2';
     <span class="text-base opacity-50">{currency}</span>
     <span class="text-3xl">{assetPrice}</span>
   </p>
-  <img src="{assetIcon}" alt="The icon of the asset" />
+  <img
+    src="images/asset-card-icons/{assetIcon}"
+    alt="The icon of {assetName}"
+    class="w-max align-middle self-center my-20"
+  />
 </div>

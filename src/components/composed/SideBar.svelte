@@ -1,5 +1,4 @@
 <script>
-import { Link } from 'svelte-routing';
 import Wallet from './Wallet.svelte';
 import { connect, disconnect } from '../../helpers/walletManager';
 import account from '../../stores/account';
