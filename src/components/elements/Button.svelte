@@ -52,5 +52,17 @@ const clickEvent = () => {
   disabled="{disabled}"
   on:click="{clickEvent}"
 >
-  {label}
+  <div
+    class="flex {$$slots.leftSlot && $$slots.rightSlot
+      ? 'justify-between items-center'
+      : $$slots.leftSlot && !$$slots.rightSlot
+      ? 'justify-start items-center'
+      : 'justify-center'}"
+  >
+    <slot name="leftSlot" />
+    <p class="{$$slots.leftSlot && !$$slots.rightSlot ? 'ml-4' : ''}">
+      {label}
+    </p>
+    <slot name="rightSlot" />
+  </div>
 </button>
