@@ -1,12 +1,10 @@
 <script>
+import { connect } from '../../helpers/walletManager';
 import Button from '../elements/Button.svelte';
 import BorderContainer from '../elements/BorderContainer.svelte';
 import WalletBalance from './WalletBalance.svelte';
+import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
 import account from '../../stores/account';
-import * as jdenticon from 'jdenticon';
-import { connect } from '../../helpers/walletManager';
-
-$: icon = $account.signer ? jdenticon.toSvg($account.address, 16) : '';
 
 /*
  * @dev truncates the long address string for better visuals
@@ -14,7 +12,7 @@ $: icon = $account.signer ? jdenticon.toSvg($account.address, 16) : '';
  * @returns the truncated address
  * */
 const truncateAddress = (address) => {
-  return `${address.slice(0, 6)}...${address.slice(-5, -1)}`;
+  return `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
 };
 </script>
 
@@ -26,7 +24,11 @@ const truncateAddress = (address) => {
       uppercase="{true}"
       noHoverEffect="{true}"
       height="h-8"
-    />
+    >
+      <div slot="leftSlot">
+        <AvatarWithIndicator hash="{$account.address}" connected="{true}" />
+      </div>
+    </Button>
     <WalletBalance />
   {:else}
     <Button
@@ -35,6 +37,10 @@ const truncateAddress = (address) => {
       uppercase="{true}"
       height="h-8"
       on:clicked="{connect}"
-    />
+    >
+      <div slot="leftSlot">
+        <AvatarWithIndicator />
+      </div>
+    </Button>
   {/if}
 </BorderContainer>
