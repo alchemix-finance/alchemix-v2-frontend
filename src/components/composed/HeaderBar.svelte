@@ -5,6 +5,10 @@ import settings from '../../stores/settings';
 import Dropdown from '../elements/Dropdown.svelte';
 import { newConversionRate } from '../../helpers/conversionRate';
 
+/*
+ * @dev stores the new base currency in state
+ * @params currency the currency object for the new base currency
+ * */
 function setCurrency(currency) {
   $settings.baseCurrency = currency;
   newConversionRate();
@@ -35,7 +39,7 @@ function setCurrency(currency) {
         py-1
         text-opacity-50
         hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded-l overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
+        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
       >
         <p>{$settings.baseCurrency?.symbol}</p>
         <p>▾</p>

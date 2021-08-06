@@ -20,6 +20,8 @@ module.exports = {
       red1: '#fc4544',
       orange1: '#ec8339',
       white2: '#f5f5f5',
+      twitter: '#4CABFA',
+      discord: '#7289DA',
     },
     fontFamily: {
       alcxTitles: ['Reem Kufi', 'sans-serif'],

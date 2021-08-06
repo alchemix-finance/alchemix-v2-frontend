@@ -19,7 +19,7 @@ const onboard = Onboard({
 });
 
 // @dev function calls onboard to connect user wallets and stores them in state
-const connect = async () => {
+async function connect() {
   await onboard.walletReset();
   await onboard.walletSelect();
   await onboard.walletCheck().then(async () => {
@@ -27,14 +27,14 @@ const connect = async () => {
     const address = await signer.getAddress();
     account.set({ address, signer });
   });
-};
+}
 
 // @dev function disconnects user wallets and resets state
-const disconnect = () => {
+function disconnect() {
   onboard.walletReset();
   account.set({ address: undefined, signer: undefined });
   walletBalance.set({ tokens: [] });
   navigate('/', { replace: true });
-};
+}
 
 export { connect, disconnect };
