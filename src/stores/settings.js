@@ -15,7 +15,7 @@ const settings = writable({
       ticker: '¥',
     },
     {
-      symbol: 'AUS',
+      symbol: 'AUD',
       ticker: '$',
     },
   ],

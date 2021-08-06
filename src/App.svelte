@@ -1,7 +1,11 @@
 <script>
 // libraries
+import { onMount } from 'svelte';
 import { Router, Route } from 'svelte-routing';
 import Modal from 'svelte-simple-modal';
+
+// middleware
+import { getFiatRates } from './middleware/zapper';
 
 // composed components
 import HeaderBar from './components/composed/HeaderBar.svelte';
@@ -19,6 +23,10 @@ import Farms from './views/Farms.svelte';
 import Governance from './views/Governance.svelte';
 
 export let url = '';
+
+onMount(async () => {
+  await getFiatRates();
+});
 </script>
 
 <Modal>
