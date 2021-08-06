@@ -2,22 +2,8 @@
 import Wallet from './Wallet.svelte';
 import { connect, disconnect } from '../../helpers/walletManager';
 import account from '../../stores/account';
-import { navigate } from 'svelte-routing';
 import Dropdown from '../elements/Dropdown.svelte';
-
-/*
- * @dev verifies that user is logged in before switching to a new page
- * @params path the URL to navigate to
- * */
-const routerGuard = async (path) => {
-  if (!$account.signer) {
-    await connect().then(() => {
-      navigate(`/${path}`, { replace: true });
-    });
-  } else {
-    navigate(`/${path}`, { replace: true });
-  }
-};
+import { routerGuard } from '../../helpers/routerGuard.js';
 </script>
 
 <div class="relative flex items-center justify-between">

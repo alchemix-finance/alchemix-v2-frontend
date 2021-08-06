@@ -3,6 +3,16 @@ import { Link } from 'svelte-routing';
 import account from '../../stores/account';
 import settings from '../../stores/settings';
 import Dropdown from '../elements/Dropdown.svelte';
+import { newConversionRate } from '../../helpers/conversionRate';
+
+/*
+ * @dev stores the new base currency in state
+ * @params currency the currency object for the new base currency
+ * */
+function setCurrency(currency) {
+  $settings.baseCurrency = currency;
+  newConversionRate();
+}
 </script>
 
 <div class="relative flex items-center justify-between">
@@ -29,16 +39,16 @@ import Dropdown from '../elements/Dropdown.svelte';
         py-1
         text-opacity-50
         hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded-l overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
+        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
       >
-        <p>{$settings.baseCurrency.symbol}</p>
+        <p>{$settings.baseCurrency?.symbol}</p>
         <p>▾</p>
       </div>
       <ul slot="options" class="w-20">
         {#each $settings.allCurrencies as currency}
           <li
             class="cursor-pointer h-8 hover:bg-grey10"
-            on:click="{() => ($settings.baseCurrency = currency)}"
+            on:click="{() => setCurrency(currency)}"
           >
             <p
               class="text-center text-opacity-50 hover:text-opacity-100 w-full"

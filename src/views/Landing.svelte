@@ -2,44 +2,34 @@
 import Button from '../components/elements/Button.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
 import AssetCard from '../components/elements/AssetCard.svelte';
-import { connect } from '../helpers/walletManager';
-import account from '../stores/account';
 import settings from '../stores/settings';
-import { navigate } from 'svelte-routing';
+import global from '../stores/global';
+import { routerGuard } from '../helpers/routerGuard.js';
 
+// TODO aggregate data from contracts
 const alAssets = [
   {
     name: 'Alchemix USD',
     ticker: 'alUSD',
-    price: '0.99',
+    price: 0.99,
     icon: 'alusd.png',
     color: 'bronze2',
   },
   {
     name: 'Alchemix ETH',
     ticker: 'alETH',
-    price: '2,171.88',
+    price: 2171.88,
     icon: 'aleth.png',
     color: 'blue3',
   },
   {
     name: 'Alchemix BTC',
     ticker: 'alBTC',
-    price: '34,096.11',
+    price: 34096.11,
     icon: 'albtc.png',
     color: 'orange1',
   },
 ];
-
-const startApplication = async () => {
-  if (!$account.signer) {
-    await connect().then(() => {
-      navigate('/components', { replace: true });
-    });
-  } else {
-    navigate('/components', { replace: true });
-  }
-};
 </script>
 
 <div class="flex justify-center">
@@ -64,7 +54,7 @@ const startApplication = async () => {
       label="Enter Alchemix"
       fontSize="text-md"
       borderSize="1"
-      on:clicked="{startApplication}"
+      on:clicked="{() => routerGuard('accounts')}"
     >
       <img
         src="images/token-icons/ALCX.png"
@@ -95,8 +85,8 @@ const startApplication = async () => {
       <AssetCard
         assetName="{asset.name}"
         assetTicker="{asset.ticker}"
-        assetPrice="{asset.price}"
-        currency="{$settings.baseCurrency.ticker}"
+        assetPrice="{asset.price * $global.conversionRate}"
+        currency="{$settings.baseCurrency?.ticker}"
         assetIcon="{asset.icon}"
         assetColor="{asset.color}"
       />

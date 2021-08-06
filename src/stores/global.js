@@ -6,6 +6,9 @@ const global = writable({
     type: undefined,
     message: undefined,
   },
+  fiatRates: undefined,
+  conversionRate: 1,
+  tokenPrices: [],
 });
 
 export default global;
