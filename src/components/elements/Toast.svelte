@@ -23,21 +23,23 @@ const errorProps = {
 export let kind = TOAST_KINDS.SUCCESS;
 export let title = 'Depositing 21.2';
 export let subTitle = 'to ...';
+
 export let showOpenButton = true;
+export let onClickOpen = () => {};
+
 export let showCloseButton = true;
 export let closeTimeoutMs = 10000;
-export let onClose = () => {};
+export let onClickClose = () => {};
 
 let isOpen = true;
-let closeToast = () => {
+let handleClose = () => {
   isOpen = false;
 };
 
 onMount(() => {
   setTimeout(() => {
-    // TODO: uncomment this before pushing it out
-    // closeToast()
-    onClose();
+    handleClose();
+    onClickClose();
   }, closeTimeoutMs);
 });
 </script>
@@ -80,10 +82,10 @@ onMount(() => {
         </div>
         <div class="flex">
           {#if showOpenButton}
-            <ToastIconButton icon="open" />
+            <ToastIconButton icon="open" onClick="{onClickOpen}" />
           {/if}
           {#if showCloseButton}
-            <ToastIconButton icon="close" onClick="{closeToast}" />
+            <ToastIconButton icon="close" onClick="{handleClose}" />
           {/if}
         </div>
       </div>
