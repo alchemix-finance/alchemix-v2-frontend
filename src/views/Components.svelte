@@ -4,6 +4,7 @@
  * */
 import Button from '../components/elements/Button.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
+import Toast from '../components/elements/Toast.svelte';
 </script>
 
 <div>
@@ -49,4 +50,7 @@ import BorderContainer from '../components/elements/BorderContainer.svelte';
   <p>Input Fields</p>
 
   <p>Input Groups</p>
+
+  <Toast />
+  <Toast kind="error" />
 </div>
