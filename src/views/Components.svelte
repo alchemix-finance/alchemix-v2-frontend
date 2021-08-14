@@ -5,6 +5,8 @@
 import Button from '../components/elements/Button.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
 import Toast from '../components/elements/Toast.svelte';
+import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
+import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
 </script>
 
 <div>
@@ -53,4 +55,13 @@ import Toast from '../components/elements/Toast.svelte';
 
   <Toast />
   <Toast kind="error" />
+
+  <div class="flex">
+    <div class="mr-4">
+      <CollateralPieChart />
+    </div>
+    <div class="ml-4">
+      <DebtCreditPieChart />
+    </div>
+  </div>
 </div>
