@@ -5,7 +5,7 @@ import { Router, Route } from 'svelte-routing';
 import Modal from 'svelte-simple-modal';
 
 // middleware
-import { getFiatRates } from './middleware/zapper';
+import { getFiatRates, getGasPrices } from './middleware/zapper';
 
 // composed components
 import HeaderBar from './components/composed/HeaderBar.svelte';
@@ -21,11 +21,21 @@ import Vaults from './views/Vaults.svelte';
 import Transmuter from './views/Transmuter.svelte';
 import Farms from './views/Farms.svelte';
 import Governance from './views/Governance.svelte';
+import Settings from './views/Settings.svelte';
 
 export let url = '';
 
+function gasPriceUpdater() {
+  window.setTimeout(async () => {
+    await getGasPrices();
+    gasPriceUpdater();
+  }, 10000);
+}
+
 onMount(async () => {
   await getFiatRates();
+  await getGasPrices();
+  gasPriceUpdater();
 });
 </script>
 
@@ -39,13 +49,14 @@ onMount(async () => {
         <div class="pl-8 pr-9 pt-8 w-96">
           <SideBar />
         </div>
-        <div class="border-l border-grey5 pl-8 pt-8 pr-8 pb-36 w-full">
+        <div class="border-l border-grey5 w-full">
           <Route path="/components" component="{Components}" />
           <Route path="/accounts" component="{Accounts}" />
           <Route path="/vaults" component="{Vaults}" />
           <Route path="/transmuter" component="{Transmuter}" />
           <Route path="/farms" component="{Farms}" />
           <Route path="/governance" component="{Governance}" />
+          <Route path="/settings" component="{Settings}" />
           <Route path="/" component="{Landing}" />
           <Route path="/*" component="{Error}" />
         </div>

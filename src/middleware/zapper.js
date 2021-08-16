@@ -24,7 +24,7 @@ function connector(endpoint) {
 }
 
 // @dev retrieves the fiat conversion rates
-async function getFiatRates() {
+export async function getFiatRates() {
   await axios(connector('fiat-rates'))
     .then((result) => {
       _global.fiatRates = result.data;
@@ -36,7 +36,7 @@ async function getFiatRates() {
 }
 
 // @dev retrieves all available token prices
-async function getTokenPrices() {
+export async function getTokenPrices() {
   await axios(connector('prices'))
     .then((result) => {
       _global.tokenPrices = result.data;
@@ -47,4 +47,14 @@ async function getTokenPrices() {
     });
 }
 
-export { getFiatRates, getTokenPrices };
+// @dev retrieves three levels of current gas prices
+export async function getGasPrices() {
+  await axios(connector('gas-price'))
+    .then((result) => {
+      _global.gasPrices = result.data;
+      global.set({ ..._global });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
