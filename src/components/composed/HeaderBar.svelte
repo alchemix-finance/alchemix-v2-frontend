@@ -2,7 +2,6 @@
 import { Link, navigate } from 'svelte-routing';
 import { connect, disconnect } from '../../helpers/walletManager';
 import { setCurrency, setGas } from '../../helpers/userSettings';
-import { iterator } from '../../helpers/objects';
 
 import account from '../../stores/account';
 import settings from '../../stores/settings';
@@ -13,6 +12,10 @@ import GasCard from '../elements/GasCard.svelte';
 function goToSettings() {
   navigate(`/settings`, { replace: false });
 }
+
+const userGas = (selector) => {
+  return selector.baseFeePerGas + selector.maxPriorityFeePerGas;
+};
 </script>
 
 <div class="relative flex items-center justify-between">
@@ -49,16 +52,19 @@ function goToSettings() {
             ></path></g
           ></svg
         >
-        <p class="mr-2">{$global.gasPrices[`${$settings.defaultGas}`]}</p>
+        <p class="mr-2">
+          {userGas($global.gasPrices[`${$settings.defaultGas}`])}
+        </p>
         <p>▾</p>
       </div>
       <div slot="options" class="flex flex-col gap-4 justify-between w-60 p-4">
-        {#each iterator($global.gasPrices) as gas}
+        {#each Object.entries($global.gasPrices) as gas}
           <GasCard
             cardColor="{$global.gasColor[`${gas[0]}`]}"
             description="{gas[0]}"
-            gasFee="{$global.gasPrices[`${gas[0]}`]}"
+            gasFee="{gas[1]}"
             isActive="{$settings.defaultGas === gas[0]}"
+            compactView="{true}"
             on:gasSelected="{() => setGas(gas[0])}"
           />
         {/each}

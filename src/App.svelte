@@ -25,19 +25,28 @@ import Settings from './views/Settings.svelte';
 
 export let url = '';
 
+// @dev to stop waste API request, stop the gas updates if needed
+let gasTimer;
+
 function gasPriceUpdater() {
-  window.setTimeout(async () => {
+  gasTimer = window.setTimeout(async () => {
     await getGasPrices();
-    gasPriceUpdater();
+    if (gasTimer !== 'stopped') gasPriceUpdater();
   }, 10000);
+}
+
+function gasIdle() {
+  clearTimeout(gasTimer);
+  gasTimer = 'stopped';
 }
 
 onMount(async () => {
   await getFiatRates();
   await getGasPrices();
-  gasPriceUpdater();
 });
 </script>
+
+<svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 
 <Modal>
   <Router url="{url}">

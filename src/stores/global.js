@@ -10,9 +10,9 @@ const global = writable({
   conversionRate: 1,
   tokenPrices: [],
   gasPrices: {
-    standard: 0,
-    fast: 0,
-    instant: 0,
+    standard: { maxFeePerGas: 0, baseFeePerGas: 0, maxPriorityFeePerGas: 0 },
+    fast: { maxFeePerGas: 0, baseFeePerGas: 0, maxPriorityFeePerGas: 0 },
+    instant: { maxFeePerGas: 0, baseFeePerGas: 0, maxPriorityFeePerGas: 0 },
   },
   gasColor: {
     standard: 'green3',

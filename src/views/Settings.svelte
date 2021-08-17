@@ -7,7 +7,6 @@ import GasCard from '../components/elements/GasCard.svelte';
 import global from '../stores/global';
 import settings from '../stores/settings';
 import account from '../stores/account';
-import { iterator } from '../helpers/objects';
 import { setCurrency, setLanguage, setGas } from '../helpers/userSettings';
 import { connect } from '../helpers/walletManager';
 </script>
@@ -24,7 +23,7 @@ import { connect } from '../helpers/walletManager';
     />
     <span class="ml-4">Settings</span>
   </div>
-  <BorderContainer width="max-w-screen-sm">
+  <BorderContainer>
     <div class="bg-grey10 rounded p-8">
       <div id="locale-settings" class="mb-4">
         <p class="opacity-50 mb-3">Locale</p>
@@ -89,8 +88,8 @@ import { connect } from '../helpers/walletManager';
 
       <div id="gas-settings" class="mb-4">
         <p class="opacity-50 mb-3">Default Gas</p>
-        <div class="flex flex-row justify-between">
-          {#each iterator($global.gasPrices) as gas}
+        <div class="flex flex-row justify-between gap-4">
+          {#each Object.entries($global.gasPrices) as gas}
             <GasCard
               cardColor="{$global.gasColor[`${gas[0]}`]}"
               description="{gas[0]}"

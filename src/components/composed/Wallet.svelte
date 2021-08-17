@@ -14,6 +14,10 @@ import account from '../../stores/account';
 const truncateAddress = (address) => {
   return `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
 };
+
+function openEtherscan() {
+  window.open(`https://etherscan.io/address/${$account.address}`, '_blank');
+}
 </script>
 
 <BorderContainer>
@@ -22,8 +26,8 @@ const truncateAddress = (address) => {
       borderSize="1"
       label="{truncateAddress($account.address)}"
       uppercase="{true}"
-      noHoverEffect="{true}"
       height="h-8"
+      on:clicked="{openEtherscan}"
     >
       <div slot="leftSlot">
         <AvatarWithIndicator hash="{$account.address}" connected="{true}" />
