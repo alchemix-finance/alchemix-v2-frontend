@@ -1,5 +1,5 @@
 <script>
-import Doughtnut from './Doughnut.svelte';
+import Doughnut from './Doughnut.svelte';
 
 export let title;
 export let subTitle;
@@ -87,6 +87,6 @@ const options = {
     </div>
   </div>
   <div class="inclined">
-    <Doughtnut data="{data}" options="{options}" />
+    <Doughnut data="{data}" options="{options}" />
   </div>
 </div>
