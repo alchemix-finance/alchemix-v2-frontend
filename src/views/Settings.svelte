@@ -27,68 +27,71 @@ import { connect } from '../helpers/walletManager';
     <div class="bg-grey10 rounded p-8">
       <div id="locale-settings" class="mb-4">
         <p class="opacity-50 mb-3">Locale</p>
-        <span>Base Currency</span>
-        <Dropdown>
-          <div
-            slot="label"
-            class="px-3 flex justify-between w-20 py-1 text-opacity-50 hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
-          >
-            <p>{$settings.baseCurrency?.symbol}</p>
-            <p>▾</p>
-          </div>
-          <ul slot="options" class="w-20">
-            {#each $global.allCurrencies as currency}
-              <li
-                class="cursor-pointer h-8 hover:bg-grey10"
-                on:click="{() => setCurrency(currency)}"
+        <div class="grid grid-cols-3 mb-3">
+          <p>Base Currency</p>
+          <div>
+            <Dropdown>
+              <div
+                slot="label"
+                class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1"
               >
-                <p
-                  class="text-center text-opacity-50 hover:text-opacity-100 w-full"
-                >
-                  {currency.symbol}
+                <p class="mr-3 w-full text-center">
+                  {$settings.baseCurrency?.symbol}
                 </p>
-              </li>
-            {/each}
-          </ul>
-        </Dropdown>
-
-        <span>Language</span>
-        <Dropdown>
-          <div
-            slot="label"
-            class="px-3
-        flex
-        justify-between
-        w-20
-        py-1
-        text-opacity-50
-        hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
-          >
-            <p>{$settings.userLanguage?.name}</p>
-            <p>▾</p>
+                <p>▾</p>
+              </div>
+              <ul slot="options" class="w-80">
+                {#each $global.allCurrencies as currency}
+                  <li
+                    class="cursor-pointer h-8 hover:bg-grey10"
+                    on:click="{() => setCurrency(currency)}"
+                  >
+                    <p
+                      class="text-center text-opacity-50 hover:text-opacity-100 w-full"
+                    >
+                      {currency.symbol}
+                    </p>
+                  </li>
+                {/each}
+              </ul>
+            </Dropdown>
           </div>
-          <ul slot="options" class="w-20">
-            {#each $global.languages as language}
-              <li
-                class="cursor-pointer h-8 hover:bg-grey10"
-                on:click="{() => setLanguage(language)}"
+        </div>
+        <div class="grid grid-cols-3">
+          <p>Language</p>
+          <div>
+            <Dropdown>
+              <div
+                slot="label"
+                class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1"
               >
-                <p
-                  class="text-center text-opacity-50 hover:text-opacity-100 w-full"
-                >
-                  {language.name}
+                <p class="mr-3 w-full text-center">
+                  {$settings.userLanguage?.name}
                 </p>
-              </li>
-            {/each}
-          </ul>
-        </Dropdown>
+                <p>▾</p>
+              </div>
+              <ul slot="options" class="w-80">
+                {#each $global.languages as language}
+                  <li
+                    class="cursor-pointer h-8 hover:bg-grey10"
+                    on:click="{() => setLanguage(language)}"
+                  >
+                    <p
+                      class="text-center text-opacity-50 hover:text-opacity-100 w-full"
+                    >
+                      {language.name}
+                    </p>
+                  </li>
+                {/each}
+              </ul>
+            </Dropdown>
+          </div>
+        </div>
       </div>
 
       <div id="gas-settings" class="mb-4">
         <p class="opacity-50 mb-3">Default Gas</p>
-        <div class="flex flex-row justify-between gap-4">
+        <div class="grid grid-cols-3 gap-4">
           {#each Object.entries($global.gasPrices) as gas}
             <GasCard
               cardColor="{$global.gasColor[`${gas[0]}`]}"
