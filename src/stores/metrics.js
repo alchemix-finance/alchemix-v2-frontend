@@ -36,7 +36,7 @@ const metrics = writable({
       percentChangedIsIncrease: true,
     },
     alcxValue: {
-      label: 'ACLX Value',
+      label: 'ACLX value',
       value: 1463,
       metric: METRICS.billions,
       currency: CURRENCIES.dollar,

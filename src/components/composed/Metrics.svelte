@@ -1,5 +1,8 @@
 <script>
 import metrics from '../../stores/metrics';
+
+const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
+const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
 </script>
 
 <div class="flex font-alcxTitles text-sm">
@@ -17,10 +20,14 @@ import metrics from '../../stores/metrics';
           : 'red1'}"
       >
         <span>(</span>
-        <span class="text-xs"
-          >{metric.percentChangedIsIncrease ? '▲' : '▼'}</span
+        <span class="text-xs mr-2"
+          >{getUpDownIndicator(metric.percentChangedIsIncrease)}</span
         >
-        <span>{metric.percentChanged}%</span>
+        <span>
+          {getPlusOrMinusIndicator(
+            metric.percentChangedIsIncrease,
+          )}{metric.percentChanged}%</span
+        >
         <span>)</span>
       </div>
     </div>

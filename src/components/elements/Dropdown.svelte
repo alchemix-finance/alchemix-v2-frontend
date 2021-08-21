@@ -1,3 +1,8 @@
+<!--
+Dropdown that opens on hover
+Used, for eg., when hovering on an icon
+For a dropdown that opens on hover see /DropdownOnClick
+-->
 <script>
 export let borderColor = 'grey5';
 export let backgroundColor = 'grey15';

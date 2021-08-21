@@ -2,6 +2,7 @@ module.exports = {
   theme: {
     colors: {
       black1: '#0E251D',
+      black2: '#10141A',
       bronze1: '#F5C59F',
       bronze2: '#F7C19B',
       blue1: '#0E8AD0',
