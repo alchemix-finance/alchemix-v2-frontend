@@ -67,9 +67,12 @@ const options = {
 .inclined {
   transform: skewX(-8deg) rotate3d(100, -10, 10, 40deg);
 }
+.h-piechart {
+  height: 350px;
+}
 </style>
 
-<div class="bg-grey10 px-16 py-8 rounded-md">
+<div class="bg-grey10 px-16 py-8 rounded-md h-piechart">
   <div class="flex justify-between">
     <div>
       <div class="font-alcxTitles text-2xl leading-8">
