@@ -1,28 +1,23 @@
 import { writable } from 'svelte/store';
 
-const settings = writable({
-  allCurrencies: [
-    {
+const localSettings = JSON.parse(localStorage.getItem('settings'));
+
+const settings = writable(
+  localSettings || {
+    baseCurrency: {
       symbol: 'USD',
       ticker: '$',
     },
-    {
-      symbol: 'EUR',
-      ticker: '€',
+    userLanguage: {
+      name: 'English',
+      locale: 'en-US',
     },
-    {
-      symbol: 'JPY',
-      ticker: '¥',
-    },
-    {
-      symbol: 'AUD',
-      ticker: '$',
-    },
-  ],
-  baseCurrency: {
-    symbol: 'USD',
-    ticker: '$',
+    defaultGas: 'standard',
   },
+);
+
+settings.subscribe((value) => {
+  localStorage.setItem('settings', JSON.stringify(value));
 });
 
 export default settings;

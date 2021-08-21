@@ -9,6 +9,44 @@ const global = writable({
   fiatRates: undefined,
   conversionRate: 1,
   tokenPrices: [],
+  gasPrices: {
+    standard: { maxFeePerGas: 0, baseFeePerGas: 0, maxPriorityFeePerGas: 0 },
+    fast: { maxFeePerGas: 0, baseFeePerGas: 0, maxPriorityFeePerGas: 0 },
+    instant: { maxFeePerGas: 0, baseFeePerGas: 0, maxPriorityFeePerGas: 0 },
+  },
+  gasColor: {
+    standard: 'green3',
+    fast: 'orange1',
+    instant: 'red1',
+  },
+  languages: [
+    {
+      name: 'English',
+      locale: 'en-US',
+    },
+    {
+      name: 'German',
+      locale: 'de-DE',
+    },
+  ],
+  allCurrencies: [
+    {
+      symbol: 'USD',
+      ticker: '$',
+    },
+    {
+      symbol: 'EUR',
+      ticker: '€',
+    },
+    {
+      symbol: 'JPY',
+      ticker: '¥',
+    },
+    {
+      symbol: 'AUD',
+      ticker: '$',
+    },
+  ],
 });
 
 export default global;
