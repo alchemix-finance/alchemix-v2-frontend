@@ -30,7 +30,7 @@ export let borderSize = '1';
     overflow-ellipsis
     bg-{backgroundColor}
     shadow-lg
-    z-50
+    z-30
     "
   >
     <slot name="options" />

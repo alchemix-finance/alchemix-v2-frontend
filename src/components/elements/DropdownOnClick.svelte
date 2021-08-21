@@ -66,10 +66,10 @@ export let options = [];
         font-alcxTitles
         overflow-ellipsis
         bg-grey15
-        z-50
+        z-30
       "
     >
-      <ul class="w-40">
+      <ul class="w-56">
         {#each [allOptionsOption, ...options] as option, i}
           <li
             class="

@@ -69,7 +69,7 @@ const options = {
 }
 </style>
 
-<div class="bg-grey10 px-16 py-8">
+<div class="bg-grey10 px-16 py-8 rounded-md">
   <div class="flex justify-between">
     <div>
       <div class="font-alcxTitles text-2xl leading-8">

@@ -14,6 +14,7 @@ export let fontSize = 'text-xs';
 export let width = 'w-full';
 export let height = 'h-auto';
 export let noHoverEffect = false;
+export let py = 'py-1';
 const dispatch = createEventDispatcher();
 
 // @dev emits an event 'clicked' the parent component can listen to
@@ -27,7 +28,7 @@ const clickEvent = () => {
     border-{borderColor}
     rounded
     px-3
-    py-1
+    {py}
     select-none
     font-alcxTitles
     overflow-ellipsis

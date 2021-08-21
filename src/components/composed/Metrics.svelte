@@ -7,7 +7,7 @@ const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
 
 <div class="flex font-alcxTitles text-sm">
   {#each Object.values($metrics.global) as metric}
-    <div class="flex mr-8">
+    <div class="flex mr-6">
       <div class="text-bronze1 mr-2">{metric.label}:</div>
       <div class="flex mr-2">
         <span>{metric.currency}</span>
