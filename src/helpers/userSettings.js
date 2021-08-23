@@ -1,3 +1,4 @@
+import { init, getLocaleFromNavigator } from 'svelte-i18n';
 import global from '../stores/global';
 import settings from '../stores/settings';
 
@@ -30,6 +31,10 @@ export function setCurrency(currency) {
 export function setLanguage(lang) {
   _settings.userLanguage = lang;
   settings.set({ ..._settings });
+  init({
+    fallbackLocale: 'en',
+    initialLocale: _settings.userLanguage.locale || getLocaleFromNavigator(),
+  });
 }
 
 /*
