@@ -1,4 +1,5 @@
 <script>
+import { _ } from 'svelte-i18n';
 import Button from '../components/elements/Button.svelte';
 import Dropdown from '../components/elements/Dropdown.svelte';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -21,14 +22,14 @@ import { connect } from '../helpers/walletManager';
       fontSize="text-md"
       on:clicked="{() => history.back()}"
     />
-    <span class="ml-4">Settings</span>
+    <span class="ml-4">{$_('settings')}</span>
   </div>
   <BorderContainer>
     <div class="bg-grey10 rounded p-8">
       <div id="locale-settings" class="mb-4">
-        <p class="opacity-50 mb-3">Locale</p>
+        <p class="opacity-50 mb-3">{$_('settings_page.locale')}</p>
         <div class="grid grid-cols-3 mb-3">
-          <p>Base Currency</p>
+          <p>{$_('settings_page.base_currency')}</p>
           <div>
             <Dropdown>
               <div
@@ -58,7 +59,7 @@ import { connect } from '../helpers/walletManager';
           </div>
         </div>
         <div class="grid grid-cols-3">
-          <p>Language</p>
+          <p>{$_('settings_page.languages')}</p>
           <div>
             <Dropdown>
               <div
@@ -90,7 +91,7 @@ import { connect } from '../helpers/walletManager';
       </div>
 
       <div id="gas-settings" class="mb-4">
-        <p class="opacity-50 mb-3">Default Gas</p>
+        <p class="opacity-50 mb-3">{$_('settings_page.default_gas')}</p>
         <div class="grid grid-cols-3 gap-4">
           {#each Object.entries($global.gasPrices) as gas}
             <GasCard
@@ -105,11 +106,11 @@ import { connect } from '../helpers/walletManager';
       </div>
 
       <div id="perms-settings">
-        <p class="opacity-50 mb-3">Permissions</p>
+        <p class="opacity-50 mb-3">{$_('settings_page.permissions')}</p>
         {#if !$account.signer}
           <Button
             borderSize="1"
-            label="Connect Wallet to check permissions"
+            label="{$_('settings_page.button_label')}"
             uppercase="{true}"
             height="h-8"
             on:clicked="{connect}"

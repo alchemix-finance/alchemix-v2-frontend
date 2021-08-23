@@ -22,11 +22,11 @@ const global = writable({
   languages: [
     {
       name: 'English',
-      locale: 'en-US',
+      locale: 'en',
     },
     {
       name: 'German',
-      locale: 'de-DE',
+      locale: 'de',
     },
   ],
   allCurrencies: [

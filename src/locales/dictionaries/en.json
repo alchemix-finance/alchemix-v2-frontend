@@ -39,5 +39,13 @@
     "intro_title": "Take Out A Self-Repaying Loan",
     "intro_subtitle": "Increase capital efficiency by borrowing the future yield of your deposit today.",
     "button_label": "Enter Alchemix"
+  },
+  "settings_page": {
+    "locale": "Locale",
+    "base_currency": "Base Currency",
+    "languages": "Languages",
+    "default_gas": "Default Gas",
+    "permissions": "Permissions",
+    "button_label": "Connect Wallet to check permissions"
   }
 }
