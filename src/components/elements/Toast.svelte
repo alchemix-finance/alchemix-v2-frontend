@@ -29,6 +29,7 @@ export let onClickOpen = () => {};
 
 export let showCloseButton = true;
 export let closeTimeoutMs = 10000;
+export let closeOnMount = true;
 export let onClickClose = () => {};
 
 let isOpen = true;
@@ -37,10 +38,12 @@ let handleClose = () => {
 };
 
 onMount(() => {
-  setTimeout(() => {
-    handleClose();
-    onClickClose();
-  }, closeTimeoutMs);
+  if (closeOnMount) {
+    setTimeout(() => {
+      handleClose();
+      onClickClose();
+    }, closeTimeoutMs);
+  }
 });
 </script>
 

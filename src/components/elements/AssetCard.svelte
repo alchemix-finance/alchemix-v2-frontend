@@ -1,7 +1,7 @@
 <script>
 export let assetName = 'Alchemix Asset';
 export let assetTicker = 'alASS';
-export let assetPrice = '0.01';
+export let assetPrice = 0.01;
 export let currency = '$';
 export let assetIcon = 'icon.png';
 export let assetColor = 'bronze2';
