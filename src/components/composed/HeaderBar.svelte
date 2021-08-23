@@ -2,6 +2,7 @@
 import { Link, navigate } from 'svelte-routing';
 import { connect, disconnect } from '../../helpers/walletManager';
 import { setCurrency, setGas } from '../../helpers/userSettings';
+import { _ } from 'svelte-i18n';
 
 import account from '../../stores/account';
 import settings from '../../stores/settings';
@@ -27,7 +28,7 @@ const userGas = (selector) => {
           alt="The Alchemix logo"
           class="w-11"
         />
-        <p class="font-alcxTitles uppercase ml-4 text-2xl">Alchemix</p>
+        <p class="font-alcxTitles uppercase ml-4 text-2xl">{$_('alchemix')}</p>
       </div>
     </Link>
   </div>
@@ -154,17 +155,17 @@ const userGas = (selector) => {
           class="cursor-pointer hover:bg-grey10 h-8"
           on:click="{goToSettings}"
         >
-          <p class="text-center">Settings</p>
+          <p class="text-center">{$_('settings')}</p>
         </li>
         <li class="cursor-default h-8 border-b border-t border-grey10">
-          <p class="text-center opacity-50">Help</p>
+          <p class="text-center opacity-50">{$_('help')}</p>
         </li>
         <li
           class="cursor-pointer h-8 hover:bg-grey10"
           on:click="{$account.signer ? disconnect : connect}"
         >
           <p class="text-center">
-            {$account.signer ? 'Disconnect' : 'Connect'}
+            {$account.signer ? $_('disconnect') : $_('connect')}
           </p>
         </li>
       </ul>

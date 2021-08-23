@@ -1,7 +1,8 @@
 <script>
+import { _ } from 'svelte-i18n';
 import { createEventDispatcher } from 'svelte';
 
-export let label = 'Submit';
+export let label = $_('submit');
 export let disabled = false;
 export let borderColor = 'grey5';
 export let backgroundColor = 'grey10';

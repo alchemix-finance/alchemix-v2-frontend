@@ -1,4 +1,5 @@
 <script>
+import { _ } from 'svelte-i18n';
 import { createEventDispatcher } from 'svelte';
 export let description = 'standard';
 export let gasFee = {
@@ -46,8 +47,10 @@ const eventCheck = () => {
     </p>
   {/if}
   <div class="flex flex-row justify-between">
-    <p class="text-sm opacity-50">Base: {gasFee.baseFeePerGas}</p>
-    <p class="text-sm opacity-50">Prio: {gasFee.maxPriorityFeePerGas}</p>
-    <p class="text-sm opacity-50">Max: {gasFee.maxFeePerGas}</p>
+    <p class="text-sm opacity-50">{$_('base')}: {gasFee.baseFeePerGas}</p>
+    <p class="text-sm opacity-50">
+      {$_('prio')}: {gasFee.maxPriorityFeePerGas}
+    </p>
+    <p class="text-sm opacity-50">{$_('max')}: {gasFee.maxFeePerGas}</p>
   </div>
 </div>

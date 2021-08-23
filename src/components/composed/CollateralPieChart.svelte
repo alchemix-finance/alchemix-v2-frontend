@@ -1,6 +1,7 @@
 <script>
 import PieChart from './Charts/PieChart.svelte';
 import tailwind from '../../../tailwind.config';
+import { _ } from 'svelte-i18n';
 
 const CHART_COLORS = {
   orange2: tailwind.theme.colors.orange2,
@@ -9,19 +10,19 @@ const CHART_COLORS = {
 
 const legend = [
   {
-    label: 'Withdrawable',
+    label: $_('withdrawable'),
     color: CHART_COLORS.orange2,
     colorName: 'orange2',
   },
   {
-    label: 'Liquidatable',
+    label: $_('liquidatable'),
     color: CHART_COLORS.orange3,
     colorName: 'orange3',
   },
 ];
 
-const title = 'Collateral';
-const subTitle = '(Everything)';
+const title = $_('collateral');
+const subTitle = `(${$_('everything')})`;
 
 const chartData = [45, 55];
 </script>

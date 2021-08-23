@@ -1,4 +1,5 @@
 <script>
+import { _ } from 'svelte-i18n';
 import Button from '../components/elements/Button.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
 import AssetCard from '../components/elements/AssetCard.svelte';
@@ -7,7 +8,7 @@ import settings from '../stores/settings';
 import global from '../stores/global';
 import { routerGuard } from '../helpers/routerGuard.js';
 
-// TODO aggregate data from contracts
+// TODO aggregate data from zapper
 const alAssets = [
   {
     name: 'Alchemix USD',
@@ -42,18 +43,17 @@ const alAssets = [
     />
   </div>
   <h1 class="text-center text-5xl font-extrabold mt-7">
-    Take Out A Self-Repaying Loan
+    {$_('landing.intro_title')}
   </h1>
   <div class="flex justify-center">
     <p class="text-center mt-7 text-2xl max-w-xl">
-      Increase capital efficiency by borrowing the future yield of your deposit
-      today.
+      {$_('landing.intro_subtitle')}
     </p>
   </div>
   <div class="flex justify-center mt-14">
     <BorderContainer width="w-80">
       <Button
-        label="Enter Alchemix"
+        label="{$_('landing.button_label')}"
         fontSize="text-md"
         borderSize="1"
         on:clicked="{() => routerGuard('accounts')}"
