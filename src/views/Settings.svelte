@@ -40,10 +40,10 @@ import { connect } from '../helpers/walletManager';
                 </p>
                 <p>▾</p>
               </div>
-              <ul slot="options" class="w-80">
+              <ul slot="options" class="w-max">
                 {#each $global.allCurrencies as currency}
                   <li
-                    class="cursor-pointer h-8 hover:bg-grey10"
+                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
                     on:click="{() => setCurrency(currency)}"
                   >
                     <p
@@ -70,10 +70,10 @@ import { connect } from '../helpers/walletManager';
                 </p>
                 <p>▾</p>
               </div>
-              <ul slot="options" class="w-80">
+              <ul slot="options" class="w-max">
                 {#each $global.languages as language}
                   <li
-                    class="cursor-pointer h-8 hover:bg-grey10"
+                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
                     on:click="{() => setLanguage(language)}"
                   >
                     <p

@@ -1,6 +1,7 @@
 <script>
 import PieChart from './Charts/PieChart.svelte';
 import tailwind from '../../../tailwind.config';
+import { _ } from 'svelte-i18n';
 
 const CHART_COLORS = {
   blue6: tailwind.theme.colors.blue6,
@@ -10,24 +11,24 @@ const CHART_COLORS = {
 
 const legend = [
   {
-    label: 'Debt',
+    label: $_('debt'),
     color: CHART_COLORS.blue6,
     colorName: 'blue6',
   },
   {
-    label: 'Credit',
+    label: $_('credit'),
     color: CHART_COLORS.blue4,
     colorName: 'blue4',
   },
   {
-    label: 'Excess Credit',
+    label: $_('excess_credit'),
     color: CHART_COLORS.blue5,
     colorName: 'blue5',
   },
 ];
 
-const title = 'Debt/Credit';
-const subTitle = '(Everything)';
+const title = `${$_('debt')}/${$_('credit')}`;
+const subTitle = `(${$_('everything')})`;
 
 const chartData = [40, 50, 10];
 </script>

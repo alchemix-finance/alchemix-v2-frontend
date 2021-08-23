@@ -1,4 +1,5 @@
 <script>
+import { _ } from 'svelte-i18n';
 import Wallet from './Wallet.svelte';
 import { routerGuard } from '../../helpers/routerGuard.js';
 </script>
@@ -7,28 +8,28 @@ import { routerGuard } from '../../helpers/routerGuard.js';
   <p
     class="flex flex-1 uppercase tracking-wider font-medium text-xs opacity-30 mb-4"
   >
-    Wallet
+    {$_('wallet')}
   </p>
 </div>
 <Wallet />
 
 <p class="uppercase tracking-wider font-medium text-xs opacity-30 my-4">
-  Navigation
+  {$_('navigation')}
 </p>
 <ul>
   <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('accounts')}">
-    <span>My Account</span>
+    <span>{$_('my')} {$_('account')}</span>
   </li>
   <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('vaults')}">
-    <span>Vaults</span>
+    <span>{$_('vaults')}</span>
   </li>
   <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('transmuter')}">
-    <span>Transmuter</span>
+    <span>{$_('transmuter')}</span>
   </li>
   <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('farms')}">
-    <span>Farms</span>
+    <span>{$_('farms')}</span>
   </li>
   <li class="cursor-pointer" on:click="{() => routerGuard('governance')}">
-    <span>Governance</span>
+    <span>{$_('governance')}</span>
   </li>
 </ul>
