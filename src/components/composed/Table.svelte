@@ -87,3 +87,64 @@ const handleRow = function (idx) {
 };
 </script>
 
+<!-- Instantiate grids parametrically, injecting categories with an
+arbitrary number of values for optimal modularity-->
+<div
+  class="border border-grey10 border-4 grid grid-flow-row auto-rows-max mt-4 "
+>
+  <div
+    class="flex justify-items-center bg-grey15 h-16 grid grid-cols-{tableStruct
+      .categories.length + 1} pt-4"
+  >
+    {#each tableStruct.categories as category}
+      <p class="text-bronze1">{category}</p>
+    {/each}
+    {@html tableStruct.endColumn[0]}
+  </div>
+
+  {#each tableStruct.assetsInfo as asset}
+    <div class="relative justify-self-start top-5">
+      <button
+        on:click="{() => (asset.expanded = !asset.expanded)}"
+        class="absolute inset-y-0 -left-4 bg-grey20 w-9 h-8 border border-grey10 rounded-sm "
+      >
+        <img
+          src="images/{asset.expanded == true ? 'minus' : 'plus'}.png"
+          alt
+          class="p-2"
+        />
+      </button>
+    </div>
+
+    <!-- use handler function to alternate color on table row backgrounds -->
+    <div
+      class="items-center justify-items-center h-16 grid grid-cols-{tableStruct
+        .categories.length + 1} {handleRow(asset.index)}"
+    >
+      {#each tableStruct.assetsContent as category, i}
+        {#if i == 0}
+          <div class="flex justify-between">
+            <img
+              class="max-h-5 mr-4"
+              src="images\token-icons\{asset.ticker}.png"
+              alt="{asset.ticker} Symbol"
+            />
+            <p class="text-sm">{category}</p>
+          </div>
+        {:else}
+          <p>{category}</p>
+        {/if}
+      {/each}
+      {@html tableStruct.endColumn[1]}
+    </div>
+    <div
+      class=" overflow-y-auto {!asset.expanded
+        ? 'h-0'
+        : 'h-24'} transition-all duration-500 ease-in-out {handleRow(
+        asset.index + 1,
+      )}"
+    >
+      expanded content
+    </div>
+  {/each}
+</div>
