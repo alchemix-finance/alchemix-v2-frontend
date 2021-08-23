@@ -2,8 +2,6 @@
 
 Repository for the v2 UI of Alchemix.
 
----
-
 ## Setup
 
 ```bash
@@ -23,7 +21,15 @@ yarn run dev
 
 The app should be accessible on [localhost:5000](http://localhost:5000) by default.
 
----
+## Storybook
+
+Run storybook using
+
+```bash
+yarn run storybook
+```
+
+The server for storybook runs on a different port than the server for svelte's dev environment, so it's possible to run both simultaneously.
 
 ## Codestyle
 
