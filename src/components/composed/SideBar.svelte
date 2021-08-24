@@ -29,7 +29,7 @@ import { routerGuard } from '../../helpers/routerGuard.js';
   <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('farms')}">
     <span>{$_('farms')}</span>
   </li>
-  <li class="cursor-pointer" on:click="{() => routerGuard('governance')}">
+  <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('governance')}">
     <span>{$_('governance')}</span>
   </li>
 </ul>
