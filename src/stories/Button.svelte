@@ -18,9 +18,7 @@ export let size = 'medium';
  */
 export let label = '';
 
-let mode = primary
-  ? 'storybook-button--primary'
-  : 'storybook-button--secondary';
+let mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
 
 let style = backgroundColor ? `background-color: ${backgroundColor}` : '';
 

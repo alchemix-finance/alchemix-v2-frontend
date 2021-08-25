@@ -59,11 +59,7 @@ const copyrightYear = () => {
   </div>
   <div class="flex flex-row mt-10 justify-center space-x-10">
     <a href="https://zapper.fi/" target="_blank">
-      <img
-        src="images/integrations/zapper.png"
-        class="w-60"
-        alt="The logo of Zapper"
-      />
+      <img src="images/integrations/zapper.png" class="w-60" alt="The logo of Zapper" />
     </a>
   </div>
 </div>

@@ -72,8 +72,9 @@ export async function getProposalVotes(id) {
   }`;
   axios(gqlConnector(query))
     .then((result) => {
-      const [votes] = result.data.data.votes;
+      const votes = result.data.data.votes;
       const outcome = { total: 0 };
+      console.log(votes);
       votes.forEach((vote) => {
         if (Object.prototype.hasOwnProperty.call(outcome, vote.choice - 1)) {
           outcome[vote.choice - 1] += 1;

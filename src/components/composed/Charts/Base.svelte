@@ -67,5 +67,4 @@ const typeToClass = {
 }
 </style>
 
-<canvas class="{typeToClass[type]}" bind:this="{chartRef}" {...$$props}
-></canvas>
+<canvas class="{typeToClass[type]}" bind:this="{chartRef}" {...$$props}></canvas>

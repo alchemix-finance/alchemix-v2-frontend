@@ -10,9 +10,7 @@ let viewDetail = false;
  * @param snapshotBlock the block number
  * */
 const snapshotToDate = (snapshotBlock) => {
-  return new Date(snapshotBlock * 1e3).toLocaleDateString(
-    $settings.userLanguage.locale,
-  );
+  return new Date(snapshotBlock * 1e3).toLocaleDateString($settings.userLanguage.locale);
 };
 
 const getVoteDetails = () => {
@@ -23,10 +21,7 @@ const getVoteDetails = () => {
 };
 </script>
 
-<p
-  on:click="{getVoteDetails}"
-  class="cursor-pointer hover:bg-grey10 {viewDetail ? 'bg-grey10' : ''}"
->
+<p on:click="{getVoteDetails}" class="cursor-pointer hover:bg-grey10 {viewDetail ? 'bg-grey10' : ''}">
   {proposalEntry?.title}
 </p>
 
@@ -39,18 +34,10 @@ const getVoteDetails = () => {
       <p>Start {snapshotToDate(proposalEntry.start)}</p>
       <p>End {snapshotToDate(proposalEntry.end)}</p>
       <p>
-        <a
-          href="https://etherscan.io/block/{proposalEntry.snapshot}"
-          target="_blank"
-        >
-          Snapshot Block
-        </a>
+        <a href="https://etherscan.io/block/{proposalEntry.snapshot}" target="_blank"> Snapshot Block </a>
       </p>
       <p>
-        <a
-          href="https://cloudflare-ipfs.com/ipfs/{proposalEntry.id}"
-          target="_blank">IPFS Link</a
-        >
+        <a href="https://cloudflare-ipfs.com/ipfs/{proposalEntry.id}" target="_blank">IPFS Link</a>
       </p>
       <ul>
         <li>Choices:</li>
@@ -58,10 +45,7 @@ const getVoteDetails = () => {
           <li>
             {choice}
             {proposalEntry.results?.[index]}
-            (~{Math.floor(
-              (100 / proposalEntry.results?.total) *
-                proposalEntry.results?.[index],
-            )}%)
+            (~{Math.floor((100 / proposalEntry.results?.total) * proposalEntry.results?.[index])}%)
           </li>
         {/each}
         <li>Total votes: {proposalEntry.results?.total}</li>

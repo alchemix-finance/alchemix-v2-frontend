@@ -47,9 +47,7 @@ import { connect } from '../helpers/walletManager';
                     class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
                     on:click="{() => setCurrency(currency)}"
                   >
-                    <p
-                      class="text-center text-opacity-50 hover:text-opacity-100 w-full"
-                    >
+                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
                       {currency.symbol}
                     </p>
                   </li>
@@ -77,9 +75,7 @@ import { connect } from '../helpers/walletManager';
                     class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
                     on:click="{() => setLanguage(language)}"
                   >
-                    <p
-                      class="text-center text-opacity-50 hover:text-opacity-100 w-full"
-                    >
+                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
                       {language.name}
                     </p>
                   </li>
