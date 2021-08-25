@@ -5,13 +5,16 @@ import ViewContainer from '../components/elements/ViewContainer.svelte';
 import { getOpenProposals } from '../middleware/snapshot';
 import governance from '../stores/governance';
 import Button from '../components/elements/Button.svelte';
+import ProposalDetailDummy from '../components/elements/ProposalDetailDummy.svelte';
 
 const openAllOnSnapshot = () => {
   window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
 };
 
 onMount(() => {
-  getOpenProposals();
+  if ($governance.proposals.length === 0) {
+    getOpenProposals();
+  }
 });
 </script>
 
@@ -28,11 +31,16 @@ onMount(() => {
     />
   </div>
   {#if $governance.fetching}
-    <p>{$_('governance_page.loading')}</p>
+    <p class="text-center">{$_('governance_page.loading')}</p>
   {:else if $governance.proposals.length > 0}
+    <p class="text-center mb-6 opacity-50">
+      {$_('governance_page.noTranslation')}
+    </p>
     <ul>
       {#each $governance.proposals as proposal}
-        <li>{proposal.title}</li>
+        <li class="mb-3">
+          <ProposalDetailDummy proposalEntry="{proposal}" />
+        </li>
       {/each}
     </ul>
   {:else}

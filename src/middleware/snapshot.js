@@ -13,7 +13,7 @@ governance.subscribe((val) => {
   _governance = val;
 });
 
-function connector(queryBody) {
+function gqlConnector(queryBody) {
   return {
     url: 'https://hub.snapshot.org/graphql/',
     method: 'POST',
@@ -29,7 +29,7 @@ export async function getOpenProposals() {
       skip: 0
       where: {
         space_in: ["alchemixstakers.eth"],
-        state: "active"
+        state: "closed"
       }
       orderBy: "created"
       orderDirection: desc
@@ -45,11 +45,44 @@ export async function getOpenProposals() {
       author
     }
   }`;
-  axios(connector(query))
+  axios(gqlConnector(query))
     .then((result) => {
-      console.log('result of snapshot', result.data.data);
+      console.log('result of snapshot', result.data.data.proposals);
       _governance.proposals = result.data.data.proposals;
       _governance.fetching = false;
+      governance.set({ ..._governance });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export async function getProposalVotes(id) {
+  // TODO check amount of total votes, adjust query accordingly or loop
+  const query = `{
+    votes(
+      skip: 0
+      first: 1000
+      where: {
+        proposal: "${id}"
+      }
+    ) {
+      choice
+    }
+  }`;
+  axios(gqlConnector(query))
+    .then((result) => {
+      const [votes] = result.data.data.votes;
+      const outcome = { total: 0 };
+      votes.forEach((vote) => {
+        if (Object.prototype.hasOwnProperty.call(outcome, vote.choice - 1)) {
+          outcome[vote.choice - 1] += 1;
+        } else {
+          outcome[vote.choice - 1] = 1;
+        }
+        outcome.total += 1;
+      });
+      _governance.proposals.find((proposal) => proposal.id === id).results = outcome;
       governance.set({ ..._governance });
     })
     .catch((error) => {
