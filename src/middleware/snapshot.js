@@ -1,9 +1,17 @@
 import axios from 'axios';
+import snapshot from '@snapshot-labs/snapshot.js';
 // import global from '../stores/global';
 import governance from '../stores/governance';
+import account from '../stores/account';
+
+const snapshotHubUrl = 'https://hub.snapshot.org';
+const space = 'alchemixstakers.eth';
+const client = new snapshot.Client(snapshotHubUrl);
+// const archiveProvider = snapshot.utils.getProvider(process.env.NETWORK_ID);
 
 // let _global;
 let _governance;
+let _account;
 
 // global.subscribe((val) => {
 //   _global = val;
@@ -13,9 +21,13 @@ governance.subscribe((val) => {
   _governance = val;
 });
 
+account.subscribe((val) => {
+  _account = val;
+});
+
 function gqlConnector(queryBody) {
   return {
-    url: 'https://hub.snapshot.org/graphql/',
+    url: `${snapshotHubUrl}/graphql/`,
     method: 'POST',
     data: {
       query: queryBody,
@@ -28,7 +40,7 @@ export async function getOpenProposals() {
     proposals(
       skip: 0
       where: {
-        space_in: ["alchemixstakers.eth"],
+        space_in: ["${space}"],
         state: "closed"
       }
       orderBy: "created"
@@ -89,4 +101,10 @@ export async function getProposalVotes(id) {
     .catch((error) => {
       console.log(error);
     });
+}
+
+export async function sendVote(voteData) {
+  console.log(_account.signer);
+  // TODO check if supplied choice is valid for provided proposal
+  await client.vote(_account.signer.provider, _account.address, space, voteData);
 }

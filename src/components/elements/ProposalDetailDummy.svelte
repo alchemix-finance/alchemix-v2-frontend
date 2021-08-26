@@ -1,9 +1,10 @@
 <script>
 import settings from '../../stores/settings';
 import BorderContainer from './BorderContainer.svelte';
-import { getProposalVotes } from '../../middleware/snapshot';
+import { getProposalVotes, sendVote } from '../../middleware/snapshot';
 export let proposalEntry = {};
 let viewDetail = false;
+let value = '';
 
 /*
  * @dev transforms snapshot's block notation to human readable date
@@ -13,11 +14,25 @@ const snapshotToDate = (snapshotBlock) => {
   return new Date(snapshotBlock * 1e3).toLocaleDateString($settings.userLanguage.locale);
 };
 
+/*
+ * @dev expands the detail view and queries votes
+ * */
 const getVoteDetails = () => {
   if (!viewDetail) {
     getProposalVotes(proposalEntry.id);
   }
   viewDetail = !viewDetail;
+};
+
+/*
+ * @dev constructs a payload and initiates snapshot voting
+ * */
+const initializeVote = () => {
+  const payload = {
+    proposal: proposalEntry.id,
+    choice: value + 1,
+  };
+  sendVote(payload);
 };
 </script>
 
@@ -39,17 +54,25 @@ const getVoteDetails = () => {
       <p>
         <a href="https://cloudflare-ipfs.com/ipfs/{proposalEntry.id}" target="_blank">IPFS Link</a>
       </p>
-      <ul>
+      <ul class="mb-3">
         <li>Choices:</li>
         {#each proposalEntry.choices as choice, index}
           <li>
             {choice}
             {proposalEntry.results?.[index]}
-            (~{Math.floor((100 / proposalEntry.results?.total) * proposalEntry.results?.[index])}%)
+            (~{((100 / proposalEntry.results?.total) * proposalEntry.results?.[index]).toFixed(2)}%)
           </li>
         {/each}
         <li>Total votes: {proposalEntry.results?.total}</li>
       </ul>
+      <p>Your vote: {value}</p>
+      <select bind:value>
+        <option value="null" selected disabled>Select your choice</option>
+        {#each proposalEntry.choices as choice, index}
+          <option value="{index}">{choice}</option>
+        {/each}
+      </select>
+      <button on:click="{initializeVote}">Send vote</button>
     </div>
   </BorderContainer>
 {/if}
