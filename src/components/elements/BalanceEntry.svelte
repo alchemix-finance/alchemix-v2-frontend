@@ -10,11 +10,7 @@ const truncateBalance = (balance) => {
 </script>
 
 <div class="flex mt-2 mb-2 flex-row">
-  <img
-    class="w-6 h-6 mr-2"
-    alt="The logo of {tokenSymbol}"
-    src="images/token-icons/{tokenSymbol}.png"
-  />
+  <img class="w-6 h-6 mr-2" alt="The logo of {tokenSymbol}" src="images/token-icons/{tokenSymbol}.png" />
   <div class="flex flex-col w-full">
     <div class="relative flex items-center justify-between text-sm">
       <p>{tokenSymbol}</p>

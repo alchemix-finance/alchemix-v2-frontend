@@ -5,9 +5,7 @@ import { routerGuard } from '../../helpers/routerGuard.js';
 </script>
 
 <div class="relative flex items-center justify-between">
-  <p
-    class="flex flex-1 uppercase tracking-wider font-medium text-xs opacity-30 mb-4"
-  >
+  <p class="flex flex-1 uppercase tracking-wider font-medium text-xs opacity-30 mb-4">
     {$_('wallet')}
   </p>
 </div>
@@ -29,7 +27,7 @@ import { routerGuard } from '../../helpers/routerGuard.js';
   <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('farms')}">
     <span>{$_('farms')}</span>
   </li>
-  <li class="cursor-pointer" on:click="{() => routerGuard('governance')}">
+  <li class="mb-5 cursor-pointer" on:click="{() => routerGuard('governance')}">
     <span>{$_('governance')}</span>
   </li>
 </ul>

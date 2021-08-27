@@ -23,11 +23,7 @@ const userGas = (selector) => {
   <div class="flex-1 flex items-center">
     <Link to="{$account.signer ? '/accounts' : '/'}">
       <div class="flex-shrink-0 flex items-center">
-        <img
-          src="images/alchemix_logo.png"
-          alt="The Alchemix logo"
-          class="w-11"
-        />
+        <img src="images/alchemix_logo.png" alt="The Alchemix logo" class="w-11" />
         <p class="font-alcxTitles uppercase ml-4 text-2xl">{$_('alchemix')}</p>
       </div>
     </Link>
@@ -108,9 +104,7 @@ const userGas = (selector) => {
             class="cursor-pointer h-8 hover:bg-grey10 border-t border-grey10"
             on:click="{() => setCurrency(currency)}"
           >
-            <p
-              class="text-center text-opacity-50 hover:text-opacity-100 w-full"
-            >
+            <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
               {currency.symbol}
             </p>
           </li>
@@ -151,19 +145,13 @@ const userGas = (selector) => {
         <p>▾</p>
       </div>
       <ul slot="options" class="w-40">
-        <li
-          class="cursor-pointer hover:bg-grey10 h-8"
-          on:click="{goToSettings}"
-        >
+        <li class="cursor-pointer hover:bg-grey10 h-8" on:click="{goToSettings}">
           <p class="text-center">{$_('settings')}</p>
         </li>
         <li class="cursor-default h-8 border-b border-t border-grey10">
           <p class="text-center opacity-50">{$_('help')}</p>
         </li>
-        <li
-          class="cursor-pointer h-8 hover:bg-grey10"
-          on:click="{$account.signer ? disconnect : connect}"
-        >
+        <li class="cursor-pointer h-8 hover:bg-grey10" on:click="{$account.signer ? disconnect : connect}">
           <p class="text-center">
             {$account.signer ? $_('disconnect') : $_('connect')}
           </p>

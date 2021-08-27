@@ -47,5 +47,12 @@
     "default_gas": "Default Gas",
     "permissions": "Permissions",
     "button_label": "Connect Wallet to check permissions"
+  },
+  "governance_page": {
+    "title": "Alchemix Improvement Proposals",
+    "loading": "Fetching Data...",
+    "openAllOnSnapshot": "View all proposals on Snapshot",
+    "noOpenVotes": "There are no open proposals at the moment.",
+    "noTranslation": "The results are fetched through external APIs and are not translated from their original language."
   }
 }

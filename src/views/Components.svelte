@@ -15,10 +15,7 @@ import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte
     <p>Labels</p>
     <h1>Container with border (non-styleable)</h1>
     <BorderContainer width="w-40">
-      <span>
-        This component will draw a rounded border around any content that exists
-        in it's slot.
-      </span>
+      <span> This component will draw a rounded border around any content that exists in it's slot. </span>
       <br />
       <p>Multiple elements can be placed inside.</p>
     </BorderContainer>

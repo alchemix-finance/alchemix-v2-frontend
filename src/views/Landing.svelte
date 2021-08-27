@@ -58,12 +58,7 @@ const alAssets = [
         borderSize="1"
         on:clicked="{() => routerGuard('accounts')}"
       >
-        <img
-          src="images/token-icons/ALCX.png"
-          slot="leftSlot"
-          class="w-6 h-6"
-          alt="The Alchemix Logo"
-        />
+        <img src="images/token-icons/ALCX.png" slot="leftSlot" class="w-6 h-6" alt="The Alchemix Logo" />
         <svg
           slot="rightSlot"
           xmlns="http://www.w3.org/2000/svg"
@@ -72,11 +67,8 @@ const alAssets = [
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"
+          ></path>
         </svg>
       </Button>
     </BorderContainer>

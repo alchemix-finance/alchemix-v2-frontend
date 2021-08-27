@@ -44,11 +44,7 @@ const clickEvent = () => {
     : noHoverEffect
     ? `hover:bg-${backgroundColor}`
     : `bg-${hoverColor}`}
-    hover:{disabled
-    ? 'cursor-not-allowed'
-    : noHoverEffect
-    ? 'cursor-default'
-    : 'cursor-pointer'}
+    hover:{disabled ? 'cursor-not-allowed' : noHoverEffect ? 'cursor-default' : 'cursor-pointer'}
     disabled:opacity-50
     "
   disabled="{disabled}"

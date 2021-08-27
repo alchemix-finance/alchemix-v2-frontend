@@ -19,9 +19,7 @@ export let borderSize = '1';
 <div class="dropdown inline-block relative w-full">
   <slot name="label" />
   <div
-    class="dropdown-menu absolute hidden border{borderSize === '1'
-      ? ''
-      : `-${borderSize}`}
+    class="dropdown-menu absolute hidden border{borderSize === '1' ? '' : `-${borderSize}`}
     border-{borderColor}
     right-0
     rounded-lg

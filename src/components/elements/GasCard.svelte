@@ -20,24 +20,14 @@ const eventCheck = () => {
 </script>
 
 <div
-  class="rounded border border-{isActive
-    ? cardColor
-    : 'lightgrey20'} py-4 px-6 {isActive
+  class="rounded border border-{isActive ? cardColor : 'lightgrey20'} py-4 px-6 {isActive
     ? ''
     : 'cursor-pointer hover:bg-grey1'} w-full"
   on:click="{eventCheck}"
 >
   <div class="flex flex-row justify-between mb-3">
-    <p
-      class="capitalize font-alcxTitles text-sm {compactView
-        ? ''
-        : 'opacity-50'}"
-    >
-      {compactView
-        ? `${description}: ${
-            gasFee.baseFeePerGas + gasFee.maxPriorityFeePerGas
-          }`
-        : description}
+    <p class="capitalize font-alcxTitles text-sm {compactView ? '' : 'opacity-50'}">
+      {compactView ? `${description}: ${gasFee.baseFeePerGas + gasFee.maxPriorityFeePerGas}` : description}
     </p>
     <p class="bg-{cardColor} w-4 h-1 rounded self-center"></p>
   </div>

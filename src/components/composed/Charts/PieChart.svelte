@@ -21,8 +21,7 @@ const count = chartData.length;
 
 const labels = legend.map((el) => el.label);
 
-const getLabelColor = (label) =>
-  legend.find((el) => el.label === label)?.colorName;
+const getLabelColor = (label) => legend.find((el) => el.label === label)?.colorName;
 
 const data = {
   labels,
