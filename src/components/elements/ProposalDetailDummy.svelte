@@ -43,6 +43,7 @@ const initializeVote = () => {
 {#if viewDetail}
   <BorderContainer>
     <div class="py-2 px-4 bg-grey10 rounded">
+      <p on:click="{getVoteDetails}">Close detail view</p>
       <p class="mb-3">
         {@html proposalEntry?.body}
       </p>
@@ -75,4 +76,9 @@ const initializeVote = () => {
       <button on:click="{initializeVote}">Send vote</button>
     </div>
   </BorderContainer>
+  <div class="flex justify-between mb-6">
+    <a href="https://snapshot.org/#/alchemixstakers.eth/proposal/{proposalEntry.id}" target="_blank"
+      >View proposal on Snapshot</a
+    >
+  </div>
 {/if}

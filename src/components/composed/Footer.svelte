@@ -61,5 +61,8 @@ const copyrightYear = () => {
     <a href="https://zapper.fi/" target="_blank">
       <img src="images/integrations/zapper.png" class="w-60" alt="The logo of Zapper" />
     </a>
+    <a href="https://snapshot.org/" target="_blank">
+      <img src="images/integrations/snapshot.png" class="w-60" alt="The logo of Snapshot" />
+    </a>
   </div>
 </div>
