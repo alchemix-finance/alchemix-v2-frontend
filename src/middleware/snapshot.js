@@ -41,7 +41,7 @@ export async function getOpenProposals() {
       skip: 0
       where: {
         space_in: ["${space}"],
-        state: "closed"
+        state: "active"
       }
       orderBy: "created"
       orderDirection: desc

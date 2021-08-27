@@ -6,6 +6,7 @@ import { getOpenProposals } from '../middleware/snapshot';
 import governance from '../stores/governance';
 import Button from '../components/elements/Button.svelte';
 import ProposalDetailDummy from '../components/elements/ProposalDetailDummy.svelte';
+import { BarLoader } from 'svelte-loading-spinners';
 
 const openAllOnSnapshot = () => {
   window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -32,8 +33,11 @@ onMount(() => {
   </div>
   {#if $governance.fetching}
     <p class="text-center">{$_('governance_page.loading')}</p>
+    <div class="flex justify-center">
+      <BarLoader color="#F5C59F" />
+    </div>
   {:else if $governance.proposals.length > 0}
-    <p class="text-center mb-6 opacity-50">
+    <p class="text-center text-xs mb-6 opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
     <ul>
@@ -44,6 +48,8 @@ onMount(() => {
       {/each}
     </ul>
   {:else}
-    {$_('governance_page.noOpenVotes')}
+    <p class="text-center opacity-50">
+      {$_('governance_page.noOpenVotes')}
+    </p>
   {/if}
 </ViewContainer>
