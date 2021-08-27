@@ -10,8 +10,18 @@ const copyrightYear = () => {
     <div class="mr-11 w-60">
       <p class="uppercase text-sm alcxTitle mb-5">{$_('alchemix')}</p>
       <p class="text-sm mb-3">&copy; {copyrightYear()} {$_('alchemix_labs')}</p>
-      <p class="text-sm text-justify">
+      <p class="text-sm mb-3 text-justify">
         {$_('footer_disclaimer')}
+      </p>
+      <p class="mb-3">
+        <a href="https://zapper.fi/" target="_blank">
+          <img src="images/integrations/zapper.png" class="w-60" alt="The logo of Zapper" />
+        </a>
+      </p>
+      <p>
+        <a href="https://snapshot.org/" target="_blank">
+          <img src="images/integrations/snapshot.png" class="w-60" alt="The logo of Snapshot" />
+        </a>
       </p>
     </div>
     <div class="mr-11">
@@ -56,13 +66,5 @@ const copyrightYear = () => {
         </li>
       </ul>
     </div>
-  </div>
-  <div class="flex flex-row mt-10 justify-center space-x-10">
-    <a href="https://zapper.fi/" target="_blank">
-      <img src="images/integrations/zapper.png" class="w-60" alt="The logo of Zapper" />
-    </a>
-    <a href="https://snapshot.org/" target="_blank">
-      <img src="images/integrations/snapshot.png" class="w-60" alt="The logo of Snapshot" />
-    </a>
   </div>
 </div>

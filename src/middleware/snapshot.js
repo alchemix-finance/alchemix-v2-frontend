@@ -40,8 +40,7 @@ export async function getOpenProposals() {
     proposals(
       skip: 0
       where: {
-        space_in: ["${space}"],
-        state: "closed"
+        space_in: ["${space}"]
       }
       orderBy: "created"
       orderDirection: desc
