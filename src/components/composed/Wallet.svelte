@@ -20,31 +20,40 @@ function openEtherscan() {
 }
 </script>
 
-<BorderContainer>
-  {#if $account.signer}
-    <Button
-      borderSize="1"
-      label="{truncateAddress($account.address)}"
-      uppercase="{true}"
-      height="h-8"
-      on:clicked="{openEtherscan}"
-    >
-      <div slot="leftSlot">
-        <AvatarWithIndicator hash="{$account.address}" connected="{true}" />
-      </div>
-    </Button>
-    <WalletBalance />
-  {:else}
-    <Button
-      borderSize="1"
-      label="Connect Wallet"
-      uppercase="{true}"
-      height="h-8"
-      on:clicked="{connect}"
-    >
-      <div slot="leftSlot">
-        <AvatarWithIndicator />
-      </div>
-    </Button>
-  {/if}
-</BorderContainer>
+<style>
+.min-w-wallet {
+  /*  prevent "connect wallet" button to wrap */
+  min-width: 210px;
+}
+</style>
+
+<div class="min-w-wallet">
+  <BorderContainer>
+    {#if $account.signer}
+      <Button
+        borderSize="1"
+        label="{truncateAddress($account.address)}"
+        uppercase="{true}"
+        height="h-10"
+        on:clicked="{openEtherscan}"
+      >
+        <div slot="leftSlot">
+          <AvatarWithIndicator hash="{$account.address}" connected="{true}" />
+        </div>
+      </Button>
+      <WalletBalance />
+    {:else}
+      <Button
+        borderSize="1"
+        label="Connect Wallet"
+        uppercase="{true}"
+        height="h-10"
+        on:clicked="{connect}"
+      >
+        <div slot="leftSlot">
+          <AvatarWithIndicator />
+        </div>
+      </Button>
+    {/if}
+  </BorderContainer>
+</div>
