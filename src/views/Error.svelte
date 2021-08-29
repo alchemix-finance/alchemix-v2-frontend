@@ -4,7 +4,7 @@ import ViewContainer from '../components/elements/ViewContainer.svelte';
 
 <ViewContainer>
   <div>
-    <h1>Error page</h1>
+    <h1>404 Error page</h1>
     <p>You'll hopefully never see this.</p>
   </div>
 </ViewContainer>
