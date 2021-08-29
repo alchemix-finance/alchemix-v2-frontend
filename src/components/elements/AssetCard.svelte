@@ -1,4 +1,6 @@
 <script>
+import commaNumber from 'comma-number';
+
 export let assetName = 'Alchemix Asset';
 export let assetTicker = 'alASS';
 export let assetPrice = 0.01;
@@ -12,7 +14,7 @@ export let assetColor = 'bronze2';
   <p class="text-3xl">{assetTicker}</p>
   <p>
     <span class="text-base opacity-50">{currency}</span>
-    <span class="text-3xl">{assetPrice.toFixed(2)}</span>
+    <span class="text-3xl">{commaNumber(assetPrice.toFixed(2))}</span>
   </p>
   <img
     src="images/asset-card-icons/{assetIcon}"
