@@ -36,11 +36,7 @@ const alAssets = [
 
 <ViewContainer>
   <div class="flex justify-center">
-    <img
-      src="images/alchemix_intro_logo.png"
-      alt="The logo depicting the Alchemix project"
-      class="w-40 h-40"
-    />
+    <img src="images/gifs/alcx-yellow.gif" alt="The logo depicting the Alchemix project" class="w-40 h-40" />
   </div>
   <h1 class="text-center text-5xl font-extrabold mt-7">
     {$_('landing.intro_title')}
