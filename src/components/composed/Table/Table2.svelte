@@ -1,5 +1,7 @@
 <script>
 import { SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+import TableCell from './TableCell.svelte';
+import VaultTypeCell from './VaultTypeCell.svelte';
 
 const columns = [
   {
@@ -36,20 +38,46 @@ const columns = [
 
 const rows = [
   {
-    col1: 'alUsd',
-    col2: '6',
-    col3: '161.5',
-    col4: '30.3',
-    col5: '50.2',
-    col6: 'View',
+    col1: {
+      CellComponent: VaultTypeCell,
+      value: 'alUsd',
+    },
+    col2: {
+      value: '6',
+    },
+    col3: {
+      value: '161.5',
+    },
+    col4: {
+      value: '30.3',
+    },
+    col5: {
+      value: '50.2',
+    },
+    col6: {
+      value: 'View',
+    },
   },
   {
-    col1: 'blUsd',
-    col2: '7',
-    col3: '261.5',
-    col4: '40.3',
-    col5: '60.2',
-    col6: 'View',
+    col1: {
+      CellComponent: VaultTypeCell,
+      value: 'blUsd',
+    },
+    col2: {
+      value: '7',
+    },
+    col3: {
+      value: '261.5',
+    },
+    col4: {
+      value: '40.3',
+    },
+    col5: {
+      value: '60.2',
+    },
+    col6: {
+      value: 'View',
+    },
   },
 ];
 
@@ -75,11 +103,9 @@ let sortOrder = SORT_ORDERS.asc;
 const sortBy = (dataKey) => {
   tableRows = sortTableRows({ columnKey: dataKey, rows: tableRows, sortOrder });
 
-  if (sortOrder === SORT_ORDERS.asc) {
-    sortOrder = SORT_ORDERS.desc;
-  } else {
-    sortOrder = SORT_ORDERS.asc;
-  }
+  // toggle sortOrder
+  sortOrder =
+    sortOrder === SORT_ORDERS.asc ? SORT_ORDERS.desc : SORT_ORDERS.asc;
 };
 
 const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
@@ -114,7 +140,9 @@ const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
         )}"
       >
         {#each row.cells as cell}
-          <td>{cell.data}</td>
+          <td>
+            <TableCell {...cell} />
+          </td>
         {/each}
       </tr>
     {/each}

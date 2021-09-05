@@ -11,20 +11,23 @@ export const sortTableRows = ({ columnKey, rows, sortOrder }) =>
     const cellA = rowA.cells.find((cell) => cell.dataKey === columnKey);
     const cellB = rowB.cells.find((cell) => cell.dataKey === columnKey);
 
-    if (isString(cellA.data) && isString(cellB.data)) {
+    const valueA = cellA.data.value;
+    const valueB = cellB.data.value;
+
+    if (isString(valueA) && isString(valueB)) {
       if (sortOrder === SORT_ORDERS.asc) {
-        return cellB.data.localeCompare(cellA.data);
+        return valueB.localeCompare(valueA);
       }
 
-      return cellA.data.localeCompare(cellB.data);
+      return valueA.localeCompare(valueB);
     }
 
-    if (isNumber(cellA.data) && isNumber(cellB.data)) {
+    if (isNumber(valueA) && isNumber(valueB)) {
       if (sortOrder === SORT_ORDERS.asc) {
-        return cellB.data > cellA.data;
+        return valueB > valueA;
       }
 
-      return cellA.data > cellB.data;
+      return valueA > valueB;
     }
 
     throw new Error('cell data must be a string or number');
