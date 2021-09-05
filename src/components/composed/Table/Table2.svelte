@@ -69,7 +69,11 @@ $: sortedRows = tableRows;
 const isString = (string) => typeof string === 'string';
 const isNumber = (number) => typeof number === 'number';
 
-let sortOrder = 'asc';
+const SORT_ORDERS = {
+  asc: 'asc',
+  desc: 'desc',
+};
+let sortOrder = SORT_ORDERS.asc;
 
 const sortBy = (dataKey) => {
   tableRows = tableRows.sort((rowA, rowB) => {
@@ -77,11 +81,22 @@ const sortBy = (dataKey) => {
     const cellB = rowB.cells.find((cell) => cell.dataKey === dataKey);
 
     if (isString(cellA.data) && isString(cellB.data)) {
-      return cellB.data.localeCompare(cellA.data);
+      if (sortOrder === SORT_ORDERS.asc) {
+        sortOrder = SORT_ORDERS.desc;
+        return cellB.data.localeCompare(cellA.data);
+      }
+
+      sortOrder = SORT_ORDERS.asc;
+      return cellA.data.localeCompare(cellB.data);
     }
 
     if (isNumber(cellA.data) && isNumber(cellB.data)) {
-      return cellB.data > cellA.data;
+      if (sortOrder === SORT_ORDERS.asc) {
+        sortOrder = SORT_ORDERS.desc;
+        return cellB.data > cellA.data;
+      }
+      sortOrder = SORT_ORDERS.asc;
+      return cellA.data > cellB.data;
     }
 
     throw new Error('cell data must be a string or number');
