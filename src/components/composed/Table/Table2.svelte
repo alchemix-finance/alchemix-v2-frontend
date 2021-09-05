@@ -55,7 +55,7 @@ const tableRows = rows.map((row) => ({
 
 const colNumber = columns.length;
 
-const handleRow = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
+const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
 </script>
 
 <!-- TODO remove mt-10 -->
@@ -77,7 +77,7 @@ const handleRow = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
   <tbody>
     {#each tableRows as row, i}
       <tr
-        class="flex justify-items-center items-center h-16 grid grid-cols-{colNumber} {handleRow(
+        class="flex justify-items-center items-center h-16 grid grid-cols-{colNumber} {rowBg(
           i,
         )}"
       >
