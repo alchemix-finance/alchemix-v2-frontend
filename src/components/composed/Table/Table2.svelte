@@ -1,4 +1,6 @@
 <script>
+import { SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+
 const columns = [
   {
     header: 'Vault Type',
@@ -51,6 +53,8 @@ const rows = [
   },
 ];
 
+const colNumber = columns.length;
+
 // we could tweak this to support multiple headers
 // like on https://codesandbox.io/s/github/tannerlinsley/react-table/tree/master/examples/sorting?file=/src/App.js:0-65
 const headerGroups = columns.map((col) => ({
@@ -66,44 +70,17 @@ let tableRows = rows.map((row) => ({
 
 $: sortedRows = tableRows;
 
-const isString = (string) => typeof string === 'string';
-const isNumber = (number) => typeof number === 'number';
-
-const SORT_ORDERS = {
-  asc: 'asc',
-  desc: 'desc',
-};
 let sortOrder = SORT_ORDERS.asc;
 
 const sortBy = (dataKey) => {
-  tableRows = tableRows.sort((rowA, rowB) => {
-    const cellA = rowA.cells.find((cell) => cell.dataKey === dataKey);
-    const cellB = rowB.cells.find((cell) => cell.dataKey === dataKey);
+  tableRows = sortTableRows({ columnKey: dataKey, rows: tableRows, sortOrder });
 
-    if (isString(cellA.data) && isString(cellB.data)) {
-      if (sortOrder === SORT_ORDERS.asc) {
-        sortOrder = SORT_ORDERS.desc;
-        return cellB.data.localeCompare(cellA.data);
-      }
-
-      sortOrder = SORT_ORDERS.asc;
-      return cellA.data.localeCompare(cellB.data);
-    }
-
-    if (isNumber(cellA.data) && isNumber(cellB.data)) {
-      if (sortOrder === SORT_ORDERS.asc) {
-        sortOrder = SORT_ORDERS.desc;
-        return cellB.data > cellA.data;
-      }
-      sortOrder = SORT_ORDERS.asc;
-      return cellA.data > cellB.data;
-    }
-
-    throw new Error('cell data must be a string or number');
-  });
+  if (sortOrder === SORT_ORDERS.asc) {
+    sortOrder = SORT_ORDERS.desc;
+  } else {
+    sortOrder = SORT_ORDERS.asc;
+  }
 };
-
-const colNumber = columns.length;
 
 const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
 </script>
