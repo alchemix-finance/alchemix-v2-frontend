@@ -1,9 +1,17 @@
 <script>
 import { SORT_ORDERS, sortTableRows } from '../../../helpers/table';
-import TableCell from './TableCell.svelte';
+
+import ExpandedRowCard from './ExpandedRowCard.svelte';
+import TableBodyRow from './TableBodyRow.svelte';
+import TableHeaderCell from './TableHeaderCell.svelte';
 import VaultTypeCell from './VaultTypeCell.svelte';
+import ExpandRowCell from './ExpandRowCell.svelte';
 
 const columns = [
+  {
+    header: '+',
+    dataKey: 'col0',
+  },
   {
     header: 'Vault Type',
     dataKey: 'col1',
@@ -30,14 +38,20 @@ const columns = [
     useSortBy: true,
   },
   {
-    header: undefined,
+    header: '',
     dataKey: 'col6',
-    useSortBy: false,
   },
 ];
 
 const rows = [
   {
+    col0: {
+      CellComponent: ExpandRowCell,
+      expandedRow: {
+        ExpandedRowComponent: ExpandedRowCard,
+        value: 'aaaa',
+      },
+    },
     col1: {
       CellComponent: VaultTypeCell,
       value: 'alUsd',
@@ -59,6 +73,13 @@ const rows = [
     },
   },
   {
+    col0: {
+      CellComponent: ExpandRowCell,
+      expandedRow: {
+        ExpandedRowComponent: ExpandedRowCard,
+        value: 'bbbb',
+      },
+    },
     col1: {
       CellComponent: VaultTypeCell,
       value: 'blUsd',
@@ -79,6 +100,34 @@ const rows = [
       value: 'View',
     },
   },
+  {
+    col0: {
+      CellComponent: ExpandRowCell,
+      expandedRow: {
+        ExpandedRowComponent: ExpandedRowCard,
+        value: 'cccc',
+      },
+    },
+    col1: {
+      CellComponent: VaultTypeCell,
+      value: 'clUsd',
+    },
+    col2: {
+      value: '10',
+    },
+    col3: {
+      value: '761.5',
+    },
+    col4: {
+      value: '10.3',
+    },
+    col5: {
+      value: '10.2',
+    },
+    col6: {
+      value: 'View',
+    },
+  },
 ];
 
 const colNumber = columns.length;
@@ -86,14 +135,15 @@ const colNumber = columns.length;
 // we could tweak this to support multiple headers
 // like on https://codesandbox.io/s/github/tannerlinsley/react-table/tree/master/examples/sorting?file=/src/App.js:0-65
 const headerGroups = columns.map((col) => ({
-  headers: [{ header: col.header, ...col }],
+  headers: [{ value: col.value, ...col }],
 }));
 
-let tableRows = rows.map((row) => ({
+let tableRows = rows.map((row, i) => ({
   cells: Object.keys(row).map((rowKey) => ({
     data: row[rowKey],
     dataKey: rowKey,
   })),
+  rowId: i,
 }));
 
 $: sortedRows = tableRows;
@@ -122,10 +172,11 @@ const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
       <tr>
         {#each headerGroup.headers as header}
           <th>
-            {header && header.header}
-            <button on:click="{() => sortBy(header.dataKey)}">
-              {header.useSortBy ? ' 🔽' : ' 🔼'}
-            </button>
+            <TableHeaderCell
+              header="{header}"
+              sortBy="{sortBy}"
+              sortOrder="{sortOrder}"
+            />
           </th>
         {/each}
       </tr>
@@ -133,18 +184,8 @@ const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
   </thead>
 
   <tbody>
-    {#each sortedRows as row, i}
-      <tr
-        class="flex justify-items-center items-center h-16 grid grid-cols-{colNumber} {rowBg(
-          i,
-        )}"
-      >
-        {#each row.cells as cell}
-          <td>
-            <TableCell {...cell} />
-          </td>
-        {/each}
-      </tr>
+    {#each sortedRows as row, index}
+      <TableBodyRow index="{index}" row="{row}" colNumber="{colNumber}" />
     {/each}
   </tbody>
 </table>
