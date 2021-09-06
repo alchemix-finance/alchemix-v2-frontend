@@ -2,7 +2,6 @@
 import Button from '../components/elements/Button.svelte';
 import BorderContainer from '../components/elements/BorderContainer.svelte';
 import AssetCard from '../components/elements/AssetCard.svelte';
-import Table from '../components/composed/Table/Table2.svelte';
 import settings from '../stores/settings';
 import global from '../stores/global';
 import { routerGuard } from '../helpers/routerGuard.js';
@@ -94,4 +93,3 @@ const alAssets = [
     </div>
   {/each}
 </div>
-<Table />
