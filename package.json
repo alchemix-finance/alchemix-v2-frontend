@@ -11,7 +11,9 @@
     "prettier": "yarn run prettier:html && yarn run prettier:js && yarn run prettier:svelte",
     "prettier:html": "npx prettier --write public/*.html",
     "prettier:js": "npx prettier --write src/*.js --write src/**/*.js --write src/**/**/*.js --write src/**/**/**/*.js",
-    "prettier:svelte": "npx prettier --write src/*.svelte --write src/**/*.svelte --write src/**/**/*.svelte --write src/**/**/**/*.svelte"
+    "prettier:svelte": "npx prettier --write src/*.svelte --write src/**/*.svelte --write src/**/**/*.svelte --write src/**/**/**/*.svelte",
+    "storybook": "start-storybook -s ./public -p 6006",
+    "build-storybook": "build-storybook"
   },
   "pre-push": {
     "run": "lint",
@@ -20,6 +22,12 @@
   "devDependencies": {
     "@babel/core": "^7.13.15",
     "@babel/preset-env": "^7.13.15",
+    "@storybook/addon-actions": "^6.3.7",
+    "@storybook/addon-essentials": "^6.3.7",
+    "@storybook/addon-links": "^6.3.7",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/addon-svelte-csf": "^1.1.0",
+    "@storybook/svelte": "^6.3.7",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^8.1.1",
@@ -46,12 +54,16 @@
   },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.15.0",
+    "@snapshot-labs/snapshot.js": "^0.2.0",
     "assert": "^2.0.0",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
     "bnc-onboard": "^1.23.0",
     "buffer": "^6.0.3",
+    "chart.js": "^3.5.0",
+    "classnames": "^2.3.1",
     "core-js": "^3.15.2",
+    "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
     "dotenv": "^8.2.0",
     "ethers": "^5.1.4",

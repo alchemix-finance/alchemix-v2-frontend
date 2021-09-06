@@ -36,7 +36,11 @@ be willing to defend your choice to exclude a user story.
 - List acceptance criteria, bullet points are always preferred.
 -->
 
-- [ ] Thing One...
-- [ ] Thing Two...
+- [ ] The component is modelled after the figma design
+- [ ] The component is a (view/composed/element) component
+- [ ] The component is embedded in storybook
+- [ ] The component uses svelte-i18n for all text and labels
+- [ ] The english dictionary is extended if needed
+- [ ] More...
 
 #### Attach files or screenshots if it's helpful for this issue.

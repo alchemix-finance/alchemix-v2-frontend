@@ -27,21 +27,11 @@ const initBalances = async () => {
     })
     .then(async () => {
       for (const token of externalContracts.tokens) {
-        const contract = new ethers.Contract(
-          token.address,
-          token.abi,
-          $account.signer,
-        );
-        const balance = ethers.utils.formatUnits(
-          await contract.balanceOf($account.address),
-          18,
-        );
+        const contract = new ethers.Contract(token.address, token.abi, $account.signer);
+        const balance = ethers.utils.formatUnits(await contract.balanceOf($account.address), 18);
         const symbol = await contract.symbol();
         const name = await contract.name();
-        $walletBalance.tokens = [
-          ...$walletBalance.tokens,
-          { symbol, name, balance },
-        ];
+        $walletBalance.tokens = [...$walletBalance.tokens, { symbol, name, balance }];
       }
     })
     .finally(() => {
@@ -62,11 +52,7 @@ onMount(async () => {
   {:else}
     {#each $walletBalance.tokens as token}
       {#if token.balance !== '0.0'}
-        <BalanceEntry
-          tokenSymbol="{token.symbol}"
-          tokenName="{token.name}"
-          tokenBalance="{token.balance}"
-        />
+        <BalanceEntry tokenSymbol="{token.symbol}" tokenName="{token.name}" tokenBalance="{token.balance}" />
       {/if}
     {/each}
   {/if}

@@ -1,7 +1,8 @@
 <script>
+import { _ } from 'svelte-i18n';
 import { createEventDispatcher } from 'svelte';
 
-export let label = 'Submit';
+export let label = $_('submit');
 export let disabled = false;
 export let borderColor = 'grey5';
 export let backgroundColor = 'grey10';
@@ -14,6 +15,7 @@ export let fontSize = 'text-xs';
 export let width = 'w-full';
 export let height = 'h-auto';
 export let noHoverEffect = false;
+export let py = 'py-1';
 const dispatch = createEventDispatcher();
 
 // @dev emits an event 'clicked' the parent component can listen to
@@ -27,7 +29,7 @@ const clickEvent = () => {
     border-{borderColor}
     rounded
     px-3
-    py-1
+    {py}
     select-none
     font-alcxTitles
     overflow-ellipsis
@@ -42,11 +44,7 @@ const clickEvent = () => {
     : noHoverEffect
     ? `hover:bg-${backgroundColor}`
     : `bg-${hoverColor}`}
-    hover:{disabled
-    ? 'cursor-not-allowed'
-    : noHoverEffect
-    ? 'cursor-default'
-    : 'cursor-pointer'}
+    hover:{disabled ? 'cursor-not-allowed' : noHoverEffect ? 'cursor-default' : 'cursor-pointer'}
     disabled:opacity-50
     "
   disabled="{disabled}"

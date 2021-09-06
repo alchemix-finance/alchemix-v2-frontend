@@ -22,11 +22,15 @@ const onboard = Onboard({
 async function connect() {
   await onboard.walletReset();
   await onboard.walletSelect();
-  await onboard.walletCheck().then(async () => {
-    const signer = await ethersProvider.getSigner();
-    const address = await signer.getAddress();
-    account.set({ address, signer });
-  });
+  try {
+    await onboard.walletCheck().then(async () => {
+      const signer = await ethersProvider.getSigner();
+      const address = await signer.getAddress();
+      account.set({ address, signer });
+    });
+  } catch (error) {
+    console.warn('User aborted wallet selection', error);
+  }
 }
 
 // @dev function disconnects user wallets and resets state
