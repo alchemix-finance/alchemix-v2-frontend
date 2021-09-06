@@ -7,7 +7,9 @@ const isString = (string) => typeof string === 'string';
 const isNumber = (number) => typeof number === 'number';
 
 export const sortTableRows = ({ columnKey, rows, sortOrder }) =>
+  /* eslint-disable implicit-arrow-linebreak */
   rows.sort((rowA, rowB) => {
+    /* eslint-enable implicit-arrow-linebreak */
     const cellA = rowA.cells.find((cell) => cell.dataKey === columnKey);
     const cellB = rowB.cells.find((cell) => cell.dataKey === columnKey);
 
