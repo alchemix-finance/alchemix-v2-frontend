@@ -46,11 +46,7 @@ export let options = [];
   </div>
 
   <div class="flex items-center border-black2 border-l border-solid p-4">
-    <img
-      class="{isOpen && 'open'}"
-      src="images/icons/caret.svg"
-      alt="Dropdown"
-    />
+    <img class="{isOpen && 'open'}" src="images/icons/caret.svg" alt="Dropdown" />
   </div>
 
   {#if isOpen}

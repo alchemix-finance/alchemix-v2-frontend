@@ -4,16 +4,7 @@
 //based on locally sourced parameters
 
 //filler content
-export const junkContent = [
-  'Sushi',
-  'ETH',
-  '50%',
-  '35%',
-  'Gandalf',
-  '12/05/2021',
-  '$1.5M',
-  '$500,000',
-];
+export const junkContent = ['Sushi', 'ETH', '50%', '35%', 'Gandalf', '12/05/2021', '$1.5M', '$500,000'];
 
 //Example details of asset callback
 const alAssets = [
@@ -89,12 +80,9 @@ const handleRow = function (idx) {
 
 <!-- Instantiate grids parametrically, injecting categories with an
 arbitrary number of values for optimal modularity-->
-<div
-  class="border border-grey10 border-4 grid grid-flow-row auto-rows-max mt-4 "
->
+<div class="border border-grey10 border-4 grid grid-flow-row auto-rows-max mt-4 ">
   <div
-    class="flex justify-items-center bg-grey15 h-16 grid grid-cols-{tableStruct
-      .categories.length + 1} pt-4"
+    class="flex justify-items-center bg-grey15 h-16 grid grid-cols-{tableStruct.categories.length + 1} pt-4"
   >
     {#each tableStruct.categories as category}
       <p class="text-bronze1">{category}</p>
@@ -108,18 +96,14 @@ arbitrary number of values for optimal modularity-->
         on:click="{() => (asset.expanded = !asset.expanded)}"
         class="absolute inset-y-0 -left-4 bg-grey20 w-9 h-8 border border-grey10 rounded-sm "
       >
-        <img
-          src="images/{asset.expanded == true ? 'minus' : 'plus'}.png"
-          alt
-          class="p-2"
-        />
+        <img src="images/{asset.expanded == true ? 'minus' : 'plus'}.png" alt class="p-2" />
       </button>
     </div>
 
     <!-- use handler function to alternate color on table row backgrounds -->
     <div
-      class="items-center justify-items-center h-16 grid grid-cols-{tableStruct
-        .categories.length + 1} {handleRow(asset.index)}"
+      class="items-center justify-items-center h-16 grid grid-cols-{tableStruct.categories.length +
+        1} {handleRow(asset.index)}"
     >
       {#each tableStruct.assetsContent as category, i}
         {#if i == 0}
@@ -140,9 +124,7 @@ arbitrary number of values for optimal modularity-->
     <div
       class=" overflow-y-auto {!asset.expanded
         ? 'h-0'
-        : 'h-24'} transition-all duration-500 ease-in-out {handleRow(
-        asset.index + 1,
-      )}"
+        : 'h-24'} transition-all duration-500 ease-in-out {handleRow(asset.index + 1)}"
     >
       expanded content
     </div>
