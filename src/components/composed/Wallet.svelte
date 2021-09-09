@@ -43,13 +43,7 @@ function openEtherscan() {
       </Button>
       <WalletBalance />
     {:else}
-      <Button
-        borderSize="1"
-        label="Connect Wallet"
-        uppercase="{true}"
-        height="h-10"
-        on:clicked="{connect}"
-      >
+      <Button borderSize="1" label="Connect Wallet" uppercase="{true}" height="h-10" on:clicked="{connect}">
         <div slot="leftSlot">
           <AvatarWithIndicator />
         </div>

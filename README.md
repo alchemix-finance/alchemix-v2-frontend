@@ -31,6 +31,8 @@ yarn run storybook
 
 The server for storybook runs on a different port than the server for svelte's dev environment, so it's possible to run both simultaneously.
 
+A built version is also available at https://alchemix-v2-storybook.vercel.app
+
 ## Codestyle
 
 **Note:** this requires you to have done the steps in `Setup` first.

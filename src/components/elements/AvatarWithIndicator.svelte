@@ -4,7 +4,7 @@ import * as jdenticon from 'jdenticon';
 export let connected = false;
 export let hash;
 
-$: pfp = jdenticon.toSvg(hash, 24);
+$: pfp = jdenticon.toSvg(hash || {}, 24);
 </script>
 
 <div class="flex flex-row relative">
