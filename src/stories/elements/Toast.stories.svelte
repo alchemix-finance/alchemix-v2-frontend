@@ -4,7 +4,7 @@ import Toast from '../../components/elements/Toast.svelte';
 </script>
 
 <Meta
-  title="Elements/Toast"
+  title="Feedback/Toast"
   component="{Toast}"
   argTypes="{{
     closeOnMount: { control: 'boolean' },

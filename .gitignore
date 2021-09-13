@@ -114,3 +114,6 @@ package-lock.json
 # misc file stuff
 .DS_Store
 .history
+
+# storybook build directory
+storybook-static/
