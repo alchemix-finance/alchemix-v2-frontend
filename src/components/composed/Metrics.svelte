@@ -15,8 +15,10 @@ const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
         <span>{metric.metric}</span>
       </div>
       <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">
-        <!--        <span class="text-xs mr-2">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>-->
+        <span>(</span>
+        <span class="text-xs mr-2">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>
         <span> {getPlusOrMinusIndicator(metric.percentChangedIsIncrease)}{metric.percentChanged}%</span>
+        <span>)</span>
       </div>
     </div>
   {/each}

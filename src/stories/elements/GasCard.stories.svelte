@@ -4,7 +4,7 @@ import LocaleWrapper from '../LocaleWrapper.svelte';
 import GasCard from '../../components/elements/GasCard.svelte';
 </script>
 
-<Meta title="Elements/GasCard" component="{GasCard}" />
+<Meta title="Stats/Gas Card" component="{GasCard}" />
 
 <Template let:args>
   <LocaleWrapper>
@@ -12,4 +12,18 @@ import GasCard from '../../components/elements/GasCard.svelte';
   </LocaleWrapper>
 </Template>
 
-<Story name="GasCard" />
+<Story
+  name="Gas Card"
+  id="GasCardStory"
+  args="{{
+    compactView: false,
+    description: 'Standard',
+    gasFee: {
+      maxFeePerGas: 100,
+      baseFeePerGas: 50,
+      maxPriorityFeePerGas: 2,
+    },
+    cardColor: 'green2',
+    isActive: true,
+  }}"
+/>
