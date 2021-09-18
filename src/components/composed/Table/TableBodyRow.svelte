@@ -1,12 +1,16 @@
 <script>
 import TableCell from './TableCell.svelte';
+import { getRowBgClass } from '../../../helpers/table';
 
-export let colNumber = 1;
+export let numberOfColumns = 1;
 export let row = {};
 export let index = undefined;
 
 let expandedRows = new Set();
 
+/*
+ * Expand a given row to display row.expandedRow.ExpandedRowComponent
+ */
 const onExpand = (rowId) => {
   if (rowId === row.rowId) {
     if (expandedRows.has(rowId)) {
@@ -21,9 +25,7 @@ const onExpand = (rowId) => {
 };
 
 let expandedRowCell = row.cells.find((cell) => cell.data.expandedRow);
-
 $: isExpanded = expandedRows.has(row.rowId);
-
 $: if (isExpanded) {
   // re-render to account for rows being re-ordered
   expandedRowCell = row.cells.find((cell) => cell.data.expandedRow);
@@ -34,11 +36,11 @@ const ExpandedRowComponent = expandedRowCell && expandedRowCell.data.expandedRow
 $: if (isExpanded && !ExpandedRowComponent) {
   throw new Error('Row needs an ExpandedRowComponent when expanded');
 }
-
-const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
 </script>
 
-<tr class="flex justify-items-center items-center h-16 grid grid-cols-{colNumber} {rowBg(index)}">
+<tr
+  class="flex justify-items-center items-center h-16 grid grid-cols-{numberOfColumns} {getRowBgClass(index)}"
+>
   {#each row.cells as cell}
     <td>
       <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" />
@@ -47,7 +49,7 @@ const rowBg = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
 </tr>
 
 {#if isExpanded && ExpandedRowComponent}
-  <tr class="flex justify-items-center items-center h-16 grid grid-cols-1 {rowBg(index)}">
+  <tr class="flex justify-items-center items-center h-16 grid grid-cols-1 {getRowBgClass(index)}">
     <ExpandedRowComponent {...expandedRowCell.data} />
   </tr>
 {/if}

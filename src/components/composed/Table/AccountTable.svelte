@@ -1,56 +1,69 @@
 <script>
 import Table from './Table.svelte';
 import ExpandRowCell from './ExpandRowCell.svelte';
+import ExpandHeaderCell from './ExpandHeaderCell.svelte';
 import ExpandedRowCard from './ExpandedRowCard.svelte';
 import VaultTypeCell from './VaultTypeCell.svelte';
+import HeaderCell from './HeaderCell.svelte';
 
 const columns = [
   {
-    header: '+',
-    dataKey: 'col0',
+    columnId: 'col0',
+    CellComponent: ExpandHeaderCell,
   },
   {
-    header: 'Vault Type',
-    dataKey: 'col1',
-    useSortBy: true,
+    columnId: 'col1',
+    CellComponent: HeaderCell,
+    value: 'Vault Type',
+    isSortable: true,
   },
   {
-    header: 'Yield Strategies',
-    dataKey: 'col2',
-    useSortBy: true,
+    columnId: 'col2',
+    CellComponent: HeaderCell,
+    value: 'Yield Strategies',
+    isSortable: true,
   },
   {
-    header: 'Deposit Amount',
-    dataKey: 'col3',
-    useSortBy: true,
+    columnId: 'col3',
+    CellComponent: HeaderCell,
+    value: 'Deposit Amount',
+    isSortable: true,
   },
   {
-    header: 'Available Credit',
-    dataKey: 'col4',
-    useSortBy: true,
+    columnId: 'col4',
+    CellComponent: HeaderCell,
+    value: 'Available Credit',
+    isSortable: true,
   },
   {
-    header: 'Borrowed Amount',
-    dataKey: 'col5',
-    useSortBy: true,
+    columnId: 'col5',
+    CellComponent: HeaderCell,
+    value: 'Borrowed Amount',
+    isSortable: true,
   },
   {
-    header: '',
-    dataKey: 'col6',
+    columnId: 'col6',
+    CellComponent: HeaderCell,
+    value: '',
   },
 ];
 
 const rows = [
   {
+    // the key here matches the columnId in the columns rray
     col0: {
+      // define which component to render in this cell
       CellComponent: ExpandRowCell,
+      // rows can display an expanded row
       expandedRow: {
         ExpandedRowComponent: ExpandedRowCard,
+        // pass through any other props
         value: 'aaaa',
       },
     },
     col1: {
       CellComponent: VaultTypeCell,
+      // pass through any other props
       value: 'alUsd',
     },
     col2: {

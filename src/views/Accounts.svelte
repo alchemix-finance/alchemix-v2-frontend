@@ -37,14 +37,15 @@ import metrics from '../stores/metrics';
         </div>
       </div>
 
-      <div class="flex">
-        <div class="mr-4">
-          <CollateralPieChart />
-        </div>
-        <div class="ml-4">
-          <DebtCreditPieChart />
-        </div>
-      </div>
+      <!-- TODO: Turn pie charts into bar charts -->
+      <!--      <div class="flex">-->
+      <!--        <div class="mr-4">-->
+      <!--          <CollateralPieChart />-->
+      <!--        </div>-->
+      <!--        <div class="ml-4">-->
+      <!--          <DebtCreditPieChart />-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
   </div>
 

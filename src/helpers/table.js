@@ -10,8 +10,8 @@ export const sortTableRows = ({ columnKey, rows, sortOrder }) =>
   /* eslint-disable implicit-arrow-linebreak */
   rows.sort((rowA, rowB) => {
     /* eslint-enable implicit-arrow-linebreak */
-    const cellA = rowA.cells.find((cell) => cell.dataKey === columnKey);
-    const cellB = rowB.cells.find((cell) => cell.dataKey === columnKey);
+    const cellA = rowA.cells.find((cell) => cell.columnId === columnKey);
+    const cellB = rowB.cells.find((cell) => cell.columnId === columnKey);
 
     const valueA = cellA.data.value;
     const valueB = cellB.data.value;
@@ -34,3 +34,6 @@ export const sortTableRows = ({ columnKey, rows, sortOrder }) =>
 
     throw new Error('cell data must be a string or number');
   });
+
+// alternate rows light/dark grey
+export const getRowBgClass = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15');
