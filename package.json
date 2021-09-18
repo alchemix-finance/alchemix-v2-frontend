@@ -62,7 +62,6 @@
     "buffer": "^6.0.3",
     "chart.js": "^3.5.0",
     "classnames": "^2.3.1",
-    "comma-number": "^2.1.0",
     "core-js": "^3.15.2",
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
