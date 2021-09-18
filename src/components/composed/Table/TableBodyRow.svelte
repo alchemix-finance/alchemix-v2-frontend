@@ -43,7 +43,7 @@ $: if (isExpanded && !ExpandedRowComponent) {
 >
   {#each row.cells as cell}
     <td>
-      <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" />
+      <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
     </td>
   {/each}
 </tr>

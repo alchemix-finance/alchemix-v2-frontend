@@ -14,35 +14,47 @@ const columns = [
   {
     columnId: 'col1',
     CellComponent: HeaderCell,
-    value: 'Vault Type',
-    isSortable: true,
+    value: 'Strategy',
+    // isSortable: true,
   },
   {
     columnId: 'col2',
     CellComponent: HeaderCell,
-    value: 'Yield Strategies',
-    isSortable: true,
+    value: 'Collateral',
+    // isSortable: true,
   },
   {
     columnId: 'col3',
     CellComponent: HeaderCell,
-    value: 'Deposit Amount',
-    isSortable: true,
+    value: 'APY',
+    // isSortable: true,
   },
   {
     columnId: 'col4',
     CellComponent: HeaderCell,
-    value: 'Available Credit',
-    isSortable: true,
+    value: 'Vault APY',
+    // isSortable: true,
   },
   {
     columnId: 'col5',
     CellComponent: HeaderCell,
-    value: 'Borrowed Amount',
-    isSortable: true,
+    value: 'Alchemist',
+    // isSortable: true,
   },
   {
     columnId: 'col6',
+    CellComponent: HeaderCell,
+    value: 'TVL',
+    // isSortable: true,
+  },
+  {
+    columnId: 'col7',
+    CellComponent: HeaderCell,
+    value: 'Deposited',
+    // isSortable: true,
+  },
+  {
+    columnId: 'col8',
     CellComponent: HeaderCell,
     value: '',
   },
@@ -65,6 +77,7 @@ const rows = [
       CellComponent: VaultTypeCell,
       // pass through any other props
       value: 'alUsd',
+      title: '',
     },
     col2: {
       value: '6',
@@ -76,9 +89,15 @@ const rows = [
       value: '30.3',
     },
     col5: {
-      value: '50.2',
+      value: 'Gandalf',
     },
     col6: {
+      value: '$1.5M',
+    },
+    col7: {
+      value: '$222,029',
+    },
+    col8: {
       value: 'View',
     },
   },
@@ -104,9 +123,15 @@ const rows = [
       value: '40.3',
     },
     col5: {
-      value: '60.2',
+      value: 'Gandalf',
     },
     col6: {
+      value: '$1.5M',
+    },
+    col7: {
+      value: '$222,029',
+    },
+    col8: {
       value: 'View',
     },
   },
@@ -132,9 +157,15 @@ const rows = [
       value: '10.3',
     },
     col5: {
-      value: '10.2',
+      value: 'Gandalf',
     },
     col6: {
+      value: '$1.5M',
+    },
+    col7: {
+      value: '$222,029',
+    },
+    col8: {
       value: 'View',
     },
   },

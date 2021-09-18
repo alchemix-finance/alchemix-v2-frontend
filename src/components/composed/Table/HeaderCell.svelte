@@ -2,4 +2,4 @@
 export let data;
 </script>
 
-<div>{data.value}</div>
+<div class="text-base font-normal font-alcxTitles text-lightgrey10">{data.value}</div>
