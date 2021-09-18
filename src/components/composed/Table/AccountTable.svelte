@@ -3,8 +3,10 @@ import Table from './Table.svelte';
 import ExpandRowCell from './ExpandRowCell.svelte';
 import ExpandHeaderCell from './ExpandHeaderCell.svelte';
 import ExpandedRowCard from './ExpandedRowCard.svelte';
-import VaultTypeCell from './VaultTypeCell.svelte';
 import HeaderCell from './HeaderCell.svelte';
+import StrategyTitleCell from './StrategyTitleCell.svelte';
+import APYCell from './APYCell.svelte';
+import SelectStrategyCell from './SelectStrategyCell.svelte';
 
 const columns = [
   {
@@ -74,19 +76,23 @@ const rows = [
       },
     },
     col1: {
-      CellComponent: VaultTypeCell,
-      // pass through any other props
-      value: 'alUsd',
-      title: '',
+      CellComponent: StrategyTitleCell,
+      strategyName: 'Sushi',
+      strategyFullName: 'Sushiswap',
+      icon: 'images/token-svgs/sushi.svg',
     },
     col2: {
-      value: '6',
+      value: 'ETH',
     },
     col3: {
-      value: '161.5',
+      CellComponent: APYCell,
+      apyRate: '50%',
+      apyPeriod: 'annualized',
     },
     col4: {
-      value: '30.3',
+      CellComponent: APYCell,
+      apyRate: '35%',
+      apyPeriod: 'annualized',
     },
     col5: {
       value: 'Gandalf',
@@ -98,7 +104,7 @@ const rows = [
       value: '$222,029',
     },
     col8: {
-      value: 'View',
+      CellComponent: SelectStrategyCell,
     },
   },
   {
@@ -110,17 +116,23 @@ const rows = [
       },
     },
     col1: {
-      CellComponent: VaultTypeCell,
-      value: 'blUsd',
+      CellComponent: StrategyTitleCell,
+      strategyName: 'Yearn',
+      strategyFullName: 'Yearn vaults',
+      icon: 'images/token-svgs/yearn.svg',
     },
     col2: {
-      value: '7',
+      value: 'ETH',
     },
     col3: {
-      value: '261.5',
+      CellComponent: APYCell,
+      apyRate: '50%',
+      apyPeriod: 'annualized',
     },
     col4: {
-      value: '40.3',
+      CellComponent: APYCell,
+      apyRate: '24%',
+      apyPeriod: 'annualized',
     },
     col5: {
       value: 'Gandalf',
@@ -132,7 +144,7 @@ const rows = [
       value: '$222,029',
     },
     col8: {
-      value: 'View',
+      CellComponent: SelectStrategyCell,
     },
   },
   {
@@ -144,17 +156,23 @@ const rows = [
       },
     },
     col1: {
-      CellComponent: VaultTypeCell,
-      value: 'clUsd',
+      CellComponent: StrategyTitleCell,
+      strategyName: 'CRV',
+      strategyFullName: 'Curve finance',
+      icon: 'images/token-svgs/curve.svg',
     },
     col2: {
-      value: '10',
+      value: 'ETH',
     },
     col3: {
-      value: '761.5',
+      CellComponent: APYCell,
+      apyRate: '50%',
+      apyPeriod: 'annualized',
     },
     col4: {
-      value: '10.3',
+      CellComponent: APYCell,
+      apyRate: '76%',
+      apyPeriod: 'annualized',
     },
     col5: {
       value: 'Gandalf',
@@ -166,10 +184,12 @@ const rows = [
       value: '$222,029',
     },
     col8: {
-      value: 'View',
+      CellComponent: SelectStrategyCell,
     },
   },
 ];
 </script>
 
-<Table rows="{rows}" columns="{columns}" />
+<div class="font-alcxTitles">
+  <Table rows="{rows}" columns="{columns}" />
+</div>

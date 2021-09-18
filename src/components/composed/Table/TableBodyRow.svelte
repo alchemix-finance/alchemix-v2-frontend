@@ -39,7 +39,7 @@ $: if (isExpanded && !ExpandedRowComponent) {
 </script>
 
 <tr
-  class="flex justify-items-center items-center h-16 grid grid-cols-{numberOfColumns} {getRowBgClass(index)}"
+  class="flex justify-items-center items-center h-20 grid grid-cols-{numberOfColumns} {getRowBgClass(index)}"
 >
   {#each row.cells as cell}
     <td>

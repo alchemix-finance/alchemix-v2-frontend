@@ -67,7 +67,7 @@ const sortBy = (columnKey) => {
 };
 </script>
 
-<table class="border border-grey10 border-4 grid grid-flow-row auto-rows-max">
+<table class="border border-grey10 border-4 grid grid-flow-row auto-rows-max rounded">
   <thead class="flex justify-items-center items-center bg-grey15 h-16 grid grid-cols-{numberOfColumns}">
     {#each headerGroups as headerGroup}
       <tr>
