@@ -49,7 +49,7 @@ $: if (isExpanded && !ExpandedRowComponent) {
 </tr>
 
 {#if isExpanded && ExpandedRowComponent}
-  <tr class="flex justify-items-center items-center h-16 grid grid-cols-1 {getRowBgClass(index)}">
+  <tr class="flex min-h-16 grid grid-cols-1 {getRowBgClass(index)}">
     <ExpandedRowComponent {...expandedRowCell.data} />
   </tr>
 {/if}

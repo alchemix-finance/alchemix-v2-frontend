@@ -40,23 +40,17 @@ const columns = [
   {
     columnId: 'col5',
     CellComponent: HeaderCell,
-    value: 'Alchemist',
+    value: 'TVL',
     // isSortable: true,
   },
   {
     columnId: 'col6',
     CellComponent: HeaderCell,
-    value: 'TVL',
-    // isSortable: true,
-  },
-  {
-    columnId: 'col7',
-    CellComponent: HeaderCell,
     value: 'Deposited',
     // isSortable: true,
   },
   {
-    columnId: 'col8',
+    columnId: 'col7',
     CellComponent: HeaderCell,
     value: '',
   },
@@ -72,7 +66,7 @@ const rows = [
       expandedRow: {
         ExpandedRowComponent: ExpandedRowCard,
         // pass through any other props
-        value: 'aaaa',
+        currentDeposit: '$5,000%',
       },
     },
     col1: {
@@ -95,15 +89,12 @@ const rows = [
       apyPeriod: 'annualized',
     },
     col5: {
-      value: 'Gandalf',
-    },
-    col6: {
       value: '$1.5M',
     },
-    col7: {
+    col6: {
       value: '$222,029',
     },
-    col8: {
+    col7: {
       CellComponent: SelectStrategyCell,
     },
   },
@@ -112,7 +103,7 @@ const rows = [
       CellComponent: ExpandRowCell,
       expandedRow: {
         ExpandedRowComponent: ExpandedRowCard,
-        value: 'bbbb',
+        currentDeposit: '$2,000%',
       },
     },
     col1: {
@@ -135,15 +126,12 @@ const rows = [
       apyPeriod: 'annualized',
     },
     col5: {
-      value: 'Gandalf',
-    },
-    col6: {
       value: '$1.5M',
     },
-    col7: {
+    col6: {
       value: '$222,029',
     },
-    col8: {
+    col7: {
       CellComponent: SelectStrategyCell,
     },
   },
@@ -152,7 +140,7 @@ const rows = [
       CellComponent: ExpandRowCell,
       expandedRow: {
         ExpandedRowComponent: ExpandedRowCard,
-        value: 'cccc',
+        currentDeposit: '$1,000%',
       },
     },
     col1: {
@@ -175,15 +163,12 @@ const rows = [
       apyPeriod: 'annualized',
     },
     col5: {
-      value: 'Gandalf',
-    },
-    col6: {
       value: '$1.5M',
     },
-    col7: {
+    col6: {
       value: '$222,029',
     },
-    col8: {
+    col7: {
       CellComponent: SelectStrategyCell,
     },
   },
