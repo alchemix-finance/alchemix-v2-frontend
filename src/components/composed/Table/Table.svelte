@@ -1,0 +1,88 @@
+<script>
+import { SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+
+import TableBodyRow from './TableBodyRow.svelte';
+import TableHeaderCell from './TableHeaderCell.svelte';
+
+/*
+  Table component
+
+  Render: <Table rows="{rows}" columns="{columns}" />
+
+  Rows is an array of rows.
+  Each row can define what cell component it should use and additional props
+  For example: [
+    {
+      column1: {
+        CellComponent: SomeCellComponent
+        expandedRow: {
+          ExpandedRowComponent: SomeComponent,
+          value|props
+        }
+        value|props
+      }
+    },
+    {
+      column2: {
+        CellComponent: SomeCellComponent
+        expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
+        value|props
+      }
+    }
+  ]
+*/
+
+export let rows = [];
+export let columns = [];
+
+const numberOfColumns = columns.length;
+
+// headerGroups are groups of header
+// TODO: support multiple headers like on https://codesandbox.io/s/github/tannerlinsley/react-table/tree/master/examples/sorting?file=/src/App.js:0-65
+const headerGroups = columns.map((col) => ({
+  headers: [{ value: col.value, ...col }],
+}));
+
+// parse provided row data to internal data structure
+let tableRows = rows.map((row, i) => ({
+  cells: Object.keys(row).map((columnId) => ({
+    columnId,
+    data: row[columnId],
+  })),
+  rowId: i,
+}));
+$: sortedRows = tableRows;
+
+// TODO: Sorting needs to be debugged and is not yet supported
+let defaultSortOrder = SORT_ORDERS.asc;
+$: sortOrder = defaultSortOrder;
+
+/**
+ * Sort the table rows and re-render
+ * @param columnKey
+ */
+const sortBy = (columnKey) => {
+  tableRows = sortTableRows({ columnKey, rows: tableRows, sortOrder });
+  sortOrder = sortOrder === SORT_ORDERS.asc ? SORT_ORDERS.desc : SORT_ORDERS.asc;
+};
+</script>
+
+<table class="border border-grey10 border-4 grid grid-flow-row auto-rows-max rounded">
+  <thead class="flex justify-items-center items-center bg-grey15 h-16 grid grid-cols-{numberOfColumns}">
+    {#each headerGroups as headerGroup}
+      <tr>
+        {#each headerGroup.headers as header}
+          <th>
+            <TableHeaderCell header="{header}" onClickSortBy="{sortBy}" sortOrder="{sortOrder}" />
+          </th>
+        {/each}
+      </tr>
+    {/each}
+  </thead>
+
+  <tbody>
+    {#each sortedRows as row, index}
+      <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" />
+    {/each}
+  </tbody>
+</table>

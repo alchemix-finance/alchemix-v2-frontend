@@ -4,6 +4,7 @@ import Metrics from '../components/composed/Metrics.svelte';
 import CollateralDropdown from '../components/composed/CollateralDropdown.svelte';
 import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
+import AccountTable from '../components/composed/Table/AccountTable.svelte';
 import metrics from '../stores/metrics';
 </script>
 
@@ -15,9 +16,9 @@ import metrics from '../stores/metrics';
 </style>
 
 <ViewContainer>
-  <div class="min-w-page">
-    <Metrics />
+  <Metrics />
 
+  <div class="min-w-page">
     <div class="px-4">
       <div class="flex justify-between items-center mt-10 mb-14">
         <CollateralDropdown />
@@ -36,14 +37,19 @@ import metrics from '../stores/metrics';
         </div>
       </div>
 
-      <div class="flex">
-        <div class="mr-4">
-          <CollateralPieChart />
-        </div>
-        <div class="ml-4">
-          <DebtCreditPieChart />
-        </div>
-      </div>
+      <!-- TODO: Turn pie charts into bar charts -->
+      <!--      <div class="flex">-->
+      <!--        <div class="mr-4">-->
+      <!--          <CollateralPieChart />-->
+      <!--        </div>-->
+      <!--        <div class="ml-4">-->
+      <!--          <DebtCreditPieChart />-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
+  </div>
+
+  <div class="mt-10 px-4">
+    <AccountTable />
   </div>
 </ViewContainer>
