@@ -2,7 +2,7 @@
 import settings from '../../stores/settings';
 import BorderContainer from './BorderContainer.svelte';
 import { getProposalVotes, sendVote } from '../../middleware/snapshot';
-export let proposalEntry = {};
+export let expandedRow = {};
 let viewDetail = false;
 let value = '';
 
@@ -19,7 +19,7 @@ const snapshotToDate = (snapshotBlock) => {
  * */
 const getVoteDetails = () => {
   if (!viewDetail) {
-    getProposalVotes(proposalEntry.id);
+    getProposalVotes(expandedRow.proposalEntry.id);
   }
   viewDetail = !viewDetail;
 };
@@ -29,7 +29,7 @@ const getVoteDetails = () => {
  * */
 const initializeVote = () => {
   const payload = {
-    proposal: proposalEntry.id,
+    proposal: expandedRow.proposalEntry.id,
     choice: value + 1,
   };
   sendVote(payload);
@@ -37,7 +37,7 @@ const initializeVote = () => {
 </script>
 
 <p on:click="{getVoteDetails}" class="cursor-pointer hover:bg-grey10 {viewDetail ? 'bg-grey10' : ''}">
-  {proposalEntry?.title}
+  {expandedRow.proposalEntry?.title}
 </p>
 
 {#if viewDetail}
@@ -45,31 +45,37 @@ const initializeVote = () => {
     <div class="py-2 px-4 bg-grey10 rounded">
       <p on:click="{getVoteDetails}">Close detail view</p>
       <p class="mb-3">
-        {@html proposalEntry?.body}
+        {@html expandedRow.proposalEntry?.body}
       </p>
-      <p>Start {snapshotToDate(proposalEntry.start)}</p>
-      <p>End {snapshotToDate(proposalEntry.end)}</p>
+      <p>Start {snapshotToDate(expandedRow.proposalEntry.start)}</p>
+      <p>End {snapshotToDate(expandedRow.proposalEntry.end)}</p>
       <p>
-        <a href="https://etherscan.io/block/{proposalEntry.snapshot}" target="_blank"> Snapshot Block </a>
+        <a href="https://etherscan.io/block/{expandedRow.proposalEntry.snapshot}" target="_blank">
+          Snapshot Block
+        </a>
       </p>
       <p>
-        <a href="https://cloudflare-ipfs.com/ipfs/{proposalEntry.id}" target="_blank">IPFS Link</a>
+        <a href="https://cloudflare-ipfs.com/ipfs/{expandedRow.proposalEntry.id}" target="_blank">IPFS Link</a
+        >
       </p>
       <ul class="mb-3">
         <li>Choices:</li>
-        {#each proposalEntry.choices as choice, index}
+        {#each expandedRow.proposalEntry.choices as choice, index}
           <li>
             {choice}
-            {proposalEntry.results?.[index]}
-            (~{((100 / proposalEntry.results?.total) * proposalEntry.results?.[index]).toFixed(2)}%)
+            {expandedRow.proposalEntry?.results?.[index]}
+            (~{(
+              (100 / expandedRow.proposalEntry?.results?.total) *
+              expandedRow.proposalEntry?.results?.[index]
+            ).toFixed(2)}%)
           </li>
         {/each}
-        <li>Total votes: {proposalEntry.results?.total}</li>
+        <li>Total votes: {expandedRow.proposalEntry?.results?.total}</li>
       </ul>
       <p>Your vote: {value}</p>
       <select bind:value>
         <option value="null" selected disabled>Select your choice</option>
-        {#each proposalEntry.choices as choice, index}
+        {#each expandedRow.proposalEntry.choices as choice, index}
           <option value="{index}">{choice}</option>
         {/each}
       </select>
@@ -77,8 +83,9 @@ const initializeVote = () => {
     </div>
   </BorderContainer>
   <div class="flex justify-between mb-6">
-    <a href="https://snapshot.org/#/alchemixstakers.eth/proposal/{proposalEntry.id}" target="_blank"
-      >View proposal on Snapshot</a
+    <a
+      href="https://snapshot.org/#/alchemixstakers.eth/proposal/{expandedRow.proposalEntry.id}"
+      target="_blank">View proposal on Snapshot</a
     >
   </div>
 {/if}
