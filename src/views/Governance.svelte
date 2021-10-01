@@ -6,7 +6,7 @@ import { getOpenProposals } from '../middleware/snapshot';
 import governance from '../stores/governance';
 import settings from '../stores/settings';
 import Button from '../components/elements/Button.svelte';
-import ProposalDetailDummy from '../components/elements/ProposalDetailDummy.svelte';
+import DetailView from '../components/composed/Table/governance/DetailView.svelte';
 import { BarLoader } from 'svelte-loading-spinners';
 import Table from '../components/composed/Table/Table.svelte';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
@@ -67,7 +67,7 @@ $: if ($governance.proposals.length > 0) {
       col0: {
         CellComponent: ExpandRowCell,
         expandedRow: {
-          ExpandedRowComponent: ProposalDetailDummy,
+          ExpandedRowComponent: DetailView,
           proposalEntry: proposal,
         },
       },
