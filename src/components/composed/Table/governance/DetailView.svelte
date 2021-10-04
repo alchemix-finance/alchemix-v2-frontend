@@ -4,7 +4,6 @@ import { _ } from 'svelte-i18n';
 import { getProposalVotes, sendVote } from '../../../../middleware/snapshot';
 import governance from '../../../../stores/governance';
 import Button from '../../../elements/Button.svelte';
-import DropdownOnClick from '../../../elements/DropdownOnClick.svelte';
 export let expandedRow = {};
 let value = '';
 let proposal;
@@ -36,9 +35,9 @@ $: console.log(proposal);
 </script>
 
 <div class="border-l-2 border-bronze2 pb-4">
-  <div class="wrapper max-w-none grid grid-cols-6">
+  <div class="wrapper max-w-none grid grid-cols-7">
     <div class="col-span-1"></div>
-    <div class="col-span-3 pr-4">
+    <div class="col-span-4 pr-4">
       <p class="mb-3 opacity-50">{$_('governance_page.description')}</p>
       <p>
         {@html proposal?.body}
@@ -59,9 +58,9 @@ $: console.log(proposal);
       {/each}
     </div>
   </div>
-  <div class="wrapper max-w-none grid grid-cols-6">
+  <div class="wrapper max-w-none grid grid-cols-7">
     <div class="col-span-1"></div>
-    <div class="col-span-3">
+    <div class="col-span-4">
       <Button
         label="{$_('governance_page.openOnSnapshot')}"
         borderSize="1"

@@ -12,5 +12,5 @@ const localSettings = JSON.parse(localStorage.getItem('settings'));
 
 init({
   fallbackLocale: 'en',
-  initialLocale: localSettings.userLanguage.locale || getLocaleFromNavigator(),
+  initialLocale: localSettings?.userLanguage?.locale || getLocaleFromNavigator(),
 });

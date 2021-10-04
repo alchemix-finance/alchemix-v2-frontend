@@ -39,20 +39,25 @@ const columns = [
   {
     columnId: 'col2',
     CellComponent: HeaderCell,
-    value: 'Start',
+    value: 'Status',
   },
   {
     columnId: 'col3',
     CellComponent: HeaderCell,
-    value: 'End',
+    value: 'Start',
   },
   {
     columnId: 'col4',
     CellComponent: HeaderCell,
-    value: 'Snapshot',
+    value: 'End',
   },
   {
     columnId: 'col5',
+    CellComponent: HeaderCell,
+    value: 'Snapshot',
+  },
+  {
+    columnId: 'col6',
     CellComponent: HeaderCell,
     value: 'IPFS',
   },
@@ -75,15 +80,18 @@ $: if ($governance.proposals.length > 0) {
         value: proposal.title,
       },
       col2: {
-        value: snapshotToDate(proposal.start),
+        value: proposal.state,
       },
       col3: {
-        value: snapshotToDate(proposal.end),
+        value: snapshotToDate(proposal.start),
       },
       col4: {
-        value: proposal.snapshot,
+        value: snapshotToDate(proposal.end),
       },
       col5: {
+        value: proposal.snapshot,
+      },
+      col6: {
         value: proposal.id,
       },
     };
