@@ -1,12 +1,13 @@
 <script>
-export let data;
+export let icon = '';
+export let strategyName;
 </script>
 
 <div class="flex font-alcxTitles">
-  <img src="{data.icon}" class="mr-4" />
+  <img src="{icon}" class="mr-4" />
   <div class="flex justify-center items-center">
     <div>
-      {data.strategyName.toUpperCase()}
+      {strategyName.toUpperCase()}
     </div>
     <!--    <div class="text-sm text-lightgrey10">-->
     <!--      {data.strategyFullName}-->

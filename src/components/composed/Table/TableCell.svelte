@@ -1,14 +1,16 @@
 <script>
 // Generic table cell component which renders the given cell component and passes it all props
-// or simply returns data.value assuming it's renderable
-export let data;
-const CellComponent = data.CellComponent;
+// or simply returns value assuming it's renderable
+export let CellComponent;
+export let value;
 </script>
 
 <div>
   {#if CellComponent}
     <CellComponent {...$$props} />
   {:else}
-    {data.value}
+    <div>
+      {value}
+    </div>
   {/if}
 </div>
