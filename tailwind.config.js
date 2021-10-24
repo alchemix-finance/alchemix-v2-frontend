@@ -18,6 +18,17 @@ module.exports = {
       'w-96': '96px',
       'w-48': '48px',
     }),
+    flexGrow: {
+      DEFAULT: 1,
+      1: 1,
+      2: 2,
+      3: 3,
+      4: 4,
+      5: 5,
+      6: 6,
+      7: 7,
+      8: 8,
+    },
     colors: {
       black1: '#0E251D',
       black2: '#10141A',
