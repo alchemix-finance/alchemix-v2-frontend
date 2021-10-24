@@ -1,5 +1,23 @@
 module.exports = {
   theme: {
+    'flex-basis': (theme) => ({
+      1: '100%',
+      2: '50%',
+      3: '33.333333%',
+      4: '25%',
+      5: '20%',
+      6: '16.666666%',
+      7: '14.285714%',
+      0: '12.5%',
+      'w-384': '384px',
+      'w-336': '336px',
+      'w-288': '288px',
+      'w-240': '240px',
+      'w-192': '192px',
+      'w-144': '144px',
+      'w-96': '96px',
+      'w-48': '48px',
+    }),
     colors: {
       black1: '#0E251D',
       black2: '#10141A',
@@ -45,10 +63,12 @@ module.exports = {
     },
   },
   variants: {
+    'flex-basis': ['responsive'],
     extend: {
       cursor: ['hover'],
       opacity: ['disabled'],
       block: ['group-hover'],
     },
   },
+  plugins: [require('@tkh/tailwind-plugin-flex-basis')()],
 };
