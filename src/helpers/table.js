@@ -41,7 +41,6 @@ export const getRowBgClass = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15'
 /*
   The width of each column can be defined using the `colSize` property
   Sizes go from 1 (48px) to 8 (384px)
-  
  */
 
 export const getFlexBasisForColSize = (colSize) =>
