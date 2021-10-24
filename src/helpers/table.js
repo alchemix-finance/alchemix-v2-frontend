@@ -43,29 +43,26 @@ export const getRowBgClass = (idx) => (idx % 2 === 0 ? 'bg-grey10' : 'bg-grey15'
   Sizes go from 1 (48px) to 8 (384px)
  */
 
-export const getFlexBasisForColSize = (colSize) =>
-  ({
-    1: 'flex-basis-w-48',
-    2: 'flex-basis-w-96',
-    3: 'flex-basis-w-144',
-    4: 'flex-basis-w-192',
-    5: 'flex-basis-w-240',
-    6: 'flex-basis-w-288',
-    7: 'flex-basis-w-336',
-    8: 'flex-basis-w-384',
-  }[colSize]);
+export const getFlexBasisForColSize = (colSize) => ({
+  1: 'flex-basis-w-48',
+  2: 'flex-basis-w-96',
+  3: 'flex-basis-w-144',
+  4: 'flex-basis-w-192',
+  5: 'flex-basis-w-240',
+  6: 'flex-basis-w-288',
+  7: 'flex-basis-w-336',
+  8: 'flex-basis-w-384',
+}[colSize]);
 
-export const getFlexGrowForColSize = (colSize) =>
-  ({
-    1: 'flex-grow-1',
-    2: 'flex-grow-2',
-    3: 'flex-grow-3',
-    4: 'flex-grow-4',
-    5: 'flex-grow-5',
-    6: 'flex-grow-6',
-    7: 'flex-grow-7',
-    8: 'flex-grow-8',
-  }[colSize]);
+export const getFlexGrowForColSize = (colSize) => ({
+  1: 'flex-grow-1',
+  2: 'flex-grow-2',
+  3: 'flex-grow-3',
+  4: 'flex-grow-4',
+  5: 'flex-grow-5',
+  6: 'flex-grow-6',
+  7: 'flex-grow-7',
+  8: 'flex-grow-8',
+}[colSize]);
 
-export const getColumnWidth = (colSize) =>
-  `${getFlexBasisForColSize(colSize)} ${getFlexGrowForColSize(colSize)}`;
+export const getColumnWidth = (colSize) => `${getFlexBasisForColSize(colSize)} ${getFlexGrowForColSize(colSize)}`;
