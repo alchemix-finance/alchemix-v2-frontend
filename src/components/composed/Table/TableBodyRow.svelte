@@ -1,6 +1,6 @@
 <script>
 import TableCell from './TableCell.svelte';
-import { getRowBgClass } from '../../../helpers/table';
+import { getColumnWidth, getRowBgClass } from '../../../helpers/table';
 
 export let numberOfColumns = 1;
 export let row = {};
@@ -24,25 +24,30 @@ const onExpand = (rowId) => {
   }
 };
 
-let expandedRowCell = row.cells.find((cell) => cell.data.expandedRow);
+let expandedRowCell = row.cells.find((cell) => cell.expandedRow);
 $: isExpanded = expandedRows.has(row.rowId);
 $: if (isExpanded) {
   // re-render to account for rows being re-ordered
-  expandedRowCell = row.cells.find((cell) => cell.data.expandedRow);
+  expandedRowCell = row.cells.find((cell) => cell.expandedRow);
 }
 
-const ExpandedRowComponent = expandedRowCell && expandedRowCell.data.expandedRow.ExpandedRowComponent;
+const ExpandedRowComponent = expandedRowCell && expandedRowCell.expandedRow.ExpandedRowComponent;
 
 $: if (isExpanded && !ExpandedRowComponent) {
   throw new Error('Row needs an ExpandedRowComponent when expanded');
 }
 </script>
 
-<tr
-  class="flex justify-items-center items-center h-20 grid grid-cols-{numberOfColumns} {getRowBgClass(index)}"
->
-  {#each row.cells as cell}
-    <td>
+<style>
+td {
+  justify-content: center;
+  display: flex;
+}
+</style>
+
+<tr class="flex justify-items-center items-center {getRowBgClass(index)}">
+  {#each row.cells as cell, i}
+    <td class="{getColumnWidth(cell.colSize)}">
       <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
     </td>
   {/each}
@@ -50,6 +55,6 @@ $: if (isExpanded && !ExpandedRowComponent) {
 
 {#if isExpanded && ExpandedRowComponent}
   <tr class="flex min-h-16 grid grid-cols-1 {getRowBgClass(index)}">
-    <ExpandedRowComponent {...expandedRowCell.data} />
+    <ExpandedRowComponent {...expandedRowCell} />
   </tr>
 {/if}

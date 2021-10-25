@@ -40,5 +40,5 @@ export let header;
 <!--</button>-->
 
 <div>
-  <TableCell data="{header}" />
+  <TableCell {...header} />
 </div>

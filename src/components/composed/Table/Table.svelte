@@ -1,5 +1,5 @@
 <script>
-import { SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+import { getColumnWidth, SORT_ORDERS, sortTableRows } from '../../../helpers/table';
 
 import TableBodyRow from './TableBodyRow.svelte';
 import TableHeaderCell from './TableHeaderCell.svelte';
@@ -40,6 +40,7 @@ const numberOfColumns = columns.length;
 // headerGroups are groups of header
 // TODO: support multiple headers like on https://codesandbox.io/s/github/tannerlinsley/react-table/tree/master/examples/sorting?file=/src/App.js:0-65
 const headerGroups = columns.map((col) => ({
+  colSize: col.colSize,
   headers: [{ value: col.value, ...col }],
 }));
 
@@ -47,7 +48,7 @@ const headerGroups = columns.map((col) => ({
 let tableRows = rows.map((row, i) => ({
   cells: Object.keys(row).map((columnId) => ({
     columnId,
-    data: row[columnId],
+    ...row[columnId],
   })),
   rowId: i,
 }));
@@ -67,10 +68,17 @@ const sortBy = (columnKey) => {
 };
 </script>
 
-<table class="border border-grey10 border-4 grid grid-flow-row auto-rows-max rounded">
-  <thead class="flex justify-items-center items-center bg-grey15 h-16 grid grid-cols-{numberOfColumns}">
+<style>
+tr {
+  justify-content: center;
+  display: flex;
+}
+</style>
+
+<table class="border border-grey10 border-4 rounded">
+  <thead class="flex justify-items-center items-center bg-grey15 h-16">
     {#each headerGroups as headerGroup}
-      <tr>
+      <tr class="{getColumnWidth(headerGroup.colSize)}">
         {#each headerGroup.headers as header}
           <th>
             <TableHeaderCell header="{header}" onClickSortBy="{sortBy}" sortOrder="{sortOrder}" />

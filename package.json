@@ -54,7 +54,8 @@
   },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.15.0",
-    "@snapshot-labs/snapshot.js": "^0.2.0",
+    "@snapshot-labs/snapshot.js": "^0.2.15",
+    "@tkh/tailwind-plugin-flex-basis": "^1.4.0",
     "assert": "^2.0.0",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
