@@ -4,6 +4,7 @@ import Metrics from '../components/composed/Metrics.svelte';
 import CollateralDropdown from '../components/composed/CollateralDropdown.svelte';
 import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
+import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import AccountTable from '../components/composed/Table/AccountTable.svelte';
 import metrics from '../stores/metrics';
 </script>
@@ -46,6 +47,7 @@ import metrics from '../stores/metrics';
       <!--          <DebtCreditPieChart />-->
       <!--        </div>-->
       <!--      </div>-->
+      <AccountsPageBarCharts />
     </div>
   </div>
 
