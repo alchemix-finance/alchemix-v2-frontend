@@ -55,7 +55,8 @@ async function connect() {
     await onboard.walletCheck().then(async () => {
       const signer = await ethersProvider.getSigner();
       const address = await signer.getAddress();
-      account.set({ address, signer });
+      const ens = await ethersProvider.lookupAddress(await address);
+      account.set({ address, signer, ens });
     });
   } catch (error) {
     console.warn('User aborted wallet selection', error);

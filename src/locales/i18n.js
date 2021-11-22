@@ -10,7 +10,14 @@ addMessages('de', de);
 
 const localSettings = JSON.parse(localStorage.getItem('settings'));
 
-init({
-  fallbackLocale: 'en',
-  initialLocale: localSettings.userLanguage.locale || getLocaleFromNavigator(),
-});
+if (localSettings !== undefined && localSettings !== null) {
+  init({
+    fallbackLocale: 'en',
+    initialLocale: localSettings.userLanguage.locale || getLocaleFromNavigator(),
+  });
+} else {
+  init({
+    fallbackLocale: 'en',
+    initialLocale: getLocaleFromNavigator(),
+  });
+}
