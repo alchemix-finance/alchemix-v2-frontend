@@ -7,12 +7,12 @@ import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
 import account from '../../stores/account';
 
 /*
- * @dev truncates the long address string for better visuals
+ * @dev returns ENS or truncates the long address string for better visuals
  * @param address the wallet address to truncate
- * @returns the truncated address
+ * @returns the formatted address
  * */
-const truncateAddress = (address) => {
-  return `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
+const resolveAddress = (address) => {
+  return $account.ens || `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
 };
 
 function openEtherscan() {
@@ -32,7 +32,7 @@ function openEtherscan() {
     {#if $account.signer}
       <Button
         borderSize="1"
-        label="{truncateAddress($account.address)}"
+        label="{resolveAddress($account.address)}"
         uppercase="{true}"
         height="h-10"
         on:clicked="{openEtherscan}"
