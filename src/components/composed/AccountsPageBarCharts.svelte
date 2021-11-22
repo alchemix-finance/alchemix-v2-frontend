@@ -6,74 +6,78 @@ import tailwind from '../../../tailwind.config';
 
 const CHART_COLORS = {
   orange2: tailwind.theme.colors.orange2,
-  orange3: tailwind.theme.colors.orange3,
+  green: '#3Db516', // tailwind.theme.colors.orange3,
+  blue: '#16F6FF',
+  grey: '#2F323E',
 };
-
-// the percentage values for each slice to render
-// eg. [45, 55] for 2 slices
-// export let chartData = [];
-const chartData = [45, 55];
 
 // an array of colors -- ChartJS maps each color to each slice
 // eg. ['#FE6A02', '#F4C19D']
 export let colors = Object.values(CHART_COLORS) || [];
 
-const legend = [
-  {
-    label: $_('withdrawable'),
-    color: CHART_COLORS.orange2,
-    colorName: 'orange2',
-  },
-  {
-    label: $_('liquidatable'),
-    color: CHART_COLORS.orange3,
-    colorName: 'orange3',
-  },
-];
-
-// pie chart props
-// eg. { label, color, colorName }
-// export let legend = [];
-
-const labels = legend.map((el) => el.label);
-
 const data = {
-  labels,
+  labels: ['Widthdrawable', 'Debt', 'Interest'],
   datasets: [
     {
-      data: chartData,
+      label: 'Total deposited',
+      data: [9000, 1000, 500],
       backgroundColor: Object.values(colors),
+      borderRadius: 5,
+      borderDash: [10000, 5000],
     },
   ],
 };
 
 const options = {
-  // space at the center of the pie
-  // cutout: '85%',
-
-  // no border
-  // borderWidth: 0,
-
-  // space between each curve
-  // spacing: 15,
-
-  // responsive: true,
-  // maintainAspectRatio: false,
+  responsive: true,
+  maintainAspectRatio: false,
 
   plugins: {
-    tooltip: {
-      // the design currently doesn't show tooltips
-      // and because we use `transform` to skew the inclination of the chart
-      // the tooltips are skewed and inclined as a result. For now, let's disable them
-      // enabled: false,
-    },
     legend: {
       // because we use `transform` to skew the inclination of the chart
       // the legend is also skewed/inclined. As a result, we'll need to re-create one.
       // display: false,
+      color: 'green',
+      position: 'top',
+    },
+    title: {
+      display: false,
+    },
+  },
+
+  scales: {
+    yAxis: {
+      grid: {
+        // width and space of dotted lines
+        borderDash: [2, 2],
+
+        color: (context) => {
+          /*
+            index: 2
+            type: "tick"s
+            tick: {
+              $context: {tick: {…}, index: 2, type: 'tick'}
+              label: "2,000"
+              value: 2000
+            }
+          */
+
+          if (context.tick.value === 5000) {
+            return CHART_COLORS.green;
+          }
+
+          if (context.tick.value === 10000) {
+            return CHART_COLORS.orange2;
+          }
+          return CHART_COLORS.grey;
+        },
+      },
     },
   },
 };
 </script>
 
-<BarChart data="{data}" options="{options}" />
+<div>
+  <div>Aggregate</div>
+  <BarChart className="h-80" data="{data}" options="{options}" />
+</div>
