@@ -4,7 +4,7 @@
   "license": "ISC",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "yarn lint && webpack serve",
+    "dev": "yarn lint && webpack serve --port 5005",
     "lint": "yarn run prettier && yarn run lint:js",
     "lint:js": "npx eslint src/*.js src/**/*.js",
     "lint:svelte": "npx eslint src/*.svelte src/**/*.svelte",
