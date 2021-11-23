@@ -71,7 +71,8 @@ module.exports = {
       discord: '#7289DA',
     },
     fontFamily: {
-      alcxTitles: ['Reem Kufi', 'sans-serif'],
+      alcxLogo: ['Reem Kufi', 'sans-serif'],
+      alcxTitles: ['neue-kabel', 'Josefin Sans', 'sans-serif'],
       alcxFlow: ['Montserrat', 'sans-serif'],
     },
   },

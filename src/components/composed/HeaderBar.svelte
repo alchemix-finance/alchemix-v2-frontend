@@ -24,7 +24,7 @@ const userGas = (selector) => {
     <Link to="{$account.signer ? '/accounts' : '/'}">
       <div class="flex-shrink-0 flex items-center">
         <img src="images/alchemix_logo.png" alt="The Alchemix logo" class="w-11" />
-        <p class="font-alcxTitles uppercase ml-4 text-2xl">{$_('alchemix')}</p>
+        <p class="font-alcxLogo uppercase ml-4 text-2xl">{$_('alchemix')}</p>
       </div>
     </Link>
   </div>
