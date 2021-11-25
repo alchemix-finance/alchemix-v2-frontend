@@ -37,7 +37,12 @@ const wallets = [
 // @dev initializes blocknative onboarding
 const onboard = Onboard({
   darkMode: true,
-  networkId: parseInt(process.env.NETWORK_ID, 10),
+  networkId: process.env.DEBUG_MODE
+    ? parseInt(process.env.LOCAL_NETWORK_ID, 10)
+    : parseInt(process.env.NETWORK_ID, 10),
+  networkName: process.env.DEBUG_MODE
+    ? process.env.LOCAL_NETWORK_NAME
+    : process.env.NETWORK_NAME,
   subscriptions: {
     wallet: async (result) => {
       const { provider } = result;
@@ -55,7 +60,9 @@ async function connect() {
     await onboard.walletCheck().then(async () => {
       const signer = await ethersProvider.getSigner();
       const address = await signer.getAddress();
-      const ens = await ethersProvider.lookupAddress(await address);
+      const ens = process.env.DEBUG_MODE
+        ? process.env.LOCAL_NETWORK_NAME
+        : await ethersProvider.lookupAddress(await address);
       account.set({ address, signer, ens });
     });
   } catch (error) {
