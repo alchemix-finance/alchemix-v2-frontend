@@ -47,5 +47,19 @@
     "default_gas": "Standard Gas",
     "permissions": "Berechtigungen",
     "button_label": "Verbinde dein Wallet um Berechtigungen zu überprüfen"
+  },
+  "governance_page": {
+    "title": "Alchemix Improvement Proposals",
+    "loading": "Hole Daten...",
+    "openAllOnSnapshot": "Zeige alle Abstimmungen auf Snapshot",
+    "openOnSnapshot": "Zeige Abstimmung auf Snapshot",
+    "noOpenVotes": "Es gibt gerade keine laufenden Abstimmungen.",
+    "noTranslation": "Die Abstimmungen werden von einer externen API geholt und nicht übersetzt.",
+    "description": "Beschreibung",
+    "results": "Ergebnisse",
+    "selectChoice": "Wähle deine Wahl",
+    "castVote": "Stimme Abgeben",
+    "closedVote": "Abstimmung Beendet",
+    "choose": "Deine Wahl"
   }
 }
