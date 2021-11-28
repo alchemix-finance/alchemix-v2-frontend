@@ -12,6 +12,8 @@ import Table from '../components/composed/Table/Table.svelte';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandHeaderCell from '../components/composed/Table/ExpandHeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
+import IpfsCell from '../components/composed/Table/governance/IpfsCell.svelte';
+import SnapshotCell from '../components/composed/Table/governance/SnapshotCell.svelte';
 
 const openAllOnSnapshot = () => {
   window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -30,36 +32,43 @@ const columns = [
   {
     columnId: 'col0',
     CellComponent: ExpandHeaderCell,
+    colSize: 1,
   },
   {
     columnId: 'col1',
     CellComponent: HeaderCell,
     value: 'Title',
+    colSize: 8,
   },
   {
     columnId: 'col2',
     CellComponent: HeaderCell,
     value: 'Status',
+    colSize: 2,
   },
   {
     columnId: 'col3',
     CellComponent: HeaderCell,
     value: 'Start',
+    colSize: 2,
   },
   {
     columnId: 'col4',
     CellComponent: HeaderCell,
     value: 'End',
+    colSize: 2,
   },
   {
     columnId: 'col5',
     CellComponent: HeaderCell,
     value: 'Snapshot',
+    colSize: 4,
   },
   {
     columnId: 'col6',
     CellComponent: HeaderCell,
     value: 'IPFS',
+    colSize: 4,
   },
 ];
 
@@ -75,24 +84,34 @@ $: if ($governance.proposals.length > 0) {
           ExpandedRowComponent: DetailView,
           proposalEntry: proposal,
         },
+        colSize: 1,
       },
       col1: {
         value: proposal.title,
+        colSize: 8,
       },
       col2: {
         value: proposal.state,
+        colSize: 2,
       },
       col3: {
         value: snapshotToDate(proposal.start),
+        colSize: 2,
       },
       col4: {
         value: snapshotToDate(proposal.end),
+        colSize: 2,
       },
       col5: {
-        value: proposal.snapshot,
+        snapshot: proposal.snapshot,
+        colSize: 4,
+        CellComponent: SnapshotCell,
       },
       col6: {
-        value: proposal.id,
+        ipfsShort: proposal.ipfs.slice(0, 8),
+        ipfsId: proposal.ipfs,
+        colSize: 4,
+        CellComponent: IpfsCell,
       },
     };
     rows.push(payload);

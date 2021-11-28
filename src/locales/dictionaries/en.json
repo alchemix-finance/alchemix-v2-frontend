@@ -59,6 +59,8 @@
     "description": "Description",
     "results": "Results",
     "selectChoice": "Select your choice",
-    "castVote": "Cast Vote"
+    "castVote": "Cast Vote",
+    "closedVote": "Voting Closed",
+    "choose": "Your Vote"
   }
 }
