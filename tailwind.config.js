@@ -66,6 +66,7 @@ module.exports = {
       orange1: '#ec8339',
       orange2: '#FE6A02',
       orange3: '#F4C19D',
+      orange4: '#F5C09A',
       white2: '#f5f5f5',
       twitter: '#4CABFA',
       discord: '#7289DA',

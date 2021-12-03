@@ -1,55 +1,67 @@
 <script>
-import ViewContainer from '../components/elements/ViewContainer.svelte';
-import Metrics from '../components/composed/Metrics.svelte';
-import CollateralDropdown from '../components/composed/CollateralDropdown.svelte';
-import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
-import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
-import AccountTable from '../components/composed/Table/AccountTable.svelte';
-import metrics from '../stores/metrics';
+  import ViewContainer from '../components/elements/ViewContainer.svelte';
+  import PageHeader from '../components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
+  import Button from '../components/elements/Button.svelte';
+  import Metrics from '../components/composed/Metrics.svelte';
+  import CollateralDropdown from '../components/composed/CollateralDropdown.svelte';
+  import AccountTable from '../components/composed/Table/AccountTable.svelte';
+  import metrics from '../stores/metrics';
 </script>
 
-<style>
-.min-w-page {
-  /*  we may want to have a responsive design instead of this */
-  min-width: 1025px;
-}
-</style>
-
 <ViewContainer>
-  <Metrics />
+  <div slot='head' class='flex justify-between'>
+    <PageHeader
+      pageIcon='vault_thin.svg'
+      pageTitle='My Accounts'
+      pageSubtitle='Your personal dashboard'
+    />
+  </div>
 
-  <div class="min-w-page">
-    <div class="px-4">
-      <div class="flex justify-between items-center mt-10 mb-14">
-        <CollateralDropdown />
-
-        <div class="flex justify-between">
-          <div class="flex">
-            <div class="font-alcxTitles mr-4">
-              <span class="text-bronze1 mr-1">Current APY:</span>
-              <span>{$metrics.account.APY}%</span>
-            </div>
-            <div class="font-alcxTitles">
-              <span class="text-bronze1 mr-1">Estimated Maturity:</span>
-              <span>{$metrics.account.estimatedMaturity}</span>
-            </div>
-          </div>
-        </div>
+  <div class='w-full mb-8'>
+    <ContainerWithHeader>
+      <div slot='header' class='py-4 px-6'>
+        <Metrics />
       </div>
-
-      <!-- TODO: Turn pie charts into bar charts -->
-      <!--      <div class="flex">-->
-      <!--        <div class="mr-4">-->
-      <!--          <CollateralPieChart />-->
-      <!--        </div>-->
-      <!--        <div class="ml-4">-->
-      <!--          <DebtCreditPieChart />-->
-      <!--        </div>-->
-      <!--      </div>-->
-    </div>
+    </ContainerWithHeader>
   </div>
 
-  <div class="mt-10 px-4">
-    <AccountTable />
+  <div class='w-full mb-8'>
+    <ContainerWithHeader>
+      <div slot='header' class='py-4 px-6 text-sm flex justify-between'>
+        <p class='inline-block self-center'>
+          Aggregate
+        </p>
+        <Button width='w-max' label=''>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            slot='rightSlot'
+            class='h-6 w-6'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
+            ></path>
+          </svg>
+        </Button>
+      </div>
+    </ContainerWithHeader>
   </div>
+
+  <div class='w-full mb-8'>
+    <ContainerWithHeader>
+      <div slot='header' class='py-4 px-6 text-sm'>
+        Vaults
+      </div>
+      <div slot='body'>
+        <AccountTable />
+      </div>
+    </ContainerWithHeader>
+  </div>
+
 </ViewContainer>

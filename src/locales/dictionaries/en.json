@@ -50,7 +50,8 @@
     "button_label": "Connect Wallet to check permissions"
   },
   "governance_page": {
-    "title": "Alchemix Improvement Proposals",
+    "title": "Governance",
+    "subtitle": "Alchemix Improvement Proposals",
     "loading": "Fetching Data...",
     "openAllOnSnapshot": "View all proposals on Snapshot",
     "openOnSnapshot": "View proposal on Snapshot",
@@ -62,5 +63,17 @@
     "castVote": "Cast Vote",
     "closedVote": "Voting Closed",
     "choose": "Your Vote"
+  },
+  "farm_page": {
+    "title": "Farms",
+    "subtitle": "Earn yield on your deposits"
+  },
+  "transmuter_page": {
+    "title": "Transmuter",
+    "subtitle": "Convert your synthetic tokens to their counterpart at a 1:1 ratio"
+  },
+  "vaults_page": {
+    "title": "Vaults",
+    "subtitle": "Deposit collateral and borrow your future yield right away"
   }
 }

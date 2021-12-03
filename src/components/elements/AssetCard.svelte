@@ -6,7 +6,9 @@ export let currency = '$';
 export let assetIcon = 'icon.png';
 export let assetColor = 'bronze2';
 
-const formattedNumber = new Intl.NumberFormat().format(assetPrice.toFixed(2));
+let formattedNumber;
+
+$: assetPrice, (formattedNumber = new Intl.NumberFormat().format(assetPrice.toFixed(2)));
 </script>
 
 <div class="flex flex-col w-80 rounded-3xl bg-grey10 bg-opacity-30 border border-lightgrey20 p-8 pb-0">
