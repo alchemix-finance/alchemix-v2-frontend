@@ -43,6 +43,7 @@ $: console.log(proposal);
         {$_('governance_page.choose')}
       </p>
       <div id='selection' class='mb-6 w-auto'>
+        {#if proposal.state !== 'closed'}
         <select bind:value class="border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-full mb-3">
           <option value="null" selected disabled>
             {$_('governance_page.selectChoice')}
@@ -51,6 +52,7 @@ $: console.log(proposal);
             <option value="{index + 1}">{choice}</option>
           {/each}
         </select>
+          {/if}
 
         <Button
           label="{proposal.state === 'closed' ? $_('governance_page.closedVote') : $_('governance_page.castVote')}"

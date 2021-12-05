@@ -2,6 +2,8 @@
 import { onMount } from 'svelte';
 import { _ } from 'svelte-i18n';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
+import PageHeader from '../components/elements/PageHeader.svelte';
+import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
 import { getOpenProposals } from '../middleware/snapshot';
 import governance from '../stores/governance';
 import settings from '../stores/settings';
@@ -10,7 +12,6 @@ import DetailView from '../components/composed/Table/governance/DetailView.svelt
 import { BarLoader } from 'svelte-loading-spinners';
 import Table from '../components/composed/Table/Table.svelte';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
-import ExpandHeaderCell from '../components/composed/Table/ExpandHeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import IpfsCell from '../components/composed/Table/governance/IpfsCell.svelte';
 import SnapshotCell from '../components/composed/Table/governance/SnapshotCell.svelte';
@@ -31,7 +32,7 @@ const snapshotToDate = (snapshotBlock) => {
 const columns = [
   {
     columnId: 'col0',
-    CellComponent: ExpandHeaderCell,
+    value: '',
     colSize: 1,
   },
   {
@@ -127,29 +128,44 @@ onMount(() => {
 
 <ViewContainer>
   <div class="flex justify-between" slot="head">
-    <span class="self-center">{$_('governance_page.title')}</span>
-    <Button
-      label="{$_('governance_page.openAllOnSnapshot')}"
-      borderSize="1"
-      height="h-8"
-      width="w-max"
-      fontSize="text-md"
-      on:clicked="{() => openAllOnSnapshot()}"
+    <PageHeader
+      pageIcon="alcx_thin.svg"
+      pageTitle="{$_('governance_page.title')}"
+      pageSubtitle="{$_('governance_page.subtitle')}"
     />
   </div>
-  {#if $governance.fetching}
-    <p class="text-center">{$_('governance_page.loading')}</p>
-    <div class="flex justify-center">
-      <BarLoader color="#F5C59F" />
-    </div>
-  {:else if $governance.proposals.length > 0}
+  <div class="w-full">
     <p class="text-center text-xs mb-6 opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
-    <Table rows="{rows}" columns="{columns}" />
-  {:else}
-    <p class="text-center opacity-50">
-      {$_('governance_page.noOpenVotes')}
-    </p>
-  {/if}
+    <ContainerWithHeader>
+      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
+        <p class="inline-block self-center">Proposals</p>
+
+        <Button
+          label="{$_('governance_page.openAllOnSnapshot')}"
+          borderSize="1"
+          height="h-8"
+          width="w-max"
+          fontSize="text-md"
+          on:clicked="{() => openAllOnSnapshot()}"
+        />
+      </div>
+
+      <div slot="body">
+        {#if $governance.fetching}
+          <p class="text-center">{$_('governance_page.loading')}</p>
+          <div class="flex justify-center">
+            <BarLoader color="#F5C59F" />
+          </div>
+        {:else if $governance.proposals.length > 0}
+          <Table rows="{rows}" columns="{columns}" />
+        {:else}
+          <p class="text-center opacity-50">
+            {$_('governance_page.noOpenVotes')}
+          </p>
+        {/if}
+      </div>
+    </ContainerWithHeader>
+  </div>
 </ViewContainer>

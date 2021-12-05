@@ -40,14 +40,13 @@ $: if (isExpanded && !ExpandedRowComponent) {
 
 <style>
 td {
-  justify-content: center;
   display: flex;
 }
 </style>
 
 <tr class="flex justify-items-center items-center {getRowBgClass(index)}">
   {#each row.cells as cell, i}
-    <td class="{getColumnWidth(cell.colSize)}">
+    <td class="{getColumnWidth(cell.colSize)} justify-center">
       <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
     </td>
   {/each}

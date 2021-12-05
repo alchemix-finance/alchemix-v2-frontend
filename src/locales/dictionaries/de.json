@@ -57,9 +57,9 @@
     "noTranslation": "Die Abstimmungen werden von einer externen API geholt und nicht übersetzt.",
     "description": "Beschreibung",
     "results": "Ergebnisse",
-    "selectChoice": "Wähle deine Wahl",
+    "selectChoice": "Stimme für diese Optionen ab",
     "castVote": "Stimme Abgeben",
     "closedVote": "Abstimmung Beendet",
-    "choose": "Deine Wahl"
+    "choose": "Deine Stimme"
   }
 }
