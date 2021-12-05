@@ -5,6 +5,7 @@ import ContainerWithHeader from '../components/elements/ContainerWithHeader.svel
 import Button from '../components/elements/Button.svelte';
 import Metrics from '../components/composed/Metrics.svelte';
 import CollateralDropdown from '../components/composed/CollateralDropdown.svelte';
+import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import AccountTable from '../components/composed/Table/AccountTable.svelte';
 import metrics from '../stores/metrics';
 </script>
@@ -44,7 +45,11 @@ import metrics from '../stores/metrics';
           </svg>
         </Button>
       </div>
+      <div slot="body">
+        <AccountsPageBarCharts />
+      </div>
     </ContainerWithHeader>
+
   </div>
 
   <div class="w-full mb-8">
