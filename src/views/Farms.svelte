@@ -487,14 +487,37 @@
       },
     },
   ];
+
+  const toggleButtons = {
+    farmSelect: {
+      active: true,
+      retired: false,
+      external: false,
+    },
+  };
+
+  const buttonToggler = (selector, key) => {
+    Object.keys(toggleButtons[selector]).forEach((entry) => {
+      if (toggleButtons[selector][entry] !== key) {
+        toggleButtons[selector][entry] = false;
+      }
+    });
+    toggleButtons[selector][key] = true;
+  };
+
+  // @dev logic for controlling the filtered views
+  const vaultFilter = (filter) => {
+    const selector = ['farmSelect', 'modeSelect', 'stratSelect'];
+    buttonToggler(selector[filter.id], filter.filter);
+  };
 </script>
 
 <ViewContainer>
   <div class='flex justify-between' slot='head'>
     <PageHeader
       pageIcon='farm_thin.svg'
-      pageTitle={$_('farm_page.title')}
-      pageSubtitle={$_('farm_page.subtitle')}
+      pageTitle="{$_('farm_page.title')}"
+      pageSubtitle="{$_('farm_page.subtitle')}"
     />
   </div>
   <div class='w-full mb-8'>
@@ -505,98 +528,49 @@
 
   <div class='w-full mb-8'>
     <ContainerWithHeader>
-      <div slot='header' class='py-4 px-6 text-sm'>
-        <strong>Active Farms</strong> - Earn ALCX tokens via staking
+      <div slot='header' class='py-4 px-6 flex space-x-4'>
+        <Button
+          label='Active'
+          width='w-max'
+          canToggle='{true}'
+          selected='{toggleButtons.farmSelect.active}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 0, filter: 'active' })}"
+        />
+
+        <Button
+          label='Retired'
+          width='w-max'
+          canToggle='{true}'
+          selected='{toggleButtons.farmSelect.retired}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 0, filter: 'retired' })}"
+        />
+
+        <Button
+          label='External'
+          width='w-max'
+          canToggle='{true}'
+          selected='{toggleButtons.farmSelect.external}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 0, filter: 'external' })}"
+        />
       </div>
       <div slot='body'>
-        <Table rows='{rowsActive}' columns='{columnsActive}' />
+        {#if toggleButtons.farmSelect.active}
+          <Table rows='{rowsActive}' columns='{columnsActive}' />
+        {/if}
+        {#if toggleButtons.farmSelect.retired}
+          <Table rows='{rowsRetired}' columns='{columnsRetired}' />
+        {/if}
+        {#if toggleButtons.farmSelect.external}
+          <Table rows='{rowsExternal}' columns='{columnsExternal}' />
+        {/if}
       </div>
     </ContainerWithHeader>
   </div>
 
-  <div class='w-full mb-8'>
-    <ContainerWithHeader>
-      <div slot='header' class='py-4 px-6 text-sm flex justify-between'>
-        <p class='inline-block self-center'>
-          <strong>External Farms</strong> - Other opportunities to earn with Alchemix
-        </p>
-        <div>
-          <Button label=''>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              slot='rightSlot'
-              class='h-6 w-6'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
-              ></path>
-            </svg>
-          </Button>
-        </div>
-      </div>
-      <div slot='body'>
-        <Table rows='{rowsExternal}' columns='{columnsExternal}' />
-      </div>
-    </ContainerWithHeader>
-  </div>
-
-  <div class='w-full mb-8'>
-    <ContainerWithHeader>
-      <div slot='header' class='py-4 px-6 text-sm flex justify-between'>
-        <p class='inline-block self-center'>
-          <strong>Retired Farms</strong> - Migrate your liquidity
-        </p>
-        <div>
-          <Button
-            width='w-max'
-            label=''
-            on:clicked="{() => goTo('https://alchemixfi.medium.com/farm-migrations-how-to-fb4754fa10b2')}"
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              slot='rightSlot'
-              class='h-6 w-6'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-              ></path>
-            </svg>
-          </Button>
-
-          <Button width='w-max' label=''>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              slot='rightSlot'
-              class='h-6 w-6'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
-              ></path>
-            </svg>
-          </Button>
-        </div>
-      </div>
-      <div slot='body'>
-        <Table rows='{rowsRetired}' columns='{columnsRetired}' />
-      </div>
-    </ContainerWithHeader>
-  </div>
 </ViewContainer>
