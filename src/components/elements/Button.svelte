@@ -16,11 +16,14 @@ export let width = 'w-full';
 export let height = 'h-auto';
 export let noHoverEffect = false;
 export let py = 'py-1';
+export let canToggle = false;
+export let selected = false;
+
 const dispatch = createEventDispatcher();
 
 // @dev emits an event 'clicked' the parent component can listen to
 const clickEvent = () => {
-  if (!disabled) dispatch('clicked');
+  if (!disabled && !selected) dispatch('clicked');
 };
 </script>
 
@@ -31,14 +34,14 @@ const clickEvent = () => {
     px-3
     {py}
     select-none
-    font-alcxTitles
+    font-alcxFlow
     overflow-ellipsis
     {height}
     {width}
     text-{textColor}
     {fontSize}
     {uppercase ? 'uppercase' : ''}
-    {solid ? `bg-${backgroundColor}` : `bg-${backgroundColor} bg-opacity-30`}
+    {selected ? `bg-${hoverColor}` : solid ? `bg-${backgroundColor}` : `bg-${backgroundColor} bg-opacity-30`}
     hover:{disabled
     ? `bg-${backgroundColor}`
     : noHoverEffect

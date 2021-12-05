@@ -4,6 +4,13 @@ module.exports = {
     es6: true,
   },
   extends: ['airbnb-base'],
+  // plugins: ['svelte3'],
+  // overrides: [
+  //   {
+  //     files: ['**/*.svelte'],
+  //     processor: 'svelte3/svelte3',
+  //   },
+  // ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',

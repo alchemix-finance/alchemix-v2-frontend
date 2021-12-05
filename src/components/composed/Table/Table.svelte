@@ -75,7 +75,7 @@ tr {
 }
 </style>
 
-<table class="border border-grey10 border-4 rounded">
+<table class="border border-grey10 border-4 rounded w-full">
   <thead class="flex justify-items-center items-center bg-grey15 h-16">
     {#each headerGroups as headerGroup}
       <tr class="{getColumnWidth(headerGroup.colSize)}">

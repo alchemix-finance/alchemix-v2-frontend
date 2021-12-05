@@ -46,7 +46,7 @@ const copyrightYear = () => {
         </li>
       </ul>
     </div>
-    <div>
+    <div class="mr-11">
       <p class="uppercase text-sm alcxTitle mb-5">{$_('social')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
@@ -62,6 +62,11 @@ const copyrightYear = () => {
         <li class="opacity-50 hover:opacity-100">
           <a href="" target="_blank">
             <span>{$_('github')}</span>
+          </a>
+        </li>
+        <li class="opacity-50 hover:opacity-100">
+          <a href="https://alchemixfi.substack.com/" target="_blank">
+            <span>{$_('newsletter')}</span>
           </a>
         </li>
       </ul>
