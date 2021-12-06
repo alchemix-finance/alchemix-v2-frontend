@@ -130,6 +130,38 @@ const options = {
 };
 </script>
 
-<div class="bg-grey10 px-16 py-8 rounded-md h-80">
-  <BarChart data="{data}" options="{options}" />
+<div class="h-96">
+  <div class="px-8 py-8 rounded-md h-full pb-24">
+    <div class="flex justify-between font-alcxFlow pb-4 pl-2">
+      <div class="flex">
+        <div class="mr-8 flex items-center">
+          <span class="text-orange2 mr-05">
+            <span>-</span>
+            <span class="mx">-</span>
+            <span>-</span>
+          </span>
+          <span class="mx-2 text-grey2">Total Deposit</span>
+          <span class="text-lg">10,000</span>
+        </div>
+        <div class="mr-8 flex items-center">
+          <span class="text-green1 mr-05">
+            <span>-</span>
+            <span class="mx">-</span>
+            <span>-</span>
+          </span>
+          <span class="mx-2 text-grey2">Debt Limit</span>
+          <span class="text-lg">10,000</span>
+        </div>
+        <div class="flex items-center">
+          <span class="text-grey2 mr-2">Aggregate APY</span>
+          <span class="text-lg">342%</span>
+        </div>
+      </div>
+      <div class="border border-grey3 rounded p-2 py-0.5 bg-grey10">
+        <span class="text-grey2 mr-2">Today</span>
+        <span class="text-lg">Sept 21, 2020</span>
+      </div>
+    </div>
+    <BarChart data="{data}" options="{options}" />
+  </div>
 </div>
