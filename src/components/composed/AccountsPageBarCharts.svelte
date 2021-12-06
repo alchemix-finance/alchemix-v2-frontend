@@ -4,10 +4,13 @@ import BarChart from './Charts/BarChart.svelte';
 import tailwind from '../../../tailwind.config';
 
 // TODO: use tailwind exported colors everywhere
+const GREY = '#74767C';
 const LIGHT_GREY = '#2F323E';
 const GREEN = '#3Db516';
 const ORANGE = tailwind.theme.colors.orange2;
 const OFF_BLACK = '#202128';
+
+const MONTSERRAT = 'Montserrat, sans-serif';
 
 let background1;
 
@@ -45,6 +48,8 @@ const options = {
   responsive: true,
   maintainAspectRatio: false,
 
+  defaultFontFamily: MONTSERRAT,
+
   plugins: {
     legend: {
       display: false,
@@ -60,11 +65,21 @@ const options = {
         // set left-most axis line to light grey
         borderColor: LIGHT_GREY,
       },
+
+      ticks: {
+        padding: 6,
+        font: {
+          size: 16,
+          family: MONTSERRAT,
+        },
+      },
     },
     y: {
       suggestedMax: 10000,
 
       ticks: {
+        padding: 10,
+
         callback: function (value) {
           if ([0, 5000, 10000].includes(value)) {
             return value.toLocaleString();
@@ -72,19 +87,21 @@ const options = {
 
           return undefined;
         },
+
+        font: {
+          size: 16,
+          family: MONTSERRAT,
+        },
       },
 
       grid: {
         // set bottom-most axis line to light grey
         borderColor: LIGHT_GREY,
 
-        // width and space of dotted lines
+        // space between each dot on dotted lines
         borderDash: [4, 4],
 
-        // the width of the line between the tick label and the vertical grey
-        // bar at position 0 on x axis
-        tickBorderDash: [6],
-        // tickBorderDashOffset: 10,
+        tickColor: GREY,
 
         color: (context) => {
           /*
