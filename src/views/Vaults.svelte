@@ -51,51 +51,7 @@
 
   <div class='w-full mb-8'>
     <ContainerWithHeader>
-      <div slot='body' class='flex space-x-4 mx-4 my-2'>
-        <Button
-          label='Deposit & Withdraw'
-          width='w-full'
-          py='py-2'
-          canToggle='{true}'
-          selected='{toggleButtons.modeSelect.deposit}'
-          solid='{false}'
-          borderSize='0'
-          on:clicked="{() => vaultFilter({ id: 1, filter: 'deposit' })}"
-        />
-        <Button
-          label='Borrow'
-          width='w-full'
-          canToggle='{true}'
-          selected='{toggleButtons.modeSelect.borrow}'
-          solid='{false}'
-          borderSize='0'
-          on:clicked="{() => vaultFilter({ id: 1, filter: 'borrow' })}"
-        />
-        <Button
-          label='Repay'
-          width='w-full'
-          canToggle='{true}'
-          selected='{toggleButtons.modeSelect.repay}'
-          solid='{false}'
-          borderSize='0'
-          on:clicked="{() => vaultFilter({ id: 1, filter: 'repay' })}"
-        />
-        <Button
-          label='Liquidate'
-          width='w-full'
-          canToggle='{true}'
-          selected='{toggleButtons.modeSelect.liquidate}'
-          solid='{false}'
-          borderSize='0'
-          on:clicked="{() => vaultFilter({ id: 1, filter: 'liquidate' })}"
-        />
-      </div>
-    </ContainerWithHeader>
-  </div>
-
-  <div class='w-full mb-8'>
-    <ContainerWithHeader>
-      <div slot='body' class='flex space-x-4 mx-4 my-2'>
+      <div slot='header' class='py-4 px-6 flex space-x-4'>
         <Button
           label='All Vaults'
           width='w-max'
@@ -135,6 +91,46 @@
             <img src='images/icons/alusd_med.svg' alt='alusd vaults' class='w-5 h-5' />
           </p>
         </Button>
+      </div>
+
+      <div slot='body' class='flex space-x-4 mx-4 my-2'>
+        <Button
+          label='Deposit & Withdraw'
+          width='w-full'
+          py='py-2'
+          canToggle='{true}'
+          selected='{toggleButtons.modeSelect.deposit}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 1, filter: 'deposit' })}"
+        />
+        <Button
+          label='Borrow'
+          width='w-full'
+          canToggle='{true}'
+          selected='{toggleButtons.modeSelect.borrow}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 1, filter: 'borrow' })}"
+        />
+        <Button
+          label='Repay'
+          width='w-full'
+          canToggle='{true}'
+          selected='{toggleButtons.modeSelect.repay}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 1, filter: 'repay' })}"
+        />
+        <Button
+          label='Liquidate'
+          width='w-full'
+          canToggle='{true}'
+          selected='{toggleButtons.modeSelect.liquidate}'
+          solid='{false}'
+          borderSize='0'
+          on:clicked="{() => vaultFilter({ id: 1, filter: 'liquidate' })}"
+        />
       </div>
     </ContainerWithHeader>
   </div>
