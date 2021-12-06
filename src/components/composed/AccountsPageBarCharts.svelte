@@ -1,29 +1,45 @@
 <script>
-import { _ } from 'svelte-i18n';
+import { onMount } from 'svelte';
 import BarChart from './Charts/BarChart.svelte';
-// import { chartData, colors } from './Charts/PieChart.svelte';
 import tailwind from '../../../tailwind.config';
 
-const CHART_COLORS = {
-  orange2: tailwind.theme.colors.orange2,
-  green: '#3Db516', // tailwind.theme.colors.orange3,
-  blue: '#16F6FF',
-  grey: '#2F323E',
-};
+// TODO: use tailwind exported colors everywhere
+const GREY = '#74767C';
+const LIGHT_GREY = '#2F323E';
+const GREEN = '#3Db516';
+const ORANGE = tailwind.theme.colors.orange2;
+const OFF_BLACK = '#202128';
 
-// an array of colors -- ChartJS maps each color to each slice
-// eg. ['#FE6A02', '#F4C19D']
-export let colors = Object.values(CHART_COLORS) || [];
+const MONTSERRAT = 'Montserrat, sans-serif';
+
+let background1;
+
+onMount(() => {
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+
+  let background1Gradient = context.createLinearGradient(0, 0, 0, 300);
+  background1Gradient.addColorStop(0, ORANGE);
+  background1Gradient.addColorStop(0.99, OFF_BLACK);
+
+  background1 = background1Gradient;
+
+  // TODO: still need to figure out how to do different gradients per bar
+  // Found some tutorials here:
+  // https://stackoverflow.com/questions/60679709/chart-js-add-gradient-to-bar-chart
+  // https://stackoverflow.com/questions/40221565/how-to-show-gradient-vertically-on-chart-js-grouped-bar-chart
+
+  context.fillStyle = background1;
+});
 
 const data = {
   labels: ['Widthdrawable', 'Debt', 'Interest'],
   datasets: [
     {
       label: 'Total deposited',
-      data: [9000, 1000, 500],
-      backgroundColor: Object.values(colors),
+      data: [9000, 4000, 2000],
+      backgroundColor: [background1],
       borderRadius: 5,
-      borderDash: [10000, 5000],
     },
   ],
 };
@@ -32,13 +48,11 @@ const options = {
   responsive: true,
   maintainAspectRatio: false,
 
+  defaultFontFamily: MONTSERRAT,
+
   plugins: {
     legend: {
-      // because we use `transform` to skew the inclination of the chart
-      // the legend is also skewed/inclined. As a result, we'll need to re-create one.
-      // display: false,
-      color: 'green',
-      position: 'top',
+      display: false,
     },
     title: {
       display: false,
@@ -46,10 +60,48 @@ const options = {
   },
 
   scales: {
-    yAxis: {
+    x: {
       grid: {
-        // width and space of dotted lines
-        borderDash: [2, 2],
+        // set left-most axis line to light grey
+        borderColor: LIGHT_GREY,
+      },
+
+      ticks: {
+        padding: 6,
+        font: {
+          size: 16,
+          family: MONTSERRAT,
+        },
+      },
+    },
+    y: {
+      suggestedMax: 10000,
+
+      ticks: {
+        padding: 10,
+
+        callback: function (value) {
+          if ([0, 5000, 10000].includes(value)) {
+            return value.toLocaleString();
+          }
+
+          return undefined;
+        },
+
+        font: {
+          size: 16,
+          family: MONTSERRAT,
+        },
+      },
+
+      grid: {
+        // set bottom-most axis line to light grey
+        borderColor: LIGHT_GREY,
+
+        // space between each dot on dotted lines
+        borderDash: [4, 4],
+
+        tickColor: GREY,
 
         color: (context) => {
           /*
@@ -63,13 +115,14 @@ const options = {
           */
 
           if (context.tick.value === 5000) {
-            return CHART_COLORS.green;
+            return GREEN;
           }
 
           if (context.tick.value === 10000) {
-            return CHART_COLORS.orange2;
+            return ORANGE;
           }
-          return CHART_COLORS.grey;
+
+          return LIGHT_GREY;
         },
       },
     },
@@ -77,7 +130,38 @@ const options = {
 };
 </script>
 
-<div>
-  <div>Aggregate</div>
-  <BarChart className="h-80" data="{data}" options="{options}" />
+<div class="h-96">
+  <div class="px-8 py-8 rounded-md h-full pb-24">
+    <div class="flex justify-between font-alcxFlow pb-4 pl-2">
+      <div class="flex">
+        <div class="mr-8 flex items-center">
+          <span class="text-orange2 mr-05">
+            <span>-</span>
+            <span class="mx">-</span>
+            <span>-</span>
+          </span>
+          <span class="mx-2 text-grey2">Total Deposit</span>
+          <span class="text-lg">10,000</span>
+        </div>
+        <div class="mr-8 flex items-center">
+          <span class="text-green1 mr-05">
+            <span>-</span>
+            <span class="mx">-</span>
+            <span>-</span>
+          </span>
+          <span class="mx-2 text-grey2">Debt Limit</span>
+          <span class="text-lg">10,000</span>
+        </div>
+        <div class="flex items-center">
+          <span class="text-grey2 mr-2">Aggregate APY</span>
+          <span class="text-lg">342%</span>
+        </div>
+      </div>
+      <div class="border border-grey3 rounded p-2 py-0.5 bg-grey10">
+        <span class="text-grey2 mr-2">Today</span>
+        <span class="text-lg">Sept 21, 2020</span>
+      </div>
+    </div>
+    <BarChart data="{data}" options="{options}" />
+  </div>
 </div>
