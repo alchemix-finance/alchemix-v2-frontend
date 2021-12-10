@@ -44,7 +44,7 @@ td {
 }
 </style>
 
-<tr class="flex justify-items-center items-center {getRowBgClass(index)}">
+<tr class="flex justify-items-center items-center bg-grey15">
   {#each row.cells as cell, i}
     <td class="{getColumnWidth(cell.colSize)} justify-center">
       <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
@@ -53,7 +53,7 @@ td {
 </tr>
 
 {#if isExpanded && ExpandedRowComponent}
-  <tr class="flex min-h-16 grid grid-cols-1 {getRowBgClass(index)}">
+  <tr class="flex min-h-16 grid grid-cols-1 bg-grey15">
     <ExpandedRowComponent {...expandedRowCell} />
   </tr>
 {/if}
