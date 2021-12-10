@@ -1,5 +1,6 @@
 <script>
 import { _ } from 'svelte-i18n';
+
 const copyrightYear = () => {
   return `2020 - ${new Date().getFullYear()}`;
 };

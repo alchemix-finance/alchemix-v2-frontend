@@ -1,29 +1,29 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+import { createEventDispatcher } from 'svelte';
 
-  export let label;
-  export let disabled = false;
-  export let borderColor = 'grey5';
-  export let backgroundColor = 'grey10';
-  export let hoverColor = 'grey1';
-  export let textColor = 'white2';
-  export let solid = true;
-  export let borderSize = '2';
-  export let uppercase = false;
-  export let fontSize = 'text-xs';
-  export let width = 'w-full';
-  export let height = 'h-auto';
-  export let noHoverEffect = false;
-  export let py = 'py-1';
-  export let canToggle = false;
-  export let selected = false;
+export let label;
+export let disabled = false;
+export let borderColor = 'grey5';
+export let backgroundColor = 'grey10';
+export let hoverColor = 'grey1';
+export let textColor = 'white2';
+export let solid = true;
+export let borderSize = '2';
+export let uppercase = false;
+export let fontSize = 'text-xs';
+export let width = 'w-full';
+export let height = 'h-auto';
+export let noHoverEffect = false;
+export let py = 'py-1';
+export let canToggle = false;
+export let selected = false;
 
-  const dispatch = createEventDispatcher();
+const dispatch = createEventDispatcher();
 
-  // @dev emits an event 'clicked' the parent component can listen to
-  const clickEvent = () => {
-    if (!disabled && ((canToggle && !selected) || !canToggle)) dispatch('clicked');
-  };
+// @dev emits an event 'clicked' the parent component can listen to
+const clickEvent = () => {
+  if (!disabled && ((canToggle && !selected) || !canToggle)) dispatch('clicked');
+};
 </script>
 
 <button
@@ -50,8 +50,8 @@
     disabled:opacity-50
     transition-all
     "
-  disabled='{disabled}'
-  on:click='{clickEvent}'
+  disabled="{disabled}"
+  on:click="{clickEvent}"
 >
   <div
     class="flex {$$slots.leftSlot && $$slots.rightSlot
@@ -60,12 +60,12 @@
       ? 'justify-start items-center'
       : 'justify-center'}"
   >
-    <slot name='leftSlot' />
+    <slot name="leftSlot" />
     {#if label}
       <p class="{$$slots.leftSlot && !$$slots.rightSlot ? 'ml-4' : ''}">
         {label}
       </p>
     {/if}
-    <slot name='rightSlot' />
+    <slot name="rightSlot" />
   </div>
 </button>

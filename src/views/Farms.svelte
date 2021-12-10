@@ -71,6 +71,7 @@ const rowsActive = [
       farmName: 'ALCX/ETH v2',
       farmSubtitle: 'Sushiswap SLP',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -116,6 +117,7 @@ const rowsActive = [
       farmName: 'ALCX',
       farmSubtitle: 'Alchemix ALCX',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -158,6 +160,7 @@ const rowsActive = [
       farmName: 'alETH Saddle',
       farmSubtitle: 'Saddle LP',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -201,6 +204,7 @@ const rowsActive = [
       farmName: 'alUSD3CRV',
       farmSubtitle: 'Convex LP',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -247,6 +251,7 @@ const rowsActive = [
       farmName: 'tALCX',
       farmSubtitle: 'Tokemak',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -299,6 +304,7 @@ const rowsExternal = [
       farmName: 'Saddle d4',
       farmSubtitle: 'Deposit alUSD, FEI, FRAX, and/or LUSD to earn ALCX, TRIBE, FXS and LQTY',
       colSize: 7,
+      alignment: 'justify-self-start',
     },
     col2: {
       CellComponent: ExternalActionsCell,
@@ -326,6 +332,7 @@ const rowsExternal = [
       farmName: 'alUSD/ETH Onsen',
       farmSubtitle: 'Deposit alUSD and ETH on Sushiswap to earn SUSHI',
       colSize: 7,
+      alignment: 'justify-self-start',
     },
     col2: {
       CellComponent: ExternalActionsCell,
@@ -353,6 +360,7 @@ const rowsExternal = [
       farmName: 'mStable alUSD Feeder',
       farmSubtitle: 'Deposit alUSD to earn MTA',
       colSize: 7,
+      alignment: 'justify-self-start',
     },
     col2: {
       CellComponent: ExternalActionsCell,

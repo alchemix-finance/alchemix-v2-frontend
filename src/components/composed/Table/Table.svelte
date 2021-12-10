@@ -5,32 +5,32 @@ import TableBodyRow from './TableBodyRow.svelte';
 import TableHeaderCell from './TableHeaderCell.svelte';
 
 /*
-  Table component
+                  Table component
 
-  Render: <Table rows="{rows}" columns="{columns}" />
+                  Render: <Table rows="{rows}" columns="{columns}" />
 
-  Rows is an array of rows.
-  Each row can define what cell component it should use and additional props
-  For example: [
-    {
-      column1: {
-        CellComponent: SomeCellComponent
-        expandedRow: {
-          ExpandedRowComponent: SomeComponent,
-          value|props
-        }
-        value|props
-      }
-    },
-    {
-      column2: {
-        CellComponent: SomeCellComponent
-        expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
-        value|props
-      }
-    }
-  ]
-*/
+                  Rows is an array of rows.
+                  Each row can define what cell component it should use and additional props
+                  For example: [
+                    {
+                      column1: {
+                        CellComponent: SomeCellComponent
+                        expandedRow: {
+                          ExpandedRowComponent: SomeComponent,
+                          value|props
+                        }
+                        value|props
+                      }
+                    },
+                    {
+                      column2: {
+                        CellComponent: SomeCellComponent
+                        expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
+                        value|props
+                      }
+                    }
+                  ]
+                */
 
 export let rows = [];
 export let columns = [];
@@ -68,17 +68,10 @@ const sortBy = (columnKey) => {
 };
 </script>
 
-<style>
-tr {
-  justify-content: center;
-  display: flex;
-}
-</style>
-
-<table class="border border-grey10 border-4 rounded w-full">
+<table class="w-full">
   <thead class="flex justify-items-center items-center bg-grey15 h-16">
     {#each headerGroups as headerGroup}
-      <tr class="{getColumnWidth(headerGroup.colSize)}">
+      <tr class="{getColumnWidth(headerGroup.colSize)} flex justify-center">
         {#each headerGroup.headers as header}
           <th>
             <TableHeaderCell header="{header}" onClickSortBy="{sortBy}" sortOrder="{sortOrder}" />

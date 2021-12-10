@@ -1,21 +1,21 @@
+<script context="module">
+export function bind(Component, props = {}) {
+  return function ModalComponent(options) {
+    return new Component({
+      ...options,
+      props: {
+        ...props,
+        ...options.props,
+      },
+    });
+  };
+}
+</script>
+
 <script>
-import { createEventDispatcher } from 'svelte';
-
-export let visible = false;
+export let visible;
 export let title;
-
-const dispatch = createEventDispatcher();
-
-const keyHandler = (event) => {
-  console.log(event);
-  if (event.key === 'Escape') {
-    closeModal();
-  }
-};
-
-const closeModal = () => {
-  dispatch('closeModal');
-};
+export let message;
 </script>
 
 {#if visible}
@@ -25,9 +25,8 @@ const closeModal = () => {
         class="py-8 px-4 inline-block align-bottom bg-grey10 border-2 border-grey5 rounded-lg overflow-hidden shadow-xl"
       >
         <p class="inline-block">{title}</p>
-        <p class="inline-block text-right" on:click="{() => closeModal()}">&times;</p>
         <div>
-          <slot />
+          <p>{message}</p>
         </div>
       </div>
     </div>
