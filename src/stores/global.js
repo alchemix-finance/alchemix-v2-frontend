@@ -25,8 +25,24 @@ const global = writable({
       locale: 'en',
     },
     {
+      name: 'Farsi',
+      locale: 'fa',
+    },
+    {
       name: 'German',
       locale: 'de',
+    },
+    {
+      name: 'Italian',
+      locale: 'it',
+    },
+    {
+      name: 'Russian',
+      locale: 'ru',
+    },
+    {
+      name: 'Spanish',
+      locale: 'es',
     },
   ],
   allCurrencies: [
