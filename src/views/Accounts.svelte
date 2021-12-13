@@ -2,12 +2,9 @@
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-import Button from '../components/elements/Button.svelte';
 import Metrics from '../components/composed/Metrics.svelte';
-import CollateralDropdown from '../components/composed/CollateralDropdown.svelte';
 import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import AccountTable from '../components/composed/Table/AccountTable.svelte';
-import metrics from '../stores/metrics';
 </script>
 
 <ViewContainer>

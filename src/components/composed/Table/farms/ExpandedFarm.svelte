@@ -28,10 +28,12 @@ const startTransaction = async () => {
     <Button label="Withdraw" on:clicked="{() => startTransaction()}" />
   </div>
 
-  <div class="col-span-1 rounded bg-grey10 w-full">
-    <p class="text-sm text-lightgrey10">Rewards</p>
-    <p>123,123.1234 sTwABCD</p>
-    <p>123,123.1234 sTwABCD</p>
+  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
+    <div>
+      <p class="text-sm text-lightgrey10">Rewards</p>
+      <p>123,123.1234 sTwABCD</p>
+      <p>123,123.1234 sTwABCD</p>
+    </div>
     <Button label="Claim" on:clicked="{() => startTransaction()}" />
   </div>
 </div>
