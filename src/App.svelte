@@ -55,6 +55,11 @@ onMount(async () => {
   kind="{$toastConfig.kind}"
   title="{$toastConfig.title}"
   subTitle="{$toastConfig.subtitle}"
+  showSpinner="{$toastConfig.spinner}"
+  showOpenButton="{$toastConfig.showOpenButton}"
+  showCloseButton="{$toastConfig.showCloseButton}"
+  closeTimeoutMs="{$toastConfig.closeTimeout}"
+  closeOnMount="{$toastConfig.closeOnMount}"
 />
 
 <Modal show="{$modal}">

@@ -25,6 +25,8 @@ export let kind;
 export let title;
 export let subTitle;
 
+export let showSpinner = true;
+
 export let showOpenButton = true;
 export let onClickOpen = () => {};
 
@@ -40,6 +42,7 @@ let handleClose = () => {
   $toastConfig.kind = '';
   $toastConfig.title = '';
   $toastConfig.subtitle = '';
+  $toastConfig.spinner = true;
   $toastConfig.showOpenButton = false;
   $toastConfig.etherscanUrl = '';
   $toastConfig.showCloseButton = false;
@@ -81,9 +84,11 @@ $: isOpen, closeTimer();
               }[kind],
             )}"
           >
-            <div class="absolute">
-              <Circle color="white" size="32" />
-            </div>
+            {#if showSpinner}
+              <div class="absolute">
+                <Circle color="white" size="32" />
+              </div>
+            {/if}
             <img src="images/alchemix_logo.png" alt="Alchemix loader" class="w-5 h-5" />
           </div>
           <div class="ml-2 mr-6">

@@ -2,6 +2,7 @@
 import { _ } from 'svelte-i18n';
 import { sendVote } from '../../../../middleware/snapshot';
 import governance from '../../../../stores/governance';
+import toastConfig from '../../../../stores/toast';
 import Button from '../../../elements/Button.svelte';
 
 export let expandedRow = {};
@@ -18,7 +19,18 @@ const initVote = () => {
       choice: value,
     };
     sendVote(payload);
+  } else {
+    voteClosed();
   }
+};
+
+const voteClosed = () => {
+  $toastConfig.kind = 'error';
+  $toastConfig.title = 'Sorry!';
+  $toastConfig.subtitle = 'Voting has finished.';
+  $toastConfig.spinner = false;
+  $toastConfig.closeTimeout = 2500;
+  $toastConfig.visible = true;
 };
 
 const openOnSnapshot = () => {

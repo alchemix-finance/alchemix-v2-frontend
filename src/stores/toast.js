@@ -5,6 +5,7 @@ const toastConfig = writable({
   kind: '',
   title: '',
   subtitle: '',
+  spinner: true,
   showOpenButton: false,
   etherscanUrl: '',
   showCloseButton: false,
