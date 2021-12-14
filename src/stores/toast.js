@@ -8,7 +8,7 @@ const toastConfig = writable({
   spinner: true,
   showOpenButton: false,
   etherscanUrl: '',
-  showCloseButton: false,
+  showCloseButton: true,
   closeTimeout: 10000,
   closeOnMount: true,
 });

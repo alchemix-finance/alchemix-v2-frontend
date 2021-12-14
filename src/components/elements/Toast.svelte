@@ -45,7 +45,7 @@ let handleClose = () => {
   $toastConfig.spinner = true;
   $toastConfig.showOpenButton = false;
   $toastConfig.etherscanUrl = '';
-  $toastConfig.showCloseButton = false;
+  $toastConfig.showCloseButton = true;
   $toastConfig.closeTimeout = 10000;
   $toastConfig.closeOnMount = true;
 };
@@ -63,11 +63,11 @@ $: isOpen, closeTimer();
 </script>
 
 {#if isOpen}
-  <div class="fixed top-28 right-8 z-20" transition:fly="{{ x: 8, duration: 400 }}">
-    <div class="flex">
+  <div class="fixed z-20 w-full">
+    <div class="sticky mx-auto w-max" transition:fly="{{ y: -8, duration: 400 }}">
       <div
         class="{cn(
-          'rounded-md border-2 p-3 font-normal font-alcxTitles text-opacity-80',
+          'rounded-md border p-3 font-normal font-alcxTitles text-opacity-80',
           {
             [TOAST_KINDS.SUCCESS]: successProps,
             [TOAST_KINDS.ERROR]: errorProps,

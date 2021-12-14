@@ -4,8 +4,6 @@ import { onMount } from 'svelte';
 import { Router, Route } from 'svelte-routing';
 import Modal from 'svelte-simple-modal';
 import { modal } from './stores/modal';
-import Toast from './components/elements/Toast.svelte';
-import toastConfig from './stores/toast.js';
 
 // middleware
 import { getFiatRates, getGasPrices } from './middleware/zapper';
@@ -49,18 +47,6 @@ onMount(async () => {
 </script>
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
-
-<Toast
-  isOpen="{$toastConfig.visible}"
-  kind="{$toastConfig.kind}"
-  title="{$toastConfig.title}"
-  subTitle="{$toastConfig.subtitle}"
-  showSpinner="{$toastConfig.spinner}"
-  showOpenButton="{$toastConfig.showOpenButton}"
-  showCloseButton="{$toastConfig.showCloseButton}"
-  closeTimeoutMs="{$toastConfig.closeTimeout}"
-  closeOnMount="{$toastConfig.closeOnMount}"
-/>
 
 <Modal show="{$modal}">
   <Router url="{url}">
