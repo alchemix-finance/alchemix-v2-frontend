@@ -36,7 +36,7 @@ const data = {
   labels: ['Widthdrawable', 'Debt', 'Interest'],
   datasets: [
     {
-      label: 'Total deposited',
+      label: 'Total amount',
       data: [9000, 4000, 2000],
       backgroundColor: [background1],
       borderRadius: 5,
@@ -105,14 +105,14 @@ const options = {
 
         color: (context) => {
           /*
-            index: 2
-            type: "tick"s
-            tick: {
-              $context: {tick: {…}, index: 2, type: 'tick'}
-              label: "2,000"
-              value: 2000
-            }
-          */
+              index: 2
+              type: "tick"s
+              tick: {
+                $context: {tick: {…}, index: 2, type: 'tick'}
+                label: "2,000"
+                value: 2000
+              }
+            */
 
           if (context.tick.value === 5000) {
             return GREEN;
@@ -150,7 +150,7 @@ const options = {
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">Debt Limit</span>
-          <span class="text-lg">10,000</span>
+          <span class="text-lg">5,000</span>
         </div>
         <div class="flex items-center">
           <span class="text-grey2 mr-2">Aggregate APY</span>

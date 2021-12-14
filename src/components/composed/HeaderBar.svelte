@@ -7,6 +7,8 @@ import { _ } from 'svelte-i18n';
 import account from '../../stores/account';
 import settings from '../../stores/settings';
 import global from '../../stores/global';
+import toastConfig from '../../stores/toast.js';
+import Toast from '../elements/Toast.svelte';
 import Dropdown from '../elements/Dropdown.svelte';
 import GasCard from '../elements/GasCard.svelte';
 
@@ -18,6 +20,19 @@ const userGas = (selector) => {
   return selector.baseFeePerGas + selector.maxPriorityFeePerGas;
 };
 </script>
+
+<Toast
+  isOpen="{$toastConfig.visible}"
+  kind="{$toastConfig.kind}"
+  title="{$toastConfig.title}"
+  subTitle="{$toastConfig.subtitle}"
+  showSpinner="{$toastConfig.spinner}"
+  showOpenButton="{$toastConfig.showOpenButton}"
+  showCloseButton="{$toastConfig.showCloseButton}"
+  closeTimeoutMs="{$toastConfig.closeTimeout}"
+  closeOnMount="{$toastConfig.closeOnMount}"
+  forceCloseToast="{$toastConfig.forceClose}"
+/>
 
 <div class="relative flex items-center justify-between">
   <div class="flex-1 flex items-center">

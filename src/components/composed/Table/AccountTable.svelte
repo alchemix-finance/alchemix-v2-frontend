@@ -1,7 +1,6 @@
 <script>
 import Table from './Table.svelte';
 import ExpandRowCell from './ExpandRowCell.svelte';
-import ExpandHeaderCell from './ExpandHeaderCell.svelte';
 import ExpandedRowCard from './SelectStrategyExpandedRow.svelte';
 import HeaderCell from './HeaderCell.svelte';
 import StrategyTitleCell from './StrategyTitleCell.svelte';
@@ -11,7 +10,8 @@ import SelectStrategyCell from './SelectStrategyCell.svelte';
 const columns = [
   {
     columnId: 'col0',
-    CellComponent: ExpandHeaderCell,
+    CellComponent: HeaderCell,
+    value: '',
     colSize: 2,
   },
   {

@@ -7,6 +7,7 @@ import Button from '../components/elements/Button.svelte';
 import Table from '../components/composed/Table/Table.svelte';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
+import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
 
 const toggleButtons = {
   transmuterSelect: {
@@ -73,11 +74,75 @@ const rows = [
   {
     col1: {
       CellComponent: ExpandRowCell,
+      expandedRow: {
+        ExpandedRowComponent: ExpandedTransmuter,
+      },
       colSize: 1,
     },
     col2: {
-      value: 'alUSD',
+      value: 'alUSD-DAI',
       colSize: 2,
+      alignment: 'justify-self-start',
+    },
+    col3: {
+      value: '350 alUSD',
+      colSize: 2,
+    },
+    col4: {
+      value: '150 alUSD',
+      colSize: 2,
+    },
+    col6: {
+      value: '200 DAI',
+      colSize: 2,
+    },
+    col5: {
+      value: '1234%',
+      colSize: 2,
+    },
+  },
+  {
+    col1: {
+      CellComponent: ExpandRowCell,
+      expandedRow: {
+        ExpandedRowComponent: ExpandedTransmuter,
+      },
+      colSize: 1,
+    },
+    col2: {
+      value: 'alUSD-USDT',
+      colSize: 2,
+      alignment: 'justify-self-start',
+    },
+    col3: {
+      value: '350 alUSD',
+      colSize: 2,
+    },
+    col4: {
+      value: '150 alUSD',
+      colSize: 2,
+    },
+    col6: {
+      value: '200 DAI',
+      colSize: 2,
+    },
+    col5: {
+      value: '1234%',
+      colSize: 2,
+    },
+  },
+  {
+    col1: {
+      CellComponent: ExpandRowCell,
+      expandedRow: {
+        ExpandedRowComponent: ExpandedTransmuter,
+      },
+      colSize: 1,
+    },
+    col2: {
+      value: 'alUSD-USDC',
+      colSize: 2,
+      alignment: 'justify-self-start',
     },
     col3: {
       value: '350 alUSD',

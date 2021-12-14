@@ -1,6 +1,6 @@
 <script>
 import TableCell from './TableCell.svelte';
-import { getColumnWidth, getRowBgClass } from '../../../helpers/table';
+import { getColumnWidth } from '../../../helpers/table';
 
 export let numberOfColumns = 1;
 export let row = {};
@@ -44,16 +44,20 @@ td {
 }
 </style>
 
-<tr class="flex justify-items-center items-center {getRowBgClass(index)}">
+<tr
+  class="flex justify-items-center items-center bg-grey15 {isExpanded
+    ? 'pt-4'
+    : 'py-4 border-b border-grey10'}"
+>
   {#each row.cells as cell, i}
-    <td class="{getColumnWidth(cell.colSize)} justify-center">
+    <td class="{getColumnWidth(cell.colSize)} {cell.alignment || 'justify-center'}">
       <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
     </td>
   {/each}
 </tr>
 
 {#if isExpanded && ExpandedRowComponent}
-  <tr class="flex min-h-16 grid grid-cols-1 {getRowBgClass(index)}">
+  <tr class="flex min-h-16 grid grid-cols-1 bg-grey15">
     <ExpandedRowComponent {...expandedRowCell} />
   </tr>
 {/if}

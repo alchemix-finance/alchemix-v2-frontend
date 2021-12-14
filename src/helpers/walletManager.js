@@ -3,8 +3,14 @@ import { navigate } from 'svelte-routing';
 import Onboard from 'bnc-onboard';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
+import toastConfig from '../stores/toast';
 
+let _toastConfig;
 let ethersProvider;
+
+toastConfig.subscribe((val) => {
+  _toastConfig = val;
+});
 
 // @dev prepare list of supported wallets according to
 // https://docs.blocknative.com/onboard#wallet-modules
@@ -70,7 +76,14 @@ async function connect() {
       const signer = await ethersProvider.getSigner();
       const address = await signer.getAddress();
       const ens = debugging ? testnetName : await ethersProvider.lookupAddress(await address);
+      _toastConfig.spinner = false;
+      _toastConfig.kind = 'success';
+      _toastConfig.showCloseButton = false;
+      _toastConfig.closeTimeout = 2500;
+      _toastConfig.title = 'Welcome back!';
+      _toastConfig.visible = true;
       account.set({ address, signer, ens });
+      toastConfig.set({ ..._toastConfig });
     });
   } catch (error) {
     console.warn('User aborted wallet selection', error);

@@ -63,13 +63,13 @@ const columns = [
     columnId: 'col5',
     CellComponent: HeaderCell,
     value: 'Snapshot',
-    colSize: 4,
+    colSize: 3,
   },
   {
     columnId: 'col6',
     CellComponent: HeaderCell,
     value: 'IPFS',
-    colSize: 4,
+    colSize: 3,
   },
 ];
 
@@ -90,6 +90,7 @@ $: if ($governance.proposals.length > 0) {
       col1: {
         value: proposal.title,
         colSize: 8,
+        alignment: 'justify-self-start',
       },
       col2: {
         value: proposal.state,
@@ -105,13 +106,13 @@ $: if ($governance.proposals.length > 0) {
       },
       col5: {
         snapshot: proposal.snapshot,
-        colSize: 4,
+        colSize: 3,
         CellComponent: SnapshotCell,
       },
       col6: {
         ipfsShort: proposal.ipfs.slice(0, 8),
         ipfsId: proposal.ipfs,
-        colSize: 4,
+        colSize: 3,
         CellComponent: IpfsCell,
       },
     };
@@ -154,8 +155,8 @@ onMount(() => {
 
       <div slot="body">
         {#if $governance.fetching}
-          <p class="text-center">{$_('governance_page.loading')}</p>
-          <div class="flex justify-center">
+          <!--          <p class="text-center mt-4">{$_('governance_page.loading')}</p>-->
+          <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>
         {:else if $governance.proposals.length > 0}

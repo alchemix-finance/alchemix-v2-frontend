@@ -70,6 +70,7 @@ const rowsActive = [
       farmName: 'ALCX/ETH v2',
       farmSubtitle: 'Sushiswap SLP',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -95,6 +96,7 @@ const rowsActive = [
     },
     col5: {
       CellComponent: ActionsCell,
+      label: 'Manage',
       expandedRow: {
         ExpandedRowComponent: ExpandedFarm,
       },
@@ -114,6 +116,7 @@ const rowsActive = [
       farmName: 'ALCX',
       farmSubtitle: 'Alchemix ALCX',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -135,6 +138,7 @@ const rowsActive = [
     },
     col5: {
       CellComponent: ActionsCell,
+      label: 'Manage',
       expandedRow: {
         ExpandedRowComponent: ExpandedFarm,
       },
@@ -155,6 +159,7 @@ const rowsActive = [
       farmName: 'alETH Saddle',
       farmSubtitle: 'Saddle LP',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -176,6 +181,7 @@ const rowsActive = [
     },
     col5: {
       CellComponent: ActionsCell,
+      label: 'Manage',
       expandedRow: {
         ExpandedRowComponent: ExpandedFarm,
       },
@@ -197,6 +203,7 @@ const rowsActive = [
       farmName: 'alUSD3CRV',
       farmSubtitle: 'Convex LP',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -222,6 +229,7 @@ const rowsActive = [
     },
     col5: {
       CellComponent: ActionsCell,
+      label: 'Manage',
       expandedRow: {
         ExpandedRowComponent: ExpandedFarm,
       },
@@ -242,6 +250,7 @@ const rowsActive = [
       farmName: 'tALCX',
       farmSubtitle: 'Tokemak',
       colSize: 3,
+      alignment: 'justify-self-start',
     },
     col2: {
       value: 5223239,
@@ -263,6 +272,7 @@ const rowsActive = [
     },
     col5: {
       CellComponent: ActionsCell,
+      label: 'Manage',
       expandedRow: {
         ExpandedRowComponent: ExpandedFarm,
       },
@@ -293,6 +303,7 @@ const rowsExternal = [
       farmName: 'Saddle d4',
       farmSubtitle: 'Deposit alUSD, FEI, FRAX, and/or LUSD to earn ALCX, TRIBE, FXS and LQTY',
       colSize: 7,
+      alignment: 'justify-self-start',
     },
     col2: {
       CellComponent: ExternalActionsCell,
@@ -320,6 +331,7 @@ const rowsExternal = [
       farmName: 'alUSD/ETH Onsen',
       farmSubtitle: 'Deposit alUSD and ETH on Sushiswap to earn SUSHI',
       colSize: 7,
+      alignment: 'justify-self-start',
     },
     col2: {
       CellComponent: ExternalActionsCell,
@@ -347,6 +359,7 @@ const rowsExternal = [
       farmName: 'mStable alUSD Feeder',
       farmSubtitle: 'Deposit alUSD to earn MTA',
       colSize: 7,
+      alignment: 'justify-self-start',
     },
     col2: {
       CellComponent: ExternalActionsCell,
@@ -512,6 +525,8 @@ const vaultFilter = (filter) => {
 };
 </script>
 
+<Modal visible="{false}" title="Farm Modal">Kek!</Modal>
+
 <ViewContainer>
   <div class="flex justify-between" slot="head">
     <PageHeader
@@ -519,11 +534,6 @@ const vaultFilter = (filter) => {
       pageTitle="{$_('farm_page.title')}"
       pageSubtitle="{$_('farm_page.subtitle')}"
     />
-  </div>
-  <div class="w-full mb-8">
-    <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6">Delta Values</div>
-    </ContainerWithHeader>
   </div>
 
   <div class="w-full mb-8">

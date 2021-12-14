@@ -1,8 +1,7 @@
 <script>
-import { _ } from 'svelte-i18n';
 import { createEventDispatcher } from 'svelte';
 
-export let label = $_('submit');
+export let label;
 export let disabled = false;
 export let borderColor = 'grey5';
 export let backgroundColor = 'grey10';
@@ -23,7 +22,7 @@ const dispatch = createEventDispatcher();
 
 // @dev emits an event 'clicked' the parent component can listen to
 const clickEvent = () => {
-  if (!disabled && !selected) dispatch('clicked');
+  if (!disabled && ((canToggle && !selected) || !canToggle)) dispatch('clicked');
 };
 </script>
 
@@ -49,6 +48,7 @@ const clickEvent = () => {
     : `bg-${hoverColor}`}
     hover:{disabled ? 'cursor-not-allowed' : noHoverEffect ? 'cursor-default' : 'cursor-pointer'}
     disabled:opacity-50
+    transition-all
     "
   disabled="{disabled}"
   on:click="{clickEvent}"
@@ -61,9 +61,11 @@ const clickEvent = () => {
       : 'justify-center'}"
   >
     <slot name="leftSlot" />
-    <p class="{$$slots.leftSlot && !$$slots.rightSlot ? 'ml-4' : ''}">
-      {label}
-    </p>
+    {#if label}
+      <p class="{$$slots.leftSlot && !$$slots.rightSlot ? 'ml-4' : ''}">
+        {label}
+      </p>
+    {/if}
     <slot name="rightSlot" />
   </div>
 </button>

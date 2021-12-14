@@ -1,5 +1,14 @@
 <script>
 import { _ } from 'svelte-i18n';
+import toastConfig from '../../stores/toast.js';
+
+const testToast = () => {
+  $toastConfig.visible = true;
+  $toastConfig.kind = 'success';
+  $toastConfig.title = 'Successful Test!';
+  $toastConfig.subtitle = 'Indeed.';
+};
+
 const copyrightYear = () => {
   return `2020 - ${new Date().getFullYear()}`;
 };
@@ -7,7 +16,7 @@ const copyrightYear = () => {
 
 <div class="flex flex-col">
   <div class="flex flex-row">
-    <div class="mr-11 w-60">
+    <div class="mr-11 w-60" on:click="{() => testToast()}">
       <p class="uppercase text-sm alcxTitle mb-5">{$_('alchemix')}</p>
       <p class="text-sm mb-3">&copy; {copyrightYear()} {$_('alchemix_labs')}</p>
       <p class="text-sm mb-3 text-justify">

@@ -5,8 +5,8 @@ export let pageSubtitle;
 </script>
 
 <div class="grid grid-cols-12 gap-6 w-full">
-  <div class="col-span-1">
-    <img src="images/icons/{pageIcon}" alt="{pageTitle}" class="w-100 h-100" />
+  <div class="col-span-1 h-16">
+    <img src="images/icons/{pageIcon}" alt="{pageTitle}" class="max-h-full" />
   </div>
   <div class="col-span-11">
     <p class="text-2xl font-alcxTitles tracking-wider mb-2">
