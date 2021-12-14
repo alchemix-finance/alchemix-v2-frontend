@@ -1,10 +1,7 @@
 <script>
-  import Button from '../../../elements/Button.svelte';
+import Button from '../../../elements/Button.svelte';
 
-  export let poolId;
+export let poolId;
 </script>
 
-<Button
-  label='Migrate'
-/>
-
+<Button label="Exit" />

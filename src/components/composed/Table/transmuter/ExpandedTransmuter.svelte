@@ -21,7 +21,7 @@ const startTransaction = async () => {
   <div class="col-span-1 rounded bg-grey10 w-full flex flex-col">
     <p class="text-sm text-lightgrey10 self-start">Available</p>
     <div class="w-full self-center">
-      <p>123,123.1234 alUSD</p>
+      <p>0 alUSD</p>
     </div>
     <div class="w-full self-end">
       <BalanceQuickSelect />
@@ -30,17 +30,16 @@ const startTransaction = async () => {
   </div>
 
   <div class="col-span-1 rounded bg-grey10 w-full">
-    <p class="text-sm text-lightgrey10">Deposited</p>
-    <p>123,123.1234 alUSD</p>
+    <p class="text-sm text-lightgrey10">Withdrawable</p>
+    <p>150 alUSD</p>
     <BalanceQuickSelect />
     <Button label="Withdraw" on:clicked="{() => startTransaction()}" />
   </div>
 
   <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
-    <div>
-      <p class="text-sm text-lightgrey10">Transmuted</p>
-      <p>123,123.1234 DAI</p>
-    </div>
+    <p class="text-sm text-lightgrey10">Transmuted</p>
+    <p>200 DAI</p>
+    <BalanceQuickSelect />
     <Button label="Claim" on:clicked="{() => startTransaction()}" />
   </div>
 </div>

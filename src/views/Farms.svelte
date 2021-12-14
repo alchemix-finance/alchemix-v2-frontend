@@ -525,8 +525,6 @@ const vaultFilter = (filter) => {
 };
 </script>
 
-<Modal visible="{false}" title="Farm Modal">Kek!</Modal>
-
 <ViewContainer>
   <div class="flex justify-between" slot="head">
     <PageHeader
