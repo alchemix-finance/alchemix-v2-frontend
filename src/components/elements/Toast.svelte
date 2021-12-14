@@ -33,6 +33,7 @@ export let onClickOpen = () => {};
 export let showCloseButton = true;
 export let closeTimeoutMs = 10000;
 export let closeOnMount = true;
+export let forceCloseToast = false;
 export let onClickClose = () => {};
 
 export let isOpen = true;
@@ -60,10 +61,11 @@ const closeTimer = () => {
 };
 
 $: isOpen, closeTimer();
+$: forceCloseToast, handleClose();
 </script>
 
 {#if isOpen}
-  <div class="fixed z-20 w-full">
+  <div class="fixed z-20 w-full pointer-events-none">
     <div class="sticky mx-auto w-max" transition:fly="{{ y: -8, duration: 400 }}">
       <div
         class="{cn(

@@ -11,6 +11,7 @@ const toastConfig = writable({
   showCloseButton: true,
   closeTimeout: 10000,
   closeOnMount: true,
+  forceClose: false,
 });
 
 export default toastConfig;

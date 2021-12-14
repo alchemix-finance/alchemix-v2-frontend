@@ -31,6 +31,7 @@ const userGas = (selector) => {
   showCloseButton="{$toastConfig.showCloseButton}"
   closeTimeoutMs="{$toastConfig.closeTimeout}"
   closeOnMount="{$toastConfig.closeOnMount}"
+  forceCloseToast="{$toastConfig.forceClose}"
 />
 
 <div class="relative flex items-center justify-between">
