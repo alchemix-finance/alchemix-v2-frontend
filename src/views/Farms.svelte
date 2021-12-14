@@ -13,7 +13,6 @@ import ActionsCell from '../components/composed/Table/farms/ActionsCell.svelte';
 import ExternalActionsCell from '../components/composed/Table/farms/ExternalActionsCell.svelte';
 import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
 import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
-import Modal from '../components/elements/Modal.svelte';
 
 const goTo = (url) => {
   window.open(url, '_blank');
