@@ -5,11 +5,26 @@ import ContainerWithHeader from '../components/elements/ContainerWithHeader.svel
 import Metrics from '../components/composed/Metrics.svelte';
 import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import AccountTable from '../components/composed/Table/AccountTable.svelte';
+import getContract from '../helpers/getContract';
+
+const alchemist = getContract('AlchemistV2');
+let supported;
+
+const contract = async () => {
+  supported = await alchemist.isSupportedUnderlyingToken('0x6b175474e89094c44da98b954eedeac495271d0f');
+};
 </script>
 
 <ViewContainer>
   <div slot="head" class="flex justify-between">
     <PageHeader pageIcon="vault_thin.svg" pageTitle="My Accounts" pageSubtitle="Your personal dashboard" />
+  </div>
+
+  <div class="w-full mb-8">
+    <p on:click="{() => contract()}">Click me to find out if the alchemist supports DAI</p>
+    {#if supported}
+      <p>Fuck yeah it does!</p>
+    {/if}
   </div>
 
   <div class="w-full mb-8">
