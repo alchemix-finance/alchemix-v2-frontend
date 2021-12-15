@@ -5,9 +5,9 @@ import ContainerWithHeader from '../components/elements/ContainerWithHeader.svel
 import Metrics from '../components/composed/Metrics.svelte';
 import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import AccountTable from '../components/composed/Table/AccountTable.svelte';
-import getContract from '../contracts/getContract';
+import getContract from '../helpers/getContract';
 
-const alchemist = getContract('alchemist');
+const alchemist = getContract('AlchemistV2');
 let supported;
 
 const contract = async () => {
