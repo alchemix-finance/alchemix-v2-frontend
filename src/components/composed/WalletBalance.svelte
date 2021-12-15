@@ -8,11 +8,12 @@ import { BarLoader } from 'svelte-loading-spinners';
 import BalanceEntry from '../elements/BalanceEntry.svelte';
 
 let loading = true;
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
 // @dev iterates over all supported collaterals and populates state accordingly
 const initBalances = async () => {
   ethers
-    .getDefaultProvider()
+    .getDefaultProvider(debugging ? 'http://localhost:8545' : 'homestead')
     .getBalance($account.address)
     .then(async (balance) => {
       const ethBal = ethers.utils.formatUnits(balance, 18);
