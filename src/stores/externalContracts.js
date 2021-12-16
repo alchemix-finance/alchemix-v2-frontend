@@ -12,7 +12,7 @@ const externalContracts = {
   tokens: [
     {
       abi: [...genericAbi],
-      // @dev address my be ENS or actual address, ENS won't work on testnet
+      // @dev address may be ENS or actual address, ENS won't work on testnet
       address: debugging ? '0x6b175474e89094c44da98b954eedeac495271d0f' : 'dai.tokens.ethers.eth',
       // @dev not used anywhere aside from keeping track inside this file
       symbol: 'DAI',
