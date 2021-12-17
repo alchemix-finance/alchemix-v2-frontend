@@ -20,6 +20,7 @@ import { poolLookup } from '../stores/stakingPools';
 import stakingPools from '../stores/stakingPools';
 import { BarLoader } from 'svelte-loading-spinners';
 import account from '../stores/account';
+import walletBalance from '../stores/walletBalance';
 
 const colsActive = [
   {
@@ -139,14 +140,26 @@ onMount(async () => {
       const checkTvl = await pools.getPoolTotalDeposited(i);
       const tvl = format(checkTvl.toString(), 18);
       const poolConfig = poolLookup.find((pool) => pool.address === token);
+      const rewardToken = 'ALCX';
 
       if (poolConfig && reward !== '0.0') {
+        const userToken = $walletBalance.tokens.find((userToken) => userToken.address === token);
+
+        const expandedProps = {
+          poolId: i,
+          token: userToken,
+          stakedBalance: userDeposit,
+          unclaimedRewards: userUnclaimed,
+          reward: rewardToken,
+        };
+
         const payload = {
           col0: {
             CellComponent: ExpandRowCell,
             expandedRow: {
               ExpandedRowComponent: ExpandedFarm,
             },
+            ...expandedProps,
             colSize: 1,
           },
           col1: {
@@ -182,6 +195,8 @@ onMount(async () => {
             expandedRow: {
               ExpandedRowComponent: ExpandedFarm,
             },
+            ...expandedProps,
+            poolId: i,
             colSize: 3,
           },
         };

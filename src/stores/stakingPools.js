@@ -37,7 +37,7 @@ export const poolLookup = [
   },
   {
     address: '0xc9da65931abf0ed1b74ce5ad8c041c4220940368',
-    title: 'alETH Saddle',
+    title: 'Saddle alETH',
     subtitle: 'Saddle LP',
     farmIcon: undefined,
     tokenIcon: 'saddle',

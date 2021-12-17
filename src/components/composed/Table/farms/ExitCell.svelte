@@ -7,10 +7,10 @@ import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../..
 
 export let poolId;
 
+const contract = getContract('StakingPools');
 const provider = getProvider();
 
 const exitPool = async () => {
-  const contract = getContract('StakingPools');
   try {
     let tx;
     setPendingWallet();
@@ -28,4 +28,11 @@ const exitPool = async () => {
 };
 </script>
 
-<Button label="Exit" on:clicked="{() => exitPool()}" />
+<Button
+  borderColor="red4"
+  backgroundColor="red2"
+  hoverColor="red3"
+  label="Exit"
+  solid="{false}"
+  on:clicked="{() => exitPool()}"
+/>

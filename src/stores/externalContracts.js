@@ -32,6 +32,16 @@ const externalContracts = {
       address: '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',
       symbol: 'ALETH',
     },
+    {
+      abi: [...genericAbi],
+      address: '0xc9da65931abf0ed1b74ce5ad8c041c4220940368',
+      symbol: 'saddlealETH',
+    },
+    {
+      abi: [...genericAbi],
+      address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
+      symbol: 'tALCX',
+    },
   ],
 };
 
