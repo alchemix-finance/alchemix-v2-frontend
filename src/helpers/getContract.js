@@ -1,4 +1,11 @@
 import { ethers } from 'ethers';
+import account from '../stores/account';
+
+let _account;
+
+account.subscribe((val) => {
+  _account = val;
+});
 
 /*
  * @dev exposes a contract's functions for usage
@@ -9,17 +16,5 @@ export default function getContract(selector) {
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const contract = require(`../abi/${selector}.json`);
   const abi = contract.abi;
-  const provider = new ethers.providers.JsonRpcProvider();
-  const signer = provider.getSigner();
-  return new ethers.Contract(contract.address, abi, signer);
-}
-
-export function getContractWithSigner(selector) {
-  // eslint-disable-next-line global-require,import/no-dynamic-require
-  const contract = require(`../abi/${selector}.json`);
-  const abi = contract.abi;
-  const provider = new ethers.providers.JsonRpcProvider();
-  const signer = provider.getSigner(0);
-  const unsignedContract = new ethers.Contract(contract.address, abi, provider);
-  return unsignedContract.connect(signer);
+  return new ethers.Contract(contract.address, abi, _account.signer);
 }

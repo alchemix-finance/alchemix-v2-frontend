@@ -35,6 +35,7 @@ module.exports = {
       bronze1: '#F5C59F',
       bronze2: '#F7C19B',
       bronze3: '#ad937c',
+      bronze4: '#353130',
       blue1: '#0E8AD0',
       blue2: '#0557e8',
       blue3: '#6C93C7',
