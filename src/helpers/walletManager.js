@@ -98,4 +98,8 @@ function disconnect() {
   navigate('/', { replace: true });
 }
 
-export { connect, disconnect };
+function getProvider() {
+  return ethersProvider;
+}
+
+export { connect, disconnect, getProvider };

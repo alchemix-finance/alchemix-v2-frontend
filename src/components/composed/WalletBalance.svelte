@@ -32,7 +32,8 @@ const initBalances = async () => {
         const balance = ethers.utils.formatUnits(await contract.balanceOf($account.address), 18);
         const symbol = await contract.symbol();
         const name = await contract.name();
-        $walletBalance.tokens = [...$walletBalance.tokens, { symbol, name, balance }];
+        const address = contract.address;
+        $walletBalance.tokens = [...$walletBalance.tokens, { symbol, name, balance, address }];
       }
     })
     .finally(() => {

@@ -1,4 +1,6 @@
 <script>
+import { ethers, BigNumber } from 'ethers';
+import { onMount } from 'svelte';
 import { _ } from 'svelte-i18n';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
@@ -10,15 +12,17 @@ import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
 import RewardCell from '../components/composed/Table/farms/RewardCell.svelte';
 import ActionsCell from '../components/composed/Table/farms/ActionsCell.svelte';
-import ExternalActionsCell from '../components/composed/Table/farms/ExternalActionsCell.svelte';
+import ExternalFarms from '../components/composed/Table/farms/ExternalFarms.svelte';
 import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
 import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
+import getContract from '../helpers/getContract';
+import { poolLookup } from '../stores/stakingPools';
+import stakingPools from '../stores/stakingPools';
+import { BarLoader } from 'svelte-loading-spinners';
+import account from '../stores/account';
+import walletBalance from '../stores/walletBalance';
 
-const goTo = (url) => {
-  window.open(url, '_blank');
-};
-
-const columnsActive = [
+const colsActive = [
   {
     columnId: 'col0',
     value: '',
@@ -28,7 +32,7 @@ const columnsActive = [
     columnId: 'col1',
     CellComponent: HeaderCell,
     value: 'Pool',
-    colSize: 3,
+    colSize: '3',
   },
   {
     columnId: 'col2',
@@ -55,330 +59,9 @@ const columnsActive = [
     colSize: 3,
   },
 ];
-const rowsActive = [
-  {
-    col0: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 1,
-    },
-    col1: {
-      CellComponent: FarmNameCell,
-      tokenIcon: 'sushi',
-      farmName: 'ALCX/ETH v2',
-      farmSubtitle: 'Sushiswap SLP',
-      colSize: 3,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      value: 5223239,
-      colSize: 2,
-    },
-    col3: {
-      CellComponent: RewardCell,
-      rewards: [
-        {
-          iconName: 'alchemix',
-          tokenName: 'ALCX',
-        },
-        {
-          iconName: 'sushi',
-          tokenName: 'SUSHI',
-        },
-      ],
-      colSize: 3,
-    },
-    col4: {
-      value: 76,
-      colSize: 1,
-    },
-    col5: {
-      CellComponent: ActionsCell,
-      label: 'Manage',
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 3,
-    },
-  },
-  {
-    col0: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 1,
-    },
-    col1: {
-      CellComponent: FarmNameCell,
-      farmName: 'ALCX',
-      farmSubtitle: 'Alchemix ALCX',
-      colSize: 3,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      value: 5223239,
-      colSize: 2,
-    },
-    col3: {
-      CellComponent: RewardCell,
-      rewards: [
-        {
-          iconName: 'alchemix',
-          tokenName: 'ALCX',
-        },
-      ],
-      colSize: 3,
-    },
-    col4: {
-      value: 76,
-      colSize: 1,
-    },
-    col5: {
-      CellComponent: ActionsCell,
-      label: 'Manage',
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 3,
-    },
-  },
-  {
-    col0: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 1,
-    },
-    col1: {
-      CellComponent: FarmNameCell,
-      tokenIcon: 'saddle',
-      farmName: 'alETH Saddle',
-      farmSubtitle: 'Saddle LP',
-      colSize: 3,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      value: 5223239,
-      colSize: 2,
-    },
-    col3: {
-      CellComponent: RewardCell,
-      rewards: [
-        {
-          iconName: 'alchemix',
-          tokenName: 'ALCX',
-        },
-      ],
-      colSize: 3,
-    },
-    col4: {
-      value: 76,
-      colSize: 1,
-    },
-    col5: {
-      CellComponent: ActionsCell,
-      label: 'Manage',
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 3,
-    },
-  },
-  {
-    col0: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 1,
-    },
-    col1: {
-      CellComponent: FarmNameCell,
-      farmIcon: 'alusd_med.svg',
-      tokenIcon: 'crv',
-      farmName: 'alUSD3CRV',
-      farmSubtitle: 'Convex LP',
-      colSize: 3,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      value: 5223239,
-      colSize: 2,
-    },
-    col3: {
-      CellComponent: RewardCell,
-      rewards: [
-        {
-          iconName: 'alchemix',
-          tokenName: 'ALCX',
-        },
-        {
-          iconName: 'crv',
-          tokenName: 'CRV',
-        },
-      ],
-      colSize: 3,
-    },
-    col4: {
-      value: 76,
-      colSize: 1,
-    },
-    col5: {
-      CellComponent: ActionsCell,
-      label: 'Manage',
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 3,
-    },
-  },
-  {
-    col0: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 1,
-    },
-    col1: {
-      CellComponent: FarmNameCell,
-      tokenIcon: 'tokemak',
-      farmName: 'tALCX',
-      farmSubtitle: 'Tokemak',
-      colSize: 3,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      value: 5223239,
-      colSize: 2,
-    },
-    col3: {
-      CellComponent: RewardCell,
-      rewards: [
-        {
-          iconName: 'alchemix',
-          tokenName: 'ALCX',
-        },
-      ],
-      colSize: 3,
-    },
-    col4: {
-      value: 76,
-      colSize: 1,
-    },
-    col5: {
-      CellComponent: ActionsCell,
-      label: 'Manage',
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 3,
-    },
-  },
-];
+let rowsActive = [];
 
-const columnsExternal = [
-  {
-    columnId: 'col1',
-    CellComponent: HeaderCell,
-    value: 'Pool',
-    colSize: 6,
-  },
-  {
-    columnId: 'col2',
-    CellComponent: HeaderCell,
-    value: 'Action',
-    colSize: 6,
-  },
-];
-const rowsExternal = [
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      farmIcon: 'saddle.png',
-      farmName: 'Saddle d4',
-      farmSubtitle: 'Deposit alUSD, FEI, FRAX, and/or LUSD to earn ALCX, TRIBE, FXS and LQTY',
-      colSize: 7,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      CellComponent: ExternalActionsCell,
-      actions: [
-        {
-          label: 'Deposit',
-          url: 'https://saddle.exchange/#/pools/d4/deposit',
-        },
-        {
-          label: 'Stake',
-          url: 'https://app.frax.finance/staking#Saddle_alUSD_FEI_FRAX_LUSD',
-        },
-        {
-          label: 'Swap',
-          url: 'https://saddle.exchange/#/',
-        },
-      ],
-      colSize: 6,
-    },
-  },
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      farmIcon: 'sushi.png',
-      farmName: 'alUSD/ETH Onsen',
-      farmSubtitle: 'Deposit alUSD and ETH on Sushiswap to earn SUSHI',
-      colSize: 7,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      CellComponent: ExternalActionsCell,
-      actions: [
-        {
-          label: 'Deposit',
-          url: 'https://app.sushi.com/add/ETH/0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9',
-        },
-        {
-          label: 'Stake',
-          url: 'https://app.sushi.com/farm',
-        },
-        {
-          label: 'Swap',
-          url: 'https://app.sushi.com/swap#/swap?inputCurrency=0xbc6da0fe9ad5f3b0d58160288917aa56653660e9&outputCurrency=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        },
-      ],
-      colSize: 6,
-    },
-  },
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      farmIcon: 'mstable.png',
-      farmName: 'mStable alUSD Feeder',
-      farmSubtitle: 'Deposit alUSD to earn MTA',
-      colSize: 7,
-      alignment: 'justify-self-start',
-    },
-    col2: {
-      CellComponent: ExternalActionsCell,
-      actions: [
-        {
-          label: 'Deposit & Stake',
-          url: 'https://mstable.app/#/musd/pools/0x4eaa01974b6594c0ee62ffd7fee56cf11e6af936',
-        },
-        {
-          label: 'Swap',
-          url: 'https://mstable.app/#/musd/swap',
-        },
-      ],
-      colSize: 6,
-    },
-  },
-];
-
-const columnsRetired = [
+const colsRetired = [
   {
     columnId: 'col1',
     CellComponent: HeaderCell,
@@ -386,120 +69,35 @@ const columnsRetired = [
     colSize: 7,
   },
   {
-    columnId: 'col4',
+    columnId: 'col2',
     CellComponent: HeaderCell,
     value: 'Staked Token',
     colSize: 4,
   },
   {
-    columnId: 'col2',
+    columnId: 'col3',
     CellComponent: HeaderCell,
     value: 'Claimable Rewards',
     colSize: 4,
   },
   {
-    columnId: 'col3',
+    columnId: 'col4',
     CellComponent: HeaderCell,
     value: 'Action',
     colSize: 5,
   },
 ];
-const rowsRetired = [
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      tokenIcon: 'sushi',
-      farmName: 'ALCX/ETH v1',
-      farmSubtitle: 'Sushiswap SLP',
-      colSize: 7,
-    },
-    col4: {
-      value: 12345,
-      colSize: 4,
-    },
-    col2: {
-      value: 5223239,
-      colSize: 4,
-    },
-    col5: {
-      CellComponent: ExitCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 5,
-    },
-  },
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      farmIcon: 'alusd_med.svg',
-      farmName: 'alUSD',
-      farmSubtitle: 'Alchemix alUSD',
-      colSize: 7,
-    },
-    col4: {
-      value: 12345,
-      colSize: 4,
-    },
-    col2: {
-      value: 5223239,
-      colSize: 4,
-    },
-    col5: {
-      CellComponent: ExitCell,
-      colSize: 5,
-    },
-  },
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      farmIcon: 'alusd_med.svg',
-      tokenIcon: 'crv',
-      farmName: 'alUSD3CRV',
-      farmSubtitle: 'Convex',
-      colSize: 7,
-    },
-    col4: {
-      value: 12345,
-      colSize: 4,
-    },
-    col2: {
-      value: 5223239,
-      colSize: 4,
-    },
-    col5: {
-      CellComponent: ExitCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 5,
-    },
-  },
-  {
-    col1: {
-      CellComponent: FarmNameCell,
-      tokenIcon: 'crv',
-      farmName: 'alETH Curve',
-      farmSubtitle: 'Convex',
-      colSize: 7,
-    },
-    col4: {
-      value: 12345,
-      colSize: 4,
-    },
-    col2: {
-      value: 5223239,
-      colSize: 4,
-    },
-    col5: {
-      CellComponent: ExitCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedFarm,
-      },
-      colSize: 5,
-    },
-  },
-];
+let rowsRetired = [];
+
+// this is for internal pools only
+// double reward pools like sushi or 3crv are external
+// those need a different approach to handling data
+const pools = getContract('StakingPools');
+const format = ethers.utils.formatUnits;
+
+const goTo = (url) => {
+  window.open(url, '_blank');
+};
 
 const toggleButtons = {
   farmSelect: {
@@ -523,6 +121,128 @@ const vaultFilter = (filter) => {
   const selector = ['farmSelect', 'modeSelect', 'stratSelect'];
   buttonToggler(selector[filter.id], filter.filter);
 };
+
+onMount(async () => {
+  if ($stakingPools.fetching) {
+    const poolCount = BigNumber.from(await pools.poolCount()).toString();
+
+    for (let i = 0; i < poolCount; i++) {
+      const checkToken = await pools.getPoolToken(i);
+      const token = checkToken.toLowerCase();
+      const checkReward = await pools.getPoolRewardRate(i);
+      const checkTotalReward = await pools.rewardRate();
+      const reward = format(checkReward.toString(), 'ether');
+      // const totalReward = format(checkTotalReward.toString(), 'ether');
+      const checkUserDeposit = await pools.getStakeTotalDeposited($account.address, i);
+      const userDeposit = format(checkUserDeposit.toString(), 'ether');
+      const checkUserUnclaimed = await pools.getStakeTotalUnclaimed($account.address, i);
+      const userUnclaimed = format(checkUserUnclaimed.toString(), 'ether');
+      const checkTvl = await pools.getPoolTotalDeposited(i);
+      const tvl = format(checkTvl.toString(), 18);
+      const poolConfig = poolLookup.find((pool) => pool.address === token);
+      const rewardToken = 'ALCX';
+
+      if (poolConfig && reward !== '0.0') {
+        const userToken = $walletBalance.tokens.find((userToken) => userToken.address === token);
+
+        const expandedProps = {
+          poolId: i,
+          token: userToken,
+          stakedBalance: userDeposit,
+          unclaimedRewards: userUnclaimed,
+          reward: rewardToken,
+        };
+
+        const payload = {
+          col0: {
+            CellComponent: ExpandRowCell,
+            expandedRow: {
+              ExpandedRowComponent: ExpandedFarm,
+            },
+            ...expandedProps,
+            colSize: 1,
+          },
+          col1: {
+            CellComponent: FarmNameCell,
+            farmName: poolConfig.title,
+            farmSubtitle: poolConfig.subtitle,
+            farmIcon: poolConfig.farmIcon,
+            tokenIcon: poolConfig.tokenIcon,
+            colSize: 3,
+            alignment: 'justify-self-start',
+          },
+          col2: {
+            value: tvl,
+            colSize: 2,
+          },
+          col3: {
+            CellComponent: RewardCell,
+            rewards: [
+              {
+                iconName: 'alchemix',
+                tokenName: 'ALCX',
+              },
+            ],
+            colSize: 3,
+          },
+          col4: {
+            value: 'N/A',
+            colSize: 1,
+          },
+          col5: {
+            CellComponent: ActionsCell,
+            label: 'Manage',
+            expandedRow: {
+              ExpandedRowComponent: ExpandedFarm,
+            },
+            ...expandedProps,
+            poolId: i,
+            colSize: 3,
+          },
+        };
+        $stakingPools.active.push(payload);
+      } else if (poolConfig && reward === '0.0') {
+        const payload = {
+          col1: {
+            CellComponent: FarmNameCell,
+            tokenIcon: poolConfig.tokenIcon,
+            farmIcon: poolConfig.farmIcon,
+            farmName: poolConfig.title,
+            farmSubtitle: poolConfig.subtitle,
+            colSize: 7,
+          },
+          col2: {
+            value: userDeposit,
+            colSize: 4,
+          },
+          col3: {
+            value: userUnclaimed,
+            colSize: 4,
+          },
+          col4: {
+            CellComponent: ExitCell,
+            poolId: i,
+            colSize: 5,
+          },
+        };
+        $stakingPools.retired.push(payload);
+      }
+    }
+    $stakingPools.fetching = false;
+  }
+});
+
+$: if ($stakingPools.active.length > 0) {
+  $stakingPools.active.forEach((pool) => {
+    rowsActive.push(pool);
+  });
+}
+
+$: if ($stakingPools.retired.length > 0) {
+  $stakingPools.retired.forEach((pool) => {
+    rowsRetired.push(pool);
+  });
+}
 </script>
 
 <ViewContainer>
@@ -568,14 +288,16 @@ const vaultFilter = (filter) => {
         />
       </div>
       <div slot="body">
-        {#if toggleButtons.farmSelect.active}
-          <Table rows="{rowsActive}" columns="{columnsActive}" />
-        {/if}
-        {#if toggleButtons.farmSelect.retired}
-          <Table rows="{rowsRetired}" columns="{columnsRetired}" />
-        {/if}
-        {#if toggleButtons.farmSelect.external}
-          <Table rows="{rowsExternal}" columns="{columnsExternal}" />
+        {#if $stakingPools.fetching}
+          <div class="flex justify-center my-4">
+            <BarLoader color="#F5C59F" />
+          </div>
+        {:else if toggleButtons.farmSelect.active}
+          <Table columns="{colsActive}" rows="{rowsActive}" />
+        {:else if toggleButtons.farmSelect.retired}
+          <Table columns="{colsRetired}" rows="{rowsRetired}" />
+        {:else if toggleButtons.farmSelect.external}
+          <ExternalFarms />
         {/if}
       </div>
     </ContainerWithHeader>

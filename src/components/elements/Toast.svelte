@@ -7,8 +7,14 @@ import { Circle } from 'svelte-loading-spinners';
 import ToastIconButton from './ToastIconButton.svelte';
 
 const TOAST_KINDS = {
+  PENDING: 'pending',
   SUCCESS: 'success',
   ERROR: 'error',
+};
+
+const pendingProps = {
+  'bg-bronze4': true,
+  'border-bronze1': true,
 };
 
 const successProps = {
@@ -61,18 +67,20 @@ const closeTimer = () => {
 };
 
 $: isOpen, closeTimer();
+$: closeOnMount, closeTimer();
 $: forceCloseToast, handleClose();
 </script>
 
 {#if isOpen}
   <div class="fixed z-20 w-full pointer-events-none">
-    <div class="sticky mx-auto w-max" transition:fly="{{ y: -8, duration: 400 }}">
+    <div class="sticky mx-auto max-w-max" transition:fly="{{ y: -8, duration: 400 }}">
       <div
         class="{cn(
           'rounded-md border p-3 font-normal font-alcxTitles text-opacity-80',
           {
             [TOAST_KINDS.SUCCESS]: successProps,
             [TOAST_KINDS.ERROR]: errorProps,
+            [TOAST_KINDS.PENDING]: pendingProps,
           }[kind],
         )}"
       >
@@ -83,6 +91,7 @@ $: forceCloseToast, handleClose();
               {
                 [TOAST_KINDS.SUCCESS]: 'bg-green2',
                 [TOAST_KINDS.ERROR]: 'bg-red4',
+                [TOAST_KINDS.PENDING]: 'bg-bronze4',
               }[kind],
             )}"
           >
@@ -93,11 +102,11 @@ $: forceCloseToast, handleClose();
             {/if}
             <img src="images/alchemix_logo.png" alt="Alchemix loader" class="w-5 h-5" />
           </div>
-          <div class="ml-2 mr-6">
-            <span>{title}</span>
-            <span class="block">
+          <div class="ml-2 mr-6 max-w-xs">
+            <p>{title}</p>
+            <p>
               {subTitle}
-            </span>
+            </p>
           </div>
           <div class="flex">
             {#if showOpenButton}

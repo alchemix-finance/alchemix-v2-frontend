@@ -27,7 +27,6 @@ function connector(endpoint) {
 export async function getFiatRates() {
   await axios(connector('fiat-rates'))
     .then((result) => {
-      console.log(result.data);
       _global.fiatRates = result.data;
       global.set({ ..._global });
     })
