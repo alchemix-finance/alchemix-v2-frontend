@@ -6,7 +6,7 @@ toastConfig.subscribe((val) => {
   _toastConfig = val;
 });
 
-function setPendingWallet() {
+export function setPendingWallet() {
   _toastConfig.kind = 'pending';
   _toastConfig.title = 'Pending';
   _toastConfig.subtitle = 'Sign transaction in wallet';
@@ -15,7 +15,7 @@ function setPendingWallet() {
   toastConfig.set({ ..._toastConfig });
 }
 
-function setPendingTx() {
+export function setPendingTx() {
   _toastConfig.kind = 'pending';
   _toastConfig.title = 'Pending';
   _toastConfig.subtitle = 'Confirming transaction';
@@ -24,7 +24,7 @@ function setPendingTx() {
   toastConfig.set({ ..._toastConfig });
 }
 
-function setSuccessTx(hash) {
+export function setSuccessTx(hash) {
   _toastConfig.kind = 'success';
   _toastConfig.title = 'Success';
   _toastConfig.subtitle = 'Transaction was confirmed';
@@ -36,7 +36,7 @@ function setSuccessTx(hash) {
   toastConfig.set({ ..._toastConfig });
 }
 
-function setError(message) {
+export function setError(message) {
   _toastConfig.kind = 'error';
   _toastConfig.title = 'Something went wrong';
   _toastConfig.subtitle = message;
@@ -46,5 +46,3 @@ function setError(message) {
   _toastConfig.closeTimeout = 2000;
   toastConfig.set({ ..._toastConfig });
 }
-
-export { setPendingWallet, setPendingTx, setSuccessTx, setError };
