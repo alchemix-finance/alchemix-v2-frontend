@@ -3,6 +3,8 @@ const genericAbi = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
   'function balanceOf(address) view returns (uint)',
+  'function allowance(address, address) view returns (uint)',
+  'function approve(address, uint) nonpayable returns(bool)',
 ];
 
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
@@ -13,7 +15,9 @@ const externalContracts = {
     {
       abi: [...genericAbi],
       // @dev address may be ENS or actual address, ENS won't work on testnet
-      address: debugging ? '0x6b175474e89094c44da98b954eedeac495271d0f' : 'dai.tokens.ethers.eth',
+      address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+      // address: debugging ? '0x6b175474e89094c44da98b954eedeac495271d0f' :
+      // 'dai.tokens.ethers.eth',
       // @dev not used anywhere aside from keeping track inside this file
       symbol: 'DAI',
     },
@@ -42,6 +46,7 @@ const externalContracts = {
       address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
       symbol: 'tALCX',
     },
+
   ],
 };
 

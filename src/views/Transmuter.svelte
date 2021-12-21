@@ -12,8 +12,9 @@ import getContract from '../helpers/getContract';
 import transmuters from '../stores/transmuters';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { onMount } from 'svelte';
+import Account from '../../../alchemix-dao-frontend/src/components/Account.svelte';
 
 const toggleButtons = {
   transmuterSelect: {
@@ -72,105 +73,21 @@ const columns = [
   {
     columnId: 'col5',
     CellComponent: HeaderCell,
-    value: 'APY',
+    //Don't like this but better than APY for now.
+    //I think this needs a tool tip
+    value: 'Maturation Rate',
     colSize: 2,
   },
 ];
-const rows = [
-  {
-    col1: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedTransmuter,
-      },
-      colSize: 1,
-    },
-    col2: {
-      value: 'alUSD-DAI',
-      colSize: 2,
-      alignment: 'justify-self-start',
-    },
-    col3: {
-      value: '350 alUSD',
-      colSize: 2,
-    },
-    col4: {
-      value: '150 alUSD',
-      colSize: 2,
-    },
-    col6: {
-      value: '200 DAI',
-      colSize: 2,
-    },
-    col5: {
-      value: '1234%',
-      colSize: 2,
-    },
-  },
-  {
-    col1: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedTransmuter,
-      },
-      colSize: 1,
-    },
-    col2: {
-      value: 'alUSD-USDT',
-      colSize: 2,
-      alignment: 'justify-self-start',
-    },
-    col3: {
-      value: '350 alUSD',
-      colSize: 2,
-    },
-    col4: {
-      value: '150 alUSD',
-      colSize: 2,
-    },
-    col6: {
-      value: '200 DAI',
-      colSize: 2,
-    },
-    col5: {
-      value: '1234%',
-      colSize: 2,
-    },
-  },
-  {
-    col1: {
-      CellComponent: ExpandRowCell,
-      expandedRow: {
-        ExpandedRowComponent: ExpandedTransmuter,
-      },
-      colSize: 1,
-    },
-    col2: {
-      value: 'alUSD-USDC',
-      colSize: 2,
-      alignment: 'justify-self-start',
-    },
-    col3: {
-      value: '350 alUSD',
-      colSize: 2,
-    },
-    col4: {
-      value: '150 alUSD',
-      colSize: 2,
-    },
-    col6: {
-      value: '200 DAI',
-      colSize: 2,
-    },
-    col5: {
-      value: '1234%',
-      colSize: 2,
-    },
-  },
-];
 
+const rows = [];
+$: row = rows;
 // the core transmuter contract
 const transmuter = getContract('TransmuterV2_DAI');
+// the alUSD contract
+const alUSD = getContract('AlToken');
+// the DAI contract
+const DAI = getContract('DAI');
 const format = ethers.utils.formatUnits;
 
 const goTo = (url) => {
@@ -178,7 +95,7 @@ const goTo = (url) => {
 };
 
 onMount(async () => {
-  if ($transmuters.fetching && $account.address) {
+  if ($account.address) {
     const getAlToken = await transmuter.syntheticToken();
     const alToken = getAlToken.toLowerCase();
     const getUnderlyingToken = await transmuter.underlyingToken();
@@ -191,13 +108,55 @@ onMount(async () => {
     const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
     const getUnexchangedBalance = await transmuter.getUnexchangedBalance($account.address);
     const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
+    const userAlToken = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
+    const userUnderlyingToken = $walletBalance.tokens.find((userToken) => userToken.address === underlyingToken);
+    const totalDeposited = new BigNumber(exchangedBalance).add(new BigNumber(unexchangedBalance))
 
-    const userToken = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
-    console.log('jelllloo', getAlToken);
-    console.log("mybal", exchangedBalance, unexchangedBalance)
+    console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);
+
+
+
+    const payload ={
+      col1: {
+        CellComponent: ExpandRowCell,
+        expandedRow: {
+          ExpandedRowComponent: ExpandedTransmuter,
+        },
+        colSize: 1,
+      },
+      col2: {
+        value: 'alUSD-DAI',
+        colSize: 2,
+        alignment: 'justify-self-start',
+      },
+      //deposited
+      col3: {
+        value: '0.00' || totalDeposited,
+        colSize: 2,
+      },
+      //withdrawable
+      col4: {
+        value: '0.00' || unexchangedBalance,
+        colSize: 2,
+      },
+      //claimable
+      col6: {
+        value: '0.00' || unexchangedBalance,
+        colSize: 2,
+      },
+      //Maturation Rate
+      col5: {
+        value: '455%',
+        colSize: 2,
+      },
+    };
+
+    rows.push(payload);
+
     $transmuters.fetching = false;
   }
 });
+console.log(rows)
 </script>
 
 <ViewContainer>
