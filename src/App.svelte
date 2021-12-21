@@ -23,10 +23,15 @@ import Farms from './views/Farms.svelte';
 import Governance from './views/Governance.svelte';
 import Settings from './views/Settings.svelte';
 
+import { connect } from './helpers/walletManager';
+
 export let url = '';
 
 // @dev to stop waste API request, stop the gas updates if needed
 let gasTimer;
+
+const preselect = window.localStorage.getItem('userWallet');
+let walletChecked = false;
 
 function gasPriceUpdater() {
   gasTimer = window.setTimeout(async () => {
@@ -41,6 +46,10 @@ function gasIdle() {
 }
 
 onMount(async () => {
+  if (preselect !== null) {
+    await connect(preselect);
+  }
+  walletChecked = true;
   await getFiatRates();
   await getGasPrices();
 });
@@ -59,14 +68,16 @@ onMount(async () => {
           <SideBar />
         </div>
         <div class="border-l border-grey5 w-full">
-          <Route path="/accounts" component="{Accounts}" />
-          <Route path="/vaults" component="{Vaults}" />
-          <Route path="/transmuter" component="{Transmuter}" />
-          <Route path="/farms" component="{Farms}" />
-          <Route path="/governance" component="{Governance}" />
-          <Route path="/settings" component="{Settings}" />
-          <Route path="/" component="{Landing}" />
-          <Route path="/*" component="{Error}" />
+          {#if walletChecked}
+            <Route path="/accounts" component="{Accounts}" />
+            <Route path="/vaults" component="{Vaults}" />
+            <Route path="/transmuter" component="{Transmuter}" />
+            <Route path="/farms" component="{Farms}" />
+            <Route path="/governance" component="{Governance}" />
+            <Route path="/settings" component="{Settings}" />
+            <Route path="/" component="{Landing}" />
+            <Route path="/*" component="{Error}" />
+          {/if}
         </div>
       </div>
       <div class="col-span-12 pl-8 py-12 border-t border-grey5">

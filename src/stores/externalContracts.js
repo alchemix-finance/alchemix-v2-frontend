@@ -19,6 +19,16 @@ const externalContracts = {
     },
     {
       abi: [...genericAbi],
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      symbol: 'USDC',
+    },
+    {
+      abi: [...genericAbi],
+      address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      symbol: 'USDT',
+    },
+    {
+      abi: [...genericAbi],
       address: '0xdbdb4d16eda451d0503b854cf79d55697f90c8df',
       symbol: 'ALCX',
     },
@@ -46,3 +56,4 @@ const externalContracts = {
 };
 
 export default externalContracts;
+export { genericAbi };

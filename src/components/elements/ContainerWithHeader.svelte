@@ -2,11 +2,14 @@
 import Button from './Button.svelte';
 
 export let canToggle = false;
+export let isVisible = true;
 let contentVisible = true;
 
 const toggleVisibility = () => {
   contentVisible = !contentVisible;
 };
+
+$: isVisible, (contentVisible = isVisible);
 </script>
 
 <div class="w-full rounded border border-grey10 bg-grey15 relative">
