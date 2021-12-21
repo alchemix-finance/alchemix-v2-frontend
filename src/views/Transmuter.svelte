@@ -8,6 +8,12 @@ import Table from '../components/composed/Table/Table.svelte';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
+import getContract from '../helpers/getContract';
+import transmuters from '../stores/transmuters';
+import account from '../stores/account';
+import walletBalance from '../stores/walletBalance';
+import { ethers } from 'ethers';
+import { onMount } from 'svelte';
 
 const toggleButtons = {
   transmuterSelect: {
@@ -162,6 +168,36 @@ const rows = [
     },
   },
 ];
+
+// the core transmuter contract
+const transmuter = getContract('TransmuterV2_DAI');
+const format = ethers.utils.formatUnits;
+
+const goTo = (url) => {
+  window.open(url, '_blank');
+};
+
+onMount(async () => {
+  if ($transmuters.fetching && $account.address) {
+    const getAlToken = await transmuter.syntheticToken();
+    const alToken = getAlToken.toLowerCase();
+    const getUnderlyingToken = await transmuter.underlyingToken();
+    const underlyingToken = getUnderlyingToken.toLowerCase();
+    const getBuffered = await transmuter.totalBuffered();
+    const buffered = format(getBuffered.toString(), 'ether');
+    const getTotalUnexchanged = await transmuter.totalUnexchanged();
+    const totalUnexchanged = format(getTotalUnexchanged.toString(), 'ether');
+    const getExchangedBalance = await transmuter.getExchangedBalance($account.address);
+    const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
+    const getUnexchangedBalance = await transmuter.getUnexchangedBalance($account.address);
+    const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
+
+    const userToken = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
+    console.log('jelllloo', getAlToken);
+    console.log("mybal", exchangedBalance, unexchangedBalance)
+    $transmuters.fetching = false;
+  }
+});
 </script>
 
 <ViewContainer>
@@ -198,13 +234,13 @@ const rows = [
         </div>
       </div>
       <div slot="body" class="py-4 px-6 flex space-x-4">
-        <Button label="Curve" width="w-max" py="py-2">
+        <Button on:clicked="{() => goTo('http://curve.fi')}" label="Curve" width="w-max" py="py-2">
           <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" />
         </Button>
-        <Button label="Zapper" width="w-max" py="py-2">
+        <Button on:clicked="{() => goTo('http://zapper.fi')}" label="Zapper" width="w-max" py="py-2">
           <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" />
         </Button>
-        <Button label="Paraswap" width="w-max" py="py-2">
+        <Button on:clicked="{() => goTo('http://paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
           <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" />
         </Button>
       </div>
