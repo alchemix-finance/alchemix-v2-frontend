@@ -9,11 +9,15 @@ import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
 import getContract from '../helpers/getContract';
+import { getProvider } from '../helpers/walletManager';
+import { getTokenSymbol } from '../helpers/getTokenSymbol';
+import { genericAbi } from '../stores/externalContracts';
 import transmuters from '../stores/transmuters';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
 import { BigNumber, ethers } from 'ethers';
 import { onMount } from 'svelte';
+import { BarLoader } from 'svelte-loading-spinners';
 import Account from '../../../alchemix-dao-frontend/src/components/Account.svelte';
 
 const toggleButtons = {
@@ -81,9 +85,15 @@ const columns = [
 ];
 
 const rows = [];
-$: row = rows;
-// the core transmuter contract
-const transmuter = getContract('TransmuterV2_DAI');
+
+const provider = getProvider();
+// the core transmuter contracts
+const transmuterContracts = [
+  getContract('TransmuterV2_DAI'),
+  // getContract('TransmuterV2_USDC'),
+  // getContract('TransmuterV2_USDT'),
+];
+
 // the alUSD contract
 const alUSD = getContract('AlToken');
 // the DAI contract
@@ -95,68 +105,88 @@ const goTo = (url) => {
 };
 
 onMount(async () => {
-  if ($account.address) {
-    const getAlToken = await transmuter.syntheticToken();
-    const alToken = getAlToken.toLowerCase();
-    const getUnderlyingToken = await transmuter.underlyingToken();
-    const underlyingToken = getUnderlyingToken.toLowerCase();
-    const getBuffered = await transmuter.totalBuffered();
-    const buffered = format(getBuffered.toString(), 'ether');
-    const getTotalUnexchanged = await transmuter.totalUnexchanged();
-    const totalUnexchanged = format(getTotalUnexchanged.toString(), 'ether');
-    const getExchangedBalance = await transmuter.getExchangedBalance($account.address);
-    const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
-    const getUnexchangedBalance = await transmuter.getUnexchangedBalance($account.address);
-    const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
-    const userAlToken = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
-    const userUnderlyingToken = $walletBalance.tokens.find((userToken) => userToken.address === underlyingToken);
-    const totalDeposited = new BigNumber(exchangedBalance).add(new BigNumber(unexchangedBalance))
+  if ($account.address && $transmuters.fetching) {
+    await transmuterContracts.forEach(async (contract) => {
+      const getAlToken = await contract.syntheticToken();
+      const alToken = getAlToken.toLowerCase();
+      const alTokenContract = new ethers.Contract(alToken, genericAbi, provider);
+      const alTokenAllowance = await alTokenContract.allowance($account.address, alToken);
+      const getUnderlyingToken = await contract.underlyingToken();
+      const underlyingToken = getUnderlyingToken.toLowerCase();
+      const getBuffered = await contract.totalBuffered();
+      const buffered = format(getBuffered.toString(), 'ether');
+      const getTotalUnexchanged = await contract.totalUnexchanged();
+      const totalUnexchanged = format(getTotalUnexchanged.toString(), 'ether');
+      const getExchangedBalance = await contract.getExchangedBalance($account.address);
+      const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
+      const getUnexchangedBalance = await contract.getUnexchangedBalance($account.address);
+      const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
+      const userAlToken = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
+      const userUnderlyingToken = $walletBalance.tokens.find(
+        (userToken) => userToken.address === underlyingToken,
+      );
+      // const totalDeposited = new BigNumber(exchangedBalance).add(new BigNumber(unexchangedBalance))
+      console.log('scoopy dai balance', userUnderlyingToken);
+      console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);
+      // console.log("alUSD object", await alUSD.sybmol)
+      const expandedProps = {
+        alToken: userAlToken,
+        underlyingToken: userUnderlyingToken,
+        transmuterContract: contract,
+        alTokenContract: alTokenContract,
+        allowance: alTokenAllowance,
+        exchangedBalance: exchangedBalance,
+        unexchangedBalance: unexchangedBalance,
+      };
 
-    console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);
-
-
-
-    const payload ={
-      col1: {
-        CellComponent: ExpandRowCell,
-        expandedRow: {
-          ExpandedRowComponent: ExpandedTransmuter,
+      const payload = {
+        col1: {
+          CellComponent: ExpandRowCell,
+          expandedRow: {
+            ExpandedRowComponent: ExpandedTransmuter,
+          },
+          ...expandedProps,
+          colSize: 1,
         },
-        colSize: 1,
-      },
-      col2: {
-        value: 'alUSD-DAI',
-        colSize: 2,
-        alignment: 'justify-self-start',
-      },
-      //deposited
-      col3: {
-        value: '0.00' || totalDeposited,
-        colSize: 2,
-      },
-      //withdrawable
-      col4: {
-        value: '0.00' || unexchangedBalance,
-        colSize: 2,
-      },
-      //claimable
-      col6: {
-        value: '0.00' || unexchangedBalance,
-        colSize: 2,
-      },
-      //Maturation Rate
-      col5: {
-        value: '455%',
-        colSize: 2,
-      },
-    };
+        col2: {
+          value: 'alUSD-DAI',
+          colSize: 2,
+          alignment: 'justify-self-start',
+        },
+        //deposited
+        col3: {
+          value: '0.00' || totalDeposited,
+          colSize: 2,
+        },
+        //withdrawable
+        col4: {
+          value: '0.00' || unexchangedBalance,
+          colSize: 2,
+        },
+        //claimable
+        col6: {
+          value: '0.00' || unexchangedBalance,
+          colSize: 2,
+        },
+        //Maturation Rate
+        col5: {
+          value: '455%',
+          colSize: 2,
+        },
+      };
 
-    rows.push(payload);
+      $transmuters.state.push(payload);
+    });
 
     $transmuters.fetching = false;
   }
 });
-console.log(rows)
+$: if ($transmuters.state.length > 0) {
+  $transmuters.state.forEach((entry) => {
+    rows.push(entry);
+  });
+  console.log('ROWS', rows);
+}
 </script>
 
 <ViewContainer>
@@ -250,7 +280,13 @@ console.log(rows)
         </Button>
       </div>
       <div slot="body">
-        <Table rows="{rows}" columns="{columns}" />
+        {#if $transmuters.fetching}
+          <div class="flex justify-center my-4">
+            <BarLoader color="#F5C59F" />
+          </div>
+        {:else if $transmuters.state.length > 0}
+          <Table rows="{rows}" columns="{columns}" />
+        {/if}
       </div>
     </ContainerWithHeader>
   </div>

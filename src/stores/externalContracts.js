@@ -51,3 +51,5 @@ const externalContracts = {
 };
 
 export default externalContracts;
+
+export { genericAbi };
