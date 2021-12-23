@@ -3,6 +3,7 @@ const genericAbi = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
   'function balanceOf(address) view returns (uint)',
+  'function decimals() view returns (uint8)',
 ];
 
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));

@@ -5,8 +5,9 @@
 import { onMount } from 'svelte';
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect';
-import { getTokenBalance, getTokenSymbol } from '../../../../helpers/getTokenData';
 import tempTx from '../../../../stores/tempTx';
+import walletBalance from '../../../../stores/walletBalance';
+import getContract from '../../../../helpers/getContract';
 
 export let yieldToken;
 export let underlyingToken;
@@ -17,7 +18,7 @@ let underlyingBalance;
 let underlyingSymbol;
 
 const mockSave = () => {
-  console.log('ye');
+  console.log('depositing 1 underlying');
   $tempTx.amount = 1;
   $tempTx.yieldToken = yieldToken;
   $tempTx.underlyingToken = underlyingToken;
@@ -25,10 +26,16 @@ const mockSave = () => {
 };
 
 onMount(async () => {
-  yieldBalance = await getTokenBalance(yieldToken);
-  yieldSymbol = await getTokenSymbol(yieldToken);
-  underlyingBalance = await getTokenBalance(underlyingToken);
-  underlyingSymbol = await getTokenSymbol(underlyingToken);
+  const contract = getContract('AlchemistV2');
+  const activeToken = $walletBalance.tokens.find((token) => token.address === yieldToken);
+  const activeUnderlying = $walletBalance.tokens.find((token) => token.address === underlyingToken);
+  yieldBalance = activeToken.balance;
+  yieldSymbol = activeToken.symbol;
+  underlyingBalance = activeUnderlying.balance;
+  underlyingSymbol = activeUnderlying.symbol;
+  console.log(activeToken);
+  console.log(activeUnderlying);
+  console.log('is supported underlying', await contract.isSupportedUnderlyingToken(activeUnderlying.address));
 });
 </script>
 

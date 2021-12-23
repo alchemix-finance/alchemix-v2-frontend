@@ -5,7 +5,11 @@ export let tokenBalance;
 
 // @dev truncates long balances to keep them readable
 const truncateBalance = (balance) => {
-  return balance.slice(0, -14) + '...';
+  const balanceSplit = balance.split('.');
+  // return balance.slice(0, -14) + '...';
+  const ellipse = balanceSplit[1].length > 4 ? '...' : '';
+  const decimals = balanceSplit[1] === '0' ? '' : '.' + balanceSplit[1].slice(0, 4);
+  return balanceSplit[0] + decimals + ellipse;
 };
 </script>
 

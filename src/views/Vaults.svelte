@@ -151,6 +151,7 @@ const deposit = async () => {
 
 const depositUnderlying = async () => {
   const amountToWei = utils.parseEther($tempTx.amount.toString());
+  // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
   } else {
@@ -167,7 +168,6 @@ const depositUnderlying = async () => {
       });
     } catch (e) {
       setError(e.message);
-      console.log(e);
       console.debug(e);
     }
     tempClear();
@@ -179,6 +179,7 @@ onMount(async () => {
   if ($vaults.fetching) {
     // alUSD Alchemist only atm
     const yieldTokens = await contract.getSupportedYieldTokens();
+    console.log(yieldTokens);
     console.log('mint', await contract.mintAllowance($account.address, $account.address));
     const ratio = await contract.minimumCollateralization();
     const ratioFormatted = utils.formatEther(ratio.toString());
@@ -322,6 +323,7 @@ $: if ($tempTx.method !== null) {
               </p>
             </Button>
             <Button
+              disabled
               label="alETH"
               width="w-max"
               canToggle="{true}"

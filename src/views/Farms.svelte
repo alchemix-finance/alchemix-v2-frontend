@@ -124,6 +124,7 @@ const vaultFilter = (filter) => {
 
 onMount(async () => {
   if ($stakingPools.fetching) {
+    // TODO add check for race condition on initialized wallet balance
     const poolCount = BigNumber.from(await pools.poolCount()).toString();
 
     for (let i = 0; i < poolCount; i++) {
