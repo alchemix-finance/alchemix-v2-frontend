@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import { genericAbi } from '../stores/externalContracts';
 import account from '../stores/account';
 
@@ -51,4 +51,18 @@ const getTokenDecimals = async (address) => {
   return contract.decimals();
 };
 
-export { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals };
+/*
+ * @dev retrieves remaining allowance for a specific token
+ * @param token the token to check
+ * @param owner the owner of the allowance
+ * @param spender the spender of the allowance
+ * @returns boolean has allowance (true) or not (false)
+ * */
+const getTokenAllowance = async (token, owner, spender) => {
+  const contract = new ethers.Contract(token, genericAbi, provider);
+  const allowanceCheck = contract.allowance(owner, spender);
+  console.log(BigNumber.from(await allowanceCheck).toString());
+  return BigNumber.from(await allowanceCheck).toString() > 0;
+};
+
+export { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals, getTokenAllowance };

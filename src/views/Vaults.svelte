@@ -1,7 +1,7 @@
 <script>
 import { onMount, getContext } from 'svelte';
 import { _ } from 'svelte-i18n';
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -12,7 +12,7 @@ import account from '../stores/account';
 import vaults from '../stores/vaults';
 import { aggregate } from '../stores/vaults';
 import getContract from '../helpers/getContract';
-import { getTokenSymbol } from '../helpers/getTokenData';
+import { getTokenSymbol, getTokenAllowance } from '../helpers/getTokenData';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import Table from '../components/composed/Table/Table.svelte';
 import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
@@ -23,6 +23,7 @@ import tempTx from '../stores/tempTx';
 import { getProvider } from '../helpers/walletManager';
 import getUserGas from '../helpers/getUserGas';
 import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
+import setTokenAllowance from '../helpers/setTokenAllowance';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -150,7 +151,11 @@ const deposit = async () => {
 };
 
 const depositUnderlying = async () => {
+  const allowance = await getTokenAllowance($tempTx.underlyingToken, $account.address, contract.address);
   const amountToWei = utils.parseEther($tempTx.amount.toString());
+  if (!allowance) {
+    await setTokenAllowance($tempTx.underlyingToken, contract.address);
+  }
   // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
@@ -195,12 +200,11 @@ onMount(async () => {
       const balance = utils.formatEther(position.balance.toString());
       const fake = () => Math.floor(Math.random() * 100000);
       const fakeBalance = fake();
-      const fakeBorrow = fake() / ratioFormatted;
+      const fakeBorrow = balance / ratioFormatted;
       const depositPayload = {
         token: token,
         symbol: yieldSymbol,
         balance: balance,
-        //balance: fake,
       };
       deposited.push(depositPayload);
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
@@ -226,7 +230,7 @@ onMount(async () => {
             alignment: 'justify-self-start',
           },
           deposited: {
-            value: fakeBalance + ' ' + yieldSymbol,
+            value: balance + ' ' + yieldSymbol,
             colSize: 2,
           },
           limit: {
