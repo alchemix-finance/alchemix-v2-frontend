@@ -1,6 +1,5 @@
 import { utils } from 'ethers';
 import getContract from './getContract';
-import { getProvider } from './walletManager';
 import { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals } from './getTokenData';
 import walletBalance from '../stores/walletBalance';
 
@@ -9,9 +8,6 @@ let _walletBalance;
 walletBalance.subscribe((val) => {
   _walletBalance = val;
 });
-
-// @dev list of all alchemist contract names
-const alchemists = ['AlchemistV2'];
 
 // @dev list of tokens to force-watch
 const tokenList = [
