@@ -1,5 +1,5 @@
 <script>
-import { onMount } from 'svelte';
+import { onMount, getContext } from 'svelte';
 import { _ } from 'svelte-i18n';
 import { utils } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -16,8 +16,13 @@ import { getTokenSymbol } from '../helpers/getTokenData';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import Table from '../components/composed/Table/Table.svelte';
 import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
-import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
-import ExpandedVault from '../components/composed/Table/vaults/ExpandedVault.svelte';
+import ActionsCell from '../components/composed/Table/vaults/ActionsCell.svelte';
+import Borrow from '../components/composed/Modals/vaults/Borrow.svelte';
+import { modalStyle } from '../stores/modal';
+import tempTx from '../stores/tempTx';
+import { getProvider } from '../helpers/walletManager';
+import getUserGas from '../helpers/getUserGas';
+import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -28,16 +33,22 @@ let rowsUser = [];
 let rowsUnused = [];
 let colsStrats = [
   {
-    columnId: 'col1',
-    CellComponent: HeaderCell,
-    value: '',
-    colSize: 1,
-  },
-  {
     columnId: 'col2',
     CellComponent: HeaderCell,
     value: 'Strategy',
     colSize: 3,
+  },
+  {
+    columnId: 'deposit',
+    CellComponent: HeaderCell,
+    value: 'Deposited',
+    colSize: 2,
+  },
+  {
+    columnId: 'limit',
+    CellComponent: HeaderCell,
+    value: 'Debt Limit',
+    colSize: 2,
   },
   {
     columnId: 'col3',
@@ -59,17 +70,27 @@ let colsStrats = [
   },
 ];
 
+const { open } = getContext('simple-modal');
+const { close } = getContext('simple-modal');
+const openModal = () => {
+  open(
+    Borrow,
+    { message: 'This is going to be the borrow modal' },
+    {
+      ...modalStyle,
+    },
+  );
+};
+
+const closeModal = () => {
+  close();
+};
+
 const toggleButtons = {
   vaultSelect: {
     all: true,
     aleth: false,
     alusd: false,
-  },
-  modeSelect: {
-    deposit: true,
-    borrow: false,
-    repay: false,
-    liquidate: false,
   },
   stratSelect: {
     used: false,
@@ -93,30 +114,98 @@ const vaultFilter = (filter) => {
   buttonToggler(selector[filter.id], filter.filter);
 };
 
+const tempClear = () => {
+  $tempTx.amount = null;
+  $tempTx.method = null;
+  $tempTx.yieldToken = null;
+  $tempTx.underlyingToken = null;
+};
+
+const contract = getContract('AlchemistV2');
+const provider = getProvider();
+const abiCoder = utils.defaultAbiCoder;
+
+const deposit = async () => {
+  const amountToWei = utils.parseEther($tempTx.amount.toString());
+  console.log(amountToWei);
+  if ($tempTx.amount < 0) {
+    setError('Trying to deposit more than available');
+  } else {
+    try {
+      let tx;
+      setPendingWallet();
+      tx = await contract.deposit($tempTx.yieldToken, amountToWei, $account.address, {
+        gasPrice: getUserGas(),
+      });
+      setPendingTx();
+      await provider.once(tx.hash, (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+      });
+    } catch (e) {
+      setError(e.message);
+      console.debug(e);
+    }
+    tempClear();
+  }
+};
+
+const depositUnderlying = async () => {
+  const amountToWei = utils.parseEther($tempTx.amount.toString());
+  if ($tempTx.amount < 0) {
+    setError('Trying to deposit more than available');
+  } else {
+    try {
+      let tx;
+      setPendingWallet();
+      const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+      tx = await contract.depositUnderlying($tempTx.yieldToken, amountToWei, $account.address, dataPackage, {
+        gasPrice: getUserGas(),
+      });
+      setPendingTx();
+      await provider.once(tx.hash, (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+      });
+    } catch (e) {
+      setError(e.message);
+      console.log(e);
+      console.debug(e);
+    }
+    tempClear();
+  }
+};
+
 onMount(async () => {
   let deposited = [];
   if ($vaults.fetching) {
     // alUSD Alchemist only atm
-    const contract = await getContract('AlchemistV2');
     const yieldTokens = await contract.getSupportedYieldTokens();
+    console.log('mint', await contract.mintAllowance($account.address, $account.address));
+    const ratio = await contract.minimumCollateralization();
+    const ratioFormatted = utils.formatEther(ratio.toString());
+    console.log('ratio', utils.formatEther(ratio.toString()));
     for (const token of yieldTokens) {
       const params = await contract.getYieldTokenParameters(token);
+      const underlyingToken = params.underlyingToken;
+      console.log(underlyingToken);
       const yieldSymbol = await getTokenSymbol(token);
       const underlyingSymbol = await getTokenSymbol(params.underlyingToken);
       const tvl = utils.formatEther(params.balance.toString());
       const position = await contract.positions($account.address, token);
-      const fake = Math.floor(Math.random() * 100000);
+      const balance = utils.formatEther(position.balance.toString());
+      const fake = () => Math.floor(Math.random() * 100000);
+      const fakeBalance = fake();
+      const fakeBorrow = fake() / ratioFormatted;
       const depositPayload = {
         token: token,
         symbol: yieldSymbol,
-        balance: utils.formatEther(position.balance.toString()),
+        balance: balance,
         //balance: fake,
       };
       deposited.push(depositPayload);
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
       const expandedProps = {
         type: stratIsUsed ? 'used' : 'unused',
-        depositAmount: 0,
+        depositAmount: utils.formatEther(position.balance.toString()),
         depositAsset: yieldSymbol,
         creditLimit: 0,
         borrowAmount: 0,
@@ -126,14 +215,6 @@ onMount(async () => {
         type: stratIsUsed ? 'used' : 'unused',
         alchemist: 'alusd',
         row: {
-          col1: {
-            CellComponent: ExpandRowCell,
-            expandedRow: {
-              ExpandedRowComponent: ExpandedVault,
-            },
-            ...expandedProps,
-            colSize: 1,
-          },
           col2: {
             CellComponent: FarmNameCell,
             farmName: yieldSymbol,
@@ -142,6 +223,14 @@ onMount(async () => {
             tokenIcon: underlyingSymbol.toLowerCase(),
             colSize: 3,
             alignment: 'justify-self-start',
+          },
+          deposited: {
+            value: fakeBalance + ' ' + yieldSymbol,
+            colSize: 2,
+          },
+          limit: {
+            value: `+${fakeBorrow}`,
+            colSize: 2,
           },
           col3: {
             value: tvl + ' ' + yieldSymbol,
@@ -152,8 +241,10 @@ onMount(async () => {
             colSize: 2,
           },
           col5: {
-            value: 'foo',
+            CellComponent: ActionsCell,
             colSize: 3,
+            yieldToken: token,
+            underlyingToken: underlyingToken,
           },
         },
       };
@@ -180,6 +271,16 @@ $: if ($vaults.alusd.length > 0) {
     counterAllStrategies += 1;
   });
 }
+
+const methodLookup = {
+  deposit: deposit,
+  depositUnderlying: depositUnderlying,
+};
+
+$: if ($tempTx.method !== null) {
+  closeModal();
+  methodLookup[$tempTx.method]();
+}
 </script>
 
 <ViewContainer>
@@ -203,7 +304,7 @@ $: if ($vaults.alusd.length > 0) {
       </div>
     </ContainerWithHeader>
   {:else}
-    <div class="w-full mb-8 grid grid-cols-3 gap-8">
+    <div class="w-full mb-8 grid grid-cols-2 gap-8">
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
@@ -249,48 +350,10 @@ $: if ($vaults.alusd.length > 0) {
           </div>
         </ContainerWithHeader>
       </div>
-      <div class="col-span-2">
-        <ContainerWithHeader>
-          <div slot="body" class="flex space-x-4">
-            <Button
-              label="Deposit & Withdraw"
-              width="w-full"
-              py="py-2"
-              canToggle="{true}"
-              selected="{toggleButtons.modeSelect.deposit}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 1, filter: 'deposit' })}"
-            />
-            <Button
-              label="Borrow"
-              width="w-full"
-              canToggle="{true}"
-              selected="{toggleButtons.modeSelect.borrow}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 1, filter: 'borrow' })}"
-            />
-            <Button
-              label="Repay"
-              width="w-full"
-              canToggle="{true}"
-              selected="{toggleButtons.modeSelect.repay}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 1, filter: 'repay' })}"
-            />
-            <Button
-              label="Liquidate"
-              width="w-full"
-              canToggle="{true}"
-              selected="{toggleButtons.modeSelect.liquidate}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 1, filter: 'liquidate' })}"
-            />
-          </div>
-        </ContainerWithHeader>
+      <div class="col-span-1 flex space-x-4">
+        <Button label="Borrow" width="w-full" on:clicked="{openModal}" />
+        <Button label="Repay" width="w-full" />
+        <Button label="Liquidate" width="w-full" />
       </div>
     </div>
 

@@ -1,16 +1,8 @@
 <script>
-import { modal } from '../../../../stores/modal';
-import { bind } from '../../../elements/Modal.svelte';
-import Modal from '../../../elements/Modal.svelte';
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 
 export let transmuterConfig = {};
-
-const showModal = () => {
-  // modal.set(bind(Modal, { title: 'Web3', message: 'Transaction pending' }));
-  modal.set(Modal);
-};
 
 const startTransaction = async () => {
   await alert('metamask tx started');
@@ -25,7 +17,7 @@ const startTransaction = async () => {
     </div>
     <div class="w-full self-end">
       <BalanceQuickSelect />
-      <Button label="Deposit" on:clicked="{showModal}" />
+      <Button label="Deposit" />
     </div>
   </div>
 

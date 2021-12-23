@@ -1,5 +1,12 @@
 import { ethers } from 'ethers';
 import { genericAbi } from '../stores/externalContracts';
+import account from '../stores/account';
+
+let _account;
+
+account.subscribe((val) => {
+  _account = val;
+});
 
 const provider = ethers.getDefaultProvider();
 
@@ -13,4 +20,14 @@ const getTokenSymbol = async (address) => {
   return contract.symbol();
 };
 
-export { getTokenSymbol };
+/*
+ * @dev retrieves balance for a specific token
+ * @params String the token address
+ * @returns String the token balance
+ * */
+const getTokenBalance = async (address) => {
+  const contract = new ethers.Contract(address, genericAbi, provider);
+  return contract.balanceOf(_account.address);
+};
+
+export { getTokenSymbol, getTokenBalance };

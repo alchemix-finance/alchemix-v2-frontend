@@ -82,7 +82,7 @@
     "svelte-eventbus": "^0.1.1",
     "svelte-i18n": "^3.3.9",
     "svelte-routing": "^1.6.0",
-    "svelte-simple-modal": "^0.10.1",
+    "svelte-simple-modal": "^1.2.0",
     "tailwindcss": "^2.1.1"
   }
 }

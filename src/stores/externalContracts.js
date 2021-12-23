@@ -47,11 +47,11 @@ const externalContracts = {
       address: '0xc9da65931abf0ed1b74ce5ad8c041c4220940368',
       symbol: 'saddlealETH',
     },
-    {
-      abi: [...genericAbi],
-      address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
-      symbol: 'tALCX',
-    },
+    // {
+    //   abi: [...genericAbi],
+    //   address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
+    //   symbol: 'tALCX',
+    // },
   ],
 };
 

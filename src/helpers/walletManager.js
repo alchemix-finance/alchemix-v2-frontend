@@ -68,12 +68,13 @@ async function connect(preselect) {
       const signer = await ethersProvider.getSigner();
       const address = await signer.getAddress();
       const ens = debugging ? testnetName : await ethersProvider.lookupAddress(await address);
+      const toastGreeting = ens !== null ? `, ${ens}!` : '!';
       _toastConfig.spinner = false;
       _toastConfig.kind = 'success';
       _toastConfig.showCloseButton = false;
       _toastConfig.closeOnMount = true;
       _toastConfig.closeTimeout = 2500;
-      _toastConfig.title = 'Welcome back!';
+      _toastConfig.title = `Welcome back${toastGreeting}`;
       _toastConfig.visible = true;
       account.set({ address, signer, ens });
     });

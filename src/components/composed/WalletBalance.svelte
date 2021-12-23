@@ -13,7 +13,7 @@ const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 // @dev iterates over all supported collaterals and populates state accordingly
 const initBalances = async () => {
   ethers
-    .getDefaultProvider(debugging ? 'http://localhost:8545' : 'homestead')
+    .getDefaultProvider(debugging ? 'http://52.14.220.22:8545' : 'homestead')
     .getBalance($account.address)
     .then(async (balance) => {
       const ethBal = ethers.utils.formatUnits(balance, 18);
