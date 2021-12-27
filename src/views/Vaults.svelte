@@ -122,7 +122,7 @@ const tempClear = () => {
   $tempTx.underlyingToken = null;
 };
 
-const contract = getContract('AlchemistV2');
+const contract = getContract('AlchemistV2_alUSD');
 const provider = getProvider();
 const abiCoder = utils.defaultAbiCoder;
 

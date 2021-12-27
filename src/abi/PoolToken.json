@@ -1,65 +1,33 @@
 {
     "abi": [
         {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                }
-            ],
-            "name": "IllegalState",
-            "type": "error"
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
         },
         {
+            "anonymous": false,
             "inputs": [
                 {
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "yToken",
+                    "name": "owner",
                     "type": "address"
-                }
-            ],
-            "name": "InvalidYieldToken",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "NoBurnableCredit",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "OnlyKeeper",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "Unauthorized",
-            "type": "error"
-        },
-        {
-            "anonymous": false,
-            "inputs": [],
-            "name": "RefreshStrategies",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
+                },
                 {
-                    "indexed": false,
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "spender",
                     "type": "address"
                 },
                 {
                     "indexed": false,
-                    "internalType": "address",
-                    "name": "transmuter",
-                    "type": "address"
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
                 }
             ],
-            "name": "RegisterAsset",
+            "name": "Approval",
             "type": "event"
         },
         {
@@ -141,37 +109,30 @@
             "anonymous": false,
             "inputs": [
                 {
-                    "indexed": false,
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "alchemist",
+                    "name": "from",
                     "type": "address"
-                }
-            ],
-            "name": "SetAlchemist",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
+                },
                 {
-                    "indexed": false,
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "to",
                     "type": "address"
                 },
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "flowRate",
+                    "name": "value",
                     "type": "uint256"
                 }
             ],
-            "name": "SetFlowRate",
+            "name": "Transfer",
             "type": "event"
         },
         {
             "inputs": [],
-            "name": "ADMIN",
+            "name": "ADMIN_ROLE",
             "outputs": [
                 {
                     "internalType": "bytes32",
@@ -196,46 +157,13 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "value",
-                    "type": "address"
-                }
-            ],
-            "name": "addKeeper",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
             "inputs": [],
-            "name": "alchemist",
+            "name": "MINTER_ROLE",
             "outputs": [
                 {
-                    "internalType": "contract IAlchemistV2",
+                    "internalType": "bytes32",
                     "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "burnCredit",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "debtToken",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
+                    "type": "bytes32"
                 }
             ],
             "stateMutability": "view",
@@ -245,7 +173,31 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "owner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                }
+            ],
+            "name": "allowance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "spender",
                     "type": "address"
                 },
                 {
@@ -254,58 +206,26 @@
                     "type": "uint256"
                 }
             ],
-            "name": "depositFunds",
-            "outputs": [],
+            "name": "approve",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
+                    "internalType": "address",
+                    "name": "account",
                     "type": "address"
                 }
             ],
-            "name": "flowAvailable",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "flowRate",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                }
-            ],
-            "name": "getAvailableFlow",
+            "name": "balanceOf",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -318,15 +238,39 @@
         },
         {
             "inputs": [],
-            "name": "getCredit",
+            "name": "decimals",
             "outputs": [
                 {
-                    "internalType": "uint256",
-                    "name": "credit",
-                    "type": "uint256"
+                    "internalType": "uint8",
+                    "name": "",
+                    "type": "uint8"
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "subtractedValue",
+                    "type": "uint256"
+                }
+            ],
+            "name": "decreaseAllowance",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -351,17 +295,22 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                }
-            ],
-            "name": "getTotalUnderlyingBuffered",
-            "outputs": [
+                    "internalType": "bytes32",
+                    "name": "role",
+                    "type": "bytes32"
+                },
                 {
                     "internalType": "uint256",
-                    "name": "totalBuffered",
+                    "name": "index",
                     "type": "uint256"
+                }
+            ],
+            "name": "getRoleMember",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
                 }
             ],
             "stateMutability": "view",
@@ -370,21 +319,16 @@
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "weightToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "token",
-                    "type": "address"
+                    "internalType": "bytes32",
+                    "name": "role",
+                    "type": "bytes32"
                 }
             ],
-            "name": "getWeight",
+            "name": "getRoleMemberCount",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "weight",
+                    "name": "",
                     "type": "uint256"
                 }
             ],
@@ -437,29 +381,16 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "_admin",
+                    "name": "spender",
                     "type": "address"
                 },
                 {
-                    "internalType": "address",
-                    "name": "_debtToken",
-                    "type": "address"
+                    "internalType": "uint256",
+                    "name": "addedValue",
+                    "type": "uint256"
                 }
             ],
-            "name": "initialize",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "keepers",
+            "name": "increaseAllowance",
             "outputs": [
                 {
                     "internalType": "bool",
@@ -467,101 +398,38 @@
                     "type": "bool"
                 }
             ],
-            "stateMutability": "view",
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "lastFlowrateUpdate",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
+                    "internalType": "address",
+                    "name": "_recipient",
                     "type": "address"
                 },
                 {
                     "internalType": "uint256",
-                    "name": "amount",
+                    "name": "_amount",
                     "type": "uint256"
                 }
             ],
-            "name": "onERC20Received",
+            "name": "mint",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         },
         {
             "inputs": [],
-            "name": "refreshStrategies",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_transmuter",
-                    "type": "address"
-                }
-            ],
-            "name": "registerAsset",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "registeredUnderlyings",
+            "name": "name",
             "outputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "string",
                     "name": "",
-                    "type": "address"
+                    "type": "string"
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "value",
-                    "type": "address"
-                }
-            ],
-            "name": "removeKeeper",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -601,68 +469,45 @@
             "type": "function"
         },
         {
-            "inputs": [
+            "inputs": [],
+            "name": "symbol",
+            "outputs": [
                 {
-                    "internalType": "contract IAlchemistV2",
-                    "name": "_alchemist",
-                    "type": "address"
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
                 }
             ],
-            "name": "setAlchemist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
+            "stateMutability": "view",
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                },
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "_flowRate",
+                    "name": "",
                     "type": "uint256"
                 }
             ],
-            "name": "setFlowrate",
-            "outputs": [],
-            "stateMutability": "nonpayable",
+            "stateMutability": "view",
             "type": "function"
         },
         {
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "weightToken",
+                    "name": "recipient",
                     "type": "address"
                 },
                 {
-                    "internalType": "contract IERC20Upgradeable[]",
-                    "name": "tokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "uint256[]",
-                    "name": "weights",
-                    "type": "uint256[]"
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
                 }
             ],
-            "name": "setWeights",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "bytes4",
-                    "name": "interfaceId",
-                    "type": "bytes4"
-                }
-            ],
-            "name": "supportsInterface",
+            "name": "transfer",
             "outputs": [
                 {
                     "internalType": "bool",
@@ -670,58 +515,15 @@
                     "type": "bool"
                 }
             ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "transmuter",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "",
+                    "name": "sender",
                     "type": "address"
-                }
-            ],
-            "name": "weightings",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "totalWeight",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
                 },
                 {
                     "internalType": "address",
@@ -729,68 +531,22 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "address[]",
-                    "name": "yTokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "bytes[]",
-                    "name": "yTokenParams",
-                    "type": "bytes[]"
-                }
-            ],
-            "name": "withdraw",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "yieldToken",
-                    "type": "address"
-                },
-                {
                     "internalType": "uint256",
-                    "name": "shares",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
-                }
-            ],
-            "name": "withdrawFromAlchemist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "",
+                    "name": "amount",
                     "type": "uint256"
                 }
             ],
-            "name": "yieldTokens",
+            "name": "transferFrom",
             "outputs": [
                 {
-                    "internalType": "address",
+                    "internalType": "bool",
                     "name": "",
-                    "type": "address"
+                    "type": "bool"
                 }
             ],
-            "stateMutability": "view",
+            "stateMutability": "nonpayable",
             "type": "function"
         }
     ],
-    "address": "0x313711e8faab2d3BE55f9F750941c8E70156aF40"
+    "address": "0x8A2F2E0FD65cAEe0622Ee7ba98B67F73717d1683"
 }

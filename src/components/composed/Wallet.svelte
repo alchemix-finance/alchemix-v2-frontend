@@ -9,6 +9,8 @@ import network from '../../stores/network';
 
 let indicatorColor;
 
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+
 /*
  * @dev returns ENS or truncates the long address string for better visuals
  * @param address the wallet address to truncate
@@ -22,7 +24,8 @@ const resolveAddress = (address) => {
  * @dev sets the indicator color to green if the connected network is correct, orange if it is wrong
  * */
 const resolveIndicator = (networkId) => {
-  indicatorColor = networkId === parseInt(process.env.NETWORK_ID, 10) ? 'green1' : 'orange1';
+  const targetNetwork = parseInt(debugging ? process.env.LOCAL_NETWORK_ID : process.env.NETWORK_ID);
+  indicatorColor = networkId === targetNetwork ? 'green1' : 'orange1';
 };
 
 /*

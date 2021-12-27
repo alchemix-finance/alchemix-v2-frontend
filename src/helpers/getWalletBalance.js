@@ -44,7 +44,7 @@ const batchTokenCheck = async (tokens) => {
  * @dev initializes the user's wallet balance with tokens supported by the alchemists
  * */
 const initAlUsdAlchemist = async () => {
-  const contract = getContract('AlchemistV2');
+  const contract = getContract('AlchemistV2_alUSD');
   const yieldTokens = await contract.getSupportedYieldTokens();
   const underlyingTokens = await contract.getSupportedUnderlyingTokens();
   tokenList.push(...yieldTokens);

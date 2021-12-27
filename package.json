@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "license": "ISC",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack",
-    "dev": "yarn lint && webpack serve --port 5005",
+    "abi": "bash ./scripts/updateAbi.sh",
+    "build": "yarn abi && cross-env NODE_ENV=production webpack",
+    "dev": "yarn abi && yarn lint && webpack serve --port 5005",
     "lint": "yarn run prettier && yarn run lint:js",
     "lint:js": "npx eslint src/*.js src/**/*.js",
     "lint:svelte": "npx eslint src/*.svelte src/**/*.svelte",
