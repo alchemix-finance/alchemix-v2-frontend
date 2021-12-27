@@ -25,6 +25,8 @@ account.subscribe((val) => {
   _account = val;
 });
 
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+
 function gqlConnector(queryBody) {
   return {
     url: `${snapshotHubUrl}/graphql/`,
@@ -61,7 +63,7 @@ export async function getOpenProposals() {
   }`;
   axios(gqlConnector(query))
     .then((result) => {
-      console.log('result of snapshot', result.data.data.proposals);
+      if (debugging) console.log('result of snapshot', result.data.data.proposals);
       _governance.proposals = result.data.data.proposals;
       _governance.fetching = false;
       governance.set({ ..._governance });
@@ -72,7 +74,8 @@ export async function getOpenProposals() {
 }
 
 export async function sendVote(voteData) {
-  console.log(_account.signer);
+  if (debugging) console.log(_account.signer);
   // TODO check if supplied choice is valid for provided proposal
+  // TODO callback to directly reflect a success/failure of voting on the governance page
   await client.vote(_account.signer.provider, _account.address, space, voteData);
 }

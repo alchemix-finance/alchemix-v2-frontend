@@ -4,7 +4,7 @@ const genericAbi = [
   'function symbol() view returns (string)',
   'function balanceOf(address) view returns (uint)',
   'function decimals() view returns (uint8)',
-  'function approve(address, uint) external returns (bool)',
+  'function approve(address, uint) nonpayable returns (bool)',
   'function allowance(address, address) view returns (uint)',
 ];
 

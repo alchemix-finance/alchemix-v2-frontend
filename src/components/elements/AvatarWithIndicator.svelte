@@ -1,8 +1,8 @@
 <script>
 import * as jdenticon from 'jdenticon';
 
-export let connected = false;
 export let hash;
+export let bgColor = 'red1';
 
 $: pfp = jdenticon.toSvg(hash || {}, 24);
 </script>
@@ -12,8 +12,6 @@ $: pfp = jdenticon.toSvg(hash || {}, 24);
     {@html pfp}
   </div>
   <div
-    class="absolute border-2 border-grey10 -bottom-0.5 -right-0.5 rounded-full w-2.5 h-2.5 bg-{connected
-      ? 'green1'
-      : 'red1'}"
+    class="absolute border-2 border-grey10 -bottom-0.5 -right-0.5 rounded-full w-2.5 h-2.5 bg-{bgColor}"
   ></div>
 </div>

@@ -62,7 +62,7 @@ const getTokenAllowance = async (token, owner, spender) => {
   const contract = new ethers.Contract(token, genericAbi, provider);
   const allowanceCheck = contract.allowance(owner, spender);
   console.log(BigNumber.from(await allowanceCheck).toString());
-  return BigNumber.from(await allowanceCheck).toString() > 0;
+  return BigNumber.from(await allowanceCheck).toString() !== '0';
 };
 
 export { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals, getTokenAllowance };

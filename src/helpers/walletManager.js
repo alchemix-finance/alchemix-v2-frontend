@@ -4,13 +4,19 @@ import Onboard from 'bnc-onboard';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
 import toastConfig from '../stores/toast';
+import network from '../stores/network';
 
 let _toastConfig;
+let _network;
 let ethersProvider;
 // let rpcUrl;
 
 toastConfig.subscribe((val) => {
   _toastConfig = val;
+});
+
+network.subscribe((val) => {
+  _network = val;
 });
 
 // @dev prepare list of supported wallets according to
@@ -49,6 +55,8 @@ const onboard = Onboard({
     },
     // @dev react to changes in the wallet's network
     network: async (result) => {
+      _network.id = result;
+      network.set({ ..._network });
       if (debugging) console.log('network changed to', result);
     },
   },
