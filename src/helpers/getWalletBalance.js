@@ -10,13 +10,7 @@ walletBalance.subscribe((val) => {
 });
 
 // @dev list of tokens to force-watch
-const tokenList = [
-  '0xdbdb4d16eda451d0503b854cf79d55697f90c8df',
-  '0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9',
-  '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',
-  '0xc9da65931abf0ed1b74ce5ad8c041c4220940368',
-  '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
-];
+const tokenList = ['0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9'];
 
 /*
  * @dev queries token details for a list of tokens

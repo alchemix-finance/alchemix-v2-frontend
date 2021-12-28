@@ -6,17 +6,20 @@ import walletBalance from '../../../../stores/walletBalance';
 
 const yieldToken = '0xdeadbeef';
 const underlyingToken = '0xcafefeed';
+const loanRatio = '0.5';
+const borrowLimit = '0.0';
+const userDeposit = '0.0';
 
 walletBalance.set({
   tokens: [
     {
       address: '0xdeadbeef',
-      symbol: 'yield',
+      symbol: 'yvDAI',
       balance: '1337',
     },
     {
       address: '0xcafefeed',
-      symbol: 'under',
+      symbol: 'DAI',
       balance: '31337',
     },
   ],
@@ -24,7 +27,7 @@ walletBalance.set({
 </script>
 
 <Meta
-  title="Modals/Vault/Deposit"
+  title="Modals/Vault"
   component="{Deposit}"
   argTypes="{{
     yieldToken: { controls: 'string' },
@@ -38,6 +41,8 @@ walletBalance.set({
   </LocaleWrapper>
 </Template>
 
-<Story name="Deposit Yield Token" args="{{ yieldToken }}" />
-<Story name="Deposit Underlying Token" args="{{ underlyingToken }}" />
-<Story name="Deposit Both Token" args="{{ yieldToken, underlyingToken }}" />
+<Story
+  id="DepositModal"
+  name="Deposit"
+  args="{{ yieldToken, underlyingToken, loanRatio, borrowLimit, userDeposit }}"
+/>

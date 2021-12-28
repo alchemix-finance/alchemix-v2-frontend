@@ -11,7 +11,7 @@ import { BarLoader } from 'svelte-loading-spinners';
 import account from '../stores/account';
 import vaults from '../stores/vaults';
 import { aggregate } from '../stores/vaults';
-import getContract from '../helpers/getContract';
+import getContract, { getFragment } from '../helpers/getContract';
 import { getTokenSymbol, getTokenAllowance } from '../helpers/getTokenData';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import Table from '../components/composed/Table/Table.svelte';
@@ -127,7 +127,11 @@ const provider = getProvider();
 const abiCoder = utils.defaultAbiCoder;
 
 const deposit = async () => {
+  const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
   const amountToWei = utils.parseEther($tempTx.amount.toString());
+  if (!allowance) {
+    await setTokenAllowance($tempTx.yieldToken, contract.address);
+  }
   console.log(amountToWei);
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
@@ -151,10 +155,18 @@ const deposit = async () => {
 };
 
 const depositUnderlying = async () => {
-  const allowance = await getTokenAllowance($tempTx.underlyingToken, $account.address, contract.address);
-  const amountToWei = utils.parseEther($tempTx.amount.toString());
-  if (!allowance) {
+  const allowanceUnderlying = await getTokenAllowance(
+    $tempTx.underlyingToken,
+    $account.address,
+    contract.address,
+  );
+  const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
+  const amountToWei = utils.parseEther($tempTx.amountUnderlying.toString());
+  if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
+  }
+  if (!allowanceYield) {
+    await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
   // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
@@ -177,6 +189,35 @@ const depositUnderlying = async () => {
     }
     tempClear();
   }
+};
+
+const multicall = async () => {
+  const allowanceUnderlying = await getTokenAllowance(
+    $tempTx.underlyingToken,
+    $account.address,
+    contract.address,
+  );
+  const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
+  if (!allowanceUnderlying) await setTokenAllowance($tempTx.underlyingToken, contract.address);
+  if (!allowanceYield) await setTokenAllowance($tempTx.yieldToken, contract.address);
+  try {
+    let tx;
+    setPendingWallet();
+    const deposit = null;
+    const depositUnderlying = null;
+    const dataPackage = abiCoder.encode(['bytes[]'], [deposit, depositUnderlying]);
+    tx = await contract.multicall(dataPackage, {
+      gasPrice: getUserGas(),
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+    });
+  } catch (e) {
+    setError(e.message);
+    console.debug(e);
+  }
+  tempClear();
 };
 
 onMount(async () => {
@@ -261,6 +302,7 @@ onMount(async () => {
     $aggregate.deposited = deposited;
     $vaults.fetching = false;
   }
+  console.log('fragment', getFragment('AlchemistV2_alUSD'));
 });
 
 $: if ($vaults.alusd.length > 0) {
@@ -280,6 +322,7 @@ $: if ($vaults.alusd.length > 0) {
 const methodLookup = {
   deposit: deposit,
   depositUnderlying: depositUnderlying,
+  multicall: multicall,
 };
 
 $: if ($tempTx.method !== null) {

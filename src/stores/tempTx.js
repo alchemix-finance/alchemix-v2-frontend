@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 
 const tempTx = writable({
-  amount: null,
+  amountYield: null,
+  amountUnderlying: null,
   method: null,
   yieldToken: null,
   underlyingToken: null,
