@@ -102,7 +102,7 @@ const rows = [
       colSize: 2,
     },
     col5: {
-      value: '$1.ada;slkfj;aslkfja;sdlkfj;al sdkfj;alksdfj;sadlkfj;asdlfkj',
+      value: '$1.42M',
       colSize: 4,
     },
     col6: {

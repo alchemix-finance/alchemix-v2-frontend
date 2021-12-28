@@ -173,6 +173,10 @@ onMount(async () => {
             alignment: 'justify-self-start',
           },
           col2: {
+            //NOTE FROM SCOOPY HERE
+            //consider getting the price of the token from zapper/coingecko
+            // (or combination of lp token virtual price,
+            // the asset it is paired with, and derive from that)
             value: tvl,
             colSize: 2,
           },
