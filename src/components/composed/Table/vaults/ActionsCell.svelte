@@ -6,6 +6,9 @@ import { modalStyle } from '../../../../stores/modal';
 
 export let yieldToken;
 export let underlyingToken;
+export let loanRatio;
+export let userDeposit;
+export let borrowLimit;
 
 const { open } = getContext('simple-modal');
 

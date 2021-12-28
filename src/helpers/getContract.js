@@ -24,10 +24,10 @@ export default function getContract(selector) {
 /*
  * @dev returns a contract's fragment
  * @param contract the contract's filename without extension
- * @returns human readable abi
+ * @returns new contract interface
  * */
 export function getFragment(selector) {
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const contract = require(`../abi/${selector}.json`);
-  return new Iface(contract.abi).format(ethers.utils.FormatTypes.full);
+  return new Iface(contract.abi);
 }

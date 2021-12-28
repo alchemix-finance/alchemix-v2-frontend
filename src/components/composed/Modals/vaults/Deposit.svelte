@@ -72,6 +72,7 @@ onMount(() => {
     underlyingSymbol = activeUnderlying.symbol;
     console.log(activeUnderlying);
   }
+  console.log('props', yieldToken, underlyingToken, userDeposit, loanRatio, borrowLimit);
 });
 </script>
 

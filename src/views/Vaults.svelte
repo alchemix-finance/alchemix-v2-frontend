@@ -123,6 +123,7 @@ const tempClear = () => {
 };
 
 const contract = getContract('AlchemistV2_alUSD');
+const contractIface = getFragment('AlchemistV2_alUSD');
 const provider = getProvider();
 const abiCoder = utils.defaultAbiCoder;
 
@@ -155,6 +156,7 @@ const deposit = async () => {
 };
 
 const depositUnderlying = async () => {
+  console.log('depositing underlying');
   const allowanceUnderlying = await getTokenAllowance(
     $tempTx.underlyingToken,
     $account.address,
@@ -162,6 +164,8 @@ const depositUnderlying = async () => {
   );
   const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
   const amountToWei = utils.parseEther($tempTx.amountUnderlying.toString());
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  console.log(gas);
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
   }
@@ -177,7 +181,7 @@ const depositUnderlying = async () => {
       setPendingWallet();
       const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
       tx = await contract.depositUnderlying($tempTx.yieldToken, amountToWei, $account.address, dataPackage, {
-        gasPrice: getUserGas(),
+        gasPrice: gas,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
@@ -185,7 +189,7 @@ const depositUnderlying = async () => {
       });
     } catch (e) {
       setError(e.message);
-      console.debug(e);
+      console.log(e);
     }
     tempClear();
   }
@@ -198,13 +202,25 @@ const multicall = async () => {
     contract.address,
   );
   const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
+  const yieldToWei = utils.parseEther($tempTx.amountYield.toString());
+  const underlyingToWei = utils.parseEther($tempTx.amountUnderlying.toString());
   if (!allowanceUnderlying) await setTokenAllowance($tempTx.underlyingToken, contract.address);
   if (!allowanceYield) await setTokenAllowance($tempTx.yieldToken, contract.address);
   try {
     let tx;
     setPendingWallet();
-    const deposit = null;
-    const depositUnderlying = null;
+    const deposit = contractIface.encodeFunctionData('deposit', [
+      $tempTx.yieldToken,
+      yieldToWei,
+      $account.address,
+    ]);
+    const underlyingData = abiCoder.encode(['bytes[]'], [[]]);
+    const depositUnderlying = contractIface.encodeFunctionData('depositUnderlying', [
+      $tempTx.yieldToken,
+      underlyingToWei,
+      $account.address,
+      underlyingData,
+    ]);
     const dataPackage = abiCoder.encode(['bytes[]'], [deposit, depositUnderlying]);
     tx = await contract.multicall(dataPackage, {
       gasPrice: getUserGas(),
@@ -239,6 +255,7 @@ onMount(async () => {
       const tvl = utils.formatEther(params.balance.toString());
       const position = await contract.positions($account.address, token);
       const balance = utils.formatEther(position.balance.toString());
+      console.log(balance, ratioFormatted);
       const fake = () => Math.floor(Math.random() * 100000);
       const fakeBalance = fake();
       const fakeBorrow = balance / ratioFormatted;
@@ -291,6 +308,9 @@ onMount(async () => {
             colSize: 3,
             yieldToken: token,
             underlyingToken: underlyingToken,
+            userDeposit: balance,
+            loanRatio: ratioFormatted,
+            borrowLimit: fakeBorrow,
           },
         },
       };
@@ -302,7 +322,6 @@ onMount(async () => {
     $aggregate.deposited = deposited;
     $vaults.fetching = false;
   }
-  console.log('fragment', getFragment('AlchemistV2_alUSD'));
 });
 
 $: if ($vaults.alusd.length > 0) {
