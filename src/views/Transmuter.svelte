@@ -18,7 +18,6 @@ import walletBalance from '../stores/walletBalance';
 import { BigNumber, ethers } from 'ethers';
 import { onMount } from 'svelte';
 import { BarLoader } from 'svelte-loading-spinners';
-import Account from '../../../alchemix-dao-frontend/src/components/Account.svelte';
 
 const toggleButtons = {
   transmuterSelect: {

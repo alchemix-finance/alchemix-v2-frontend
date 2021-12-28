@@ -8,7 +8,7 @@ const genericAbi = [
   'function allowance(address, address) view returns (uint)',
 ];
 
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+// const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
 // @dev mainly used for wallet balance checks of supported collaterals
 const externalContracts = {
