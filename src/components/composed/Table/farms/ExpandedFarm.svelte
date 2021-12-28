@@ -1,5 +1,5 @@
 <script>
-import { utils, BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 import getContract from '../../../../helpers/getContract';

@@ -6,6 +6,7 @@ import walletBalance from '../../stores/walletBalance';
 import { onMount } from 'svelte';
 import { BarLoader } from 'svelte-loading-spinners';
 import BalanceEntry from '../elements/BalanceEntry.svelte';
+import initBalance from '../../helpers/getWalletBalance';
 
 let loading = true;
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
@@ -13,7 +14,7 @@ const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 // @dev iterates over all supported collaterals and populates state accordingly
 const initBalances = async () => {
   ethers
-    .getDefaultProvider(debugging ? 'http://localhost:8545' : 'homestead')
+    .getDefaultProvider(debugging ? process.env.LOCAL_NETWORK_URL : 'homestead')
     .getBalance($account.address)
     .then(async (balance) => {
       const ethBal = ethers.utils.formatUnits(balance, 18);
@@ -27,14 +28,7 @@ const initBalances = async () => {
       ];
     })
     .then(async () => {
-      for (const token of externalContracts.tokens) {
-        const contract = new ethers.Contract(token.address, token.abi, $account.signer);
-        const balance = ethers.utils.formatUnits(await contract.balanceOf($account.address), 18);
-        const symbol = await contract.symbol();
-        const name = await contract.name();
-        const address = contract.address;
-        $walletBalance.tokens = [...$walletBalance.tokens, { symbol, name, balance, address }];
-      }
+      await initBalance();
     })
     .finally(() => {
       loading = false;

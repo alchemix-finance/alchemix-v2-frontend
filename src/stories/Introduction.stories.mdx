@@ -132,3 +132,21 @@ To fix this, simply use the `LocaleWrapper.svelte` file like so within the stori
   </LocaleWrapper>
 </Template>
 ```
+
+## Store Interaction
+
+Implementing and working with Svelte's store works just like in regular svelte components:
+
+```javascript
+import store from '../store'
+```
+
+Updating values can be done using the store's `.set()` function:
+
+```javascript
+import store from '../store'
+
+store.set({
+    key: 'value'
+})
+```

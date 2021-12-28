@@ -1,7 +1,4 @@
 <script>
-import { modal } from '../../../../stores/modal';
-import { bind } from '../../../elements/Modal.svelte';
-import Modal from '../../../elements/Modal.svelte';
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 import account from '../../../../stores/account';
@@ -117,11 +114,6 @@ const claim = async () => {
 };
 
 
-const showModal = () => {
-  // modal.set(bind(Modal, { title: 'Web3', message: 'Transaction pending' }));
-  modal.set(Modal);
-};
-
 const startTransaction = async () => {
   await alert('metamask tx started');
 };
@@ -144,7 +136,6 @@ const startTransaction = async () => {
       {:else}
       <Button label="Deposit" on:clicked="{showModal}" />
       {/if}
-
     </div>
   </div>
 

@@ -126,7 +126,7 @@ const rows = [
     col1: {
       CellComponent: StrategyTitleCell,
       strategyName: 'Yearn',
-      strategyFullName: 'Yearn vaults',
+      strategyFullName: 'Yearn vaultAlUsd',
       icon: 'images/token-svgs/yearn.svg',
       colSize: 2,
     },

@@ -249,7 +249,7 @@ $: if ($transmuters.state.length > 0) {
           on:clicked="{() => vaultFilter({ id: 0, filter: 'all' })}"
         >
           <p slot="leftSlot">
-            <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
+            <img src="images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
         <Button
@@ -262,7 +262,7 @@ $: if ($transmuters.state.length > 0) {
           on:clicked="{() => vaultFilter({ id: 0, filter: 'aleth' })}"
         >
           <p slot="leftSlot">
-            <img src="images/icons/aleth_med.svg" alt="aleth vaults" class="w-5 h-5" />
+            <img src="images/icons/aleth_med.svg" alt="aleth vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
         <Button
@@ -275,7 +275,7 @@ $: if ($transmuters.state.length > 0) {
           on:clicked="{() => vaultFilter({ id: 0, filter: 'alusd' })}"
         >
           <p slot="leftSlot">
-            <img src="images/icons/alusd_med.svg" alt="alusd vaults" class="w-5 h-5" />
+            <img src="images/icons/alusd_med.svg" alt="alusd vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
       </div>

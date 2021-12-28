@@ -3,8 +3,9 @@ const genericAbi = [
   'function name() view returns (string)',
   'function symbol() view returns (string)',
   'function balanceOf(address) view returns (uint)',
+  'function decimals() view returns (uint8)',
+  'function approve(address, uint) nonpayable returns (bool)',
   'function allowance(address, address) view returns (uint)',
-  'function approve(address, uint) nonpayable returns(bool)',
 ];
 
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
@@ -20,6 +21,16 @@ const externalContracts = {
       // 'dai.tokens.ethers.eth',
       // @dev not used anywhere aside from keeping track inside this file
       symbol: 'DAI',
+    },
+    {
+      abi: [...genericAbi],
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      symbol: 'USDC',
+    },
+    {
+      abi: [...genericAbi],
+      address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      symbol: 'USDT',
     },
     {
       abi: [...genericAbi],
@@ -41,15 +52,13 @@ const externalContracts = {
       address: '0xc9da65931abf0ed1b74ce5ad8c041c4220940368',
       symbol: 'saddlealETH',
     },
-    {
-      abi: [...genericAbi],
-      address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
-      symbol: 'tALCX',
-    },
-
+    // {
+    //   abi: [...genericAbi],
+    //   address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
+    //   symbol: 'tALCX',
+    // },
   ],
 };
 
 export default externalContracts;
-
 export { genericAbi };
