@@ -124,6 +124,7 @@ const vaultFilter = (filter) => {
 
 onMount(async () => {
   if ($stakingPools.fetching) {
+    // TODO add check for race condition on initialized wallet balance
     const poolCount = BigNumber.from(await pools.poolCount()).toString();
 
     for (let i = 0; i < poolCount; i++) {
@@ -257,35 +258,41 @@ $: if ($stakingPools.retired.length > 0) {
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
-        <Button
-          label="Active"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.farmSelect.active}"
-          solid="{false}"
-          borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'active' })}"
-        />
+        {#if $stakingPools.fetching}
+          <p class="inline-block self-center">{$_('fetching_data')}</p>
+        {:else}
+          <Button
+            label="Active"
+            width="w-max"
+            canToggle="{true}"
+            selected="{toggleButtons.farmSelect.active}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => vaultFilter({ id: 0, filter: 'active' })}"
+          />
 
-        <Button
-          label="Retired"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.farmSelect.retired}"
-          solid="{false}"
-          borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'retired' })}"
-        />
+          {#if $stakingPools.retired.length > 0}
+            <Button
+              label="Retired"
+              width="w-max"
+              canToggle="{true}"
+              selected="{toggleButtons.farmSelect.retired}"
+              solid="{false}"
+              borderSize="0"
+              on:clicked="{() => vaultFilter({ id: 0, filter: 'retired' })}"
+            />
+          {/if}
 
-        <Button
-          label="External"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.farmSelect.external}"
-          solid="{false}"
-          borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'external' })}"
-        />
+          <Button
+            label="External"
+            width="w-max"
+            canToggle="{true}"
+            selected="{toggleButtons.farmSelect.external}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => vaultFilter({ id: 0, filter: 'external' })}"
+          />
+        {/if}
       </div>
       <div slot="body">
         {#if $stakingPools.fetching}

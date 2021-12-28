@@ -3,6 +3,14 @@ import { onMount } from 'svelte';
 import BarChart from './Charts/BarChart.svelte';
 import tailwind from '../../../tailwind.config';
 
+export let totalDeposit;
+export let totalDebtLimit;
+export let aggregatedApy;
+export let totalDebt;
+export let totalInterest;
+
+const withdrawable = totalDeposit - totalDebt;
+
 // TODO: use tailwind exported colors everywhere
 const GREY = '#74767C';
 const LIGHT_GREY = '#2F323E';
@@ -33,11 +41,11 @@ onMount(() => {
 });
 
 const data = {
-  labels: ['Widthdrawable', 'Debt', 'Interest'],
+  labels: ['Withdrawable', 'Debt', 'Interest'],
   datasets: [
     {
       label: 'Total amount',
-      data: [9000, 4000, 2000],
+      data: [withdrawable, totalDebt, totalInterest],
       backgroundColor: [background1],
       borderRadius: 5,
     },
@@ -75,13 +83,13 @@ const options = {
       },
     },
     y: {
-      suggestedMax: 10000,
+      suggestedMax: totalDeposit,
 
       ticks: {
         padding: 10,
 
         callback: function (value) {
-          if ([0, 5000, 10000].includes(value)) {
+          if ([0, totalDebtLimit, totalDeposit].includes(value)) {
             return value.toLocaleString();
           }
 
@@ -105,20 +113,20 @@ const options = {
 
         color: (context) => {
           /*
-              index: 2
-              type: "tick"s
-              tick: {
-                $context: {tick: {…}, index: 2, type: 'tick'}
-                label: "2,000"
-                value: 2000
-              }
-            */
+                                      index: 2
+                                      type: "tick"s
+                                      tick: {
+                                        $context: {tick: {…}, index: 2, type: 'tick'}
+                                        label: "2,000"
+                                        value: 2000
+                                      }
+                                    */
 
-          if (context.tick.value === 5000) {
+          if (context.tick.value === totalDebtLimit) {
             return GREEN;
           }
 
-          if (context.tick.value === 10000) {
+          if (context.tick.value === totalDeposit) {
             return ORANGE;
           }
 
@@ -141,7 +149,7 @@ const options = {
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">Total Deposit</span>
-          <span class="text-lg">10,000</span>
+          <span class="text-lg">{totalDeposit}</span>
         </div>
         <div class="mr-8 flex items-center">
           <span class="text-green1 mr-05">
@@ -150,16 +158,12 @@ const options = {
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">Debt Limit</span>
-          <span class="text-lg">5,000</span>
+          <span class="text-lg">{totalDebtLimit}</span>
         </div>
         <div class="flex items-center">
           <span class="text-grey2 mr-2">Aggregate APY</span>
-          <span class="text-lg">342%</span>
+          <span class="text-lg">{aggregatedApy}%</span>
         </div>
-      </div>
-      <div class="border border-grey3 rounded p-2 py-0.5 bg-grey10">
-        <span class="text-grey2 mr-2">Today</span>
-        <span class="text-lg">Sept 21, 2020</span>
       </div>
     </div>
     <BarChart data="{data}" options="{options}" />

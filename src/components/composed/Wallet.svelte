@@ -5,6 +5,11 @@ import BorderContainer from '../elements/BorderContainer.svelte';
 import WalletBalance from './WalletBalance.svelte';
 import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
 import account from '../../stores/account';
+import network from '../../stores/network';
+
+let indicatorColor;
+
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
 /*
  * @dev returns ENS or truncates the long address string for better visuals
@@ -15,9 +20,22 @@ const resolveAddress = (address) => {
   return $account.ens || `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
 };
 
+/*
+ * @dev sets the indicator color to green if the connected network is correct, orange if it is wrong
+ * */
+const resolveIndicator = (networkId) => {
+  const targetNetwork = parseInt(debugging ? process.env.LOCAL_NETWORK_ID : process.env.NETWORK_ID);
+  indicatorColor = networkId === targetNetwork ? 'green1' : 'orange1';
+};
+
+/*
+ * @dev opens etherscan for the currently logged in wallet
+ * */
 function openEtherscan() {
   window.open(`https://etherscan.io/address/${$account.address}`, '_blank');
 }
+
+$: $network, resolveIndicator($network.id);
 </script>
 
 <style>
@@ -38,7 +56,7 @@ function openEtherscan() {
         on:clicked="{openEtherscan}"
       >
         <div slot="leftSlot">
-          <AvatarWithIndicator hash="{$account.address}" connected="{true}" />
+          <AvatarWithIndicator hash="{$account.address}" bgColor="{indicatorColor}" />
         </div>
       </Button>
       <WalletBalance />

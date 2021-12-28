@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "license": "ISC",
   "scripts": {
+    "abi": "bash ./scripts/updateAbi.sh",
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "yarn lint && webpack serve --port 5005",
+    "dev": "yarn abi && yarn lint && webpack serve --port 5005",
     "lint": "yarn run prettier && yarn run lint:js",
     "lint:js": "npx eslint src/*.js src/**/*.js",
     "lint:svelte": "npx eslint src/*.svelte src/**/*.svelte",
@@ -67,6 +68,8 @@
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
     "dotenv": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-svelte3": "^3.2.1",
     "ethers": "^5.1.4",
     "https-browserify": "^1.0.0",
@@ -82,7 +85,7 @@
     "svelte-eventbus": "^0.1.1",
     "svelte-i18n": "^3.3.9",
     "svelte-routing": "^1.6.0",
-    "svelte-simple-modal": "^0.10.1",
+    "svelte-simple-modal": "^1.2.0",
     "tailwindcss": "^2.1.1"
   }
 }
