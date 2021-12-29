@@ -32,7 +32,13 @@ let claimAmount;
 // const
 const gas = utils.parseUnits(getUserGas().toString(), 'gwei')
 const provider = getProvider();
-
+const alTokenData = $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
+let alTokenBalance
+if (alTokenData) {
+  alTokenBalance = alTokenData.balance
+  console.log("ATB", alTokenBalance)
+}
+console.log("altokenbal", alTokenData)
 const approve = async () => {
   const unlimitedAmount = ethers.constants.MaxUint256;
   try {
@@ -57,7 +63,7 @@ const deposit = async () => {
     await approve();
   }
 
-  if (depositAmount > alTokenContract.balance) {
+  if (depositAmount > alTokenBalance) {
     setError('Trying to deposit more than available');
   } else {
     try {
@@ -123,7 +129,7 @@ const claim = async () => {
 
 const setDepositValue = (event) => {
   // TODO if new value < 1 wei -> depositAmount = 1 wei
-  depositAmount = (parseFloat(alTokenContract.balance) / 100) * event.detail.value;
+  depositAmount = (parseFloat(alTokenBalance) / 100) * event.detail.value;
 };
 const setWithdrawValue = (event) => {
   // TODO if new value < 1 wei -> withdrawAmount = 1 wei
@@ -142,7 +148,7 @@ const startTransaction = async () => {
     <p class="text-sm text-lightgrey10 self-start">Available</p>
     <p></p>
     <div class="w-full self-center">
-      <p>0 {alTokenSymbol}</p>
+      <p>{alTokenBalance} {alTokenSymbol}</p>
     </div>
     <input type="number" bind:value="{depositAmount}" />
     <div class="w-full self-end">

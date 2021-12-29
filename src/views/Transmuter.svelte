@@ -98,10 +98,10 @@ const format = ethers.utils.formatUnits;
 const goTo = (url) => {
   window.open(url, '_blank');
 };
-
+$: precheck = $account.address && $transmuters.fetching && $walletBalance.tokens.length > 2;
 onMount(async () => {
   console.log($transmuters.fetching);
-  if ($account.address && $transmuters.fetching) {
+  if (precheck) {
     for (const contract of transmuterContracts) {
       const getAlToken = await contract.syntheticToken();
       const alToken = getAlToken.toLowerCase();
