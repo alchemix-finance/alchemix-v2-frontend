@@ -7,6 +7,7 @@ export let borderColor = 'grey5';
 export let backgroundColor = 'grey10';
 export let hoverColor = 'grey1';
 export let textColor = 'white2';
+export let textColorInactive = 'lightgrey20';
 export let solid = true;
 export let borderSize = '2';
 export let uppercase = false;
@@ -37,7 +38,7 @@ const clickEvent = () => {
     overflow-ellipsis
     {height}
     {width}
-    text-{textColor}
+    text-{canToggle ? (selected ? textColor : textColorInactive) : `${textColor} text-opacity-80`}
     {fontSize}
     {uppercase ? 'uppercase' : ''}
     {selected ? `bg-${hoverColor}` : solid ? `bg-${backgroundColor}` : `bg-${backgroundColor} bg-opacity-30`}
@@ -47,6 +48,7 @@ const clickEvent = () => {
     ? `hover:bg-${backgroundColor}`
     : `bg-${hoverColor}`}
     hover:{disabled ? 'cursor-not-allowed' : noHoverEffect ? 'cursor-default' : 'cursor-pointer'}
+    hover:text-opacity-100
     disabled:opacity-50
     transition-all
     "

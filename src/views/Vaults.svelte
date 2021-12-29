@@ -162,15 +162,11 @@ const depositUnderlying = async () => {
     $account.address,
     contract.address,
   );
-  const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
   const amountToWei = utils.parseEther($tempTx.amountUnderlying.toString());
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   console.log(gas);
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
-  }
-  if (!allowanceYield) {
-    await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
   // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
@@ -245,8 +241,8 @@ onMount(async () => {
     console.log('mint', await contract.mintAllowance($account.address, $account.address));
     const ratio = await contract.minimumCollateralization();
     const ratioFormatted = utils.formatEther(ratio.toString());
-    console.log('ratio', utils.formatEther(ratio.toString()));
     for (const token of yieldTokens) {
+      console.log('ratio', utils.formatEther(ratio.toString()));
       const params = await contract.getYieldTokenParameters(token);
       const underlyingToken = params.underlyingToken;
       console.log(underlyingToken);
