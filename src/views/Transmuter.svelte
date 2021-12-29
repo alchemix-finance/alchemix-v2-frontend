@@ -107,8 +107,7 @@ onMount(async () => {
       const alToken = getAlToken.toLowerCase();
       const alTokenContract = new ethers.Contract(alToken, genericAbi, $account.signer);
       const alTokenAllowance = await alTokenContract.allowance($account.address, alToken);
-      const alTokenSymbol = await getTokenSymbol(getAlToken)
-      console.log("alusd symbol", alTokenSymbol)
+      const alTokenSymbol = await getTokenSymbol(getAlToken);
       const getUnderlyingToken = await contract.underlyingToken();
       const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
       const getBuffered = await contract.totalBuffered();
@@ -119,20 +118,19 @@ onMount(async () => {
       const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
       const getUnexchangedBalance = await contract.getUnexchangedBalance($account.address);
       const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
-      console.log($walletBalance)
-      const userAlToken =  $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
-      const userUnderlyingToken =   $walletBalance.tokens.find(
-        (userToken) => userToken.address === getUnderlyingToken,
-      );
-      console.log("useraltoken", $walletBalance, userAlToken)
+      console.log($walletBalance);
+      // const userAlToken = await $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
+      // const userUnderlyingToken = await $walletBalance.tokens.find((token) => token.address === getUnderlyingToken);
+      // console.log('useraltoken', userUnderlyingToken);
       const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
       const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
       const totalDeposited = exchangedBN.add(unexchangedBN);
 
-      console.log('scoopy dai balance', userUnderlyingToken);
+      // console.log('scoopy dai balance', userUnderlyingToken);
       console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);
       const expandedProps = {
-
+        alToken: getAlToken,
+        underlyingToken: getUnderlyingToken,
         transmuterContract: contract,
         alTokenContract: alUSD,
         allowance: alTokenAllowance,
@@ -152,7 +150,7 @@ onMount(async () => {
           colSize: 1,
         },
         col2: {
-          value: alTokenSymbol + "-" + underlyingTokenSymbol,
+          value: alTokenSymbol + '-' + underlyingTokenSymbol,
           colSize: 2,
           alignment: 'justify-self-start',
         },

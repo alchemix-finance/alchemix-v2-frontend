@@ -2,6 +2,7 @@
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 import account from '../../../../stores/account';
+import walletBalance from '../../../../stores/walletBalance';
 import getUserGas from '../../../../helpers/getUserGas';
 import { getProvider } from '../../../../helpers/walletManager';
 import {
@@ -11,6 +12,7 @@ import {
   setError,
 } from '../../../../helpers/setToast';
 import { ethers, utils } from 'ethers';
+import { genericAbi } from '../../../../stores/externalContracts';
 
 export let transmuterConfig = {};
 export let alToken;
@@ -28,7 +30,6 @@ let withdrawAmount;
 let claimAmount;
 
 // const
-
 const gas = utils.parseUnits(getUserGas().toString(), 'gwei')
 const provider = getProvider();
 
@@ -122,7 +123,7 @@ const claim = async () => {
 
 const setDepositValue = (event) => {
   // TODO if new value < 1 wei -> depositAmount = 1 wei
-  depositAmount = (parseFloat(token.balance) / 100) * event.detail.value;
+  depositAmount = (parseFloat(alTokenContract.balance) / 100) * event.detail.value;
 };
 const setWithdrawValue = (event) => {
   // TODO if new value < 1 wei -> withdrawAmount = 1 wei
