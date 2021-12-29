@@ -15,7 +15,7 @@ const { open } = getContext('simple-modal');
 const openDeposit = () => {
   open(
     Deposit,
-    { yieldToken, underlyingToken },
+    { yieldToken, underlyingToken, loanRatio, userDeposit, borrowLimit },
     { ...modalStyle },
     {
       onClosed: () => {

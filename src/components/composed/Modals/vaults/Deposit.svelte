@@ -3,7 +3,6 @@ import { onMount } from 'svelte';
 import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
 import BorderContainer from '../../../elements/BorderContainer.svelte';
 import Button from '../../../elements/Button.svelte';
-import BalanceQuickSelect from '../../../composed/BalanceQuickSelect';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
 
@@ -18,46 +17,37 @@ let yieldSymbol;
 let underlyingBalance;
 let underlyingSymbol;
 
-let yieldDeposit = 0;
-let underlyingDeposit = 0;
+let yieldDeposit;
+let underlyingDeposit;
 let totalDeposit;
-
-let projectedTotalDeposit;
 let projectedDebtLimit;
 
-const toggleMode = {
-  yield: true,
-  underlying: false,
-  combo: false,
-};
-
-const buttonToggler = (key) => {
-  Object.keys(toggleMode).forEach((entry) => {
-    if (toggleMode[entry] !== key) {
-      toggleMode[entry] = false;
-    }
-  });
-  toggleMode[key] = true;
-};
+let depositDisabled = true;
 
 const deposit = () => {
   const yieldAmnt = parseFloat(yieldDeposit);
   const udrlyAmnt = parseFloat(underlyingDeposit);
-  if (yieldAmnt > 0) $tempTx.amountYield = yieldAmnt;
-  if (udrlyAmnt > 0) $tempTx.amountUnderlying = udrlyAmnt;
+  if (yieldAmnt) $tempTx.amountYield = yieldAmnt;
+  if (udrlyAmnt) $tempTx.amountUnderlying = udrlyAmnt;
   $tempTx.yieldToken = yieldToken;
   $tempTx.underlyingToken = underlyingToken;
-  if (yieldAmnt > 0 && udrlyAmnt > 0) {
+  if (yieldAmnt && udrlyAmnt) {
     $tempTx.method = 'multicall';
-  } else if (yieldAmnt > 0 && udrlyAmnt <= 0) {
+  } else if (yieldAmnt && !udrlyAmnt) {
     $tempTx.method = 'deposit';
   } else {
     $tempTx.method = 'depositUnderlying';
   }
 };
 
-$: yieldDeposit, (totalDeposit = yieldDeposit + underlyingDeposit);
-$: underlyingDeposit, (totalDeposit = yieldDeposit + underlyingDeposit);
+const updateBalances = () => {
+  totalDeposit = (parseFloat(yieldDeposit) || 0) + (parseFloat(underlyingDeposit) || 0);
+  projectedDebtLimit = parseFloat(totalDeposit) / parseFloat(loanRatio);
+  depositDisabled = yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance || !totalDeposit;
+};
+
+$: yieldDeposit, updateBalances();
+$: underlyingDeposit, updateBalances();
 
 onMount(() => {
   if (yieldToken) {
@@ -76,98 +66,134 @@ onMount(() => {
 });
 </script>
 
-<BorderContainer>
-  <div class="flex justify-between mb-4">
-    <Button
-      label="{yieldSymbol}"
-      width="w-full"
-      canToggle="{true}"
-      selected="{toggleMode.yield}"
-      solid="{false}"
-      borderSize="0"
-      on:clicked="{() => buttonToggler('yield')}"
-    />
-    <Button
-      label="{underlyingSymbol}"
-      width="w-full"
-      canToggle="{true}"
-      selected="{toggleMode.underlying}"
-      solid="{false}"
-      borderSize="0"
-      on:clicked="{() => buttonToggler('underlying')}"
-    />
-    <Button
-      label="Combo"
-      width="w-full"
-      canToggle="{true}"
-      selected="{toggleMode.combo}"
-      solid="{false}"
-      borderSize="0"
-      on:clicked="{() => buttonToggler('combo')}"
-    />
+<ContainerWithHeader>
+  <div slot="header" class="p-4 text-sm flex justify-between">
+    <p class="inline-block">Deposit Collateral</p>
+    <p class="inline-block">Loan Ratio: {100 / parseFloat(loanRatio)}%</p>
   </div>
-  <div class="flex flex-col space-y-2">
-    {#if toggleMode.combo}
-      <ContainerWithHeader>
-        <div class="p-2 text-sm" slot="header">
-          <p>Wallet Balance: {yieldBalance} {yieldSymbol}</p>
+  <div slot="body" class="p-4">
+    <div class="flex space-x-4">
+      {#if yieldBalance !== '0.0'}
+        <div class="w-full">
+          <label for="yieldInput" class="text-sm text-lightgrey10">
+            Available: {yieldBalance}
+            {yieldSymbol}
+          </label>
+          <div
+            class="flex bg-grey3 rounded border {yieldDeposit > yieldBalance
+              ? 'border-red3'
+              : 'border-grey3'}"
+          >
+            <div class="w-full">
+              <input
+                type="number"
+                id="yieldInput"
+                bind:value="{yieldDeposit}"
+                placeholder="~0.00 {yieldSymbol}"
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldDeposit >
+                yieldBalance
+                  ? 'text-red3'
+                  : 'text-lightgrey5'}"
+              />
+            </div>
+            <div class="flex flex-col">
+              <Button
+                label="MAX"
+                width="w-full"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => {
+                  yieldDeposit = yieldBalance;
+                }}"
+              />
+              <Button
+                label="CLEAR"
+                width="w-max"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => {
+                  yieldDeposit = null;
+                }}"
+              />
+            </div>
+          </div>
         </div>
-        <div class="p-2" slot="body">
-          <input type="number" bind:value="{yieldDeposit}" />
-          <BalanceQuickSelect />
+      {/if}
+      {#if underlyingBalance !== '0.0'}
+        <div class="w-full">
+          <label for="underlyingInput" class="text-sm text-lightgrey10">
+            Available: {underlyingBalance}
+            {underlyingSymbol}
+          </label>
+          <div
+            class="flex bg-grey3 rounded border {underlyingDeposit > underlyingBalance
+              ? 'border-red3'
+              : 'border-grey3'}"
+          >
+            <div class="w-full">
+              <input
+                type="number"
+                id="underlyingInput"
+                bind:value="{underlyingDeposit}"
+                placeholder="~0.00 {underlyingSymbol}"
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingDeposit >
+                underlyingBalance
+                  ? 'text-red3'
+                  : 'text-lightgrey5'}"
+              />
+            </div>
+            <div class="flex flex-col">
+              <Button
+                label="MAX"
+                width="w-full"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => {
+                  underlyingDeposit = underlyingBalance;
+                }}"
+              />
+              <Button
+                label="CLEAR"
+                width="w-max"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => {
+                  underlyingDeposit = null;
+                }}"
+              />
+            </div>
+          </div>
         </div>
-      </ContainerWithHeader>
-      <ContainerWithHeader>
-        <div class="p-2 text-sm" slot="header">
-          <p>Wallet Balance: {underlyingBalance} {underlyingSymbol}</p>
-        </div>
-        <div class="p-2" slot="body">
-          <input type="number" bind:value="{underlyingDeposit}" />
-          <BalanceQuickSelect />
-        </div>
-      </ContainerWithHeader>
-    {:else if toggleMode.yield}
-      <ContainerWithHeader>
-        <div class="p-2 text-sm" slot="header">
-          <p>Wallet Balance: {yieldBalance} {yieldSymbol}</p>
-        </div>
-        <div class="p-2" slot="body">
-          <input type="number" bind:value="{yieldDeposit}" />
-          <BalanceQuickSelect />
-        </div>
-      </ContainerWithHeader>
-    {:else if toggleMode.underlying}
-      <ContainerWithHeader>
-        <div class="p-2 text-sm" slot="header">
-          <p>Wallet Balance: {underlyingBalance} {underlyingSymbol}</p>
-        </div>
-        <div class="p-2" slot="body">
-          <input type="number" bind:value="{underlyingDeposit}" />
-          <BalanceQuickSelect />
-        </div>
-      </ContainerWithHeader>
-    {/if}
-  </div>
+      {/if}
+    </div>
 
-  <div class="my-2">
-    <ContainerWithHeader>
-      <div class="p-2" slot="body">
-        <p>Loan Ratio: {parseFloat(loanRatio) * 100}%</p>
-        Deposit Balance: {userDeposit} -> {parseFloat(userDeposit) + parseFloat(totalDeposit)}<br />
-        Borrow Limit: {borrowLimit} -> {parseFloat(borrowLimit) +
-          parseFloat(totalDeposit) * parseFloat(loanRatio)}
-      </div>
-    </ContainerWithHeader>
-  </div>
+    <div class="my-4 text-sm text-lightgrey10">
+      Deposit Balance: {userDeposit} -> {totalDeposit || userDeposit}<br />
+      Borrow Limit: {borrowLimit} -> {projectedDebtLimit || borrowLimit}
+    </div>
 
-  <Button
-    label="Deposit"
-    borderColor="green4"
-    backgroundColor="black1"
-    hoverColor="green4"
-    height="h-12"
-    borderSize="1"
-    fontSize="text-md"
-    on:clicked="{() => deposit()}"
-  />
-</BorderContainer>
+    <Button
+      label="Deposit"
+      borderColor="green4"
+      backgroundColor="black1"
+      hoverColor="green4"
+      height="h-12"
+      borderSize="1"
+      fontSize="text-md"
+      on:clicked="{() => deposit()}"
+      disabled="{depositDisabled}"
+    />
+  </div>
+</ContainerWithHeader>

@@ -6,7 +6,7 @@ import walletBalance from '../../../../stores/walletBalance';
 
 const yieldToken = '0xdeadbeef';
 const underlyingToken = '0xcafefeed';
-const loanRatio = '0.5';
+const loanRatio = '2.0';
 const borrowLimit = '0.0';
 const userDeposit = '0.0';
 
