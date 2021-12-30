@@ -1,7 +1,6 @@
 <script>
 import { onMount } from 'svelte';
 import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import BorderContainer from '../../../elements/BorderContainer.svelte';
 import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
