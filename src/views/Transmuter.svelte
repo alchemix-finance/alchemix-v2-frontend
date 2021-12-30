@@ -9,8 +9,7 @@ import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
 import getContract from '../helpers/getContract';
-import { getProvider } from '../helpers/walletManager';
-import { getTokenSymbol, getTokenAllowance } from '../helpers/getTokenSymbol';
+import { getTokenSymbol } from '../helpers/getTokenSymbol';
 import getUserGas from '../helpers/getUserGas';
 import { genericAbi } from '../stores/externalContracts';
 import transmuters from '../stores/transmuters';
@@ -95,14 +94,13 @@ const transmuterContracts = [
 ];
 
 // the alUSD contract
-const alUSD = getContract('AlToken');
 
 const format = ethers.utils.formatUnits;
 
 const goTo = (url) => {
   window.open(url, '_blank');
 };
-$: precheck = $account.address && $transmuters.fetching && $walletBalance.tokens.length > 2;
+
 onMount(async () => {
   console.log($transmuters.fetching);
   if ($transmuters.fetching) {
@@ -111,6 +109,12 @@ onMount(async () => {
       const alToken = getAlToken.toLowerCase();
       const alTokenContract = new ethers.Contract(alToken, genericAbi, $account.signer);
       const alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
+      console.log(
+        'allowance -- transmuter',
+        alTokenAllowance,
+        ' wei for the following transmuter ',
+        contract.address,
+      );
       const alTokenSymbol = await getTokenSymbol(getAlToken);
       const getUnderlyingToken = await contract.underlyingToken();
       const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
@@ -128,7 +132,7 @@ onMount(async () => {
       // console.log('useraltoken', userUnderlyingToken);
       const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
       const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
-      const totalDeposited = exchangedBN.add(unexchangedBN);
+      const totalDeposited = format(exchangedBN.add(unexchangedBN).toString(), 'ether');
 
       // console.log('scoopy dai balance', userUnderlyingToken);
       console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);

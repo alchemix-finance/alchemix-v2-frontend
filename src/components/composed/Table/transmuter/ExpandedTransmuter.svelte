@@ -4,14 +4,16 @@ import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 import account from '../../../../stores/account';
 import walletBalance from '../../../../stores/walletBalance';
 import getUserGas from '../../../../helpers/getUserGas';
+import setTokenAllowance from '../../../../helpers/setTokenAllowance';
 import { getProvider } from '../../../../helpers/walletManager';
 import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
 import { ethers, utils } from 'ethers';
 import { genericAbi } from '../../../../stores/externalContracts';
+import Transmuter from '../../../../views/Transmuter.svelte';
 
-export let transmuterConfig = {};
+// export let transmuterConfig = {};
 export let alToken;
-export let underlyingToken;
+// export let underlyingToken;
 export let transmuterContract;
 export let exchangedBalance;
 export let unexchangedBalance;
@@ -25,6 +27,8 @@ let withdrawAmount;
 let claimAmount;
 
 // const
+const format = ethers.utils.formatUnits;
+
 const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 const provider = getProvider();
 const alTokenData = $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
@@ -34,30 +38,31 @@ if (alTokenData) {
   console.log('ATB', alTokenBalance);
 }
 console.log('altokenbal', alTokenData);
-const approve = async () => {
-  const unlimitedAmount = ethers.constants.MaxUint256;
-  try {
-    let tx;
-    setPendingWallet();
-    tx = await alTokenContract.approve(transmuterContract.address, unlimitedAmount, {
-      gasPrice: gas,
-    });
-    setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
-      setSuccessTx(transaction.transactionHash);
-    });
-  } catch (e) {
-    setError(e.message);
-    console.log(e);
-  }
-};
+// const approve = async () => {
+//   const unlimitedAmount = ethers.constants.MaxUint256;
+//   try {
+//     let tx;
+//     setPendingWallet();
+//     tx = await alTokenContract.approve(transmuterContract.address, unlimitedAmount, {
+//       gasPrice: gas,
+//     });
+//     setPendingTx();
+//     await provider.once(tx.hash, (transaction) => {
+//       setSuccessTx(transaction.transactionHash);
+//     });
+//     alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
+//   } catch (e) {
+//     setError(e.message);
+//     console.log(e);
+//   }
+// };
 
 const deposit = async () => {
   const amountToWei = utils.parseEther(depositAmount.toString());
   if (allowance < amountToWei) {
-    await approve();
+    setTokenAllowance(alToken, transmuterContract);
+    alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
   }
-
   if (depositAmount > alTokenBalance) {
     setError('Trying to deposit more than available');
   } else {
@@ -71,6 +76,9 @@ const deposit = async () => {
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
+      // TODO: NEED TO MAKE IT SO THAT TOKEN BALANCES UPDATE IN THE UI AFTER TRANSACTIONS
+      const unexchangedBalanceWei = await transmuterContract.getUnexchangedBalance($account.address);
+      unexchangedBalance = format(unexchangedBalanceWei.toString(), 'ether');
     } catch (e) {
       setError(e.message);
       console.debug(e);
@@ -93,6 +101,7 @@ const withdraw = async () => {
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
+      // TODO: NEED TO MAKE IT SO THAT TOKEN BALANCES UPDATE IN THE UI AFTER TRANSACTIONS
     } catch (e) {
       setError(e.message);
       console.debug(e);
@@ -115,6 +124,7 @@ const claim = async () => {
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
+      // TODO: NEED TO MAKE IT SO THAT TOKEN BALANCES UPDATE IN THE UI AFTER TRANSACTIONS
     } catch (e) {
       setError(e.message);
       console.debug(e);
@@ -145,7 +155,7 @@ const startTransaction = async () => {
     <div class="w-full self-center">
       <p>{alTokenBalance} {alTokenSymbol}</p>
     </div>
-    <input type="number" bind:value="{depositAmount}" />
+    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{depositAmount}" />
     <div class="w-full self-end">
       <BalanceQuickSelect on:setInputValue="{() => setDepositValue()}" />
       <Button label="Deposit" on:clicked="{() => deposit()}" />
@@ -155,7 +165,7 @@ const startTransaction = async () => {
   <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
     <p class="text-sm text-lightgrey10">Withdrawable</p>
     <p>{unexchangedBalance} {alTokenSymbol}</p>
-    <input type="number" bind:value="{withdrawAmount}" />
+    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{withdrawAmount}" />
     <BalanceQuickSelect on:setInputValue="{() => setWithdrawValue()}" />
     <Button label="Withdraw" on:clicked="{() => withdraw()}" />
   </div>
@@ -163,7 +173,7 @@ const startTransaction = async () => {
   <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
     <p class="text-sm text-lightgrey10">Transmuted</p>
     <p>{exchangedBalance} {underlyingTokenSymbol}</p>
-    <input type="number" bind:value="{claimAmount}" />
+    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{claimAmount}" />
     <BalanceQuickSelect on:setInputValue="{() => setClaimValue()}" />
     <Button label="Claim" on:clicked="{() => claim()}" />
   </div>
