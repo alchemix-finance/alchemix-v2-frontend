@@ -237,11 +237,52 @@ const stupidMint = async () => {
   await contract.mint(amount, $account.address);
 };
 
+const withdraw = () => {
+  setError('withdraw called');
+};
+
+const withdrawUnderlying = () => {
+  setError('withdrawUnderlying called');
+};
+
+const withdrawMulticall = () => {
+  setError('withdrawMulticall called');
+};
+
+const methodLookup = {
+  deposit: deposit,
+  depositUnderlying: depositUnderlying,
+  multicall: multicall,
+  withdraw: withdraw,
+  withdrawUnderlying: withdrawUnderlying,
+  withdrawMulticall: withdrawMulticall,
+};
+
+$: if ($tempTx.method !== null) {
+  closeModal();
+  methodLookup[$tempTx.method]();
+}
+
+$: if ($vaults.alusd.length > 0) {
+  $vaults.alusd.forEach((vault) => {
+    if (vault.type === 'used') {
+      rowsUser.push(vault.row);
+      counterUserStrategies += 1;
+    } else {
+      rowsUnused.push(vault.row);
+      counterUnusedStrategies += 1;
+    }
+    rowsAll.push(vault.row);
+    counterAllStrategies += 1;
+  });
+}
+
 onMount(async () => {
   let deposited = [];
   if ($vaults.fetching) {
     // alUSD Alchemist only atm
     const debt = await contract.accounts($account.address);
+    const debtFormatted = utils.formatEther(debt.debt.toString());
     console.log('debt', utils.formatEther(debt.debt.toString()));
     const yieldTokens = await contract.getSupportedYieldTokens();
     console.log(yieldTokens);
@@ -254,7 +295,9 @@ onMount(async () => {
       const underlyingToken = params.underlyingToken;
       console.log(underlyingToken);
       const underlyingPerShare = await contract.underlyingTokensPerShare(token);
+      const underlyingPerShareFormatted = utils.formatEther(underlyingPerShare.toString());
       const yieldPerShare = await contract.yieldTokensPerShare(token);
+      const yieldPerShareFormatted = utils.formatEther(yieldPerShare.toString());
       console.log('underlying rate', utils.formatEther(underlyingPerShare.toString()));
       console.log('yield rate', utils.formatEther(yieldPerShare.toString()));
       const yieldSymbol = await getTokenSymbol(token);
@@ -326,6 +369,10 @@ onMount(async () => {
             userDeposit: balance,
             loanRatio: ratioFormatted,
             borrowLimit: fakeBorrow,
+            openDebtAmount: debtFormatted,
+            openDebtSymbol: 'alUSD',
+            underlyingPricePerShare: underlyingPerShareFormatted,
+            yieldPricePerShare: yieldPerShareFormatted,
           },
         },
       };
@@ -338,31 +385,6 @@ onMount(async () => {
     $vaults.fetching = false;
   }
 });
-
-$: if ($vaults.alusd.length > 0) {
-  $vaults.alusd.forEach((vault) => {
-    if (vault.type === 'used') {
-      rowsUser.push(vault.row);
-      counterUserStrategies += 1;
-    } else {
-      rowsUnused.push(vault.row);
-      counterUnusedStrategies += 1;
-    }
-    rowsAll.push(vault.row);
-    counterAllStrategies += 1;
-  });
-}
-
-const methodLookup = {
-  deposit: deposit,
-  depositUnderlying: depositUnderlying,
-  multicall: multicall,
-};
-
-$: if ($tempTx.method !== null) {
-  closeModal();
-  methodLookup[$tempTx.method]();
-}
 </script>
 
 <ViewContainer>

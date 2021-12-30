@@ -36,8 +36,7 @@ walletBalance.set({
   title="Modals/Vault"
   component="{Withdraw}"
   argTypes="{{
-    yieldToken: { controls: 'string' },
-    underlyingToken: { controls: 'string' },
+    ...props,
   }}"
 />
 
