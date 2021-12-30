@@ -5,12 +5,7 @@ import account from '../../../../stores/account';
 import walletBalance from '../../../../stores/walletBalance';
 import getUserGas from '../../../../helpers/getUserGas';
 import { getProvider } from '../../../../helpers/walletManager';
-import {
-  setPendingWallet,
-  setPendingTx,
-  setSuccessTx,
-  setError,
-} from '../../../../helpers/setToast';
+import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
 import { ethers, utils } from 'ethers';
 import { genericAbi } from '../../../../stores/externalContracts';
 
@@ -30,15 +25,15 @@ let withdrawAmount;
 let claimAmount;
 
 // const
-const gas = utils.parseUnits(getUserGas().toString(), 'gwei')
+const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 const provider = getProvider();
 const alTokenData = $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
-let alTokenBalance
+let alTokenBalance;
 if (alTokenData) {
-  alTokenBalance = alTokenData.balance
-  console.log("ATB", alTokenBalance)
+  alTokenBalance = alTokenData.balance;
+  console.log('ATB', alTokenBalance);
 }
-console.log("altokenbal", alTokenData)
+console.log('altokenbal', alTokenData);
 const approve = async () => {
   const unlimitedAmount = ethers.constants.MaxUint256;
   try {
@@ -137,7 +132,7 @@ const setWithdrawValue = (event) => {
 };
 const setClaimValue = (event) => {
   claimAmount = (parseFloat(exchangedBalance) / 100) * event.detail.value;
-}
+};
 const startTransaction = async () => {
   await alert('metamask tx started');
 };
@@ -152,7 +147,7 @@ const startTransaction = async () => {
     </div>
     <input type="number" bind:value="{depositAmount}" />
     <div class="w-full self-end">
-      <BalanceQuickSelect on:setInputValue="{setDepositValue}" />
+      <BalanceQuickSelect on:setInputValue="{() => setDepositValue()}" />
       <Button label="Deposit" on:clicked="{() => deposit()}" />
     </div>
   </div>
@@ -161,7 +156,7 @@ const startTransaction = async () => {
     <p class="text-sm text-lightgrey10">Withdrawable</p>
     <p>{unexchangedBalance} {alTokenSymbol}</p>
     <input type="number" bind:value="{withdrawAmount}" />
-    <BalanceQuickSelect on:setInputValue="{setWithdrawValue}" />
+    <BalanceQuickSelect on:setInputValue="{() => setWithdrawValue()}" />
     <Button label="Withdraw" on:clicked="{() => withdraw()}" />
   </div>
 
@@ -169,7 +164,7 @@ const startTransaction = async () => {
     <p class="text-sm text-lightgrey10">Transmuted</p>
     <p>{exchangedBalance} {underlyingTokenSymbol}</p>
     <input type="number" bind:value="{claimAmount}" />
-    <BalanceQuickSelect on:setInputValue="{setClaimValue}" />
-    <Button label="Claim" on:clicked="{claim}" />
+    <BalanceQuickSelect on:setInputValue="{() => setClaimValue()}" />
+    <Button label="Claim" on:clicked="{() => claim()}" />
   </div>
 </div>

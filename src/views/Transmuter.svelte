@@ -88,7 +88,11 @@ const columns = [
 let rows = [];
 
 // the core transmuter contracts
-const transmuterContracts = [getContract('TransmuterV2_DAI')];
+const transmuterContracts = [
+  getContract('TransmuterV2_DAI'),
+  getContract('TransmuterV2_USDC'),
+  getContract('TransmuterV2_USDT'),
+];
 
 // the alUSD contract
 const alUSD = getContract('AlToken');
@@ -101,12 +105,12 @@ const goTo = (url) => {
 $: precheck = $account.address && $transmuters.fetching && $walletBalance.tokens.length > 2;
 onMount(async () => {
   console.log($transmuters.fetching);
-  if (precheck) {
+  if ($transmuters.fetching) {
     for (const contract of transmuterContracts) {
       const getAlToken = await contract.syntheticToken();
       const alToken = getAlToken.toLowerCase();
       const alTokenContract = new ethers.Contract(alToken, genericAbi, $account.signer);
-      const alTokenAllowance = await alTokenContract.allowance($account.address, alToken);
+      const alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
       const alTokenSymbol = await getTokenSymbol(getAlToken);
       const getUnderlyingToken = await contract.underlyingToken();
       const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
@@ -132,7 +136,7 @@ onMount(async () => {
         alToken: getAlToken,
         underlyingToken: getUnderlyingToken,
         transmuterContract: contract,
-        alTokenContract: alUSD,
+        alTokenContract: alTokenContract,
         allowance: alTokenAllowance,
         exchangedBalance: exchangedBalance,
         unexchangedBalance: unexchangedBalance,
@@ -173,10 +177,9 @@ onMount(async () => {
       };
 
       $transmuters.state.push(payload);
-
-      $transmuters.fetching = false;
-      console.log($transmuters.fetching);
     }
+    $transmuters.fetching = false;
+    console.log($transmuters.fetching);
   }
 });
 $: if ($transmuters.state.length > 0) {
