@@ -9,8 +9,8 @@ import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
 import getContract from '../helpers/getContract';
-import { getProvider } from '../helpers/walletManager';
 import { getTokenSymbol } from '../helpers/getTokenSymbol';
+import getUserGas from '../helpers/getUserGas';
 import { genericAbi } from '../stores/externalContracts';
 import transmuters from '../stores/transmuters';
 import account from '../stores/account';
@@ -41,7 +41,8 @@ const vaultFilter = (filter) => {
   const selector = ['transmuterSelect', 'modeSelect', 'stratSelect'];
   buttonToggler(selector[filter.id], filter.filter);
 };
-
+const userGas = getUserGas();
+console.log('USER GAS', userGas);
 const columns = [
   {
     columnId: 'col1',
@@ -83,20 +84,17 @@ const columns = [
   },
 ];
 
-const rows = [];
+let rows = [];
 
-const provider = getProvider();
 // the core transmuter contracts
 const transmuterContracts = [
   getContract('TransmuterV2_DAI'),
-  // getContract('TransmuterV2_USDC'),
-  // getContract('TransmuterV2_USDT'),
+  getContract('TransmuterV2_USDC'),
+  getContract('TransmuterV2_USDT'),
 ];
 
 // the alUSD contract
-const alUSD = getContract('AlToken');
-// the DAI contract
-const DAI = getContract('DAI');
+
 const format = ethers.utils.formatUnits;
 
 const goTo = (url) => {
@@ -104,14 +102,22 @@ const goTo = (url) => {
 };
 
 onMount(async () => {
-  if ($account.address && $transmuters.fetching) {
-    await transmuterContracts.forEach(async (contract) => {
+  console.log($transmuters.fetching);
+  if ($transmuters.fetching) {
+    for (const contract of transmuterContracts) {
       const getAlToken = await contract.syntheticToken();
       const alToken = getAlToken.toLowerCase();
-      const alTokenContract = new ethers.Contract(alToken, genericAbi, provider);
-      const alTokenAllowance = await alTokenContract.allowance($account.address, alToken);
+      const alTokenContract = new ethers.Contract(alToken, genericAbi, $account.signer);
+      const alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
+      console.log(
+        'allowance -- transmuter',
+        alTokenAllowance,
+        ' wei for the following transmuter ',
+        contract.address,
+      );
+      const alTokenSymbol = await getTokenSymbol(getAlToken);
       const getUnderlyingToken = await contract.underlyingToken();
-      const underlyingToken = getUnderlyingToken.toLowerCase();
+      const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
       const getBuffered = await contract.totalBuffered();
       const buffered = format(getBuffered.toString(), 'ether');
       const getTotalUnexchanged = await contract.totalUnexchanged();
@@ -120,22 +126,26 @@ onMount(async () => {
       const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
       const getUnexchangedBalance = await contract.getUnexchangedBalance($account.address);
       const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
-      const userAlToken = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
-      const userUnderlyingToken = $walletBalance.tokens.find(
-        (userToken) => userToken.address === underlyingToken,
-      );
-      // const totalDeposited = new BigNumber(exchangedBalance).add(new BigNumber(unexchangedBalance))
-      console.log('scoopy dai balance', userUnderlyingToken);
+      console.log($walletBalance);
+      // const userAlToken = await $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
+      // const userUnderlyingToken = await $walletBalance.tokens.find((token) => token.address === getUnderlyingToken);
+      // console.log('useraltoken', userUnderlyingToken);
+      const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
+      const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
+      const totalDeposited = format(exchangedBN.add(unexchangedBN).toString(), 'ether');
+
+      // console.log('scoopy dai balance', userUnderlyingToken);
       console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);
-      // console.log("alUSD object", await alUSD.sybmol)
       const expandedProps = {
-        alToken: userAlToken,
-        underlyingToken: userUnderlyingToken,
+        alToken: getAlToken,
+        underlyingToken: getUnderlyingToken,
         transmuterContract: contract,
         alTokenContract: alTokenContract,
         allowance: alTokenAllowance,
         exchangedBalance: exchangedBalance,
         unexchangedBalance: unexchangedBalance,
+        alTokenSymbol: alTokenSymbol,
+        underlyingTokenSymbol: underlyingTokenSymbol,
       };
 
       const payload = {
@@ -148,26 +158,22 @@ onMount(async () => {
           colSize: 1,
         },
         col2: {
-          value: 'alUSD-DAI',
+          value: alTokenSymbol + '-' + underlyingTokenSymbol,
           colSize: 2,
           alignment: 'justify-self-start',
         },
-        //deposited
         col3: {
-          value: '0.00' || totalDeposited,
+          value: totalDeposited,
           colSize: 2,
         },
-        //withdrawable
         col4: {
-          value: '0.00' || unexchangedBalance,
+          value: unexchangedBalance,
           colSize: 2,
         },
-        //claimable
         col6: {
-          value: '0.00' || unexchangedBalance,
+          value: exchangedBalance,
           colSize: 2,
         },
-        //Maturation Rate
         col5: {
           value: '455%',
           colSize: 2,
@@ -175,9 +181,9 @@ onMount(async () => {
       };
 
       $transmuters.state.push(payload);
-    });
-
+    }
     $transmuters.fetching = false;
+    console.log($transmuters.fetching);
   }
 });
 $: if ($transmuters.state.length > 0) {
@@ -283,7 +289,7 @@ $: if ($transmuters.state.length > 0) {
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>
-        {:else if $transmuters.state.length > 0}
+        {:else}
           <Table rows="{rows}" columns="{columns}" />
         {/if}
       </div>

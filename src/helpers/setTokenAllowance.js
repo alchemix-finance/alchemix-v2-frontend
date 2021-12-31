@@ -10,7 +10,7 @@ account.subscribe((val) => {
 
 const setTokenAllowance = async (token, spender) => {
   console.log('setting allowance', token, spender);
-  const amount = ethers.utils.parseEther('10000000');
+  const amount = ethers.constants.MaxUint256;
   const contract = new ethers.Contract(token, genericAbi, _account.signer);
   await contract.approve(spender, amount);
 };

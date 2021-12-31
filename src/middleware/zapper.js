@@ -15,7 +15,7 @@ global.subscribe((val) => {
  * */
 function connector(endpoint) {
   return {
-    url: `https://api.zapper.fi/v1/${endpoint}?api_key=${process.env.ZAPPER_KEY}&eip1559=true`,
+    url: `https://api.zapper.fi/v1/${endpoint}?api_key=${process.env.ZAPPER_KEY}&eip1559=true&network=ethereum`,
     method: 'GET',
     headers: {
       Authorization: process.env.ZAPPER_KEY,

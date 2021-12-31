@@ -2,66 +2,83 @@
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 import account from '../../../../stores/account';
-import { genericAbi } from '../../../../stores/externalContracts';
+import walletBalance from '../../../../stores/walletBalance';
 import getUserGas from '../../../../helpers/getUserGas';
-import getContract from '../../../../helpers/getContract';
+import setTokenAllowance from '../../../../helpers/setTokenAllowance';
 import { getProvider } from '../../../../helpers/walletManager';
 import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
-import { ethers, providers, utils } from 'ethers';
+import { ethers, utils } from 'ethers';
+import { genericAbi } from '../../../../stores/externalContracts';
+import Transmuter from '../../../../views/Transmuter.svelte';
 
-
-
-
-export let transmuterConfig = {};
+// export let transmuterConfig = {};
 export let alToken;
-export let underlyingToken;
+// export let underlyingToken;
 export let transmuterContract;
 export let exchangedBalance;
 export let unexchangedBalance;
 export let alTokenContract;
 export let allowance;
+export let underlyingTokenSymbol;
+export let alTokenSymbol;
 
 let depositAmount;
 let withdrawAmount;
 let claimAmount;
 
+// const
+const format = ethers.utils.formatUnits;
+
+const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 const provider = getProvider();
-
-
-const approve = async () => {
-  const unlimitedAmount = ethers.constants.MaxUint256;
-  try {
-    let tx;
-    setPendingWallet();
-      tx = await alTokenContract.approve("0x530c3012E35893A248388177cCFF27C1cD349262", unlimitedAmount, {
-        gasPrice: getUserGas(),
-      });
-      setPendingTx();
-      await providers.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-      });
-    } catch (e) {
-      setError(e.message);
-      console.debug(e);
-    }
-  }
-
+const alTokenData = $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
+let alTokenBalance;
+if (alTokenData) {
+  alTokenBalance = alTokenData.balance;
+  console.log('ATB', alTokenBalance);
+}
+console.log('altokenbal', alTokenData);
+// const approve = async () => {
+//   const unlimitedAmount = ethers.constants.MaxUint256;
+//   try {
+//     let tx;
+//     setPendingWallet();
+//     tx = await alTokenContract.approve(transmuterContract.address, unlimitedAmount, {
+//       gasPrice: gas,
+//     });
+//     setPendingTx();
+//     await provider.once(tx.hash, (transaction) => {
+//       setSuccessTx(transaction.transactionHash);
+//     });
+//     alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
+//   } catch (e) {
+//     setError(e.message);
+//     console.log(e);
+//   }
+// };
 
 const deposit = async () => {
   const amountToWei = utils.parseEther(depositAmount.toString());
-  if (depositAmount > alToken.balance) {
+  if (allowance < amountToWei) {
+    setTokenAllowance(alToken, transmuterContract);
+    alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
+  }
+  if (depositAmount > alTokenBalance) {
     setError('Trying to deposit more than available');
   } else {
     try {
       let tx;
       setPendingWallet();
       tx = await transmuterContract.deposit(amountToWei, $account.address, {
-        gasPrice: getUserGas(),
+        gasPrice: gas,
       });
       setPendingTx();
-      await providers.once(tx.hash, (transaction) => {
+      await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
+      // TODO: NEED TO MAKE IT SO THAT TOKEN BALANCES UPDATE IN THE UI AFTER TRANSACTIONS
+      const unexchangedBalanceWei = await transmuterContract.getUnexchangedBalance($account.address);
+      unexchangedBalance = format(unexchangedBalanceWei.toString(), 'ether');
     } catch (e) {
       setError(e.message);
       console.debug(e);
@@ -78,12 +95,13 @@ const withdraw = async () => {
       let tx;
       setPendingWallet();
       tx = await transmuterContract.withdraw(amountToWei, $account.address, {
-        gasPrice: getUserGas(),
+        gasPrice: gas,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
+      // TODO: NEED TO MAKE IT SO THAT TOKEN BALANCES UPDATE IN THE UI AFTER TRANSACTIONS
     } catch (e) {
       setError(e.message);
       console.debug(e);
@@ -93,19 +111,20 @@ const withdraw = async () => {
 
 const claim = async () => {
   const amountToWei = utils.parseEther(claimAmount.toString());
-  if (withdrawAmount > exchangedBalance) {
+  if (claimAmount > exchangedBalance) {
     setError('Trying to claim more than available');
   } else {
     try {
       let tx;
       setPendingWallet();
       tx = await transmuterContract.claim(amountToWei, $account.address, {
-        gasPrice: getUserGas(),
+        gasPrice: gas,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
+      // TODO: NEED TO MAKE IT SO THAT TOKEN BALANCES UPDATE IN THE UI AFTER TRANSACTIONS
     } catch (e) {
       setError(e.message);
       console.debug(e);
@@ -113,43 +132,49 @@ const claim = async () => {
   }
 };
 
-
+const setDepositValue = (event) => {
+  // TODO if new value < 1 wei -> depositAmount = 1 wei
+  depositAmount = (parseFloat(alTokenBalance) / 100) * event.detail.value;
+};
+const setWithdrawValue = (event) => {
+  // TODO if new value < 1 wei -> withdrawAmount = 1 wei
+  withdrawAmount = (parseFloat(unexchangedBalance) / 100) * event.detail.value;
+};
+const setClaimValue = (event) => {
+  claimAmount = (parseFloat(exchangedBalance) / 100) * event.detail.value;
+};
 const startTransaction = async () => {
   await alert('metamask tx started');
 };
 </script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10">
-  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col">
-    <p class="text-sm text-lightgrey10 self-start">
-      I have {underlyingToken.balance}
-      {underlyingToken.symbol}.
-    </p>
+  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
+    <p class="text-sm text-lightgrey10 self-start">Available</p>
     <p></p>
     <div class="w-full self-center">
-      <p>0 alUSD</p>
+      <p>{alTokenBalance} {alTokenSymbol}</p>
     </div>
+    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{depositAmount}" />
     <div class="w-full self-end">
-      <BalanceQuickSelect />
-      {#if allowance < 1}
-      <Button label="Approve" on:clicked="{approve}"/>
-      {:else}
-      <Button label="Deposit" on:clicked="{showModal}" />
-      {/if}
+      <BalanceQuickSelect on:setInputValue="{() => setDepositValue()}" />
+      <Button label="Deposit" on:clicked="{() => deposit()}" />
     </div>
   </div>
 
-  <div class="col-span-1 rounded bg-grey10 w-full">
+  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
     <p class="text-sm text-lightgrey10">Withdrawable</p>
-    <p>150 alUSD</p>
-    <BalanceQuickSelect />
-    <Button label="Withdraw" on:clicked="{() => startTransaction()}" />
+    <p>{unexchangedBalance} {alTokenSymbol}</p>
+    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{withdrawAmount}" />
+    <BalanceQuickSelect on:setInputValue="{() => setWithdrawValue()}" />
+    <Button label="Withdraw" on:clicked="{() => withdraw()}" />
   </div>
 
   <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
     <p class="text-sm text-lightgrey10">Transmuted</p>
-    <p>200 DAI</p>
-    <BalanceQuickSelect />
-    <Button label="Claim" on:clicked="{() => startTransaction()}" />
+    <p>{exchangedBalance} {underlyingTokenSymbol}</p>
+    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{claimAmount}" />
+    <BalanceQuickSelect on:setInputValue="{() => setClaimValue()}" />
+    <Button label="Claim" on:clicked="{() => claim()}" />
   </div>
 </div>
