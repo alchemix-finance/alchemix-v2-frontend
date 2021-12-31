@@ -232,10 +232,58 @@ const multicall = async () => {
   tempClear();
 };
 
+const stupidMint = async () => {
+  const amount = utils.parseEther('10');
+  await contract.mint(amount, $account.address);
+};
+
+const withdraw = () => {
+  setError('withdraw called');
+};
+
+const withdrawUnderlying = () => {
+  setError('withdrawUnderlying called');
+};
+
+const withdrawMulticall = () => {
+  setError('withdrawMulticall called');
+};
+
+const methodLookup = {
+  deposit: deposit,
+  depositUnderlying: depositUnderlying,
+  multicall: multicall,
+  withdraw: withdraw,
+  withdrawUnderlying: withdrawUnderlying,
+  withdrawMulticall: withdrawMulticall,
+};
+
+$: if ($tempTx.method !== null) {
+  closeModal();
+  methodLookup[$tempTx.method]();
+}
+
+$: if ($vaults.alusd.length > 0) {
+  $vaults.alusd.forEach((vault) => {
+    if (vault.type === 'used') {
+      rowsUser.push(vault.row);
+      counterUserStrategies += 1;
+    } else {
+      rowsUnused.push(vault.row);
+      counterUnusedStrategies += 1;
+    }
+    rowsAll.push(vault.row);
+    counterAllStrategies += 1;
+  });
+}
+
 onMount(async () => {
   let deposited = [];
   if ($vaults.fetching) {
     // alUSD Alchemist only atm
+    const debt = await contract.accounts($account.address);
+    const debtFormatted = utils.formatEther(debt.debt.toString());
+    console.log('debt', utils.formatEther(debt.debt.toString()));
     const yieldTokens = await contract.getSupportedYieldTokens();
     console.log(yieldTokens);
     console.log('mint', await contract.mintAllowance($account.address, $account.address));
@@ -246,12 +294,26 @@ onMount(async () => {
       const params = await contract.getYieldTokenParameters(token);
       const underlyingToken = params.underlyingToken;
       console.log(underlyingToken);
+      const underlyingPerShare = await contract.underlyingTokensPerShare(token);
+      const underlyingPerShareFormatted = utils.formatEther(underlyingPerShare.toString());
+      const yieldPerShare = await contract.yieldTokensPerShare(token);
+      const yieldPerShareFormatted = utils.formatEther(yieldPerShare.toString());
+      console.log('underlying rate', utils.formatEther(underlyingPerShare.toString()));
+      console.log('yield rate', utils.formatEther(yieldPerShare.toString()));
       const yieldSymbol = await getTokenSymbol(token);
       const underlyingSymbol = await getTokenSymbol(params.underlyingToken);
       const tvl = utils.formatEther(params.balance.toString());
       const position = await contract.positions($account.address, token);
       const balance = utils.formatEther(position.balance.toString());
       console.log(balance, ratioFormatted);
+      console.log(
+        'underlying deposit',
+        (position.balance.toString() * utils.formatEther(underlyingPerShare.toString())) / 10 ** 18,
+      );
+      console.log(
+        'yield deposit',
+        (position.balance.toString() * utils.formatEther(yieldPerShare.toString())) / 10 ** 18,
+      );
       const fake = () => Math.floor(Math.random() * 100000);
       const fakeBalance = fake();
       const fakeBorrow = balance / ratioFormatted;
@@ -307,6 +369,10 @@ onMount(async () => {
             userDeposit: balance,
             loanRatio: ratioFormatted,
             borrowLimit: fakeBorrow,
+            openDebtAmount: debtFormatted,
+            openDebtSymbol: 'alUSD',
+            underlyingPricePerShare: underlyingPerShareFormatted,
+            yieldPricePerShare: yieldPerShareFormatted,
           },
         },
       };
@@ -319,31 +385,6 @@ onMount(async () => {
     $vaults.fetching = false;
   }
 });
-
-$: if ($vaults.alusd.length > 0) {
-  $vaults.alusd.forEach((vault) => {
-    if (vault.type === 'used') {
-      rowsUser.push(vault.row);
-      counterUserStrategies += 1;
-    } else {
-      rowsUnused.push(vault.row);
-      counterUnusedStrategies += 1;
-    }
-    rowsAll.push(vault.row);
-    counterAllStrategies += 1;
-  });
-}
-
-const methodLookup = {
-  deposit: deposit,
-  depositUnderlying: depositUnderlying,
-  multicall: multicall,
-};
-
-$: if ($tempTx.method !== null) {
-  closeModal();
-  methodLookup[$tempTx.method]();
-}
 </script>
 
 <ViewContainer>
@@ -368,6 +409,7 @@ $: if ($tempTx.method !== null) {
     </ContainerWithHeader>
   {:else}
     <div class="w-full mb-8 grid grid-cols-2 gap-8">
+      <Button label="mint scoopybux" on:clicked="{() => stupidMint()}" />
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
