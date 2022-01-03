@@ -144,7 +144,8 @@ onMount(async () => {
       const rewardToken = 'ALCX';
 
       if (poolConfig && reward !== '0.0') {
-        const userToken = $walletBalance.tokens.find((userToken) => userToken.address === token);
+        // TODO FIXME race condition when user refreshes page and $walletBalance is not completely filled
+        const userToken = $walletBalance.tokens.find((item) => item.address === token);
 
         const expandedProps = {
           poolId: i,

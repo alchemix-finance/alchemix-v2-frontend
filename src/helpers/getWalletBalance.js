@@ -2,6 +2,7 @@ import { utils } from 'ethers';
 import getContract from './getContract';
 import { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals } from './getTokenData';
 import walletBalance from '../stores/walletBalance';
+import { poolLookup } from '../stores/stakingPools';
 
 let _walletBalance;
 
@@ -47,10 +48,20 @@ const initAlUsdAlchemist = async () => {
 };
 
 /*
+ * @dev initializes the user's wallet balance with tokens supported by the staking pools
+ * */
+const initPoolBalances = async () => {
+  poolLookup.forEach((pool) => {
+    tokenList.push(pool.address);
+  });
+};
+
+/*
  * @dev initializes user's wallet balance
  * */
 const initBalance = async () => {
   await initAlUsdAlchemist();
+  await initPoolBalances();
   await batchTokenCheck(tokenList);
   return true;
 };
