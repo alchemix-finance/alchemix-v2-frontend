@@ -1,4 +1,5 @@
 <script>
+import { slide } from 'svelte/transition';
 import Button from './Button.svelte';
 
 export let canToggle = false;
@@ -42,10 +43,10 @@ $: isVisible, (contentVisible = isVisible);
     </div>
   {/if}
   {#if $$slots.body}
-    <div class="w-full">
-      {#if contentVisible}
+    {#if contentVisible}
+      <div class="w-full" transition:slide>
         <slot name="body" />
-      {/if}
-    </div>
+      </div>
+    {/if}
   {/if}
 </div>

@@ -30,6 +30,7 @@ const deposit = () => {
   if (udrlyAmnt) $tempTx.amountUnderlying = udrlyAmnt;
   $tempTx.yieldToken = yieldToken;
   $tempTx.underlyingToken = underlyingToken;
+  $tempTx.targetAddress = null;
   if (yieldAmnt && udrlyAmnt) {
     $tempTx.method = 'multicall';
   } else if (yieldAmnt && !udrlyAmnt) {

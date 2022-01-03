@@ -33,7 +33,7 @@ walletBalance.set({
 </script>
 
 <Meta
-  title="Modals/Vault"
+  title="Modals/Vault/Withdraw"
   component="{Withdraw}"
   argTypes="{{
     ...props,

@@ -71,12 +71,22 @@ let colsStrats = [
   },
 ];
 
+let userDebtAlusd = 0;
+let maxDebtAlusd = 0;
+
 const { open } = getContext('simple-modal');
 const { close } = getContext('simple-modal');
 const openModal = () => {
   open(
     Borrow,
-    { message: 'This is going to be the borrow modal' },
+    {
+      debtToken: {
+        symbol: 'alUSD',
+        address: '',
+      },
+      maxDebt: maxDebtAlusd,
+      currentDebt: userDebtAlusd,
+    },
     {
       ...modalStyle,
     },
@@ -232,9 +242,24 @@ const multicall = async () => {
   tempClear();
 };
 
-const stupidMint = async () => {
-  const amount = utils.parseEther('10');
-  await contract.mint(amount, $account.address);
+const mint = async () => {
+  const amount = $tempTx.amountBorrow;
+  const target = $tempTx.targetAddress;
+  const normalizedAmount = utils.parseEther(amount.toString());
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  try {
+    setPendingWallet();
+    const tx = await contract.mint(normalizedAmount, target || $account.address, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+    });
+  } catch (e) {
+    setError(e.message);
+    console.error(e);
+  }
 };
 
 const withdraw = () => {
@@ -256,6 +281,7 @@ const methodLookup = {
   withdraw: withdraw,
   withdrawUnderlying: withdrawUnderlying,
   withdrawMulticall: withdrawMulticall,
+  mint: mint,
 };
 
 $: if ($tempTx.method !== null) {
@@ -282,7 +308,7 @@ onMount(async () => {
   if ($vaults.fetching) {
     // alUSD Alchemist only atm
     const debt = await contract.accounts($account.address);
-    const debtFormatted = utils.formatEther(debt.debt.toString());
+    userDebtAlusd = utils.formatEther(debt.debt.toString());
     console.log('debt', utils.formatEther(debt.debt.toString()));
     const yieldTokens = await contract.getSupportedYieldTokens();
     console.log(yieldTokens);
@@ -314,9 +340,9 @@ onMount(async () => {
         'yield deposit',
         (position.balance.toString() * utils.formatEther(yieldPerShare.toString())) / 10 ** 18,
       );
-      const fake = () => Math.floor(Math.random() * 100000);
-      const fakeBalance = fake();
-      const fakeBorrow = balance / ratioFormatted;
+      const vaultDebt =
+        (position.balance.toString() * underlyingPerShareFormatted) / 10 ** 18 / ratioFormatted;
+      maxDebtAlusd += vaultDebt;
       const depositPayload = {
         token: token,
         symbol: yieldSymbol,
@@ -350,7 +376,7 @@ onMount(async () => {
             colSize: 2,
           },
           limit: {
-            value: `+${fakeBorrow}`,
+            value: `+${vaultDebt}`,
             colSize: 2,
           },
           col3: {
@@ -368,8 +394,8 @@ onMount(async () => {
             underlyingToken: underlyingToken,
             userDeposit: balance,
             loanRatio: ratioFormatted,
-            borrowLimit: fakeBorrow,
-            openDebtAmount: debtFormatted,
+            borrowLimit: vaultDebt,
+            openDebtAmount: userDebtAlusd,
             openDebtSymbol: 'alUSD',
             underlyingPricePerShare: underlyingPerShareFormatted,
             yieldPricePerShare: yieldPerShareFormatted,
@@ -409,7 +435,6 @@ onMount(async () => {
     </ContainerWithHeader>
   {:else}
     <div class="w-full mb-8 grid grid-cols-2 gap-8">
-      <Button label="mint scoopybux" on:clicked="{() => stupidMint()}" />
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
