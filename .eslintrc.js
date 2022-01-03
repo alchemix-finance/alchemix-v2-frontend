@@ -25,5 +25,7 @@ module.exports = {
     'no-use-before-define': 0,
     'import/prefer-default-export': 'off',
     'prefer-destructuring': 0,
+    'no-plusplus': 0,
+    'no-await-in-loop': 0,
   },
 };
