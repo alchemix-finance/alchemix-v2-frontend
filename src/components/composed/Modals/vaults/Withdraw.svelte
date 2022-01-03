@@ -87,9 +87,11 @@ const withdraw = () => {
   const payload = {
     amountYield: yieldToShare,
     amountUnderlying: underlyingToShare,
+    amountBorrow: null,
     method,
     yieldToken,
     underlyingToken,
+    targetAddress: null,
   };
   tempTx.set({ ...payload });
 };

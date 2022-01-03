@@ -64,6 +64,13 @@ const setMaxBorrow = () => {
 const clearTarget = () => {
   targetWallet = null;
   rng = null;
+  showError = false;
+};
+
+const mint = () => {
+  $tempTx.amountBorrow = borrowAmount;
+  $tempTx.targetAddress = targetWallet;
+  $tempTx.method = 'mint';
 };
 
 onMount(() => {
@@ -172,6 +179,7 @@ $: targetWalletVerified, updateValues();
         height="h-12"
         fontSize="text-md"
         disabled="{!canBorrow}"
+        on:clicked="{() => mint()}"
       />
     {/if}
   </div>

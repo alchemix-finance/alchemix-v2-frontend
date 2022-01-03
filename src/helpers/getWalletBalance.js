@@ -42,8 +42,12 @@ const initAlUsdAlchemist = async () => {
   const contract = getContract('AlchemistV2_alUSD');
   const yieldTokens = await contract.getSupportedYieldTokens();
   const underlyingTokens = await contract.getSupportedUnderlyingTokens();
-  tokenList.push(...yieldTokens);
-  tokenList.push(...underlyingTokens);
+  yieldTokens.forEach((token) => {
+    if (!tokenList.includes(token)) tokenList.push(token);
+  });
+  underlyingTokens.forEach((token) => {
+    if (!tokenList.includes(token)) tokenList.push(token);
+  });
   return true;
 };
 
@@ -52,7 +56,7 @@ const initAlUsdAlchemist = async () => {
  * */
 const initPoolBalances = async () => {
   poolLookup.forEach((pool) => {
-    tokenList.push(pool.address);
+    if (!tokenList.includes(pool.address)) tokenList.push(pool.address);
   });
 };
 
