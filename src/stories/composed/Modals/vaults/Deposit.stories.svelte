@@ -27,7 +27,7 @@ walletBalance.set({
 </script>
 
 <Meta
-  title="Modals/Vault"
+  title="Modals/Vault/Deposit"
   component="{Deposit}"
   argTypes="{{
     yieldToken: { controls: 'string' },
