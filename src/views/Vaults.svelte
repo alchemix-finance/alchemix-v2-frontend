@@ -12,12 +12,18 @@ import account from '../stores/account';
 import vaults from '../stores/vaults';
 import { aggregate } from '../stores/vaults';
 import getContract, { getFragment } from '../helpers/getContract';
-import { getTokenSymbol, getTokenAllowance } from '../helpers/getTokenData';
+import {
+  getTokenSymbol,
+  getTokenAllowance,
+  getTokenBalance,
+  getTokenDecimals,
+} from '../helpers/getTokenData';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import Table from '../components/composed/Table/Table.svelte';
 import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
 import ActionsCell from '../components/composed/Table/vaults/ActionsCell.svelte';
 import Borrow from '../components/composed/Modals/vaults/Borrow.svelte';
+import Repay from '../components/composed/Modals/vaults/Repay.svelte';
 import { modalStyle } from '../stores/modal';
 import tempTx from '../stores/tempTx';
 import { getProvider } from '../helpers/walletManager';
@@ -73,10 +79,11 @@ let colsStrats = [
 
 let userDebtAlusd = 0;
 let maxDebtAlusd = 0;
+let underlyingTokenAlusd = [];
 
 const { open } = getContext('simple-modal');
 const { close } = getContext('simple-modal');
-const openModal = () => {
+const openBorrowModal = () => {
   open(
     Borrow,
     {
@@ -92,7 +99,18 @@ const openModal = () => {
     },
   );
 };
-
+const openRepayModal = () => {
+  open(
+    Repay,
+    {
+      underlyingTokens: underlyingTokenAlusd,
+      outstandingDebt: userDebtAlusd,
+    },
+    {
+      ...modalStyle,
+    },
+  );
+};
 const closeModal = () => {
   close();
 };
@@ -143,7 +161,7 @@ const deposit = async () => {
   if (!allowance) {
     await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
-  console.log(amountToWei);
+  console.log('deposit config', amountToWei, utils.formatEther(allowance.toString()));
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
   } else {
@@ -172,12 +190,17 @@ const depositUnderlying = async () => {
     $account.address,
     contract.address,
   );
+  const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
   const amountToWei = utils.parseEther($tempTx.amountUnderlying.toString());
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   console.log(gas);
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
   }
+  if (!allowance) {
+    await setTokenAllowance($tempTx.yieldToken, contract.address);
+  }
+  console.log('deposit config', amountToWei, allowanceUnderlying, allowance);
   // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
@@ -262,6 +285,23 @@ const mint = async () => {
   }
 };
 
+const repay = async () => {
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  try {
+    setPendingWallet();
+    const tx = await contract.repay($tempTx.underlyingToken, $tempTx.amountRepay, $account.address, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+    });
+  } catch (e) {
+    console.error(e);
+    setError(e.message);
+  }
+};
+
 const withdraw = () => {
   setError('withdraw called');
 };
@@ -282,6 +322,7 @@ const methodLookup = {
   withdrawUnderlying: withdrawUnderlying,
   withdrawMulticall: withdrawMulticall,
   mint: mint,
+  repay: repay,
 };
 
 $: if ($tempTx.method !== null) {
@@ -331,6 +372,8 @@ onMount(async () => {
       const tvl = utils.formatEther(params.balance.toString());
       const position = await contract.positions($account.address, token);
       const balance = utils.formatEther(position.balance.toString());
+      const underlyingBalance = await getTokenBalance(underlyingToken);
+      const underlyingDecimals = await getTokenDecimals(underlyingToken);
       console.log(balance, ratioFormatted);
       console.log(
         'underlying deposit',
@@ -349,15 +392,13 @@ onMount(async () => {
         balance: balance,
       };
       deposited.push(depositPayload);
+      underlyingTokenAlusd.push({
+        symbol: underlyingSymbol,
+        address: underlyingToken,
+        balance: underlyingBalance,
+        decimals: underlyingDecimals,
+      });
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
-      const expandedProps = {
-        type: stratIsUsed ? 'used' : 'unused',
-        depositAmount: utils.formatEther(position.balance.toString()),
-        depositAsset: yieldSymbol,
-        creditLimit: 0,
-        borrowAmount: 0,
-        borrowAsset: 'alUSD',
-      };
       let payload = {
         type: stratIsUsed ? 'used' : 'unused',
         alchemist: 'alusd',
@@ -482,8 +523,8 @@ onMount(async () => {
         </ContainerWithHeader>
       </div>
       <div class="col-span-1 flex space-x-4">
-        <Button label="Borrow" width="w-full" on:clicked="{openModal}" />
-        <Button label="Repay" width="w-full" />
+        <Button label="Borrow" width="w-full" on:clicked="{openBorrowModal}" />
+        <Button label="Repay" width="w-full" on:clicked="{openRepayModal}" />
         <Button label="Liquidate" width="w-full" />
       </div>
     </div>

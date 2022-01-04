@@ -88,6 +88,7 @@ const withdraw = () => {
     amountYield: yieldToShare,
     amountUnderlying: underlyingToShare,
     amountBorrow: null,
+    amountRepay: null,
     method,
     yieldToken,
     underlyingToken,
