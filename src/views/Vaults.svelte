@@ -157,11 +157,12 @@ const abiCoder = utils.defaultAbiCoder;
 
 const deposit = async () => {
   const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
-  const amountToWei = utils.parseEther($tempTx.amount.toString());
+  const decimals = await getTokenDecimals($tempTx.yieldToken);
+  const amountToWei = utils.parseUnits($tempTx.amount.toString(), decimals);
   if (!allowance) {
     await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
-  console.log('deposit config', amountToWei, utils.formatEther(allowance.toString()));
+  console.log('deposit config', amountToWei, utils.formatUnits(allowance.toString(), decimals));
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
   } else {
@@ -190,17 +191,13 @@ const depositUnderlying = async () => {
     $account.address,
     contract.address,
   );
-  const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
-  const amountToWei = utils.parseEther($tempTx.amountUnderlying.toString());
+  const decimals = await getTokenDecimals($tempTx.underlyingToken);
+  const amountToWei = utils.parseUnits($tempTx.amountUnderlying.toString(), decimals);
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  console.log(gas);
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
   }
-  if (!allowance) {
-    await setTokenAllowance($tempTx.yieldToken, contract.address);
-  }
-  console.log('deposit config', amountToWei, allowanceUnderlying, allowance);
+  console.log('deposit config', amountToWei, allowanceUnderlying);
   // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
@@ -361,19 +358,23 @@ onMount(async () => {
       const params = await contract.getYieldTokenParameters(token);
       const underlyingToken = params.underlyingToken;
       console.log(underlyingToken);
+      const underlyingDecimals = await getTokenDecimals(underlyingToken);
+      const yieldDecimals = await getTokenDecimals(token);
       const underlyingPerShare = await contract.underlyingTokensPerShare(token);
-      const underlyingPerShareFormatted = utils.formatEther(underlyingPerShare.toString());
+      const underlyingPerShareFormatted = utils.formatUnits(
+        underlyingPerShare.toString(),
+        underlyingDecimals,
+      );
       const yieldPerShare = await contract.yieldTokensPerShare(token);
-      const yieldPerShareFormatted = utils.formatEther(yieldPerShare.toString());
+      const yieldPerShareFormatted = utils.formatUnits(yieldPerShare.toString(), yieldDecimals);
       console.log('underlying rate', utils.formatEther(underlyingPerShare.toString()));
       console.log('yield rate', utils.formatEther(yieldPerShare.toString()));
       const yieldSymbol = await getTokenSymbol(token);
       const underlyingSymbol = await getTokenSymbol(params.underlyingToken);
-      const tvl = utils.formatEther(params.balance.toString());
+      const tvl = utils.formatUnits(params.balance.toString(), yieldDecimals);
       const position = await contract.positions($account.address, token);
-      const balance = utils.formatEther(position.balance.toString());
+      const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
       const underlyingBalance = await getTokenBalance(underlyingToken);
-      const underlyingDecimals = await getTokenDecimals(underlyingToken);
       console.log(balance, ratioFormatted);
       console.log(
         'underlying deposit',
@@ -383,8 +384,7 @@ onMount(async () => {
         'yield deposit',
         (position.balance.toString() * utils.formatEther(yieldPerShare.toString())) / 10 ** 18,
       );
-      const vaultDebt =
-        (position.balance.toString() * underlyingPerShareFormatted) / 10 ** 18 / ratioFormatted;
+      const vaultDebt = (balance * underlyingPerShareFormatted) / ratioFormatted;
       maxDebtAlusd += vaultDebt;
       const depositPayload = {
         token: token,
