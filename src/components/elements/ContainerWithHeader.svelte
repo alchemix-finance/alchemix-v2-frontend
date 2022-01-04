@@ -43,8 +43,12 @@ $: isVisible, (contentVisible = isVisible);
     </div>
   {/if}
   {#if $$slots.body}
-    {#if contentVisible}
+    {#if canToggle && contentVisible}
       <div class="w-full" transition:slide>
+        <slot name="body" />
+      </div>
+    {:else if contentVisible}
+      <div class="w-full">
         <slot name="body" />
       </div>
     {/if}
