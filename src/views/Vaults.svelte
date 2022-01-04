@@ -24,6 +24,7 @@ import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte
 import ActionsCell from '../components/composed/Table/vaults/ActionsCell.svelte';
 import Borrow from '../components/composed/Modals/vaults/Borrow.svelte';
 import Repay from '../components/composed/Modals/vaults/Repay.svelte';
+import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
 import { modalStyle } from '../stores/modal';
 import tempTx from '../stores/tempTx';
 import { getProvider } from '../helpers/walletManager';
@@ -80,6 +81,7 @@ let colsStrats = [
 let userDebtAlusd = 0;
 let maxDebtAlusd = 0;
 let underlyingTokenAlusd = [];
+let yieldTokenAlusd = [];
 
 const { open } = getContext('simple-modal');
 const { close } = getContext('simple-modal');
@@ -105,6 +107,18 @@ const openRepayModal = () => {
     {
       underlyingTokens: underlyingTokenAlusd,
       outstandingDebt: userDebtAlusd,
+    },
+    {
+      ...modalStyle,
+    },
+  );
+};
+const openLiquidateModal = () => {
+  open(
+    Liquidate,
+    {
+      outstandingDebt: userDebtAlusd,
+      yieldTokens: yieldTokenAlusd,
     },
     {
       ...modalStyle,
@@ -299,6 +313,24 @@ const repay = async () => {
   }
 };
 
+const liquidate = async () => {
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+  try {
+    setPendingWallet();
+    const tx = await contract.liquidate($tempTx.yieldToken, $tempTx.amountRepay, dataPackage, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+    });
+  } catch (e) {
+    console.error(e);
+    setError(e.message);
+  }
+};
+
 const withdraw = () => {
   setError('withdraw called');
 };
@@ -320,6 +352,7 @@ const methodLookup = {
   withdrawMulticall: withdrawMulticall,
   mint: mint,
   repay: repay,
+  liquidate: liquidate,
 };
 
 $: if ($tempTx.method !== null) {
@@ -367,8 +400,8 @@ onMount(async () => {
       );
       const yieldPerShare = await contract.yieldTokensPerShare(token);
       const yieldPerShareFormatted = utils.formatUnits(yieldPerShare.toString(), yieldDecimals);
-      console.log('underlying rate', utils.formatEther(underlyingPerShare.toString()));
-      console.log('yield rate', utils.formatEther(yieldPerShare.toString()));
+      console.log('underlying rate', utils.formatUnits(underlyingPerShare.toString(), underlyingDecimals));
+      console.log('yield rate', utils.formatUnits(yieldPerShare.toString(), yieldDecimals));
       const yieldSymbol = await getTokenSymbol(token);
       const underlyingSymbol = await getTokenSymbol(params.underlyingToken);
       const tvl = utils.formatUnits(params.balance.toString(), yieldDecimals);
@@ -392,6 +425,14 @@ onMount(async () => {
         balance: balance,
       };
       deposited.push(depositPayload);
+      yieldTokenAlusd.push({
+        symbol: yieldSymbol,
+        address: token,
+        balance: balance,
+        decimals: yieldDecimals,
+        yieldPerShare: yieldPerShareFormatted,
+        underlyingPerShare: underlyingPerShareFormatted,
+      });
       underlyingTokenAlusd.push({
         symbol: underlyingSymbol,
         address: underlyingToken,
@@ -413,15 +454,17 @@ onMount(async () => {
             alignment: 'justify-self-start',
           },
           deposited: {
-            value: balance + ' ' + yieldSymbol,
+            value: utils.formatUnits((balance * yieldPerShare).toString(), yieldDecimals) + ' USD',
             colSize: 2,
           },
           limit: {
-            value: `+${vaultDebt}`,
+            value: `+${vaultDebt} USD`,
             colSize: 2,
           },
           col3: {
-            value: tvl + ' ' + yieldSymbol,
+            value:
+              utils.formatUnits(utils.parseUnits(tvl, underlyingDecimals).toString(), underlyingDecimals) +
+              ' USD',
             colSize: 2,
           },
           col4: {
@@ -525,7 +568,7 @@ onMount(async () => {
       <div class="col-span-1 flex space-x-4">
         <Button label="Borrow" width="w-full" on:clicked="{openBorrowModal}" />
         <Button label="Repay" width="w-full" on:clicked="{openRepayModal}" />
-        <Button label="Liquidate" width="w-full" />
+        <Button label="Liquidate" width="w-full" on:clicked="{openLiquidateModal}" />
       </div>
     </div>
 
