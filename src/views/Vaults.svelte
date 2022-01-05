@@ -31,6 +31,7 @@ import { getProvider } from '../helpers/walletManager';
 import getUserGas from '../helpers/getUserGas';
 import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
 import setTokenAllowance from '../helpers/setTokenAllowance';
+import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -495,17 +496,22 @@ onMount(async () => {
             alignment: 'justify-self-start',
           },
           deposited: {
-            value: utils.formatUnits((balance * yieldPerShare).toString(), yieldDecimals) + ' USD',
+            CellComponent: CurrencyCell,
+            value: utils.formatUnits((balance * yieldPerShare).toString(), yieldDecimals),
             colSize: 2,
           },
           limit: {
-            value: `+${vaultDebt} USD`,
+            CellComponent: CurrencyCell,
+            value: vaultDebt.toString(),
+            prefix: '+',
             colSize: 2,
           },
           col3: {
-            value:
-              utils.formatUnits(utils.parseUnits(tvl, underlyingDecimals).toString(), underlyingDecimals) +
-              ' USD',
+            CellComponent: CurrencyCell,
+            value: utils.formatUnits(
+              utils.parseUnits(tvl, underlyingDecimals).toString(),
+              underlyingDecimals,
+            ),
             colSize: 2,
           },
           col4: {
