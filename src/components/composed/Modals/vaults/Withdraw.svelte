@@ -1,5 +1,6 @@
 <script>
 import { onMount } from 'svelte';
+import { utils, FixedNumber } from 'ethers';
 import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
 import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
@@ -14,6 +15,8 @@ export let openDebtAmount;
 export let openDebtSymbol;
 export let underlyingPricePerShare;
 export let yieldPricePerShare;
+export let yieldDecimals;
+export let underlyingDecimals;
 
 let yieldSymbol;
 let yieldWithdraw;
@@ -63,30 +66,34 @@ const clearUnderlying = () => {
 
 const updateBalances = () => {
   const normalizedYieldAmount =
-    (yieldWithdraw / parseFloat(yieldPricePerShare)) * parseFloat(underlyingPricePerShare);
-  console.log(normalizedYieldAmount, underlyingWithdraw);
-  yieldToShare = normalizedYieldAmount / parseFloat(underlyingPricePerShare);
-  underlyingToShare = underlyingWithdraw / parseFloat(underlyingPricePerShare);
-  console.log(yieldToShare, underlyingToShare);
+    (yieldWithdraw / FixedNumber.from(yieldPricePerShare).toUnsafeFloat()) *
+    FixedNumber.from(underlyingPricePerShare).toUnsafeFloat();
+  yieldToShare = normalizedYieldAmount / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
+  underlyingToShare = underlyingWithdraw / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
   remainingBalance = startingBalance - (normalizedYieldAmount || 0) - (underlyingWithdraw || 0);
-  projectedDebtLimit = remainingBalance / parseFloat(loanRatio);
+  projectedDebtLimit = remainingBalance / FixedNumber.from(loanRatio).toUnsafeFloat();
   withdrawEnabled =
     (yieldToShare > 0 && yieldWithdraw <= maxYieldWithdrawAmount) ||
     (underlyingToShare > 0 && underlyingWithdraw <= maxUnderlyingWithdrawAmount);
 };
 
 const withdraw = () => {
+  const yieldFormatted = FixedNumber.from(yieldToShare.toString()).toUnsafeFloat().toFixed(yieldDecimals);
+  const underlyingFormatted = FixedNumber.from(underlyingToShare.toString())
+    .toUnsafeFloat()
+    .toFixed(underlyingDecimals);
   let method;
-  if (yieldToShare > 0 && underlyingToShare === 0) {
+  if (parseFloat(yieldToShare) > 0 && (parseFloat(underlyingToShare) === 0 || !!!underlyingToShare)) {
     method = 'withdraw';
-  } else if (yieldToShare === 0 && underlyingToShare > 0) {
+  } else if ((parseFloat(yieldToShare) === 0 || !!!yieldToShare) && parseFloat(underlyingToShare) > 0) {
     method = 'withdrawUnderlying';
   } else {
     method = 'withdrawMulticall';
   }
+  console.log('method', method);
   const payload = {
-    amountYield: yieldToShare,
-    amountUnderlying: underlyingToShare,
+    amountYield: utils.parseUnits(yieldFormatted, yieldDecimals),
+    amountUnderlying: utils.parseUnits(underlyingFormatted, underlyingDecimals),
     amountBorrow: null,
     amountRepay: null,
     method,

@@ -26,7 +26,7 @@ import Borrow from '../components/composed/Modals/vaults/Borrow.svelte';
 import Repay from '../components/composed/Modals/vaults/Repay.svelte';
 import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
 import { modalStyle } from '../stores/modal';
-import tempTx from '../stores/tempTx';
+import tempTx, { defaults } from '../stores/tempTx';
 import { getProvider } from '../helpers/walletManager';
 import getUserGas from '../helpers/getUserGas';
 import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
@@ -158,10 +158,7 @@ const vaultFilter = (filter) => {
 };
 
 const tempClear = () => {
-  $tempTx.amount = null;
-  $tempTx.method = null;
-  $tempTx.yieldToken = null;
-  $tempTx.underlyingToken = null;
+  tempTx.set({ ...defaults });
 };
 
 const contract = getContract('AlchemistV2_alUSD');
@@ -294,6 +291,7 @@ const mint = async () => {
     setError(e.message);
     console.error(e);
   }
+  tempClear();
 };
 
 const repay = async () => {
@@ -311,6 +309,7 @@ const repay = async () => {
     console.error(e);
     setError(e.message);
   }
+  tempClear();
 };
 
 const liquidate = async () => {
@@ -329,18 +328,60 @@ const liquidate = async () => {
     console.error(e);
     setError(e.message);
   }
+  tempClear();
 };
 
-const withdraw = () => {
-  setError('withdraw called');
+const withdraw = async () => {
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  try {
+    setPendingWallet();
+    const tx = await contract.withdraw(
+      $tempTx.yieldToken,
+      $tempTx.amountYield,
+      $tempTx.targetAddress || $account.address,
+      {
+        gasPrice: gas,
+      },
+    );
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+    });
+  } catch (e) {
+    console.error(e);
+    setError(e.message);
+  }
+  tempClear();
 };
 
-const withdrawUnderlying = () => {
-  setError('withdrawUnderlying called');
+const withdrawUnderlying = async () => {
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+  try {
+    setPendingWallet();
+    const tx = await contract.withdrawUnderlying(
+      $tempTx.yieldToken,
+      $tempTx.amountUnderlying,
+      $tempTx.targetAddress || $account.address,
+      dataPackage,
+      {
+        gasPrice: gas,
+      },
+    );
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+    });
+  } catch (e) {
+    console.error(e);
+    setError(e.message);
+  }
+  tempClear();
 };
 
 const withdrawMulticall = () => {
-  setError('withdrawMulticall called');
+  setError('Multicall is not supported yet :(');
+  tempClear();
 };
 
 const methodLookup = {
@@ -483,6 +524,8 @@ onMount(async () => {
             openDebtSymbol: 'alUSD',
             underlyingPricePerShare: underlyingPerShareFormatted,
             yieldPricePerShare: yieldPerShareFormatted,
+            yieldDecimals,
+            underlyingDecimals,
           },
         },
       };

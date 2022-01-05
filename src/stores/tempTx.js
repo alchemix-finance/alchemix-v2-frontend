@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const tempTx = writable({
+const defaults = {
   amountYield: null,
   amountUnderlying: null,
   amountBorrow: null,
@@ -9,6 +9,13 @@ const tempTx = writable({
   yieldToken: null,
   underlyingToken: null,
   targetAddress: null,
+};
+
+Object.freeze(defaults);
+
+const tempTx = writable({
+  ...defaults,
 });
 
 export default tempTx;
+export { defaults };
