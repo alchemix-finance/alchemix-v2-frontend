@@ -14,6 +14,8 @@ export let openDebtAmount;
 export let openDebtSymbol;
 export let underlyingPricePerShare;
 export let yieldPricePerShare;
+export let yieldDecimals;
+export let underlyingDecimals;
 
 const { open } = getContext('simple-modal');
 
@@ -31,6 +33,7 @@ const openDeposit = () => {
 };
 
 const openWithdraw = () => {
+  console.log('decimals', yieldDecimals, underlyingDecimals);
   open(
     Withdraw,
     {
@@ -43,6 +46,8 @@ const openWithdraw = () => {
       openDebtSymbol,
       underlyingPricePerShare,
       yieldPricePerShare,
+      yieldDecimals,
+      underlyingDecimals,
     },
     { ...modalStyle },
     {
