@@ -481,6 +481,7 @@ onMount(async () => {
         balance: underlyingBalance,
         decimals: underlyingDecimals,
       });
+      console.log(underlyingTokenAlusd);
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
       let payload = {
         type: stratIsUsed ? 'used' : 'unused',
@@ -497,7 +498,7 @@ onMount(async () => {
           },
           deposited: {
             CellComponent: CurrencyCell,
-            value: utils.formatUnits((balance * yieldPerShare).toString(), yieldDecimals),
+            value: utils.formatUnits(underlyingBalance, underlyingDecimals),
             colSize: 2,
           },
           limit: {
