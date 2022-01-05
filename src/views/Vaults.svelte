@@ -451,15 +451,9 @@ onMount(async () => {
       const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
       const underlyingBalance = await getTokenBalance(underlyingToken);
       console.log(balance, ratioFormatted);
-      console.log(
-        'underlying deposit',
-        (position.balance.toString() * utils.formatEther(underlyingPerShare.toString())) / 10 ** 18,
-      );
-      console.log(
-        'yield deposit',
-        (position.balance.toString() * utils.formatEther(yieldPerShare.toString())) / 10 ** 18,
-      );
       const vaultDebt = (balance * underlyingPerShareFormatted) / ratioFormatted;
+      console.log('underlying deposit', (balance * underlyingPerShare) / 10 ** underlyingDecimals);
+      console.log('yield deposit', (balance * yieldPerShare) / 10 ** yieldDecimals);
       maxDebtAlusd += vaultDebt;
       const depositPayload = {
         token: token,
@@ -481,7 +475,6 @@ onMount(async () => {
         balance: underlyingBalance,
         decimals: underlyingDecimals,
       });
-      console.log(underlyingTokenAlusd);
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
       let payload = {
         type: stratIsUsed ? 'used' : 'unused',
@@ -498,7 +491,7 @@ onMount(async () => {
           },
           deposited: {
             CellComponent: CurrencyCell,
-            value: utils.formatUnits(underlyingBalance, underlyingDecimals),
+            value: (balance * underlyingPerShare) / 10 ** underlyingDecimals,
             colSize: 2,
           },
           limit: {
