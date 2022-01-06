@@ -143,13 +143,179 @@ const setWithdrawValue = (event) => {
 const setClaimValue = (event) => {
   claimAmount = (parseFloat(exchangedBalance) / 100) * event.detail.value;
 };
+
+const setMaxDeposit = () => {
+  depositAmount = alTokenBalance
+}
+const setMaxWithdraw = () => {
+  withdrawAmount = unexchangedBalance
+}
+const setMaxClaim = () => {
+  claimAmount = exchangedBalance
+}
+const clearDeposit = () => {
+  depositAmount = null
+}
+const clearWithdraw = () => {
+  withdrawAmount = null
+}
+const clearClaim = () => {
+  claimAmount = null
+}
 const startTransaction = async () => {
   await alert('metamask tx started');
 };
 </script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10">
-  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
+  <div  class="p-4 flex flex-col space-y-4">
+    <label for="borrowInput" class="text-sm text-lightgrey10">
+      Available: {alTokenBalance}
+      {alTokenSymbol}
+    </label>
+    <div class="flex bg-grey3 rounded border border-grey3">
+      <div class="w-full">
+        <input
+          type="number"
+          id="borrowInput"
+          placeholder="~0.00 {alTokenSymbol}"
+          bind:value="{depositAmount}"
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+        />
+      </div>
+      <div class="flex flex-col">
+        <Button
+          label="MAX"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMaxDeposit()}"
+        />
+        <Button
+          label="CLEAR"
+          width="w-max"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clearDeposit()}"
+        />
+      </div>
+    </div>
+    <Button
+        label="Deposit"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => deposit()}"
+      />
+  </div>
+  <div  class="p-4 flex flex-col space-y-4">
+    <label for="borrowInput" class="text-sm text-lightgrey10">
+      Withdrawable: {unexchangedBalance}
+      {alTokenSymbol}
+    </label>
+    <div class="flex bg-grey3 rounded border border-grey3">
+      <div class="w-full">
+        <input
+          type="number"
+          id="borrowInput"
+          placeholder="~0.00 {alTokenSymbol}"
+          bind:value="{withdrawAmount}"
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+        />
+      </div>
+      <div class="flex flex-col">
+        <Button
+          label="MAX"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMaxWithdraw()}"
+        />
+        <Button
+          label="CLEAR"
+          width="w-max"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clearWithdraw()}"
+        />
+      </div>
+    </div>
+    <Button
+        label="Withdraw"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => withdraw()}"
+      />
+  </div>
+  <div  class="p-4 flex flex-col space-y-4">
+    <label for="claimInput" class="text-sm text-lightgrey10">
+      Transmuted: {exchangedBalance}
+      {underlyingTokenSymbol}
+    </label>
+    <div class="flex bg-grey3 rounded border border-grey3">
+      <div class="w-full">
+        <input
+          type="number"
+          id="claimInput"
+          placeholder="~0.00 {underlyingTokenSymbol}"
+          bind:value="{claimAmount}"
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+        />
+      </div>
+      <div class="flex flex-col">
+        <Button
+          label="MAX"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMaxClaim()}"
+        />
+        <Button
+          label="CLEAR"
+          width="w-max"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clearClaim()}"
+        />
+      </div>
+    </div>
+    <Button
+        label="Claim"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => claim()}"
+      />
+  </div>
+  <!-- <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
     <p class="text-sm text-lightgrey10 self-start">Available</p>
     <p></p>
     <div class="w-full self-center">
@@ -176,5 +342,5 @@ const startTransaction = async () => {
     <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{claimAmount}" />
     <BalanceQuickSelect on:setInputValue="{() => setClaimValue()}" />
     <Button label="Claim" on:clicked="{() => claim()}" />
-  </div>
+  </div> -->
 </div>

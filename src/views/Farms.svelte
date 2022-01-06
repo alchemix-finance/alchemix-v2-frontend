@@ -146,7 +146,7 @@ onMount(async () => {
       if (poolConfig && reward !== '0.0') {
         // TODO FIXME race condition when user refreshes page and $walletBalance is not completely filled
         const userToken = $walletBalance.tokens.find((item) => item.address === token);
-        console.log("USER TOKEN", userToken)
+        console.log('USER TOKEN', userToken);
         const expandedProps = {
           poolId: i,
           token: userToken,
