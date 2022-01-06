@@ -89,38 +89,177 @@ const setDepositValue = (event) => {
   depositAmount = (parseFloat(token.balance) / 100) * event.detail.value;
 };
 
+const setMaxDeposit = () => {
+  depositAmount = token.balance;
+}
+
+const clearDeposit = () => {
+  depositAmount = null
+}
+
+const setMaxWithdraw = () => {
+  withdrawAmount = stakedBalance;
+}
+
+const clearWithdraw = () => {
+  withdrawAmount = null;
+}
+
+
+
 const setWithdrawValue = (event) => {
   // TODO if new value < 1 wei -> withdrawAmount = 1 wei
   withdrawAmount = (parseFloat(stakedBalance) / 100) * event.detail.value;
 };
+
+console.log("TOKEN IN FARM", token)
 </script>
 
+<!-- NOTE -- the token object is not working at the moment so I had to put in placeholders for styling -->
+
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10">
-  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col">
-    <p class="text-sm text-lightgrey10 self-start">Available</p>
+  <div  class="p-4 flex flex-col space-y-4">
+    <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
     <div class="w-full self-center">
       <p>{token.balance} {token.symbol}</p>
+    </div> -->
+    <label for="borrowInput" class="text-sm text-lightgrey10">
+      Available: {token.balance}
+      {token.symbol}
+    </label>
+    <div class="flex bg-grey3 rounded border border-grey3">
+      <div class="w-full">
+        <input
+          type="number"
+          id="borrowInput"
+          placeholder="~0.00 {token.symbol}"
+          bind:value="{depositAmount}"
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+        />
+      </div>
+      <div class="flex flex-col">
+        <Button
+          label="MAX"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMaxDeposit()}"
+        />
+        <Button
+          label="CLEAR"
+          width="w-max"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clearDeposit()}"
+        />
+      </div>
     </div>
-    <div class="w-full self-end">
-      <input type="number" placeholder="0.0" bind:value="{depositAmount}" />
-      <BalanceQuickSelect on:setInputValue="{setDepositValue}" />
-      <Button label="Stake" on:clicked="{() => deposit()}" />
-    </div>
+    <Button
+        label="Deposit"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => deposit()}"
+      />
   </div>
-
-  <div class="col-span-1 rounded bg-grey10 w-full">
+  <div  class="p-4 flex flex-col space-y-4">
+    <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
+    <div class="w-full self-center">
+      <p>{token.balance} {token.symbol}</p>
+    </div> -->
+    <label for="withdrawInput" class="text-sm text-lightgrey10">
+      Available: {stakedBalance}
+      {token.symbol}
+    </label>
+    <div class="flex bg-grey3 rounded border border-grey3">
+      <div class="w-full">
+        <input
+          type="number"
+          id="withdrawInput"
+          placeholder="~0.00 {token.symbol}"
+          bind:value="{withdrawAmount}"
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+        />
+      </div>
+      <div class="flex flex-col">
+        <Button
+          label="MAX"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMaxWithdraw()}"
+        />
+        <Button
+          label="CLEAR"
+          width="w-max"
+          fontSize="text-xs"
+          textColor="lightgrey10"
+          backgroundColor="grey3"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clearWithdraw()}"
+        />
+      </div>
+    </div>
+    <Button
+        label="Withdraw"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => withdraw()}"
+      />
+  </div>
+<!-- old version for reference -->
+  <!-- <div class="col-span-1 rounded bg-grey10 w-full">
     <p class="text-sm text-lightgrey10">Staked</p>
     <p>{stakedBalance} {token.symbol}</p>
     <input type="number" placeholder="0.0" bind:value="{withdrawAmount}" />
     <BalanceQuickSelect on:setInputValue="{setWithdrawValue}" />
     <Button label="Withdraw" on:clicked="{() => withdraw()}" />
+  </div> -->
+  <div  class="p-4 flex flex-col space-y-4">
+    <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
+    <div class="w-full self-center">
+      <p>{token.balance} {token.symbol}</p>
+    </div> -->
+    <label for="borrowInput" class="text-sm text-lightgrey10">
+      Rewards:
+      </label>
+    <div class="flex bg-grey3 rounded border border-grey3">
+      <div class="w-full">
+        <div class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 bg-grey3">
+          {unclaimedRewards}
+      {reward}
+        </div>
+      </div>
+
+
+    </div>
+    <Button
+        label="Claim"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => claim()}"
+      />
   </div>
 
-  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
-    <div>
-      <p class="text-sm text-lightgrey10">Rewards</p>
-      <p>{unclaimedRewards} {reward}</p>
-    </div>
-    <Button label="Claim" on:clicked="{() => claim()}" />
-  </div>
 </div>
