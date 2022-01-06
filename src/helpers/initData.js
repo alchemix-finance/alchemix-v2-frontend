@@ -257,15 +257,17 @@ async function initVaults() {
 
 // @dev initializes a majority of data needed to render the site
 export default async function initData() {
-  setLoadingData('Supported Tokens', 1, 4);
+  if (debugging) setLoadingData('Supported Tokens', 1, 4);
   await initSupportedTokens();
-  setLoadingData('Token Balances', 2, 4);
+  if (debugging) setLoadingData('Token Balances', 2, 4);
   await initWalletBalance();
-  setLoadingData('Vault Configurations', 3, 4);
+  if (debugging) setLoadingData('Vault Configurations', 3, 4);
   await initVaults();
-  setLoadingData('Transmuter Configurations', 4, 4);
+  if (debugging) setLoadingData('Transmuter Configurations', 4, 4);
   _account.loadingTransmuterConfigurations = false;
   account.set({ ..._account });
-  closeToast();
-  if (debugging) logData();
+  if (debugging) {
+    closeToast();
+    logData();
+  }
 }

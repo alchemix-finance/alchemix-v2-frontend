@@ -404,104 +404,96 @@ $: if ($tempTx.method !== null) {
 
 const renderVaults = async () => {
   // alUSD Alchemist only atm
-  for (const token of $alusd.yieldTokens) {
-    const rowData = $alusd.rows.find((row) => row.token === token);
-    yieldTokenAlusd.push({
-      symbol: rowData.yieldSymbol,
-      address: token,
-      balance: rowData.balance,
-      decimals: rowData.yieldDecimals,
-      yieldPerShare: rowData.yieldPerShareFormatted,
-      underlyingPerShare: rowData.underlyingPerShareFormatted,
-    });
-    underlyingTokenAlusd.push({
-      symbol: rowData.underlyingSymbol,
-      address: rowData.underlyingToken,
-      balance: rowData.underlyingBalance,
-      decimals: rowData.underlyingDecimals,
-    });
-    let payload = {
-      type: rowData.stratIsUsed ? 'used' : 'unused',
-      alchemist: 'alusd',
-      row: {
-        col2: {
-          CellComponent: FarmNameCell,
-          farmName: rowData.yieldSymbol,
-          farmSubtitle: 'Yearn ' + rowData.underlyingSymbol,
-          farmIcon: 'alusd_med.svg',
-          tokenIcon: rowData.underlyingSymbol.toLowerCase(),
-          colSize: 3,
-          alignment: 'justify-self-start',
+  console.log('rendervaults');
+  if (!$alusd.loadingRowData) {
+    for (const token of $alusd.yieldTokens) {
+      console.log('for loop');
+      const rowData = $alusd.rows.find((row) => row.token === token);
+      yieldTokenAlusd.push({
+        symbol: rowData.yieldSymbol,
+        address: token,
+        balance: rowData.balance,
+        decimals: rowData.yieldDecimals,
+        yieldPerShare: rowData.yieldPerShareFormatted,
+        underlyingPerShare: rowData.underlyingPerShareFormatted,
+      });
+      underlyingTokenAlusd.push({
+        symbol: rowData.underlyingSymbol,
+        address: rowData.underlyingToken,
+        balance: rowData.underlyingBalance,
+        decimals: rowData.underlyingDecimals,
+      });
+      const payload = {
+        type: rowData.stratIsUsed ? 'used' : 'unused',
+        alchemist: 'alusd',
+        row: {
+          col2: {
+            CellComponent: FarmNameCell,
+            farmName: rowData.yieldSymbol,
+            farmSubtitle: 'Yearn ' + rowData.underlyingSymbol,
+            farmIcon: 'alusd_med.svg',
+            tokenIcon: rowData.underlyingSymbol.toLowerCase(),
+            colSize: 3,
+            alignment: 'justify-self-start',
+          },
+          deposited: {
+            CellComponent: CurrencyCell,
+            value: (rowData.balance * rowData.underlyingPerShare) / 10 ** rowData.underlyingDecimals,
+            colSize: 2,
+          },
+          limit: {
+            CellComponent: CurrencyCell,
+            value: rowData.vaultDebt.toString(),
+            prefix: '+',
+            colSize: 2,
+          },
+          col3: {
+            CellComponent: CurrencyCell,
+            value: utils.formatUnits(
+              utils.parseUnits(rowData.tvl, rowData.underlyingDecimals).toString(),
+              rowData.underlyingDecimals,
+            ),
+            colSize: 2,
+          },
+          col4: {
+            value: 'N/A',
+            colSize: 2,
+          },
+          col5: {
+            CellComponent: ActionsCell,
+            colSize: 3,
+            yieldToken: token,
+            underlyingToken: rowData.underlyingToken,
+            userDeposit: rowData.balance,
+            loanRatio: $alusd.ratio,
+            borrowLimit: rowData.vaultDebt,
+            openDebtAmount: $alusd.userDebt,
+            openDebtSymbol: 'alUSD',
+            underlyingPricePerShare: rowData.underlyingPerShareFormatted,
+            yieldPricePerShare: rowData.yieldPerShareFormatted,
+            yieldDecimals: rowData.yieldDecimals,
+            underlyingDecimals: rowData.underlyingDecimals,
+          },
         },
-        deposited: {
-          CellComponent: CurrencyCell,
-          value: (rowData.balance * rowData.underlyingPerShare) / 10 ** rowData.underlyingDecimals,
-          colSize: 2,
-        },
-        limit: {
-          CellComponent: CurrencyCell,
-          value: rowData.vaultDebt.toString(),
-          prefix: '+',
-          colSize: 2,
-        },
-        col3: {
-          CellComponent: CurrencyCell,
-          value: utils.formatUnits(
-            utils.parseUnits(rowData.tvl, rowData.underlyingDecimals).toString(),
-            rowData.underlyingDecimals,
-          ),
-          colSize: 2,
-        },
-        col4: {
-          value: 'N/A',
-          colSize: 2,
-        },
-        col5: {
-          CellComponent: ActionsCell,
-          colSize: 3,
-          yieldToken: token,
-          underlyingToken: rowData.underlyingToken,
-          userDeposit: rowData.balance,
-          loanRatio: $alusd.ratio,
-          borrowLimit: rowData.vaultDebt,
-          openDebtAmount: $alusd.userDebt,
-          openDebtSymbol: 'alUSD',
-          underlyingPricePerShare: rowData.underlyingPerShareFormatted,
-          yieldPricePerShare: rowData.yieldPerShareFormatted,
-          yieldDecimals: rowData.yieldDecimals,
-          underlyingDecimals: rowData.underlyingDecimals,
-        },
-      },
-    };
-    $vaults.alusd.push(payload);
+      };
+      if (payload.type === 'used') {
+        console.log('type used');
+        rowsUser.push(payload.row);
+        counterUserStrategies += 1;
+      } else {
+        console.log('type unused');
+        rowsUnused.push(payload.row);
+        counterUnusedStrategies += 1;
+      }
+      console.log('type all');
+      rowsAll.push(payload.row);
+      counterAllStrategies += 1;
+    }
+    loading = false;
   }
-  $vaults.alusd.forEach((vault) => {
-    if (vault.type === 'used') {
-      rowsUser.push(vault.row);
-      counterUserStrategies += 1;
-    } else {
-      rowsUnused.push(vault.row);
-      counterUnusedStrategies += 1;
-    }
-    rowsAll.push(vault.row);
-    counterAllStrategies += 1;
-  });
-  loading = false;
 };
 
-let readyFn;
-const readyCheck = () => {
-  readyFn = setTimeout(() => {
-    if (!$account.loadingWalletBalance && !$account.loadingVaultConfiguration && !$alusd.loadingRowData) {
-      renderVaults();
-      clearTimeout(readyFn);
-    } else {
-      readyCheck();
-    }
-  }, 500);
-};
-
-$: $alusd.loadingRowData, readyCheck();
+$: if (!$alusd.loadingRowData) renderVaults();
 </script>
 
 <ViewContainer>
