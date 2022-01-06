@@ -404,10 +404,8 @@ $: if ($tempTx.method !== null) {
 
 const renderVaults = async () => {
   // alUSD Alchemist only atm
-  console.log('rendervaults');
   if (!$alusd.loadingRowData) {
     for (const token of $alusd.yieldTokens) {
-      console.log('for loop');
       const rowData = $alusd.rows.find((row) => row.token === token);
       yieldTokenAlusd.push({
         symbol: rowData.yieldSymbol,
@@ -477,15 +475,12 @@ const renderVaults = async () => {
         },
       };
       if (payload.type === 'used') {
-        console.log('type used');
         rowsUser.push(payload.row);
         counterUserStrategies += 1;
       } else {
-        console.log('type unused');
         rowsUnused.push(payload.row);
         counterUnusedStrategies += 1;
       }
-      console.log('type all');
       rowsAll.push(payload.row);
       counterAllStrategies += 1;
     }

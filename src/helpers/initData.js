@@ -17,6 +17,8 @@ import { setLoadingData, closeToast } from './setToast';
 // @dev enable verbose messages in console when debugging
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 let retry;
+let startStamp;
+let stopStamp;
 if (debugging) console.warn('====== Running initData in Debug mode ======');
 
 // @dev prints out nicely formatted view of the initialized data
@@ -29,6 +31,7 @@ function logData() {
       !_account.loadingTransmuterConfigurations &&
       !_alusd.loadingRowData
     ) {
+      stopStamp = Date.now();
       console.log('====== Supported Tokens ======');
       console.log(tokenList);
       console.log('====== Wallet Balance ======');
@@ -38,7 +41,7 @@ function logData() {
       console.table(_alusd.rows);
       console.log('====== Transmuter Configuration ======');
       console.table(_transmuters.props);
-      console.log('====== initData finished ======');
+      console.log(`====== initData finished ( ~${(stopStamp - startStamp) / 1000}s) ======`);
       clearTimeout(retry);
     } else {
       logData();
@@ -316,7 +319,10 @@ function initTransmuters() {
 
 // @dev initializes a majority of data needed to render the site
 export default async function initData() {
-  if (debugging) setLoadingData('Supported Tokens', 1, 4);
+  if (debugging) {
+    startStamp = Date.now();
+    setLoadingData('Supported Tokens', 1, 4);
+  }
   await initSupportedTokens();
   if (debugging) setLoadingData('Token Balances', 2, 4);
   await initWalletBalance();
