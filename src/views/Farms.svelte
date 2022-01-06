@@ -1,5 +1,5 @@
 <script>
-import { ethers, BigNumber } from 'ethers';
+import { ethers, utils, BigNumber } from 'ethers';
 import { onMount } from 'svelte';
 import { _ } from 'svelte-i18n';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -146,7 +146,7 @@ onMount(async () => {
       if (poolConfig && reward !== '0.0') {
         // TODO FIXME race condition when user refreshes page and $walletBalance is not completely filled
         const userToken = $walletBalance.tokens.find((item) => item.address === token);
-
+        console.log('USER TOKEN', userToken);
         const expandedProps = {
           poolId: i,
           token: userToken,
