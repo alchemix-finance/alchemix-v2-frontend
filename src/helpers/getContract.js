@@ -31,3 +31,14 @@ export function getFragment(selector) {
   const contract = require(`../abi/${selector}.json`);
   return new Iface(contract.abi);
 }
+
+/*
+ * @dev returns a contract's address from the json
+ * @param contract the contract's filename without extension
+ * @returns the address string
+ * */
+export function getAddress(selector) {
+  // eslint-disable-next-line global-require,import/no-dynamic-require
+  const contract = require(`../abi/${selector}.json`);
+  return contract.address;
+}

@@ -7,6 +7,23 @@ const vaults = writable({
   albtc: [],
 });
 
+export const alusd = writable({
+  userDebt: 0,
+  maxDebt: 0,
+  ratio: undefined,
+  yieldTokens: [],
+  loadingRowData: true,
+  rows: [],
+});
+
+export const aleth = writable({
+  uerDebt: 0,
+  maxDebt: 0,
+  ratio: undefined,
+  yieldTokens: [],
+  rows: [],
+});
+
 export const aggregate = writable({
   deposited: [],
   totalDeposit: 0,

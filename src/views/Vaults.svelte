@@ -1,7 +1,7 @@
 <script>
 import { onMount, getContext } from 'svelte';
 import { _ } from 'svelte-i18n';
-import { utils, BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -9,8 +9,8 @@ import Button from '../components/elements/Button.svelte';
 import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import { BarLoader } from 'svelte-loading-spinners';
 import account from '../stores/account';
-import vaults from '../stores/vaults';
-import { aggregate } from '../stores/vaults';
+import walletBalance from '../stores/walletBalance';
+import vaults, { aggregate, alusd } from '../stores/vaults';
 import getContract, { getFragment } from '../helpers/getContract';
 import {
   getTokenSymbol,
@@ -36,6 +36,8 @@ import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
 let counterUnusedStrategies = 0;
+
+let loading = true;
 
 let rowsAll = [];
 let rowsUser = [];
@@ -79,8 +81,6 @@ let colsStrats = [
   },
 ];
 
-let userDebtAlusd = 0;
-let maxDebtAlusd = 0;
 let underlyingTokenAlusd = [];
 let yieldTokenAlusd = [];
 
@@ -94,8 +94,8 @@ const openBorrowModal = () => {
         symbol: 'alUSD',
         address: '',
       },
-      maxDebt: maxDebtAlusd,
-      currentDebt: userDebtAlusd,
+      maxDebt: $alusd.maxDebt,
+      currentDebt: $alusd.userDebt,
     },
     {
       ...modalStyle,
@@ -107,7 +107,7 @@ const openRepayModal = () => {
     Repay,
     {
       underlyingTokens: underlyingTokenAlusd,
-      outstandingDebt: userDebtAlusd,
+      outstandingDebt: $alusd.userDebt,
     },
     {
       ...modalStyle,
@@ -118,7 +118,7 @@ const openLiquidateModal = () => {
   open(
     Liquidate,
     {
-      outstandingDebt: userDebtAlusd,
+      outstandingDebt: $alusd.userDebt,
       yieldTokens: yieldTokenAlusd,
     },
     {
@@ -402,109 +402,56 @@ $: if ($tempTx.method !== null) {
   methodLookup[$tempTx.method]();
 }
 
-$: if ($vaults.alusd.length > 0) {
-  $vaults.alusd.forEach((vault) => {
-    if (vault.type === 'used') {
-      rowsUser.push(vault.row);
-      counterUserStrategies += 1;
-    } else {
-      rowsUnused.push(vault.row);
-      counterUnusedStrategies += 1;
-    }
-    rowsAll.push(vault.row);
-    counterAllStrategies += 1;
-  });
-}
-
-onMount(async () => {
-  let deposited = [];
-  if ($vaults.fetching) {
-    // alUSD Alchemist only atm
-    const debt = await contract.accounts($account.address);
-    userDebtAlusd = utils.formatEther(debt.debt.toString());
-    console.log('debt', utils.formatEther(debt.debt.toString()));
-    const yieldTokens = await contract.getSupportedYieldTokens();
-    console.log(yieldTokens);
-    console.log('mint', await contract.mintAllowance($account.address, $account.address));
-    const ratio = await contract.minimumCollateralization();
-    const ratioFormatted = utils.formatEther(ratio.toString());
-    for (const token of yieldTokens) {
-      console.log('ratio', utils.formatEther(ratio.toString()));
-      const params = await contract.getYieldTokenParameters(token);
-      const underlyingToken = params.underlyingToken;
-      console.log(underlyingToken);
-      const underlyingDecimals = await getTokenDecimals(underlyingToken);
-      const yieldDecimals = await getTokenDecimals(token);
-      const underlyingPerShare = await contract.underlyingTokensPerShare(token);
-      const underlyingPerShareFormatted = utils.formatUnits(
-        underlyingPerShare.toString(),
-        underlyingDecimals,
-      );
-      const yieldPerShare = await contract.yieldTokensPerShare(token);
-      const yieldPerShareFormatted = utils.formatUnits(yieldPerShare.toString(), yieldDecimals);
-      console.log('underlying rate', utils.formatUnits(underlyingPerShare.toString(), underlyingDecimals));
-      console.log('yield rate', utils.formatUnits(yieldPerShare.toString(), yieldDecimals));
-      const yieldSymbol = await getTokenSymbol(token);
-      const underlyingSymbol = await getTokenSymbol(params.underlyingToken);
-      const tvl = utils.formatUnits(params.balance.toString(), yieldDecimals);
-      const position = await contract.positions($account.address, token);
-      const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
-      const underlyingBalance = await getTokenBalance(underlyingToken);
-      console.log(balance, ratioFormatted);
-      const vaultDebt = (balance * underlyingPerShareFormatted) / ratioFormatted;
-      console.log('underlying deposit', (balance * underlyingPerShare) / 10 ** underlyingDecimals);
-      console.log('yield deposit', (balance * yieldPerShare) / 10 ** yieldDecimals);
-      maxDebtAlusd += vaultDebt;
-      const depositPayload = {
-        token: token,
-        symbol: yieldSymbol,
-        balance: balance,
-      };
-      deposited.push(depositPayload);
+const renderVaults = async () => {
+  // alUSD Alchemist only atm
+  console.log('rendervaults');
+  if (!$alusd.loadingRowData) {
+    for (const token of $alusd.yieldTokens) {
+      console.log('for loop');
+      const rowData = $alusd.rows.find((row) => row.token === token);
       yieldTokenAlusd.push({
-        symbol: yieldSymbol,
+        symbol: rowData.yieldSymbol,
         address: token,
-        balance: balance,
-        decimals: yieldDecimals,
-        yieldPerShare: yieldPerShareFormatted,
-        underlyingPerShare: underlyingPerShareFormatted,
+        balance: rowData.balance,
+        decimals: rowData.yieldDecimals,
+        yieldPerShare: rowData.yieldPerShareFormatted,
+        underlyingPerShare: rowData.underlyingPerShareFormatted,
       });
       underlyingTokenAlusd.push({
-        symbol: underlyingSymbol,
-        address: underlyingToken,
-        balance: underlyingBalance,
-        decimals: underlyingDecimals,
+        symbol: rowData.underlyingSymbol,
+        address: rowData.underlyingToken,
+        balance: rowData.underlyingBalance,
+        decimals: rowData.underlyingDecimals,
       });
-      const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
-      let payload = {
-        type: stratIsUsed ? 'used' : 'unused',
+      const payload = {
+        type: rowData.stratIsUsed ? 'used' : 'unused',
         alchemist: 'alusd',
         row: {
           col2: {
             CellComponent: FarmNameCell,
-            farmName: yieldSymbol,
-            farmSubtitle: 'Yearn ' + underlyingSymbol,
+            farmName: rowData.yieldSymbol,
+            farmSubtitle: 'Yearn ' + rowData.underlyingSymbol,
             farmIcon: 'alusd_med.svg',
-            tokenIcon: underlyingSymbol.toLowerCase(),
+            tokenIcon: rowData.underlyingSymbol.toLowerCase(),
             colSize: 3,
             alignment: 'justify-self-start',
           },
           deposited: {
             CellComponent: CurrencyCell,
-            value: (balance * underlyingPerShare) / 10 ** underlyingDecimals,
+            value: (rowData.balance * rowData.underlyingPerShare) / 10 ** rowData.underlyingDecimals,
             colSize: 2,
           },
           limit: {
             CellComponent: CurrencyCell,
-            value: vaultDebt.toString(),
+            value: rowData.vaultDebt.toString(),
             prefix: '+',
             colSize: 2,
           },
           col3: {
             CellComponent: CurrencyCell,
             value: utils.formatUnits(
-              utils.parseUnits(tvl, underlyingDecimals).toString(),
-              underlyingDecimals,
+              utils.parseUnits(rowData.tvl, rowData.underlyingDecimals).toString(),
+              rowData.underlyingDecimals,
             ),
             colSize: 2,
           },
@@ -516,28 +463,37 @@ onMount(async () => {
             CellComponent: ActionsCell,
             colSize: 3,
             yieldToken: token,
-            underlyingToken: underlyingToken,
-            userDeposit: balance,
-            loanRatio: ratioFormatted,
-            borrowLimit: vaultDebt,
-            openDebtAmount: userDebtAlusd,
+            underlyingToken: rowData.underlyingToken,
+            userDeposit: rowData.balance,
+            loanRatio: $alusd.ratio,
+            borrowLimit: rowData.vaultDebt,
+            openDebtAmount: $alusd.userDebt,
             openDebtSymbol: 'alUSD',
-            underlyingPricePerShare: underlyingPerShareFormatted,
-            yieldPricePerShare: yieldPerShareFormatted,
-            yieldDecimals,
-            underlyingDecimals,
+            underlyingPricePerShare: rowData.underlyingPerShareFormatted,
+            yieldPricePerShare: rowData.yieldPerShareFormatted,
+            yieldDecimals: rowData.yieldDecimals,
+            underlyingDecimals: rowData.underlyingDecimals,
           },
         },
       };
-      $vaults.alusd.push(payload);
+      if (payload.type === 'used') {
+        console.log('type used');
+        rowsUser.push(payload.row);
+        counterUserStrategies += 1;
+      } else {
+        console.log('type unused');
+        rowsUnused.push(payload.row);
+        counterUnusedStrategies += 1;
+      }
+      console.log('type all');
+      rowsAll.push(payload.row);
+      counterAllStrategies += 1;
     }
-    deposited.forEach((deposit) => {
-      $aggregate.totalDeposit += deposit.balance;
-    });
-    $aggregate.deposited = deposited;
-    $vaults.fetching = false;
+    loading = false;
   }
-});
+};
+
+$: if (!$alusd.loadingRowData) renderVaults();
 </script>
 
 <ViewContainer>
@@ -549,7 +505,7 @@ onMount(async () => {
     />
   </div>
 
-  {#if $vaults.fetching}
+  {#if loading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
         <p class="inline-block self-center">{$_('fetching_data')}</p>

@@ -5,9 +5,12 @@ import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
 import toastConfig from '../stores/toast';
 import network from '../stores/network';
+import initData from './initData';
 
 let _toastConfig;
 let _network;
+let _account;
+const accountReset = account;
 let ethersProvider;
 // let rpcUrl;
 
@@ -17,6 +20,10 @@ toastConfig.subscribe((val) => {
 
 network.subscribe((val) => {
   _network = val;
+});
+
+account.subscribe((val) => {
+  _account = val;
 });
 
 // @dev prepare list of supported wallets according to
@@ -51,6 +58,8 @@ const onboard = Onboard({
     wallet: async (result) => {
       const { provider } = result;
       ethersProvider = new ethers.providers.Web3Provider(provider);
+      _account.provider = ethersProvider;
+      account.set({ ..._account });
       window.localStorage.setItem('userWallet', result.name);
     },
     // @dev react to changes in the wallet's network
@@ -84,7 +93,11 @@ async function connect(preselect) {
       _toastConfig.closeTimeout = 2500;
       _toastConfig.title = `Welcome back${toastGreeting}`;
       _toastConfig.visible = true;
-      account.set({ address, signer, ens });
+      _account.address = address;
+      _account.ens = ens;
+      _account.signer = signer;
+      account.set({ ..._account });
+      await initData();
     });
   } catch (error) {
     console.warn('User aborted wallet selection', error);
@@ -95,7 +108,7 @@ async function connect(preselect) {
 // @dev function disconnects user wallets and resets state
 function disconnect() {
   onboard.walletReset();
-  account.set({ address: undefined, signer: undefined, ens: undefined });
+  account.set({ ...accountReset });
   walletBalance.set({ tokens: [] });
   navigate('/', { replace: true });
 }

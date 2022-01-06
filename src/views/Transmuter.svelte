@@ -9,14 +9,10 @@ import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
 import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
 import getContract from '../helpers/getContract';
-import { getTokenSymbol } from '../helpers/getTokenSymbol';
 import getUserGas from '../helpers/getUserGas';
-import { genericAbi } from '../stores/externalContracts';
 import transmuters from '../stores/transmuters';
 import account from '../stores/account';
-import walletBalance from '../stores/walletBalance';
-import { BigNumber, ethers } from 'ethers';
-import { onMount } from 'svelte';
+import { ethers } from 'ethers';
 import { BarLoader } from 'svelte-loading-spinners';
 
 const toggleButtons = {
@@ -42,7 +38,6 @@ const vaultFilter = (filter) => {
   buttonToggler(selector[filter.id], filter.filter);
 };
 const userGas = getUserGas();
-console.log('USER GAS', userGas);
 const columns = [
   {
     columnId: 'col1',
@@ -101,97 +96,56 @@ const goTo = (url) => {
   window.open(url, '_blank');
 };
 
-onMount(async () => {
-  console.log($transmuters.fetching);
-  if ($transmuters.fetching) {
-    for (const contract of transmuterContracts) {
-      const getAlToken = await contract.syntheticToken();
-      const alToken = getAlToken.toLowerCase();
-      const alTokenContract = new ethers.Contract(alToken, genericAbi, $account.signer);
-      const alTokenAllowance = await alTokenContract.allowance($account.address, contract.address);
-      console.log(
-        'allowance -- transmuter',
-        alTokenAllowance,
-        ' wei for the following transmuter ',
-        contract.address,
-      );
-      const alTokenSymbol = await getTokenSymbol(getAlToken);
-      const getUnderlyingToken = await contract.underlyingToken();
-      const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
-      const getBuffered = await contract.totalBuffered();
-      const buffered = format(getBuffered.toString(), 'ether');
-      const getTotalUnexchanged = await contract.totalUnexchanged();
-      const totalUnexchanged = format(getTotalUnexchanged.toString(), 'ether');
-      const getExchangedBalance = await contract.getExchangedBalance($account.address);
-      const exchangedBalance = format(getExchangedBalance.toString(), 'ether');
-      const getUnexchangedBalance = await contract.getUnexchangedBalance($account.address);
-      const unexchangedBalance = format(getUnexchangedBalance.toString(), 'ether');
-      console.log($walletBalance);
-      // const userAlToken = await $walletBalance.tokens.find((userToken) => userToken.symbol === alTokenSymbol);
-      // const userUnderlyingToken = await $walletBalance.tokens.find((token) => token.address === getUnderlyingToken);
-      // console.log('useraltoken', userUnderlyingToken);
-      const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
-      const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
-      const totalDeposited = format(exchangedBN.add(unexchangedBN).toString(), 'ether');
+const renderTransmuters = () => {
+  for (const prop of $transmuters.props) {
+    const expandedProps = {
+      alToken: prop.getAlToken,
+      transmuterContract: prop.address,
+      allowance: prop.alTokenAllowance,
+      exchangedBalance: prop.exchangedBalance,
+      unexchangedBalance: prop.unexchangedBalance,
+      alTokenSymbol: prop.alTokenSymbol,
+      underlyingTokenSymbol: prop.underlyingTokenSymbol,
+    };
 
-      // console.log('scoopy dai balance', userUnderlyingToken);
-      console.log('scoopy - transmuter.svelte - mybal', exchangedBalance, unexchangedBalance);
-      const expandedProps = {
-        alToken: getAlToken,
-        underlyingToken: getUnderlyingToken,
-        transmuterContract: contract,
-        alTokenContract: alTokenContract,
-        allowance: alTokenAllowance,
-        exchangedBalance: exchangedBalance,
-        unexchangedBalance: unexchangedBalance,
-        alTokenSymbol: alTokenSymbol,
-        underlyingTokenSymbol: underlyingTokenSymbol,
-      };
+    const payload = {
+      col1: {
+        CellComponent: ExpandRowCell,
+        expandedRow: {
+          ExpandedRowComponent: ExpandedTransmuter,
+        },
+        ...expandedProps,
+        colSize: 1,
+      },
+      col2: {
+        value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
+        colSize: 2,
+        alignment: 'justify-self-start',
+      },
+      col3: {
+        value: prop.totalDeposited,
+        colSize: 2,
+      },
+      col4: {
+        value: prop.unexchangedBalance,
+        colSize: 2,
+      },
+      col6: {
+        value: prop.exchangedBalance,
+        colSize: 2,
+      },
+      col5: {
+        value: '455%',
+        colSize: 2,
+      },
+    };
 
-      const payload = {
-        col1: {
-          CellComponent: ExpandRowCell,
-          expandedRow: {
-            ExpandedRowComponent: ExpandedTransmuter,
-          },
-          ...expandedProps,
-          colSize: 1,
-        },
-        col2: {
-          value: alTokenSymbol + '-' + underlyingTokenSymbol,
-          colSize: 2,
-          alignment: 'justify-self-start',
-        },
-        col3: {
-          value: totalDeposited,
-          colSize: 2,
-        },
-        col4: {
-          value: unexchangedBalance,
-          colSize: 2,
-        },
-        col6: {
-          value: exchangedBalance,
-          colSize: 2,
-        },
-        col5: {
-          value: '455%',
-          colSize: 2,
-        },
-      };
-
-      $transmuters.state.push(payload);
-    }
-    $transmuters.fetching = false;
-    console.log($transmuters.fetching);
+    rows.push(payload);
   }
-});
-$: if ($transmuters.state.length > 0) {
-  $transmuters.state.forEach((entry) => {
-    rows.push(entry);
-  });
-  console.log('ROWS', rows);
-}
+  $transmuters.fetching = false;
+};
+
+$: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
 </script>
 
 <ViewContainer>
