@@ -4,8 +4,7 @@
   "license": "ISC",
   "scripts": {
     "abi": "bash ./scripts/updateAbi.sh",
-    "vercelEnv": "bash ./scripts/vercelEnv.sh",
-    "build": "yarn vercelEnv && cross-env NODE_ENV=production webpack",
+    "build": "vercel env pull && cross-env NODE_ENV=production webpack",
     "dev": "yarn abi && yarn lint && webpack serve --port 5005",
     "lint": "yarn run prettier && yarn run lint:js",
     "lint:js": "npx eslint src/*.js src/**/*.js",
