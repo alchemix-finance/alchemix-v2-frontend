@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp .env.production .env
+cp ./.env.production ./.env
