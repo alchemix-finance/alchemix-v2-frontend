@@ -6,6 +6,11 @@ toastConfig.subscribe((val) => {
   _toastConfig = val;
 });
 
+export function closeToast() {
+  _toastConfig.forceClose = true;
+  toastConfig.set({ ...toastConfig });
+}
+
 export function setPendingWallet() {
   _toastConfig.kind = 'pending';
   _toastConfig.title = 'Pending';
@@ -44,5 +49,19 @@ export function setError(message) {
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
   _toastConfig.closeTimeout = 2000;
+  toastConfig.set({ ..._toastConfig });
+}
+
+export function setLoadingData(message, step, totalSteps) {
+  _toastConfig.kind = 'pending';
+  if (step && totalSteps) {
+    _toastConfig.title = `Initializing Data (${step}/${totalSteps})`;
+  } else {
+    _toastConfig.title = 'Initializing Data';
+  }
+  _toastConfig.subtitle = message;
+  _toastConfig.closeOnMount = false;
+  _toastConfig.visible = true;
+  _toastConfig.spinner = true;
   toastConfig.set({ ..._toastConfig });
 }
