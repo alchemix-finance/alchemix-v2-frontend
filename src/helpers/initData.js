@@ -1,9 +1,16 @@
 import { ethers, utils } from 'ethers';
-import getContract from './getContract';
-import { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals } from './getTokenData';
+import getContract, { getAddress } from './getContract';
+import {
+  getTokenSymbol,
+  getTokenBalance,
+  getTokenName,
+  getTokenDecimals,
+  getTokenAllowance,
+} from './getTokenData';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
 import vaults, { alusd, aggregate } from '../stores/vaults';
+import transmuters, { transmuterContracts } from '../stores/transmuters';
 import { poolLookup } from '../stores/stakingPools';
 import { setLoadingData, closeToast } from './setToast';
 
@@ -30,7 +37,7 @@ function logData() {
       console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
       console.table(_alusd.rows);
       console.log('====== Transmuter Configuration ======');
-      console.table(_walletBalance);
+      console.table(_transmuters.props);
       console.log('====== initData finished ======');
       clearTimeout(retry);
     } else {
@@ -63,6 +70,11 @@ aggregate.subscribe((val) => {
 let _alusd;
 alusd.subscribe((val) => {
   _alusd = val;
+});
+
+let _transmuters;
+transmuters.subscribe((val) => {
+  _transmuters = val;
 });
 
 // @dev list of tokens to watch
@@ -163,7 +175,7 @@ async function initWalletBalance() {
  * @param tokens a list of yield tokens from the alUSD alchemist
  * @returns void
  * */
-function rowBuilder(tokens) {
+function vaultAlusdRowBuilder(tokens) {
   const contract = getContract('AlchemistV2_alUSD');
   tokens.forEach(async (token) => {
     const params = await contract.getYieldTokenParameters(token);
@@ -219,14 +231,14 @@ function rowBuilder(tokens) {
 }
 
 // @dev makes sure to not initialize vault before balances have been loaded
-let rowBuilderQueueTimer;
-const rowBuilderQueue = (tokens) => {
-  rowBuilderQueueTimer = setTimeout(() => {
+let vaultAlusdRowBuilderQueueTimer;
+const vaultAlusdRowBuilderQueue = (tokens) => {
+  vaultAlusdRowBuilderQueueTimer = setTimeout(() => {
     if (!_account.loadingWalletBalance) {
-      rowBuilder(tokens);
-      clearTimeout(rowBuilderQueueTimer);
+      vaultAlusdRowBuilder(tokens);
+      clearTimeout(vaultAlusdRowBuilderQueueTimer);
     } else {
-      rowBuilderQueue(tokens);
+      vaultAlusdRowBuilderQueue(tokens);
     }
   }, 200);
 };
@@ -241,17 +253,64 @@ async function initAlusdVault() {
   _alusd.ratio = utils.formatEther(rawRatio.toString());
   alusd.set({ ..._alusd });
 
-  rowBuilderQueue(_alusd.yieldTokens);
+  vaultAlusdRowBuilderQueue(_alusd.yieldTokens);
   return true;
 }
 
-// @dev starts initialization of all vaults
+// @dev orchestrates initialization of all vaults
 async function initVaults() {
   await initAlusdVault();
   _account.loadingVaultConfigurations = false;
   account.set({ ..._account });
   _vaults.fetching = false;
   vaults.set({ ..._vaults });
+  return true;
+}
+
+// @dev orchestrates initialization of all transmuters
+function initTransmuters() {
+  let counter = 0;
+  transmuterContracts.forEach(async (transmuter) => {
+    const contract = getContract(transmuter);
+    const address = getAddress(transmuter);
+    const getAlToken = await contract.syntheticToken();
+    const alToken = getAlToken.toLowerCase();
+    const alTokenAllowance = await getTokenAllowance(getAlToken, _account.address, address);
+    const alTokenSymbol = await getTokenSymbol(getAlToken);
+    const getUnderlyingToken = await contract.underlyingToken();
+    const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
+    const getTotalUnexchanged = await contract.totalUnexchanged();
+    const getExchangedBalance = await contract.getExchangedBalance(_account.address);
+    const exchangedBalance = utils.formatEther(getExchangedBalance.toString());
+    const getUnexchangedBalance = await contract.getUnexchangedBalance(_account.address);
+    const unexchangedBalance = utils.formatEther(getUnexchangedBalance.toString());
+    const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
+    const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
+    const totalDeposited = utils.formatEther(exchangedBN.add(unexchangedBN).toString());
+    const payload = {
+      address,
+      getAlToken,
+      alToken,
+      alTokenAllowance,
+      alTokenSymbol,
+      underlyingTokenSymbol,
+      getTotalUnexchanged,
+      getExchangedBalance,
+      exchangedBalance,
+      getUnexchangedBalance,
+      unexchangedBalance,
+      exchangedBN,
+      unexchangedBN,
+      totalDeposited,
+    };
+    _transmuters.props.push(payload);
+    transmuters.set({ ..._transmuters });
+    counter += 1;
+    if (transmuterContracts.length === counter) {
+      _account.loadingTransmuterConfigurations = false;
+      account.set({ ..._account });
+    }
+  });
   return true;
 }
 
@@ -264,8 +323,7 @@ export default async function initData() {
   if (debugging) setLoadingData('Vault Configurations', 3, 4);
   await initVaults();
   if (debugging) setLoadingData('Transmuter Configurations', 4, 4);
-  _account.loadingTransmuterConfigurations = false;
-  account.set({ ..._account });
+  initTransmuters();
   if (debugging) {
     closeToast();
     logData();
