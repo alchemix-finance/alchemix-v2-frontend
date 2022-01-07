@@ -1,5 +1,5 @@
 <script>
-import { onMount, getContext } from 'svelte';
+import { getContext } from 'svelte';
 import { _ } from 'svelte-i18n';
 import { utils } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -9,15 +9,9 @@ import Button from '../components/elements/Button.svelte';
 import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
 import { BarLoader } from 'svelte-loading-spinners';
 import account from '../stores/account';
-import walletBalance from '../stores/walletBalance';
-import vaults, { aggregate, alusd } from '../stores/vaults';
+import { aggregate, alusd } from '../stores/vaults';
 import getContract, { getFragment } from '../helpers/getContract';
-import {
-  getTokenSymbol,
-  getTokenAllowance,
-  getTokenBalance,
-  getTokenDecimals,
-} from '../helpers/getTokenData';
+import { getTokenAllowance, getTokenDecimals } from '../helpers/getTokenData';
 import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
 import Table from '../components/composed/Table/Table.svelte';
 import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
@@ -32,6 +26,7 @@ import getUserGas from '../helpers/getUserGas';
 import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
 import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
+import ChildUpdater from '../components/elements/ChildUpdater.svelte';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -401,6 +396,17 @@ $: if ($tempTx.method !== null) {
   closeModal();
   methodLookup[$tempTx.method]();
 }
+const refreshData = () => {
+  rowsAll = [];
+  rowsUnused = [];
+  rowsUser = [];
+  counterUnusedStrategies = 0;
+  counterAllStrategies = 0;
+  counterUserStrategies = 0;
+  setTimeout(() => {
+    renderVaults();
+  }, 500);
+};
 
 const renderVaults = async () => {
   // alUSD Alchemist only atm
@@ -476,19 +482,29 @@ const renderVaults = async () => {
       };
       if (payload.type === 'used') {
         rowsUser.push(payload.row);
+        rowsUser = rowsUser;
         counterUserStrategies += 1;
       } else {
         rowsUnused.push(payload.row);
+        rowsUnused = rowsUnused;
         counterUnusedStrategies += 1;
       }
       rowsAll.push(payload.row);
+      rowsAll = rowsAll;
       counterAllStrategies += 1;
     }
     loading = false;
+    getRandomData();
   }
 };
 
+let foo;
+const getRandomData = () => {
+  foo = Math.floor(Math.random()*100000)
+}
+
 $: if (!$alusd.loadingRowData) renderVaults();
+$:
 </script>
 
 <ViewContainer>
@@ -499,7 +515,7 @@ $: if (!$alusd.loadingRowData) renderVaults();
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
   </div>
-
+  <Button on:clicked="{() => refreshData()}" label="clear" />
   {#if loading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
@@ -617,17 +633,23 @@ $: if (!$alusd.loadingRowData) renderVaults();
         <div slot="body">
           {#if toggleButtons.stratSelect.used}
             {#if rowsUser.length > 0}
-              <Table rows="{rowsUser}" columns="{colsStrats}" />
+              <ChildUpdater key="{foo}">
+                <Table rows columns="{colsStrats}" />
+              </ChildUpdater>
             {:else}
               <div class="flex justify-center my-4">
                 <p>You don't have any active strategies.</p>
               </div>
             {/if}
           {:else if toggleButtons.stratSelect.all}
-            <Table rows="{rowsAll}" columns="{colsStrats}" />
+            <ChildUpdater key="{foo}">
+              <Table rows="{rowsAll}" columns="{colsStrats}" />
+            </ChildUpdater>
           {:else if toggleButtons.stratSelect.unused}
             {#if rowsUnused.length > 0}
-              <Table rows="{rowsUnused}" columns="{colsStrats}" />
+              <ChildUpdater key="{foo}">
+                <Table rows="{rowsUnused}" columns="{colsStrats}" />
+              </ChildUpdater>
             {:else}
               <div class="flex justify-center my-4">
                 <p>You are using all available strategies.</p>

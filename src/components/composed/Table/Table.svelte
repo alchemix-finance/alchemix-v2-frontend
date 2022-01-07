@@ -5,32 +5,32 @@ import TableBodyRow from './TableBodyRow.svelte';
 import TableHeaderCell from './TableHeaderCell.svelte';
 
 /*
-                    Table component
+                        Table component
 
-                    Render: <Table rows="{rows}" columns="{columns}" />
+                        Render: <Table rows="{rows}" columns="{columns}" />
 
-                    Rows is an array of rows.
-                    Each row can define what cell component it should use and additional props
-                    For example: [
-                      {
-                        column1: {
-                          CellComponent: SomeCellComponent
-                          expandedRow: {
-                            ExpandedRowComponent: SomeComponent,
-                            value|props
+                        Rows is an array of rows.
+                        Each row can define what cell component it should use and additional props
+                        For example: [
+                          {
+                            column1: {
+                              CellComponent: SomeCellComponent
+                              expandedRow: {
+                                ExpandedRowComponent: SomeComponent,
+                                value|props
+                              }
+                              value|props
+                            }
+                          },
+                          {
+                            column2: {
+                              CellComponent: SomeCellComponent
+                              expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
+                              value|props
+                            }
                           }
-                          value|props
-                        }
-                      },
-                      {
-                        column2: {
-                          CellComponent: SomeCellComponent
-                          expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
-                          value|props
-                        }
-                      }
-                    ]
-                  */
+                        ]
+                      */
 
 export let rows = [];
 export let columns = [];
