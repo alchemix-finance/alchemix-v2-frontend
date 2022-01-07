@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo 'DEBUG_MODE='$DEBUG_MODE >> .env
+echo 'BLOCKNATIVE_KEY='$BLOCKNATIVE_KEY >> .env
+echo 'NETWORK_ID='$NETWORK_ID >> .env
+echo 'NETWORK_NAME='$NETWORK_NAME >> .env
+echo 'LOCAL_NETWORK_ID='$LOCAL_NETWORK_ID >> .env
+echo 'LOCAL_NETWORK_NAME='$LOCAL_NETWORK_NAME >> .env
+echo 'LOCAL_NETWORK_URL='$LOCAL_NETWORK_URL >> .env
+echo 'ZAPPER_KEY='$ZAPPER_KEY >> .env

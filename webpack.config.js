@@ -93,9 +93,7 @@ module.exports = {
 
     // take our environment variable in .env file
     // And it does a text replace in the resulting bundle for any instances of process.env.
-    new Dotenv({
-      safe: true,
-    }),
+    new Dotenv({}),
 
     // webpack update broke some compatibility
     // keep this in here or I'll come and find you I swear on me mum
