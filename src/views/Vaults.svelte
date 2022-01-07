@@ -500,11 +500,10 @@ const renderVaults = async () => {
 
 let foo;
 const getRandomData = () => {
-  foo = Math.floor(Math.random()*100000)
-}
+  foo = Math.floor(Math.random() * 100000);
+};
 
 $: if (!$alusd.loadingRowData) renderVaults();
-$:
 </script>
 
 <ViewContainer>
