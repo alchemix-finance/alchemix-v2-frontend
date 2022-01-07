@@ -52,9 +52,6 @@ onMount(async () => {
   walletChecked = true;
   await getFiatRates();
   await getGasPrices();
-  console.log('env check', process.env.SVELTE_DEBUG_MODE);
-  console.log('vite env check', process.env.VITE_VERCEL_DEBUG_MODE);
-  console.log('vercel check', process.env.VERCEL);
 });
 </script>
 
