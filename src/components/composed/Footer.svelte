@@ -29,19 +29,18 @@ const copyrightYear = () => {
       <p class="uppercase text-sm alcxTitle mb-5">{$_('navigation')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">{$_('documentation')}</a>
+          <a href="https://alchemix-finance.gitbook.io/alchemix-finance/" target="_blank"
+            >{$_('documentation')}</a
+          >
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">{$_('governance')}</a>
+          <a href="/governance">{$_('governance')}</a>
         </li>
+        <!--        <li class="opacity-50 hover:opacity-100">-->
+        <!--          <a href="" target="_blank">{$_('modules')}</a>-->
+        <!--        </li>-->
         <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">{$_('modules')}</a>
-        </li>
-        <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">{$_('voting')}</a>
-        </li>
-        <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">
+          <a href="https://forum.alchemix.fi/public/" target="_blank">
             <span>{$_('forum')}</span>
           </a>
         </li>
@@ -51,17 +50,17 @@ const copyrightYear = () => {
       <p class="uppercase text-sm alcxTitle mb-5">{$_('social')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">
+          <a href="https://discord.com/invite/alchemix" target="_blank">
             <span>{$_('discord')}</span>
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">
+          <a href="https://twitter.com/AlchemixFi" target="_blank">
             <span>{$_('twitter')}</span>
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a href="" target="_blank">
+          <a href="https://github.com/orgs/alchemix-finance/" target="_blank">
             <span>{$_('github')}</span>
           </a>
         </li>

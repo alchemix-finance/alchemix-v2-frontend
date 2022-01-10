@@ -6,7 +6,7 @@ import Modal from 'svelte-simple-modal';
 import { modal } from './stores/modal';
 
 // middleware
-import { getFiatRates, getGasPrices } from './middleware/zapper';
+import { getFiatRates, getGasPrices, getTokenPrices } from './middleware/zapper';
 
 // composed components
 import HeaderBar from './components/composed/HeaderBar.svelte';
@@ -52,6 +52,7 @@ onMount(async () => {
   walletChecked = true;
   await getFiatRates();
   await getGasPrices();
+  getTokenPrices();
 });
 </script>
 
@@ -64,10 +65,10 @@ onMount(async () => {
         <HeaderBar />
       </div>
       <div class="col-span-12 flex">
-        <div class="pl-8 pr-9 pt-8 w-96">
+        <div class="pl-8 pr-9 pt-8 w-96 sm:hidden xl:block">
           <SideBar />
         </div>
-        <div class="border-l border-grey5 w-full">
+        <div class="border-l border-grey5 w-full sm:hidden xl:block">
           {#if walletChecked}
             <Route path="/accounts" component="{Accounts}" />
             <Route path="/vaults" component="{Vaults}" />
@@ -79,6 +80,13 @@ onMount(async () => {
             <Route path="/*" component="{Error}" />
           {/if}
         </div>
+      </div>
+      <div class="sm:block xl:hidden col-span-12">
+        <p class="text-center text-lg my-12">What is this? DeFi 2.0 for ants?</p>
+        <p class="text-center mb-12">
+          Alchemix v2 does not yet support smol screens. Please get a larger screen or resize your browser
+          window.
+        </p>
       </div>
       <div class="col-span-12 pl-8 py-12 border-t border-grey5">
         <Footer />

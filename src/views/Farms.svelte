@@ -1,5 +1,4 @@
 <script>
-import { ethers, utils, BigNumber } from 'ethers';
 import { onMount } from 'svelte';
 import { _ } from 'svelte-i18n';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -15,8 +14,6 @@ import ActionsCell from '../components/composed/Table/farms/ActionsCell.svelte';
 import ExternalFarms from '../components/composed/Table/farms/ExternalFarms.svelte';
 import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
 import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
-import getContract from '../helpers/getContract';
-import { poolLookup } from '../stores/stakingPools';
 import stakingPools from '../stores/stakingPools';
 import { BarLoader } from 'svelte-loading-spinners';
 import account from '../stores/account';
@@ -89,12 +86,6 @@ const colsRetired = [
 ];
 let rowsRetired = [];
 
-// this is for internal pools only
-// double reward pools like sushi or 3crv are external
-// those need a different approach to handling data
-const pools = getContract('StakingPools');
-const format = ethers.utils.formatUnits;
-
 const goTo = (url) => {
   window.open(url, '_blank');
 };
@@ -122,39 +113,19 @@ const vaultFilter = (filter) => {
   buttonToggler(selector[filter.id], filter.filter);
 };
 
-onMount(async () => {
-  if ($stakingPools.fetching) {
-    // TODO add check for race condition on initialized wallet balance
-    const poolCount = BigNumber.from(await pools.poolCount()).toString();
-
-    for (let i = 0; i < poolCount; i++) {
-      const checkToken = await pools.getPoolToken(i);
-      const token = checkToken.toLowerCase();
-      const checkReward = await pools.getPoolRewardRate(i);
-      const checkTotalReward = await pools.rewardRate();
-      const reward = format(checkReward.toString(), 'ether');
-      // const totalReward = format(checkTotalReward.toString(), 'ether');
-      const checkUserDeposit = await pools.getStakeTotalDeposited($account.address, i);
-      const userDeposit = format(checkUserDeposit.toString(), 'ether');
-      const checkUserUnclaimed = await pools.getStakeTotalUnclaimed($account.address, i);
-      const userUnclaimed = format(checkUserUnclaimed.toString(), 'ether');
-      const checkTvl = await pools.getPoolTotalDeposited(i);
-      const tvl = format(checkTvl.toString(), 18);
-      const poolConfig = poolLookup.find((pool) => pool.address === token);
-      const rewardToken = 'ALCX';
-
-      if (poolConfig && reward !== '0.0') {
-        // TODO FIXME race condition when user refreshes page and $walletBalance is not completely filled
-        const userToken = $walletBalance.tokens.find((item) => item.address === token);
-        console.log('USER TOKEN', userToken);
+let loading = true;
+const renderFarms = async () => {
+  if (loading) {
+    $stakingPools.allPools.forEach((pool) => {
+      const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
+      if (pool.poolConfig && pool.reward !== '0.0') {
         const expandedProps = {
-          poolId: i,
+          poolId: pool.poolId,
           token: userToken,
-          stakedBalance: userDeposit,
-          unclaimedRewards: userUnclaimed,
-          reward: rewardToken,
+          stakedBalance: pool.userDeposit,
+          unclaimedRewards: pool.userUnclaimed,
+          reward: pool.rewardToken,
         };
-
         const payload = {
           col0: {
             CellComponent: ExpandRowCell,
@@ -166,19 +137,16 @@ onMount(async () => {
           },
           col1: {
             CellComponent: FarmNameCell,
-            farmName: poolConfig.title,
-            farmSubtitle: poolConfig.subtitle,
-            farmIcon: poolConfig.farmIcon,
-            tokenIcon: poolConfig.tokenIcon,
+            farmName: pool.poolConfig.title,
+            farmSubtitle: pool.poolConfig.subtitle,
+            farmIcon: pool.poolConfig.farmIcon,
+            tokenIcon: pool.poolConfig.tokenIcon,
             colSize: 3,
             alignment: 'justify-self-start',
           },
           col2: {
-            //NOTE FROM SCOOPY HERE
-            //consider getting the price of the token from zapper/coingecko
-            // (or combination of lp token virtual price,
-            // the asset it is paired with, and derive from that)
-            value: tvl,
+            // TODO calculate fiat values
+            value: pool.tvl,
             colSize: 2,
           },
           col3: {
@@ -202,53 +170,46 @@ onMount(async () => {
               ExpandedRowComponent: ExpandedFarm,
             },
             ...expandedProps,
-            poolId: i,
             colSize: 3,
           },
         };
-        $stakingPools.active.push(payload);
-      } else if (poolConfig && reward === '0.0') {
+        rowsActive.push(payload);
+      } else if (pool.poolConfig && pool.reward === '0.0') {
         const payload = {
           col1: {
             CellComponent: FarmNameCell,
-            tokenIcon: poolConfig.tokenIcon,
-            farmIcon: poolConfig.farmIcon,
-            farmName: poolConfig.title,
-            farmSubtitle: poolConfig.subtitle,
+            tokenIcon: pool.poolConfig.tokenIcon,
+            farmIcon: pool.poolConfig.farmIcon,
+            farmName: pool.poolConfig.title,
+            farmSubtitle: pool.poolConfig.subtitle,
             colSize: 7,
           },
           col2: {
-            value: userDeposit,
+            value: pool.userDeposit,
             colSize: 4,
           },
           col3: {
-            value: userUnclaimed,
+            value: pool.userUnclaimed,
             colSize: 4,
           },
           col4: {
             CellComponent: ExitCell,
-            poolId: i,
+            poolId: pool.poolId,
             colSize: 5,
           },
         };
-        $stakingPools.retired.push(payload);
+        rowsRetired.push(payload);
       }
-    }
-    $stakingPools.fetching = false;
+      if (pool.poolId + 1 === parseInt($stakingPools.pools, 10)) {
+        loading = false;
+      }
+    });
   }
-});
+};
 
-$: if ($stakingPools.active.length > 0) {
-  $stakingPools.active.forEach((pool) => {
-    rowsActive.push(pool);
-  });
-}
+$: if (!$account.loadingFarmsConfigurations && !$account.loadingWalletBalance) renderFarms();
 
-$: if ($stakingPools.retired.length > 0) {
-  $stakingPools.retired.forEach((pool) => {
-    rowsRetired.push(pool);
-  });
-}
+onMount(() => {});
 </script>
 
 <ViewContainer>
@@ -263,7 +224,7 @@ $: if ($stakingPools.retired.length > 0) {
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
-        {#if $stakingPools.fetching}
+        {#if loading}
           <p class="inline-block self-center">{$_('fetching_data')}</p>
         {:else}
           <Button
@@ -276,7 +237,7 @@ $: if ($stakingPools.retired.length > 0) {
             on:clicked="{() => vaultFilter({ id: 0, filter: 'active' })}"
           />
 
-          {#if $stakingPools.retired.length > 0}
+          {#if rowsRetired.length > 0}
             <Button
               label="Retired"
               width="w-max"
@@ -300,7 +261,7 @@ $: if ($stakingPools.retired.length > 0) {
         {/if}
       </div>
       <div slot="body">
-        {#if $stakingPools.fetching}
+        {#if loading}
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>

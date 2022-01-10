@@ -2,6 +2,8 @@ import { writable } from 'svelte/store';
 
 const stakingPools = writable({
   fetching: true,
+  pools: 0,
+  allPools: [],
   active: [],
   retired: [],
 });

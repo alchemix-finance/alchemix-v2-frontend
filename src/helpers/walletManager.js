@@ -100,7 +100,7 @@ async function connect(preselect) {
       await initData();
     });
   } catch (error) {
-    console.warn('User aborted wallet selection', error);
+    throw new Error('User aborted wallet selection');
   }
   toastConfig.set({ ..._toastConfig });
 }

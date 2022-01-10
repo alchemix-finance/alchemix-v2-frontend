@@ -14,9 +14,20 @@ account.subscribe((val) => {
  * */
 async function routerGuard(path) {
   if (!_account.signer) {
-    await connect().then(() => {
+    try {
+      await connect();
       navigate(`/${path}`, { replace: true });
-    });
+    } catch (e) {
+      console.error(e);
+      navigate('/', { replace: true });
+    }
+    // await connect()
+    //   .then(() => {
+    //     navigate(`/${path}`, { replace: true });
+    //   })
+    //   .catch(() => {
+    //     navigate('/', { replace: true });
+    //   });
   } else {
     navigate(`/${path}`, { replace: true });
   }

@@ -5,6 +5,7 @@ const account = writable({
   loadingWalletBalance: true,
   loadingVaultConfigurations: true,
   loadingTransmuterConfigurations: true,
+  loadingFarmsConfigurations: true,
   address: undefined,
   signer: undefined,
   ens: undefined,

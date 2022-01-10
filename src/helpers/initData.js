@@ -11,7 +11,7 @@ import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
 import vaults, { alusd, aggregate } from '../stores/vaults';
 import transmuters, { transmuterContracts } from '../stores/transmuters';
-import { poolLookup } from '../stores/stakingPools';
+import stakingPools, { poolLookup } from '../stores/stakingPools';
 import { setLoadingData, closeToast } from './setToast';
 
 // @dev enable verbose messages in console when debugging
@@ -29,7 +29,8 @@ function logData() {
       !_account.loadingWalletBalance &&
       !_account.loadingVaultConfigurations &&
       !_account.loadingTransmuterConfigurations &&
-      !_alusd.loadingRowData
+      !_alusd.loadingRowData &&
+      !_account.loadingFarmsConfigurations
     ) {
       stopStamp = Date.now();
       console.log('====== Supported Tokens ======');
@@ -41,6 +42,8 @@ function logData() {
       console.table(_alusd.rows);
       console.log('====== Transmuter Configuration ======');
       console.table(_transmuters.props);
+      console.log('====== Farms Configuration ======');
+      console.table(_stakingPools.allPools);
       console.log(`====== initData finished ( ~${(stopStamp - startStamp) / 1000}s) ======`);
       clearTimeout(retry);
     } else {
@@ -78,6 +81,11 @@ alusd.subscribe((val) => {
 let _transmuters;
 transmuters.subscribe((val) => {
   _transmuters = val;
+});
+
+let _stakingPools;
+stakingPools.subscribe((val) => {
+  _stakingPools = val;
 });
 
 // @dev list of tokens to watch
@@ -139,6 +147,9 @@ async function initAlusdAlchemistTokens() {
 
 // @dev retrieves the tokens supported by the staking pools
 async function initPoolTokens() {
+  const contract = getContract('StakingPools');
+  _stakingPools.pools = ethers.BigNumber.from(await contract.poolCount()).toString();
+  stakingPools.set({ ..._stakingPools });
   poolLookup.forEach((pool) => {
     tokenList.push(pool.address);
   });
@@ -317,19 +328,57 @@ function initTransmuters() {
   return true;
 }
 
+// @dev orchestrates initialization of all farms
+async function initFarms() {
+  const contract = getContract('StakingPools');
+  const poolCounter = parseInt(_stakingPools.pools, 10);
+  for (let i = 0; i < poolCounter; i++) {
+    const checkToken = await contract.getPoolToken(i);
+    const token = checkToken.toLowerCase();
+    const checkReward = await contract.getPoolRewardRate(i);
+    const reward = utils.formatEther(checkReward.toString());
+    const checkUserDeposit = await contract.getStakeTotalDeposited(_account.address, i);
+    const userDeposit = utils.formatEther(checkUserDeposit.toString());
+    const checkUserUnclaimed = await contract.getStakeTotalUnclaimed(_account.address, i);
+    const userUnclaimed = utils.formatEther(checkUserUnclaimed.toString());
+    const checkTvl = await contract.getPoolTotalDeposited(i);
+    const tvl = utils.formatEther(checkTvl.toString());
+    const poolConfig = poolLookup.find((pool) => pool.address === token);
+    const rewardToken = 'ALCX';
+    const payload = {
+      token,
+      reward,
+      userDeposit,
+      userUnclaimed,
+      tvl,
+      poolConfig,
+      rewardToken,
+      poolId: i,
+    };
+    _stakingPools.allPools.push(payload);
+    stakingPools.set({ ..._stakingPools });
+    if (i + 1 === poolCounter) {
+      _account.loadingFarmsConfigurations = false;
+      account.set({ ..._account });
+    }
+  }
+}
+
 // @dev initializes a majority of data needed to render the site
 export default async function initData() {
   if (debugging) {
     startStamp = Date.now();
-    setLoadingData('Supported Tokens', 1, 4);
+    setLoadingData('Supported Tokens', 1, 5);
   }
   await initSupportedTokens();
-  if (debugging) setLoadingData('Token Balances', 2, 4);
+  if (debugging) setLoadingData('Token Balances', 2, 5);
   await initWalletBalance();
-  if (debugging) setLoadingData('Vault Configurations', 3, 4);
+  if (debugging) setLoadingData('Vault Configurations', 3, 5);
   await initVaults();
-  if (debugging) setLoadingData('Transmuter Configurations', 4, 4);
+  if (debugging) setLoadingData('Transmuter Configurations', 4, 5);
   initTransmuters();
+  if (debugging) setLoadingData('Farm Configurations', 5, 5);
+  initFarms();
   if (debugging) {
     closeToast();
     logData();
