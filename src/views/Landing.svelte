@@ -13,23 +13,23 @@ const alAssets = [
   {
     name: 'Alchemix USD',
     ticker: 'alUSD',
-    price: 0.99,
-    icon: 'alusd.png',
+    price: 0.0,
+    icon: 'alusd_med.svg',
     color: 'bronze2',
   },
   {
     name: 'Alchemix ETH',
     ticker: 'alETH',
-    price: 2171.88,
-    icon: 'aleth.png',
+    price: 0.0,
+    icon: 'aleth_med.svg',
     color: 'blue3',
   },
   {
-    name: 'Alchemix BTC',
-    ticker: 'alBTC',
-    price: 34096.11,
-    icon: 'albtc.png',
-    color: 'orange1',
+    name: 'Alchemix Governance',
+    ticker: 'ALCX',
+    price: 0.0,
+    icon: 'alcx_med.svg',
+    color: 'bronze2',
   },
 ];
 </script>
@@ -73,13 +73,14 @@ const alAssets = [
       </Button>
     </BorderContainer>
   </div>
-  <div class="grid grid-cols-3 gap-14 mt-14">
+  <div class="mt-14 flex justify-center space-x-14">
     {#each alAssets as asset}
-      <div class="col-span-1 justify-self-center">
+      <div class="col-span-1 justify-self-center w-64">
         <AssetCard
           assetName="{asset.name}"
           assetTicker="{asset.ticker}"
-          assetPrice="{asset.price * $global.conversionRate}"
+          assetPrice="{$global.tokenPrices.find((token) => token.symbol === asset.ticker)?.price *
+            $global.conversionRate}"
           currency="{$settings.baseCurrency?.ticker}"
           assetIcon="{asset.icon}"
           assetColor="{asset.color}"
