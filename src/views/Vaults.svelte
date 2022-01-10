@@ -633,7 +633,7 @@ $: if (!$alusd.loadingRowData) renderVaults();
           {#if toggleButtons.stratSelect.used}
             {#if rowsUser.length > 0}
               <ChildUpdater key="{foo}">
-                <Table rows columns="{colsStrats}" />
+                <Table rows="{rowsUser}" columns="{colsStrats}" />
               </ChildUpdater>
             {:else}
               <div class="flex justify-center my-4">
