@@ -1,5 +1,4 @@
 <script>
-import { ethers, utils, BigNumber } from 'ethers';
 import { onMount } from 'svelte';
 import { _ } from 'svelte-i18n';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -15,7 +14,6 @@ import ActionsCell from '../components/composed/Table/farms/ActionsCell.svelte';
 import ExternalFarms from '../components/composed/Table/farms/ExternalFarms.svelte';
 import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
 import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
-import getContract from '../helpers/getContract';
 import stakingPools from '../stores/stakingPools';
 import { BarLoader } from 'svelte-loading-spinners';
 import account from '../stores/account';
@@ -88,12 +86,6 @@ const colsRetired = [
 ];
 let rowsRetired = [];
 
-// this is for internal pools only
-// double reward pools like sushi or 3crv are external
-// those need a different approach to handling data
-const pools = getContract('StakingPools');
-const format = ethers.utils.formatUnits;
-
 const goTo = (url) => {
   window.open(url, '_blank');
 };
@@ -125,11 +117,7 @@ let loading = true;
 const renderFarms = async () => {
   if (loading) {
     $stakingPools.allPools.forEach((pool) => {
-      console.table(pool);
       const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
-      console.log('USER TOKEN', userToken, pool.token);
-      console.log('pool reward rate', pool.reward === '0.0');
-      console.log('pool config', pool.poolConfig);
       if (pool.poolConfig && pool.reward !== '0.0') {
         const expandedProps = {
           poolId: pool.poolId,
@@ -220,6 +208,8 @@ const renderFarms = async () => {
 };
 
 $: if (!$account.loadingFarmsConfigurations && !$account.loadingWalletBalance) renderFarms();
+
+onMount(() => {});
 </script>
 
 <ViewContainer>

@@ -396,17 +396,6 @@ $: if ($tempTx.method !== null) {
   closeModal();
   methodLookup[$tempTx.method]();
 }
-const refreshData = () => {
-  rowsAll = [];
-  rowsUnused = [];
-  rowsUser = [];
-  counterUnusedStrategies = 0;
-  counterAllStrategies = 0;
-  counterUserStrategies = 0;
-  setTimeout(() => {
-    renderVaults();
-  }, 500);
-};
 
 const renderVaults = async () => {
   // alUSD Alchemist only atm
@@ -514,7 +503,6 @@ $: if (!$alusd.loadingRowData) renderVaults();
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
   </div>
-  <Button on:clicked="{() => refreshData()}" label="clear" />
   {#if loading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">

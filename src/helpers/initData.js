@@ -344,7 +344,6 @@ async function initFarms() {
     const checkTvl = await contract.getPoolTotalDeposited(i);
     const tvl = utils.formatEther(checkTvl.toString());
     const poolConfig = poolLookup.find((pool) => pool.address === token);
-    console.log('pool config', token, poolConfig);
     const rewardToken = 'ALCX';
     const payload = {
       token,
