@@ -12,14 +12,14 @@ import walletBalance from '../stores/walletBalance';
 import vaults, { alusd, aggregate } from '../stores/vaults';
 import transmuters, { transmuterContracts } from '../stores/transmuters';
 import stakingPools, { poolLookup } from '../stores/stakingPools';
-import { setLoadingData, closeToast } from './setToast';
+import backgroundLoading from '../stores/backgroundLoading';
 
 // @dev enable verbose messages in console when debugging
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 let retry;
 let startStamp;
 let stopStamp;
-if (debugging) console.warn('====== Running initData in Debug mode ======');
+if (debugging) console.log('====== Running initData in Debug mode ======');
 
 // @dev prints out nicely formatted view of the initialized data
 function logData() {
@@ -33,18 +33,24 @@ function logData() {
       !_account.loadingFarmsConfigurations
     ) {
       stopStamp = Date.now();
-      console.log('====== Supported Tokens ======');
-      console.log(tokenList);
-      console.log('====== Wallet Balance ======');
-      console.table(_walletBalance.tokens);
-      console.log('====== Vault Configuration ======');
-      console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
-      console.table(_alusd.rows);
-      console.log('====== Transmuter Configuration ======');
-      console.table(_transmuters.props);
-      console.log('====== Farms Configuration ======');
-      console.table(_stakingPools.allPools);
-      console.log(`====== initData finished ( ~${(stopStamp - startStamp) / 1000}s) ======`);
+      if (debugging) {
+        console.log('====== Supported Tokens ======');
+        console.log(tokenList);
+        console.log('====== Wallet Balance ======');
+        console.table(_walletBalance.tokens);
+        console.log('====== Vault Configuration ======');
+        console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
+        console.table(_alusd.rows);
+        console.log('====== Transmuter Configuration ======');
+        console.table(_transmuters.props);
+        console.log('====== Farms Configuration ======');
+        console.table(_stakingPools.allPools);
+        console.log(`====== initData finished ( ~${(stopStamp - startStamp) / 1000}s) ======`);
+      }
+      _backgroundLoading.active = false;
+      _backgroundLoading.message = null;
+      backgroundLoading.set({ ..._backgroundLoading });
+
       clearTimeout(retry);
     } else {
       logData();
@@ -86,6 +92,11 @@ transmuters.subscribe((val) => {
 let _stakingPools;
 stakingPools.subscribe((val) => {
   _stakingPools = val;
+});
+
+let _backgroundLoading;
+backgroundLoading.subscribe((val) => {
+  _backgroundLoading = val;
 });
 
 // @dev list of tokens to watch
@@ -403,19 +414,24 @@ async function initFarms() {
 export default async function initData() {
   if (debugging) {
     startStamp = Date.now();
-    setLoadingData('Supported Tokens', 1, 5);
   }
+  _backgroundLoading.message = 'Tokens';
+  _backgroundLoading.active = true;
+  backgroundLoading.set({ ..._backgroundLoading });
   await initSupportedTokens();
-  if (debugging) setLoadingData('Token Balances', 2, 5);
+  _backgroundLoading.message = 'Balances';
+  backgroundLoading.set({ ..._backgroundLoading });
   await initWalletBalance();
-  if (debugging) setLoadingData('Vault Configurations', 3, 5);
+  _backgroundLoading.message = 'Vaults';
+  backgroundLoading.set({ ..._backgroundLoading });
   await initVaults();
-  if (debugging) setLoadingData('Transmuter Configurations', 4, 5);
+  _backgroundLoading.message = 'Transmuters';
+  backgroundLoading.set({ ..._backgroundLoading });
   initTransmuters();
-  if (debugging) setLoadingData('Farm Configurations', 5, 5);
+  _backgroundLoading.message = 'Farms';
+  backgroundLoading.set({ ..._backgroundLoading });
   initFarms();
-  if (debugging) {
-    closeToast();
-    logData();
-  }
+  logData();
+  _backgroundLoading.message = 'Finalizing';
+  backgroundLoading.set({ ..._backgroundLoading });
 }
