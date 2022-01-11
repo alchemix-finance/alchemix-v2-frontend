@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const global = writable({
+const defaults = {
   loading: false,
   alert: {
     type: undefined,
@@ -63,6 +63,14 @@ const global = writable({
       ticker: '$',
     },
   ],
+};
+
+const global = writable({
+  ...defaults,
 });
+
+export const globalReset = () => {
+  global.set({ ...defaults });
+};
 
 export default global;

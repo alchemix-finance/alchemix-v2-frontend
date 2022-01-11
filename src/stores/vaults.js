@@ -1,33 +1,45 @@
 import { writable } from 'svelte/store';
 
+const defaults = {
+  vaults: {
+    fetching: true,
+  },
+  vaultConfig: {
+    userDebt: 0,
+    maxDebt: 0,
+    ratio: undefined,
+    yieldTokens: [],
+    loadingRowData: true,
+    rows: [],
+  },
+  aggregate: {
+    deposited: [],
+    totalDeposit: 0,
+    totalDebt: 0,
+  },
+};
+
 const vaults = writable({
-  fetching: true,
-  alusd: [],
-  aleth: [],
-  albtc: [],
+  ...defaults.vaults,
 });
 
 export const alusd = writable({
-  userDebt: 0,
-  maxDebt: 0,
-  ratio: undefined,
-  yieldTokens: [],
-  loadingRowData: true,
-  rows: [],
+  ...defaults.vaultConfig,
 });
 
 export const aleth = writable({
-  uerDebt: 0,
-  maxDebt: 0,
-  ratio: undefined,
-  yieldTokens: [],
-  rows: [],
+  ...defaults.vaultConfig,
 });
 
 export const aggregate = writable({
-  deposited: [],
-  totalDeposit: 0,
-  totalDebt: 0,
+  ...defaults.aggregate,
 });
+
+export const vaultsReset = () => {
+  vaults.set({ ...defaults.vaults });
+  alusd.set({ ...defaults.vaultConfig });
+  aleth.set({ ...defaults.vaultConfig });
+  aggregate.set({ ...defaults.aggregate });
+};
 
 export default vaults;

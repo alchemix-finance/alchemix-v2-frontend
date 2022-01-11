@@ -1,12 +1,20 @@
 import { writable } from 'svelte/store';
 
-const stakingPools = writable({
+const defaults = {
   fetching: true,
   pools: 0,
   allPools: [],
   active: [],
   retired: [],
+};
+
+const stakingPools = writable({
+  ...defaults,
 });
+
+export const stakingPoolsReset = () => {
+  stakingPools.set({ ...defaults });
+};
 
 export const poolLookup = [
   {

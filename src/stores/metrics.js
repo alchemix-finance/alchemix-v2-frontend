@@ -9,7 +9,7 @@ const CURRENCIES = {
   dollar: '$',
 };
 
-const metrics = writable({
+const defaults = {
   global: {
     globalMintableDebt: {
       label: 'Global Mintable Debt',
@@ -48,6 +48,14 @@ const metrics = writable({
     APY: 345.23,
     estimatedMaturity: '12/29/2022',
   },
+};
+
+const metrics = writable({
+  ...defaults,
 });
+
+export const metricsReset = () => {
+  metrics.set({ ...defaults });
+};
 
 export default metrics;

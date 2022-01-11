@@ -21,13 +21,6 @@ async function routerGuard(path) {
       console.error(e);
       navigate('/', { replace: true });
     }
-    // await connect()
-    //   .then(() => {
-    //     navigate(`/${path}`, { replace: true });
-    //   })
-    //   .catch(() => {
-    //     navigate('/', { replace: true });
-    //   });
   } else {
     navigate(`/${path}`, { replace: true });
   }

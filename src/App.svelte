@@ -50,9 +50,9 @@ onMount(async () => {
     await connect(preselect);
   }
   walletChecked = true;
-  await getFiatRates();
   await getGasPrices();
-  getTokenPrices();
+  await getFiatRates();
+  await getTokenPrices();
 });
 </script>
 
