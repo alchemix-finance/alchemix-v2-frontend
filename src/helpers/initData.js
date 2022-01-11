@@ -96,6 +96,7 @@ const tokenList = [];
  * @returns the token object from the walletBalance store
  * */
 async function tokenFinder(token) {
+  if (debugging) console.log(':: tokenFinder');
   return _walletBalance.tokens.find((item) => item.address === token);
 }
 
@@ -104,6 +105,7 @@ async function tokenFinder(token) {
  * @param tokens the list of token addresses
  *  */
 async function batchTokenCheck(tokens) {
+  if (debugging) console.log(':: batchTokenCheck');
   let counter = 0;
   const tokenFiller = async (token) => {
     const payload = {
@@ -132,32 +134,43 @@ async function batchTokenCheck(tokens) {
 
 // @dev retrieves the tokens supported by the alusd alchemist
 async function initAlusdAlchemistTokens() {
+  if (debugging) console.log(':: initAlusdAlchemistTokens');
   const contract = getContract('AlchemistV2_alUSD');
   const yieldTokens = await contract.getSupportedYieldTokens();
   const underlyingTokens = await contract.getSupportedUnderlyingTokens();
+  const dupeCheck = (token) => tokenList.some((entry) => entry === token);
   yieldTokens.forEach((token) => {
-    _alusd.yieldTokens.push(token);
-    tokenList.push(token);
+    if (!dupeCheck(token)) {
+      _alusd.yieldTokens.push(token);
+      tokenList.push(token);
+    }
   });
   underlyingTokens.forEach((token) => {
-    tokenList.push(token);
+    if (!dupeCheck(token)) {
+      tokenList.push(token);
+    }
   });
   return true;
 }
 
 // @dev retrieves the tokens supported by the staking pools
 async function initPoolTokens() {
+  if (debugging) console.log(':: initPoolTokens');
   const contract = getContract('StakingPools');
   _stakingPools.pools = ethers.BigNumber.from(await contract.poolCount()).toString();
+  const dupeCheck = (token) => tokenList.some((entry) => entry === token);
   stakingPools.set({ ..._stakingPools });
   poolLookup.forEach((pool) => {
-    tokenList.push(pool.address);
+    if (!dupeCheck(pool.address)) {
+      tokenList.push(pool.address);
+    }
   });
   return true;
 }
 
 // @dev initializes the list of supported tokens
 async function initSupportedTokens() {
+  if (debugging) console.log(':: initSupportedTokens');
   await initAlusdAlchemistTokens();
   await initPoolTokens();
   _account.loadingSupportedTokens = false;
@@ -168,6 +181,7 @@ async function initSupportedTokens() {
 
 // @dev initializes the user's wallet balance
 async function initWalletBalance() {
+  if (debugging) console.log(':: initWalletBalance');
   const ethBalance = await ethers
     .getDefaultProvider(debugging ? process.env.LOCAL_NETWORK_URL : 'homestead')
     .getBalance(_account.address);
@@ -190,58 +204,64 @@ async function initWalletBalance() {
  * @returns void
  * */
 function vaultAlusdRowBuilder(tokens) {
-  const contract = getContract('AlchemistV2_alUSD');
-  tokens.forEach(async (token) => {
-    const params = await contract.getYieldTokenParameters(token);
-    const underlyingToken = params.underlyingToken;
-    const yieldConfig = await tokenFinder(token);
-    const underlyingConfig = await tokenFinder(underlyingToken);
-    const underlyingDecimals = underlyingConfig.decimals;
-    const yieldDecimals = yieldConfig.decimals;
-    const underlyingPerShare = await contract.underlyingTokensPerShare(token);
-    const underlyingPerShareFormatted = utils.formatUnits(underlyingPerShare.toString(), underlyingDecimals);
-    const yieldPerShare = await contract.yieldTokensPerShare(token);
-    const yieldPerShareFormatted = utils.formatUnits(yieldPerShare.toString(), yieldDecimals);
-    const yieldSymbol = yieldConfig.symbol;
-    const underlyingSymbol = underlyingConfig.symbol;
-    const tvl = utils.formatUnits(params.balance.toString(), underlyingDecimals);
-    const position = await contract.positions(_account.address, token);
-    const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
-    const underlyingBalance = await getTokenBalance(underlyingToken);
-    const vaultDebt = (balance * underlyingPerShareFormatted) / _alusd.ratio;
-    const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
-    const depositPayload = {
-      token,
-      symbol: yieldSymbol,
-      balance,
-    };
-    const rowPayload = {
-      yieldSymbol,
-      token,
-      balance,
-      yieldDecimals,
-      yieldPerShare,
-      yieldPerShareFormatted,
-      underlyingPerShare,
-      underlyingPerShareFormatted,
-      underlyingSymbol,
-      underlyingToken,
-      underlyingBalance,
-      underlyingDecimals,
-      stratIsUsed,
-      tvl,
-      vaultDebt,
-    };
-
-    _alusd.rows.push(rowPayload);
-    _alusd.maxDebt += vaultDebt;
-    _aggregate.deposited.push(depositPayload);
-    _aggregate.totalDeposit += depositPayload.balance;
-    aggregate.set({ ..._aggregate });
-    alusd.set({ ..._alusd });
-
-    if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;
-  });
+  if (debugging) console.log(':: vaultAlusdRowBuilder');
+  if (_alusd.rows.length === 0) {
+    const contract = getContract('AlchemistV2_alUSD');
+    tokens.forEach(async (token) => {
+      const params = await contract.getYieldTokenParameters(token);
+      const underlyingToken = params.underlyingToken;
+      const yieldConfig = await tokenFinder(token);
+      const underlyingConfig = await tokenFinder(underlyingToken);
+      const underlyingDecimals = underlyingConfig.decimals;
+      const yieldDecimals = yieldConfig.decimals;
+      const underlyingPerShare = await contract.underlyingTokensPerShare(token);
+      const underlyingPerShareFormatted = utils.formatUnits(
+        underlyingPerShare.toString(),
+        underlyingDecimals,
+      );
+      const yieldPerShare = await contract.yieldTokensPerShare(token);
+      const yieldPerShareFormatted = utils.formatUnits(yieldPerShare.toString(), yieldDecimals);
+      const yieldSymbol = yieldConfig.symbol;
+      const underlyingSymbol = underlyingConfig.symbol;
+      const tvl = utils.formatUnits(params.balance.toString(), underlyingDecimals);
+      const position = await contract.positions(_account.address, token);
+      const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
+      const underlyingBalance = await getTokenBalance(underlyingToken);
+      const vaultDebt = (balance * underlyingPerShareFormatted) / _alusd.ratio;
+      const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
+      const depositPayload = {
+        token,
+        symbol: yieldSymbol,
+        balance,
+      };
+      const rowPayload = {
+        yieldSymbol,
+        token,
+        balance,
+        yieldDecimals,
+        yieldPerShare,
+        yieldPerShareFormatted,
+        underlyingPerShare,
+        underlyingPerShareFormatted,
+        underlyingSymbol,
+        underlyingToken,
+        underlyingBalance,
+        underlyingDecimals,
+        stratIsUsed,
+        tvl,
+        vaultDebt,
+      };
+      _alusd.rows.push(rowPayload);
+      _alusd.maxDebt += vaultDebt;
+      _aggregate.deposited.push(depositPayload);
+      _aggregate.totalDeposit += depositPayload.balance;
+      aggregate.set({ ..._aggregate });
+      alusd.set({ ..._alusd });
+      if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;
+    });
+  } else {
+    _alusd.loadingRowData = false;
+  }
 }
 
 // @dev makes sure to not initialize vault before balances have been loaded
@@ -259,6 +279,7 @@ const vaultAlusdRowBuilderQueue = (tokens) => {
 
 // @dev initializes the alUSD vault
 async function initAlusdVault() {
+  if (debugging) console.log(':: initAlusdVault');
   const contract = getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
   const rawRatio = await contract.minimumCollateralization();
@@ -273,6 +294,7 @@ async function initAlusdVault() {
 
 // @dev orchestrates initialization of all vaults
 async function initVaults() {
+  if (debugging) console.log(':: initVaults');
   await initAlusdVault();
   _account.loadingVaultConfigurations = false;
   account.set({ ..._account });
@@ -283,84 +305,97 @@ async function initVaults() {
 
 // @dev orchestrates initialization of all transmuters
 function initTransmuters() {
-  let counter = 0;
-  transmuterContracts.forEach(async (transmuter) => {
-    const contract = getContract(transmuter);
-    const address = getAddress(transmuter);
-    const getAlToken = await contract.syntheticToken();
-    const alToken = getAlToken.toLowerCase();
-    const alTokenAllowance = await getTokenAllowance(getAlToken, _account.address, address);
-    const alTokenSymbol = await getTokenSymbol(getAlToken);
-    const getUnderlyingToken = await contract.underlyingToken();
-    const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
-    const getTotalUnexchanged = await contract.totalUnexchanged();
-    const getExchangedBalance = await contract.getExchangedBalance(_account.address);
-    const exchangedBalance = utils.formatEther(getExchangedBalance.toString());
-    const getUnexchangedBalance = await contract.getUnexchangedBalance(_account.address);
-    const unexchangedBalance = utils.formatEther(getUnexchangedBalance.toString());
-    const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
-    const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
-    const totalDeposited = utils.formatEther(exchangedBN.add(unexchangedBN).toString());
-    const payload = {
-      address,
-      getAlToken,
-      alToken,
-      alTokenAllowance,
-      alTokenSymbol,
-      underlyingTokenSymbol,
-      getTotalUnexchanged,
-      getExchangedBalance,
-      exchangedBalance,
-      getUnexchangedBalance,
-      unexchangedBalance,
-      exchangedBN,
-      unexchangedBN,
-      totalDeposited,
-    };
-    _transmuters.props.push(payload);
-    transmuters.set({ ..._transmuters });
-    counter += 1;
-    if (transmuterContracts.length === counter) {
-      _account.loadingTransmuterConfigurations = false;
-      account.set({ ..._account });
-    }
-  });
+  if (debugging) console.log(':: initTransmuters');
+  if (_transmuters.props.length === 0) {
+    let counter = 0;
+    transmuterContracts.forEach(async (transmuter) => {
+      const contract = getContract(transmuter);
+      const address = getAddress(transmuter);
+      const getAlToken = await contract.syntheticToken();
+      const alToken = getAlToken.toLowerCase();
+      const alTokenAllowance = await getTokenAllowance(getAlToken, _account.address, address);
+      const alTokenSymbol = await getTokenSymbol(getAlToken);
+      const getUnderlyingToken = await contract.underlyingToken();
+      const underlyingTokenSymbol = await getTokenSymbol(getUnderlyingToken);
+      const getTotalUnexchanged = await contract.totalUnexchanged();
+      const getExchangedBalance = await contract.getExchangedBalance(_account.address);
+      const exchangedBalance = utils.formatEther(getExchangedBalance.toString());
+      const getUnexchangedBalance = await contract.getUnexchangedBalance(_account.address);
+      const unexchangedBalance = utils.formatEther(getUnexchangedBalance.toString());
+      const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
+      const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
+      const totalDeposited = utils.formatEther(exchangedBN.add(unexchangedBN).toString());
+      const payload = {
+        address,
+        getAlToken,
+        alToken,
+        alTokenAllowance,
+        alTokenSymbol,
+        underlyingTokenSymbol,
+        getTotalUnexchanged,
+        getExchangedBalance,
+        exchangedBalance,
+        getUnexchangedBalance,
+        unexchangedBalance,
+        exchangedBN,
+        unexchangedBN,
+        totalDeposited,
+      };
+      _transmuters.props.push(payload);
+      transmuters.set({ ..._transmuters });
+      counter += 1;
+      if (transmuterContracts.length === counter) {
+        _account.loadingTransmuterConfigurations = false;
+        account.set({ ..._account });
+      }
+    });
+  } else {
+    _account.loadingTransmuterConfigurations = false;
+    account.set({ ..._account });
+  }
+
   return true;
 }
 
 // @dev orchestrates initialization of all farms
 async function initFarms() {
-  const contract = getContract('StakingPools');
-  const poolCounter = parseInt(_stakingPools.pools, 10);
-  for (let i = 0; i < poolCounter; i++) {
-    const checkToken = await contract.getPoolToken(i);
-    const token = checkToken.toLowerCase();
-    const checkReward = await contract.getPoolRewardRate(i);
-    const reward = utils.formatEther(checkReward.toString());
-    const checkUserDeposit = await contract.getStakeTotalDeposited(_account.address, i);
-    const userDeposit = utils.formatEther(checkUserDeposit.toString());
-    const checkUserUnclaimed = await contract.getStakeTotalUnclaimed(_account.address, i);
-    const userUnclaimed = utils.formatEther(checkUserUnclaimed.toString());
-    const checkTvl = await contract.getPoolTotalDeposited(i);
-    const tvl = utils.formatEther(checkTvl.toString());
-    const poolConfig = poolLookup.find((pool) => pool.address === token);
-    const rewardToken = 'ALCX';
-    const payload = {
-      token,
-      reward,
-      userDeposit,
-      userUnclaimed,
-      tvl,
-      poolConfig,
-      rewardToken,
-      poolId: i,
-    };
-    _stakingPools.allPools.push(payload);
-    stakingPools.set({ ..._stakingPools });
-    if (i + 1 === poolCounter) {
-      _account.loadingFarmsConfigurations = false;
-      account.set({ ..._account });
+  if (debugging) console.log(':: initFarms');
+  if (_stakingPools.allPools.length === 0) {
+    const contract = getContract('StakingPools');
+    const poolCounter = parseInt(_stakingPools.pools, 10);
+    for (let i = 0; i < poolCounter; i++) {
+      const checkToken = await contract.getPoolToken(i);
+      const token = checkToken.toLowerCase();
+      const checkReward = await contract.getPoolRewardRate(i);
+      const reward = utils.formatEther(checkReward.toString());
+      const checkUserDeposit = await contract.getStakeTotalDeposited(_account.address, i);
+      const userDeposit = utils.formatEther(checkUserDeposit.toString());
+      const checkUserUnclaimed = await contract.getStakeTotalUnclaimed(_account.address, i);
+      const userUnclaimed = utils.formatEther(checkUserUnclaimed.toString());
+      const checkTvl = await contract.getPoolTotalDeposited(i);
+      const tvl = utils.formatEther(checkTvl.toString());
+      const poolConfig = poolLookup.find((pool) => pool.address === token);
+      const rewardToken = 'ALCX';
+      const payload = {
+        token,
+        reward,
+        userDeposit,
+        userUnclaimed,
+        tvl,
+        poolConfig,
+        rewardToken,
+        poolId: i,
+      };
+      _stakingPools.allPools.push(payload);
+      stakingPools.set({ ..._stakingPools });
+      if (i + 1 === poolCounter) {
+        _account.loadingFarmsConfigurations = false;
+        account.set({ ..._account });
+      }
     }
+  } else {
+    _account.loadingFarmsConfigurations = false;
+    account.set({ ..._account });
   }
 }
 

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const toastConfig = writable({
+const defaults = {
   visible: false,
   kind: '',
   title: '',
@@ -12,6 +12,14 @@ const toastConfig = writable({
   closeTimeout: 10000,
   closeOnMount: true,
   forceClose: false,
+};
+
+const toastConfig = writable({
+  ...defaults,
 });
+
+export const toastReset = () => {
+  toastConfig.set({ ...defaults });
+};
 
 export default toastConfig;

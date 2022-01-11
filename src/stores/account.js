@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-const account = writable({
+const defaults = {
   loadingSupportedTokens: true,
   loadingWalletBalance: true,
   loadingVaultConfigurations: true,
@@ -10,6 +10,15 @@ const account = writable({
   signer: undefined,
   ens: undefined,
   provider: undefined,
+};
+
+const account = writable({
+  ...defaults,
 });
+
+export const accountReset = () => {
+  account.set({ ...defaults });
+  localStorage.removeItem('userWallet');
+};
 
 export default account;

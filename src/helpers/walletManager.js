@@ -2,17 +2,38 @@ import { ethers } from 'ethers';
 import { navigate } from 'svelte-routing';
 import Onboard from 'bnc-onboard';
 import account from '../stores/account';
-import walletBalance from '../stores/walletBalance';
 import toastConfig from '../stores/toast';
 import network from '../stores/network';
 import initData from './initData';
+import { uninitData } from './uninitData';
 
 let _toastConfig;
 let _network;
 let _account;
-const accountReset = account;
 let ethersProvider;
-// let rpcUrl;
+
+// @dev have eslint not get a stroke
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+const mainnetId = parseInt(process.env.NETWORK_ID, 10);
+const mainnetName = process.env.NETWORK_NAME;
+const testnetId = parseInt(process.env.LOCAL_NETWORK_ID, 10);
+const testnetName = process.env.LOCAL_NETWORK_NAME;
+const testnetRpc = process.env.LOCAL_NETWORK_URL;
+
+// @dev we're literally cheating infura with this lmfao
+const infuraKeys = [
+  '823507aa205c4761a50d3c4e1498143a',
+  '54a3abfeaadc4c71b8ebe13d593ba611',
+  '68c754b1dc074216b0b4c60c059c456e',
+  'd506144931134462b2157f3b6ee001b4',
+  'bfd639c5e98b41a990b4e3983ba54c7d',
+  'eba3c9fbe23e45318034d525c6b9f10c',
+  '9322e37943ef4d61bd3fd8e2049a441e',
+  '42e287812d1c4b038b43b550360e808c',
+  'f9274d4bd94d4a9abb568ce154f36a89',
+];
+const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
+const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
 
 toastConfig.subscribe((val) => {
   _toastConfig = val;
@@ -30,23 +51,27 @@ account.subscribe((val) => {
 // https://docs.blocknative.com/onboard#wallet-modules
 const wallets = [
   { walletName: 'metamask', preferred: true },
-  // { walletName: 'walletLink', rpcUrl },
-  // { walletName: 'lattice', rpcUrl, appName: 'Alchemix' },
-  // {
-  //   walletName: 'trezor',
-  //   rpcUrl,
-  //   appName: 'Alchemix',
-  //   email: 'n4n0@mail.alchemix.fi',
-  // },
-  // { walletName: 'ledger', rpcUrl },
+  {
+    walletName: 'walletConnect',
+    rpc: {
+      [mainnetId]: rpcUrl,
+      [testnetId]: testnetRpc,
+    },
+  },
+  { walletName: 'walletLink', rpcUrl: debugging ? testnetRpc : rpcUrl },
+  { walletName: 'lattice', rpcUrl, appName: 'Alchemix' },
+  {
+    walletName: 'trezor',
+    rpcUrl: debugging ? testnetRpc : rpcUrl,
+    appName: 'Alchemix',
+    email: 'n4n0@mail.alchemix.fi',
+    customNetwork: {
+      name: process.env.LOCAL_NETWORK_NAME,
+      chainId: process.env.LOCAL_NETWORK_ID,
+    },
+  },
+  { walletName: 'ledger', rpcUrl: debugging ? testnetRpc : rpcUrl },
 ];
-
-// @dev have eslint not get a stroke
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
-const mainnetId = parseInt(process.env.NETWORK_ID, 10);
-const mainnetName = process.env.NETWORK_NAME;
-const testnetId = parseInt(process.env.LOCAL_NETWORK_ID, 10);
-const testnetName = process.env.LOCAL_NETWORK_NAME;
 
 // @dev initializes blocknative onboarding
 const onboard = Onboard({
@@ -100,6 +125,7 @@ async function connect(preselect) {
       await initData();
     });
   } catch (error) {
+    console.error(error);
     throw new Error('User aborted wallet selection');
   }
   toastConfig.set({ ..._toastConfig });
@@ -108,8 +134,7 @@ async function connect(preselect) {
 // @dev function disconnects user wallets and resets state
 function disconnect() {
   onboard.walletReset();
-  account.set({ ...accountReset });
-  walletBalance.set({ tokens: [] });
+  uninitData();
   navigate('/', { replace: true });
 }
 
