@@ -254,7 +254,7 @@ const multicall = async () => {
       $account.address,
       underlyingData,
     ]);
-    const dataPackage = abiCoder.encode(['bytes[]'], [deposit, depositUnderlying]);
+    const dataPackage = [deposit, depositUnderlying];
     tx = await contract.multicall(dataPackage, {
       gasPrice: getUserGas(),
     });
