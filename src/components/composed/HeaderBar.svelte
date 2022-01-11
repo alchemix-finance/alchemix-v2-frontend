@@ -8,9 +8,12 @@ import account from '../../stores/account';
 import settings from '../../stores/settings';
 import global from '../../stores/global';
 import toastConfig from '../../stores/toast.js';
+import backgroundLoading from '../../stores/backgroundLoading';
 import Toast from '../elements/Toast.svelte';
 import Dropdown from '../elements/Dropdown.svelte';
 import GasCard from '../elements/GasCard.svelte';
+import LoadingIndicator from '../elements/LoadingIndicator.svelte';
+import * as LottiePlayer from '@lottiefiles/lottie-player';
 
 function goToSettings() {
   navigate(`/settings`, { replace: false });
@@ -39,11 +42,15 @@ const userGas = (selector) => {
     <Link to="{$account.signer ? '/accounts' : '/'}">
       <div class="flex-shrink-0 flex items-center">
         <img src="images/icons/alcx_med.svg" alt="The Alchemix logo" class="w-11" />
+
         <p class="font-alcxLogo uppercase ml-4 text-2xl">{$_('alchemix')}</p>
       </div>
     </Link>
   </div>
   <div class="absolute inset-y-0 right-0 flex flex-row items-center gap-2 pr-8">
+    {#if $backgroundLoading.active}
+      <LoadingIndicator />
+    {/if}
     <Dropdown>
       <div
         slot="label"
