@@ -41,9 +41,11 @@ export function updateWalletBalance() {
   _walletBalance.tokens.forEach(async (token) => {
     const index = _walletBalance.tokens.findIndex((entry) => entry === token);
     const balance = utils.formatUnits(await getTokenBalance(token.address), token.decimals);
-    if (token.balance !== balance) _walletBalance.tokens[index].balance = balance;
+    if (token.balance !== balance) {
+      _walletBalance.tokens[index].balance = balance;
+      walletBalance.set({ ..._walletBalance });
+    }
     counter += 1;
     if (counter === _walletBalance.tokens.length) clearLoading();
   });
-  walletBalance.set({ ..._walletBalance });
 }

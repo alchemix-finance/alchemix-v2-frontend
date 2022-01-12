@@ -92,10 +92,10 @@ $: console.log(proposal);
           <p>{choice}</p>
           <p class="text-sm">
             <!--            FIXME toFixed(2) errors out if scores returns an empty array-->
-            {proposal.scores?.[index].toFixed(2) || '0'} ALCX ({(
+            {proposal.scores?.[index]?.toFixed(2) || '0'} ALCX ({(
               (100 / proposal.scores_total) *
               proposal.scores?.[index]
-            ).toFixed(2) || '0'}%)
+            )?.toFixed(2) || '0'}%)
           </p>
         </div>
         <div class="mb-4 text-center">
