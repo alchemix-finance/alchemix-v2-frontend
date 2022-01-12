@@ -27,7 +27,7 @@ import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpe
 import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 import ChildUpdater from '../components/elements/ChildUpdater.svelte';
-import { updateWalletBalance } from '../helpers/updateData';
+import { updateWalletBalance, updateAlusdVault } from '../helpers/updateData';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -184,7 +184,7 @@ const deposit = async () => {
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
-        updateWalletBalance();
+        refreshData();
       });
     } catch (e) {
       setError(e.message);
@@ -222,7 +222,7 @@ const depositUnderlying = async () => {
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
-        updateWalletBalance();
+        refreshData();
       });
     } catch (e) {
       setError(e.message);
@@ -401,94 +401,110 @@ $: if ($tempTx.method !== null) {
   methodLookup[$tempTx.method]();
 }
 
+// @dev forces rerendering of table content
+const refreshData = () => {
+  updateWalletBalance();
+  updateAlusdVault();
+  // rowsAll = [];
+  // rowsUnused = [];
+  // rowsUser = [];
+  // counterUnusedStrategies = 0;
+  // counterAllStrategies = 0;
+  // counterUserStrategies = 0;
+  // yieldTokenAlusd = [];
+  // underlyingTokenAlusd = [];
+  getRandomData();
+  // renderVaults();
+};
+
 const renderVaults = async () => {
   // alUSD Alchemist only atm
-  if (!$alusd.loadingRowData) {
-    for (const token of $alusd.yieldTokens) {
-      const rowData = $alusd.rows.find((row) => row.token === token);
-      yieldTokenAlusd.push({
-        symbol: rowData.yieldSymbol,
-        address: token,
-        balance: rowData.balance,
-        decimals: rowData.yieldDecimals,
-        yieldPerShare: rowData.yieldPerShareFormatted,
-        underlyingPerShare: rowData.underlyingPerShareFormatted,
-      });
-      underlyingTokenAlusd.push({
-        symbol: rowData.underlyingSymbol,
-        address: rowData.underlyingToken,
-        balance: rowData.underlyingBalance,
-        decimals: rowData.underlyingDecimals,
-      });
-      const payload = {
-        type: rowData.stratIsUsed ? 'used' : 'unused',
-        alchemist: 'alusd',
-        row: {
-          col2: {
-            CellComponent: FarmNameCell,
-            farmName: rowData.yieldSymbol,
-            farmSubtitle: 'Yearn ' + rowData.underlyingSymbol,
-            farmIcon: 'alusd_med.svg',
-            tokenIcon: rowData.underlyingSymbol.toLowerCase(),
-            colSize: 3,
-            alignment: 'justify-self-start',
-          },
-          deposited: {
-            CellComponent: CurrencyCell,
-            value: (rowData.balance * rowData.underlyingPerShare) / 10 ** rowData.underlyingDecimals,
-            colSize: 2,
-          },
-          limit: {
-            CellComponent: CurrencyCell,
-            value: rowData.vaultDebt.toString(),
-            prefix: '+',
-            colSize: 2,
-          },
-          col3: {
-            CellComponent: CurrencyCell,
-            value: utils.formatUnits(
-              utils.parseUnits(rowData.tvl, rowData.underlyingDecimals).toString(),
-              rowData.underlyingDecimals,
-            ),
-            colSize: 2,
-          },
-          col4: {
-            value: 'N/A',
-            colSize: 2,
-          },
-          col5: {
-            CellComponent: ActionsCell,
-            colSize: 3,
-            yieldToken: token,
-            underlyingToken: rowData.underlyingToken,
-            userDeposit: rowData.balance,
-            loanRatio: $alusd.ratio,
-            borrowLimit: rowData.vaultDebt,
-            openDebtAmount: $alusd.userDebt,
-            openDebtSymbol: 'alUSD',
-            underlyingPricePerShare: rowData.underlyingPerShareFormatted,
-            yieldPricePerShare: rowData.yieldPerShareFormatted,
-            yieldDecimals: rowData.yieldDecimals,
-            underlyingDecimals: rowData.underlyingDecimals,
-          },
+  for (const token of $alusd.yieldTokens) {
+    const index = $alusd.rows.findIndex((row) => row.token === token);
+    yieldTokenAlusd.push({
+      symbol: $alusd.rows[index].yieldSymbol,
+      address: token,
+      balance: $alusd.rows[index].balance,
+      decimals: $alusd.rows[index].yieldDecimals,
+      yieldPerShare: $alusd.rows[index].yieldPerShareFormatted,
+      underlyingPerShare: $alusd.rows[index].underlyingPerShareFormatted,
+    });
+    underlyingTokenAlusd.push({
+      symbol: $alusd.rows[index].underlyingSymbol,
+      address: $alusd.rows[index].underlyingToken,
+      balance: $alusd.rows[index].underlyingBalance,
+      decimals: $alusd.rows[index].underlyingDecimals,
+    });
+    const payload = {
+      type: $alusd.rows[index].stratIsUsed ? 'used' : 'unused',
+      alchemist: 'alusd',
+      row: {
+        col2: {
+          CellComponent: FarmNameCell,
+          farmName: $alusd.rows[index].yieldSymbol,
+          farmSubtitle: 'Yearn ' + $alusd.rows[index].underlyingSymbol,
+          farmIcon: 'alusd_med.svg',
+          tokenIcon: $alusd.rows[index].underlyingSymbol.toLowerCase(),
+          colSize: 3,
+          alignment: 'justify-self-start',
         },
-      };
-      if (payload.type === 'used') {
-        rowsUser.push(payload.row);
-        rowsUser = rowsUser;
-        counterUserStrategies += 1;
-      } else {
-        rowsUnused.push(payload.row);
-        rowsUnused = rowsUnused;
-        counterUnusedStrategies += 1;
-      }
-      rowsAll.push(payload.row);
-      rowsAll = rowsAll;
-      counterAllStrategies += 1;
+        deposited: {
+          CellComponent: CurrencyCell,
+          value:
+            ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
+            10 ** $alusd.rows[index].underlyingDecimals,
+          colSize: 2,
+        },
+        limit: {
+          CellComponent: CurrencyCell,
+          value: $alusd.rows[index].vaultDebt.toString(),
+          prefix: '+',
+          colSize: 2,
+        },
+        col3: {
+          CellComponent: CurrencyCell,
+          value: utils.formatUnits(
+            utils.parseUnits($alusd.rows[index].tvl, $alusd.rows[index].underlyingDecimals).toString(),
+            $alusd.rows[index].underlyingDecimals,
+          ),
+          colSize: 2,
+        },
+        col4: {
+          value: 'N/A',
+          colSize: 2,
+        },
+        col5: {
+          CellComponent: ActionsCell,
+          colSize: 3,
+          yieldToken: token,
+          underlyingToken: $alusd.rows[index].underlyingToken,
+          userDeposit: $alusd.rows[index].balance,
+          loanRatio: $alusd.ratio,
+          borrowLimit: $alusd.rows[index].vaultDebt,
+          openDebtAmount: $alusd.userDebt,
+          openDebtSymbol: 'alUSD',
+          underlyingPricePerShare: $alusd.rows[index].underlyingPerShareFormatted,
+          yieldPricePerShare: $alusd.rows[index].yieldPerShareFormatted,
+          yieldDecimals: $alusd.rows[index].yieldDecimals,
+          underlyingDecimals: $alusd.rows[index].underlyingDecimals,
+        },
+      },
+    };
+    if (payload.type === 'used') {
+      rowsUser.push(payload.row);
+      // rowsUser = rowsUser;
+      counterUserStrategies += 1;
+    } else {
+      rowsUnused.push(payload.row);
+      // rowsUnused = rowsUnused;
+      counterUnusedStrategies += 1;
     }
-    loading = false;
-    getRandomData();
+    rowsAll.push(payload.row);
+    // rowsAll = rowsAll;
+    counterAllStrategies += 1;
   }
+  loading = false;
+  getRandomData();
 };
 
 let foo;
@@ -496,7 +512,9 @@ const getRandomData = () => {
   foo = Math.floor(Math.random() * 100000);
 };
 
-$: if (!$alusd.loadingRowData) renderVaults();
+$: if (!$alusd.loadingRowData && loading) {
+  renderVaults();
+}
 </script>
 
 <ViewContainer>
@@ -624,23 +642,17 @@ $: if (!$alusd.loadingRowData) renderVaults();
         <div slot="body">
           {#if toggleButtons.stratSelect.used}
             {#if rowsUser.length > 0}
-              <ChildUpdater key="{foo}">
-                <Table rows="{rowsUser}" columns="{colsStrats}" />
-              </ChildUpdater>
+              <Table rows="{rowsUser}" columns="{colsStrats}" key="{foo}" />
             {:else}
               <div class="flex justify-center my-4">
                 <p>You don't have any active strategies.</p>
               </div>
             {/if}
           {:else if toggleButtons.stratSelect.all}
-            <ChildUpdater key="{foo}">
-              <Table rows="{rowsAll}" columns="{colsStrats}" />
-            </ChildUpdater>
+            <Table rows="{rowsAll}" columns="{colsStrats}" key="{foo}" />
           {:else if toggleButtons.stratSelect.unused}
             {#if rowsUnused.length > 0}
-              <ChildUpdater key="{foo}">
-                <Table rows="{rowsUnused}" columns="{colsStrats}" />
-              </ChildUpdater>
+              <Table rows="{rowsUnused}" columns="{colsStrats}" key="{foo}" />
             {:else}
               <div class="flex justify-center my-4">
                 <p>You are using all available strategies.</p>

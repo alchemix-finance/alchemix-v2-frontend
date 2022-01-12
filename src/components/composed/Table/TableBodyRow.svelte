@@ -5,6 +5,7 @@ import { getColumnWidth } from '../../../helpers/table';
 export let numberOfColumns = 1;
 export let row = {};
 export let index = undefined;
+export let key;
 
 let expandedRows = new Set();
 
@@ -36,6 +37,8 @@ const ExpandedRowComponent = expandedRowCell && expandedRowCell.expandedRow.Expa
 $: if (isExpanded && !ExpandedRowComponent) {
   throw new Error('Row needs an ExpandedRowComponent when expanded');
 }
+
+$: key, console.log('key changed in bodyrow', key);
 </script>
 
 <style>
@@ -49,9 +52,16 @@ td {
     ? 'pt-4'
     : 'py-4 border-b border-grey10'}"
 >
-  {#each row.cells as cell, i}
+  {#each row.cells as cell, i (key)}
     <td class="{getColumnWidth(cell.colSize)} {cell.alignment || 'justify-center'}">
-      <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
+      <TableCell
+        {...cell}
+        row="{row}"
+        rowIndex="{index}"
+        onExpand="{onExpand}"
+        isExpanded="{isExpanded}"
+        key="{key}"
+      />
     </td>
   {/each}
 </tr>

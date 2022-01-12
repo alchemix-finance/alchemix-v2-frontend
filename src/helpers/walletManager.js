@@ -104,7 +104,7 @@ const onboard = Onboard({
       _network.id = result;
       network.set({ ..._network });
       if (debugging) console.log('network changed to', result);
-      if (!initDone && supportedNetwork(_network.id)) await initData();
+      if (network && !initDone && supportedNetwork(_network.id)) await initData();
     },
   },
   walletSelect: { wallets },

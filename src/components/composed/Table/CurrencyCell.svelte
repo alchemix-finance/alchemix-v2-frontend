@@ -4,6 +4,7 @@ import settings from '../../../stores/settings';
 
 export let value;
 export let prefix;
+export let key;
 let normalizedValue;
 
 const normalize = () => {
@@ -12,6 +13,8 @@ const normalize = () => {
 
 $: value, normalize();
 $: $settings, normalize();
+$: key, normalize();
+$: key, console.log(key, value);
 </script>
 
 {#if prefix}{prefix}{/if}{normalizedValue}

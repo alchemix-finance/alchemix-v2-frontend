@@ -12,11 +12,31 @@ const truncateBalance = (balance) => {
   return balanceSplit[0] + decimals + ellipse;
 };
 
-$: tokenBalance, console.log('balance changed', tokenSymbol, tokenBalance);
+/*
+ * @dev silly hack to check if a file exists because no server
+ * @param filename the filename to check
+ * @return file exists or not
+ * */
+const checkFileIcon = (filename) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('HEAD', `/images/token-icons/${filename}.png`, false);
+  xhr.send();
+  return xhr.status.toString() !== '404';
+};
+
+/*
+ * @dev constructs the path for the img src
+ * @param filename the filename to use
+ * @returns the relative path
+ * */
+const getSource = (filename) => {
+  const exists = checkFileIcon(filename);
+  return `images/token-icons/${exists ? filename + '.png' : 'unknown.svg'}`;
+};
 </script>
 
 <div class="flex mt-2 mb-2 flex-row opacity-50 hover:opacity-100">
-  <img class="w-6 h-6 mr-2" alt="The logo of {tokenSymbol}" src="images/token-icons/{tokenSymbol}.png" />
+  <img class="w-6 h-6 mr-2" alt="The logo of {tokenSymbol}" src="{getSource(tokenSymbol)}" />
   <div class="flex flex-col w-full">
     <div class="relative flex items-center justify-between text-sm">
       <p>{tokenSymbol}</p>

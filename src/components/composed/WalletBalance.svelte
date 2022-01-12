@@ -8,7 +8,6 @@ let updateKey;
 
 const randomKey = () => {
   updateKey = Math.floor(Math.random() * 1000000);
-  console.log('randomKey generated', updateKey);
 };
 
 $: $walletBalance.tokens, randomKey();

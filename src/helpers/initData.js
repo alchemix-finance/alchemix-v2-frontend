@@ -409,11 +409,50 @@ async function initFarms() {
   }
 }
 
+// @dev prints neato ascii art. bitches love ascii art
+function leet() {
+  console.log(
+    `%c  
+ ▄▄▄       ██▓     ▄████▄   ██░ ██ ▓█████  ███▄ ▄███▓ ██▓▒██   ██▒
+▒████▄    ▓██▒    ▒██▀ ▀█  ▓██░ ██▒▓█   ▀ ▓██▒▀█▀ ██▒▓██▒▒▒ █ █ ▒░
+▒██  ▀█▄  ▒██░    ▒▓█    ▄ ▒██▀▀██░▒███   ▓██    ▓██░▒██▒░░  █   ░
+░██▄▄▄▄██ ▒██░    ▒▓▓▄ ▄██▒░▓█ ░██ ▒▓█  ▄ ▒██    ▒██ ░██░ ░ █ █ ▒ 
+ ▓█   ▓██▒░██████▒▒ ▓███▀ ░░▓█▒░██▓░▒████▒▒██▒   ░██▒░██░▒██▒ ▒██▒
+ ▒▒   ▓▒█░░ ▒░▓  ░░ ░▒ ▒  ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ░  ░░▓  ▒▒ ░ ░▓ ░
+  ▒   ▒▒ ░░ ░ ▒  ░  ░  ▒    ▒ ░▒░ ░ ░ ░  ░░  ░      ░ ▒ ░░░   ░▒ ░
+  ░   ▒     ░ ░   ░         ░  ░░ ░   ░   ░      ░    ▒ ░ ░    ░  
+      ░  ░    ░  ░░ ░       ░  ░  ░   ░  ░       ░    ░   ░    ░  
+                  ░              
+                                                   
+=============================[ v2 ]=================================
+
+GitHub:   https://github.com/alchemix-finance
+Twitter:  https://twitter.com/alchemixfi
+Telegram: lmao no
+
+Make sure you're running this on ${
+      process.env.APP_URL ||
+      'if you can read this, the site you are visiting right now is probably trying to scam you'
+    }
+We will never ask you for your private key or seedphrase.
+
+========================[ DISCLAIMER ]==============================
+
+All rights reserved, no guarantees given.
+DeFi tools are not toys.
+Use at your own risk.
+
+  `,
+    'color: #F5C09A',
+  );
+}
+
 // @dev initializes a majority of data needed to render the site
 export default async function initData() {
   if (debugging) {
     startStamp = Date.now();
   }
+  leet();
   _backgroundLoading.message = 'Tokens';
   _backgroundLoading.active = true;
   backgroundLoading.set({ ..._backgroundLoading });
