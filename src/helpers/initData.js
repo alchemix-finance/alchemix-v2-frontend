@@ -50,7 +50,6 @@ function logData() {
       _backgroundLoading.active = false;
       _backgroundLoading.message = null;
       backgroundLoading.set({ ..._backgroundLoading });
-
       clearTimeout(retry);
     } else {
       logData();

@@ -1,5 +1,7 @@
+import { utils } from 'ethers';
 import backgroundLoading from '../stores/backgroundLoading';
 import walletBalance from '../stores/walletBalance';
+import { getTokenBalance } from './getTokenData';
 
 let _backgroundLoading;
 backgroundLoading.subscribe((val) => {
@@ -11,7 +13,7 @@ walletBalance.subscribe((val) => {
   _walletBalance = val;
 });
 
-// const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10))
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
 // @dev helper function to easily clear the background loading indicator
 const clearLoading = () => {
@@ -33,9 +35,15 @@ const setLoading = (msg) => {
 
 // @dev updates the user's wallet balances from chain to state
 export function updateWalletBalance() {
-  setLoading('Updating');
-  // const tokens = _walletBalance.tokens;
-  // tokens.forEach((token) => {});
-  console.log(_walletBalance.tokens);
-  clearLoading();
+  if (debugging) console.log(':: updateWalletBalance');
+  setLoading('Balancing');
+  let counter = 1;
+  _walletBalance.tokens.forEach(async (token) => {
+    const index = _walletBalance.tokens.findIndex((entry) => entry === token);
+    const balance = utils.formatUnits(await getTokenBalance(token.address), token.decimals);
+    if (token.balance !== balance) _walletBalance.tokens[index].balance = balance;
+    counter += 1;
+    if (counter === _walletBalance.tokens.length) clearLoading();
+  });
+  walletBalance.set({ ..._walletBalance });
 }

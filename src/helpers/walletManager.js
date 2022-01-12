@@ -47,6 +47,18 @@ account.subscribe((val) => {
   _account = val;
 });
 
+/*
+ * @dev evaluates if current network is supported
+ * @param networkId the network to evaluate
+ * @returns boolean
+ * */
+const supportedNetwork = (networkId) => {
+  const targetNetwork = debugging ? testnetId : mainnetId;
+  return targetNetwork === networkId;
+};
+
+let initDone = false;
+
 // @dev prepare list of supported wallets according to
 // https://docs.blocknative.com/onboard#wallet-modules
 const wallets = [
@@ -92,6 +104,7 @@ const onboard = Onboard({
       _network.id = result;
       network.set({ ..._network });
       if (debugging) console.log('network changed to', result);
+      if (!initDone && supportedNetwork(_network.id)) await initData();
     },
   },
   walletSelect: { wallets },
@@ -122,7 +135,10 @@ async function connect(preselect) {
       _account.ens = ens;
       _account.signer = signer;
       account.set({ ..._account });
-      await initData();
+      if (supportedNetwork(_network.id)) {
+        initDone = true;
+        await initData();
+      }
     });
   } catch (error) {
     console.error(error);

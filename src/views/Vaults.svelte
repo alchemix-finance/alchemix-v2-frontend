@@ -27,6 +27,7 @@ import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpe
 import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 import ChildUpdater from '../components/elements/ChildUpdater.svelte';
+import { updateWalletBalance } from '../helpers/updateData';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -164,13 +165,14 @@ const abiCoder = utils.defaultAbiCoder;
 
 const deposit = async () => {
   const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
+  console.log('allowance', allowance);
   const decimals = await getTokenDecimals($tempTx.yieldToken);
-  const amountToWei = utils.parseUnits($tempTx.amount.toString(), decimals);
+  const amountToWei = utils.parseUnits($tempTx.amountYield.toString(), decimals);
   if (!allowance) {
     await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
-  console.log('deposit config', amountToWei, utils.formatUnits(allowance.toString(), decimals));
-  if ($tempTx.amount < 0) {
+  console.log('deposit config', amountToWei, allowance);
+  if ($tempTx.amountYield < 0) {
     setError('Trying to deposit more than available');
   } else {
     try {
@@ -182,6 +184,7 @@ const deposit = async () => {
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
+        updateWalletBalance();
       });
     } catch (e) {
       setError(e.message);
@@ -219,6 +222,7 @@ const depositUnderlying = async () => {
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
+        updateWalletBalance();
       });
     } catch (e) {
       setError(e.message);
