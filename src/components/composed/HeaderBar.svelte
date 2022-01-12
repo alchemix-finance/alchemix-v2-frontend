@@ -41,9 +41,7 @@ const userGas = (selector) => {
   <div class="flex-1 flex items-center">
     <Link to="{$account.signer ? '/accounts' : '/'}">
       <div class="flex-shrink-0 flex items-center">
-        <img src="images/icons/alcx_med.svg" alt="The Alchemix logo" class="w-11" />
-
-        <p class="font-alcxLogo uppercase ml-4 text-2xl">{$_('alchemix')}</p>
+        <img src="images/icons/ALCX_Std_logo.svg" class="h-11" alt="The Alchemix logo" />
       </div>
     </Link>
   </div>
