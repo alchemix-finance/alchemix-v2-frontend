@@ -1,4 +1,5 @@
 <script>
+import { slide } from 'svelte/transition';
 import { _ } from 'svelte-i18n';
 import { sendVote } from '../../../../middleware/snapshot';
 import governance from '../../../../stores/governance';
@@ -42,7 +43,7 @@ $: proposal = $governance.proposals?.find((proposal) => proposal.id === expanded
 $: console.log(proposal);
 </script>
 
-<div class="pb-4 pt-4 border-b border-grey10">
+<div class="pb-4 pt-4 border-b border-grey10" transition:slide>
   <div class="wrapper max-w-none grid grid-cols-12">
     <div class="col-span-1"></div>
     <div class="col-span-7 pr-8">

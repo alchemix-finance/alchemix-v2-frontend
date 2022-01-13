@@ -1,4 +1,5 @@
 <script>
+import { slide } from 'svelte/transition';
 import { utils } from 'ethers';
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
@@ -118,7 +119,7 @@ console.log('TOKEN IN FARM', token);
 
 <!-- NOTE -- the token object is not working at the moment so I had to put in placeholders for styling -->
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10">
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
   <div class="p-4 flex flex-col space-y-4">
     <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
     <div class="w-full self-center">

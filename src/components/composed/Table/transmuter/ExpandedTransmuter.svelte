@@ -1,4 +1,5 @@
 <script>
+import { slide } from 'svelte/transition';
 import Button from '../../../elements/Button.svelte';
 import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
 import account from '../../../../stores/account';
@@ -145,30 +146,30 @@ const setClaimValue = (event) => {
 };
 
 const setMaxDeposit = () => {
-  depositAmount = alTokenBalance
-}
+  depositAmount = alTokenBalance;
+};
 const setMaxWithdraw = () => {
-  withdrawAmount = unexchangedBalance
-}
+  withdrawAmount = unexchangedBalance;
+};
 const setMaxClaim = () => {
-  claimAmount = exchangedBalance
-}
+  claimAmount = exchangedBalance;
+};
 const clearDeposit = () => {
-  depositAmount = null
-}
+  depositAmount = null;
+};
 const clearWithdraw = () => {
-  withdrawAmount = null
-}
+  withdrawAmount = null;
+};
 const clearClaim = () => {
-  claimAmount = null
-}
+  claimAmount = null;
+};
 const startTransaction = async () => {
   await alert('metamask tx started');
 };
 </script>
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10">
-  <div  class="p-4 flex flex-col space-y-4">
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+  <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10">
       Available: {alTokenBalance}
       {alTokenSymbol}
@@ -207,17 +208,17 @@ const startTransaction = async () => {
       </div>
     </div>
     <Button
-        label="Deposit"
-        borderSize="1"
-        borderColor="green4"
-        backgroundColor="black1"
-        hoverColor="green4"
-        height="h-12"
-        fontSize="text-md"
-        on:clicked="{() => deposit()}"
-      />
+      label="Deposit"
+      borderSize="1"
+      borderColor="green4"
+      backgroundColor="black1"
+      hoverColor="green4"
+      height="h-12"
+      fontSize="text-md"
+      on:clicked="{() => deposit()}"
+    />
   </div>
-  <div  class="p-4 flex flex-col space-y-4">
+  <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10">
       Withdrawable: {unexchangedBalance}
       {alTokenSymbol}
@@ -256,17 +257,17 @@ const startTransaction = async () => {
       </div>
     </div>
     <Button
-        label="Withdraw"
-        borderSize="1"
-        borderColor="green4"
-        backgroundColor="black1"
-        hoverColor="green4"
-        height="h-12"
-        fontSize="text-md"
-        on:clicked="{() => withdraw()}"
-      />
+      label="Withdraw"
+      borderSize="1"
+      borderColor="green4"
+      backgroundColor="black1"
+      hoverColor="green4"
+      height="h-12"
+      fontSize="text-md"
+      on:clicked="{() => withdraw()}"
+    />
   </div>
-  <div  class="p-4 flex flex-col space-y-4">
+  <div class="p-4 flex flex-col space-y-4">
     <label for="claimInput" class="text-sm text-lightgrey10">
       Transmuted: {exchangedBalance}
       {underlyingTokenSymbol}
@@ -305,15 +306,15 @@ const startTransaction = async () => {
       </div>
     </div>
     <Button
-        label="Claim"
-        borderSize="1"
-        borderColor="green4"
-        backgroundColor="black1"
-        hoverColor="green4"
-        height="h-12"
-        fontSize="text-md"
-        on:clicked="{() => claim()}"
-      />
+      label="Claim"
+      borderSize="1"
+      borderColor="green4"
+      backgroundColor="black1"
+      hoverColor="green4"
+      height="h-12"
+      fontSize="text-md"
+      on:clicked="{() => claim()}"
+    />
   </div>
   <!-- <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
     <p class="text-sm text-lightgrey10 self-start">Available</p>
