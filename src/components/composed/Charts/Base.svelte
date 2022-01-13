@@ -52,19 +52,6 @@ afterUpdate(() => {
 onDestroy(() => {
   chart = null;
 });
-
-// svelte doesn't seem to like when classes are defined in a parent
-// https://github.com/sveltejs/svelte/issues/2870#issuecomment-823836170
-// so we need to define classes applied to the canvas by types here
-const typeToClass = {
-  doughnut: 'doughnut',
-};
 </script>
 
-<style>
-.doughnut {
-  transform: scaleY(0.6);
-}
-</style>
-
-<canvas id="canvas" class="{typeToClass[type]}" bind:this="{chartRef}" {...$$props}></canvas>
+<canvas id="canvas" bind:this="{chartRef}" {...$$props}></canvas>

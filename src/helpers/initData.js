@@ -42,6 +42,10 @@ function logData() {
         console.log('====== Vault Configuration ======');
         console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
         console.table(_alusd.rows);
+        console.log('====== Aggregated ======');
+        console.log('Total deposited:', _aggregate.totalDeposit);
+        console.log('Total debt:', _aggregate.totalDebt);
+        console.table(_aggregate.deposited);
         console.log('====== Transmuter Configuration ======');
         console.table(_transmuters.props);
         console.log('====== Farms Configuration ======');
@@ -263,7 +267,9 @@ function vaultAlusdRowBuilder(tokens) {
       _alusd.rows.push(rowPayload);
       _alusd.maxDebt += vaultDebt;
       _aggregate.deposited.push(depositPayload);
-      _aggregate.totalDeposit += depositPayload.balance;
+      _aggregate.totalDeposit +=
+        (parseFloat(depositPayload.balance) * underlyingPerShare) / 10 ** underlyingDecimals;
+      _aggregate.debtLimit += parseFloat(vaultDebt);
       aggregate.set({ ..._aggregate });
       alusd.set({ ..._alusd });
       if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;
@@ -295,6 +301,8 @@ async function initAlusdVault() {
   _alusd.userDebt = utils.formatEther(rawDebt.debt.toString());
   _alusd.ratio = utils.formatEther(rawRatio.toString());
   alusd.set({ ..._alusd });
+
+  _aggregate.totalDebt = parseFloat(_alusd.userDebt);
 
   vaultAlusdRowBuilderQueue(_alusd.yieldTokens);
   return true;

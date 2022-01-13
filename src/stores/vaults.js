@@ -16,6 +16,7 @@ const defaults = {
     deposited: [],
     totalDeposit: 0,
     totalDebt: 0,
+    debtLimit: 0,
   },
 };
 
