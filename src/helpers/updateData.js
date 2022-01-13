@@ -58,7 +58,7 @@ export async function updateWalletBalance(token) {
   setLoading('Updating');
   const index = _walletBalance.tokens.findIndex((entry) => entry.address === token);
   const uToken = _walletBalance.tokens[index];
-  const balance = utils.formatUnits(await getTokenBalance(uToken.address));
+  const balance = utils.formatUnits(await getTokenBalance(uToken.address), uToken.decimals);
   if (uToken.balance !== balance) {
     _walletBalance.tokens[index].balance = balance;
     walletBalance.set({ ..._walletBalance });
