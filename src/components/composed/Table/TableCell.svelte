@@ -5,8 +5,6 @@
 export let CellComponent;
 export let value;
 export let key;
-
-$: key, ('table cell data', value);
 </script>
 
 <div>

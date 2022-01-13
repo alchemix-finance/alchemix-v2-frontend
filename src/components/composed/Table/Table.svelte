@@ -46,7 +46,7 @@ const headerGroups = columns.map((col) => ({
 }));
 
 // parse provided row data to internal data structure
-let sortedRows;
+// let sortedRows;
 let tableRows = rows.map((row, i) => ({
   cells: Object.keys(row).map((columnId) => ({
     columnId,
@@ -55,28 +55,17 @@ let tableRows = rows.map((row, i) => ({
   rowId: i,
 }));
 
-// FIXME the way that tableRows/sortedRows is originally constructed kills reactivity
-
-const redoRows = () => {
-  tableRows = rows.map((row, i) => ({
-    cells: Object.keys(row).map((columnId) => ({
-      columnId,
-      ...row[columnId],
-    })),
-    rowId: i,
-  }));
-};
-
-$: key, (sortedRows = tableRows);
-
-// $: sortedRows = tableRows;
+$: sortedRows = rows.map((row, i) => ({
+  cells: Object.keys(row).map((columnId) => ({
+    columnId,
+    ...row[columnId],
+  })),
+  rowId: i,
+}));
 
 // TODO: Sorting needs to be debugged and is not yet supported
 let defaultSortOrder = SORT_ORDERS.asc;
 $: sortOrder = defaultSortOrder;
-
-$: key, console.log('key changed in table', key);
-$: key, redoRows();
 
 /**
  * Sort the table rows and re-render
@@ -102,7 +91,7 @@ const sortBy = (columnKey) => {
   </thead>
 
   <tbody>
-    {#each tableRows as row, index (key)}
+    {#each sortedRows as row, index (key)}
       <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" key="{key}" />
     {/each}
   </tbody>

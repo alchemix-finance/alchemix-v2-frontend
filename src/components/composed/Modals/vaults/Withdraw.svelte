@@ -6,6 +6,8 @@ import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
 
+export let vaultIndex;
+
 export let yieldToken;
 export let underlyingToken;
 export let loanRatio;
@@ -100,6 +102,7 @@ const withdraw = () => {
     yieldToken,
     underlyingToken,
     targetAddress: null,
+    vaultIndex,
   };
   tempTx.set({ ...payload });
 };
@@ -108,7 +111,6 @@ $: yieldWithdraw, updateBalances();
 $: underlyingWithdraw, updateBalances();
 
 onMount(() => {
-  console.log('props', $$props);
   yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
   underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
   startingBalance = parseFloat(userShares) * parseFloat(underlyingPricePerShare);

@@ -31,7 +31,7 @@ alusd.subscribe((val) => {
 //   _aggregate = val;
 // });
 
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+// const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
 // @dev helper function to easily clear the background loading indicator
 const clearLoading = () => {
@@ -50,60 +50,64 @@ const setLoading = (msg) => {
   backgroundLoading.set({ ..._backgroundLoading });
 };
 
-// @dev updates the user's wallet balances from chain to state
-export function updateWalletBalance() {
-  if (debugging) console.log(':: updateWalletBalance');
+/*
+ * @dev updates the user's wallet balances from chain to state
+ * @param token the address of the token to update
+ * */
+export async function updateWalletBalance(token) {
   setLoading('Updating');
-  let counter = 1;
-  _walletBalance.tokens.forEach(async (token) => {
-    const index = _walletBalance.tokens.findIndex((entry) => entry === token);
-    const balance = utils.formatUnits(await getTokenBalance(token.address), token.decimals);
-    if (token.balance !== balance) {
-      _walletBalance.tokens[index].balance = balance;
-      walletBalance.set({ ..._walletBalance });
-    }
-    counter += 1;
-    if (counter === _walletBalance.tokens.length) clearLoading();
-  });
+  const index = _walletBalance.tokens.findIndex((entry) => entry.address === token);
+  const uToken = _walletBalance.tokens[index];
+  const balance = utils.formatUnits(await getTokenBalance(uToken.address));
+  if (uToken.balance !== balance) {
+    _walletBalance.tokens[index].balance = balance;
+    walletBalance.set({ ..._walletBalance });
+  }
+  clearLoading();
+  return true;
 }
 
-// @dev updates the user's alusd vault balances from chain to state
-export function updateAlusdVault() {
-  if (debugging) console.log(':: updateAlusdVault');
+/*
+ * @dev updates the user's alusd vault balances from chain to state
+ * @param vaultIndex the index of the vault's row to update
+ * */
+export async function updateAlusdVault(vaultIndex) {
   setLoading('Updating');
   _alusd.loadingRowData = true;
   alusd.set({ ..._alusd });
   const contract = getContract('AlchemistV2_alUSD');
-  let counter = 1;
-  _alusd.rows.forEach(async (vault) => {
-    const index = _alusd.rows.findIndex((entry) => entry === vault);
-    const params = await contract.getYieldTokenParameters(vault.token);
-    const position = await contract.positions(_account.address, vault.token);
-    const balance = utils.formatUnits(position.balance.toString(), vault.yieldDecimals);
-    const tvl = utils.formatUnits(params.balance.toString(), vault.underlyingDecimals);
-    const underlyingBalance = await getTokenBalance(vault.underlyingToken);
-    const vaultDebt = (balance * vault.underlyingPerShareFormatted) / _alusd.ratio;
-    if (tvl !== vault.tvl) {
-      _alusd.rows[index].tvl = tvl;
-      alusd.set({ ..._alusd });
-    }
-    if (underlyingBalance !== vault.underlyingBalance) {
-      _alusd.rows[index].underlyingBalance = underlyingBalance;
-      alusd.set({ ..._alusd });
-    }
-    if (vaultDebt !== vault.vaultDebt) {
-      _alusd.rows[index].vaultDebt = vaultDebt;
-      alusd.set({ ..._alusd });
-    }
-    if (balance !== vault.balance) {
-      _alusd.rows[index].balance = balance;
-      alusd.set({ ..._alusd });
-    }
-    counter += 1;
-    if (counter === _alusd.rows.length) {
-      _alusd.loadingRowData = false;
-      alusd.set({ ..._alusd });
-      clearLoading();
-    }
-  });
+  const vault = _alusd.rows[vaultIndex];
+  const params = await contract.getYieldTokenParameters(vault.token);
+  const position = await contract.positions(_account.address, vault.token);
+  const balance = utils.formatUnits(position.balance.toString(), vault.yieldDecimals);
+  const tvl = utils.formatUnits(params.balance.toString(), vault.underlyingDecimals);
+  const underlyingBalance = await getTokenBalance(vault.underlyingToken);
+  const vaultDebt = (balance * vault.underlyingPerShareFormatted) / _alusd.ratio;
+  console.log('tvl', tvl, vault.tvl);
+  if (tvl !== vault.tvl) {
+    _alusd.rows[vaultIndex].tvl = tvl;
+    alusd.set({ ..._alusd });
+  }
+  console.log('underlyingBalance', underlyingBalance, vault.underlyingBalance);
+  if (underlyingBalance !== vault.underlyingBalance) {
+    _alusd.rows[vaultIndex].underlyingBalance = underlyingBalance;
+    alusd.set({ ..._alusd });
+  }
+  console.log('vaultDebt', vaultDebt, vault.vaultDebt);
+  console.log('maxDebt', _alusd.maxDebt);
+  if (vaultDebt !== vault.vaultDebt) {
+    const debtDiff = vaultDebt - vault.vaultDebt;
+    _alusd.rows[vaultIndex].vaultDebt = vaultDebt;
+    _alusd.maxDebt += debtDiff;
+    alusd.set({ ..._alusd });
+  }
+  console.log('balance', balance, vault.balance);
+  if (balance !== vault.balance) {
+    _alusd.rows[vaultIndex].balance = balance;
+    alusd.set({ ..._alusd });
+  }
+  _alusd.loadingRowData = false;
+  alusd.set({ ..._alusd });
+  clearLoading();
+  return true;
 }

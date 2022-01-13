@@ -8,8 +8,10 @@ import GasCard from '../components/elements/GasCard.svelte';
 import global from '../stores/global';
 import settings from '../stores/settings';
 import account from '../stores/account';
-import { setCurrency, setLanguage, setGas } from '../helpers/userSettings';
+import { setCurrency, setLanguage, setGas, setVerbose } from '../helpers/userSettings';
 import { connect } from '../helpers/walletManager';
+
+const debugging = Boolean(parseInt(process.env.DEBUG_MODE));
 </script>
 
 <ViewContainer>
@@ -26,6 +28,39 @@ import { connect } from '../helpers/walletManager';
   </div>
   <BorderContainer>
     <div class="bg-grey10 rounded p-8">
+      {#if debugging}
+        <div class="mb-4">
+          <p class="opacity-50 mb-3">Developer</p>
+          <div class="grid grid-cols-3 mb-3">
+            <p>Verbose Console Logging</p>
+            <div>
+              <Dropdown>
+                <div
+                  slot="label"
+                  class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1"
+                >
+                  <p class="mr-3 w-full text-center">{$settings.verboseConsole}</p>
+                  <p>▾</p>
+                </div>
+                <ul class="w-max" slot="options">
+                  <li
+                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
+                    on:click="{() => setVerbose(false)}"
+                  >
+                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">False</p>
+                  </li>
+                  <li
+                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
+                    on:click="{() => setVerbose(true)}"
+                  >
+                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">True</p>
+                  </li>
+                </ul>
+              </Dropdown>
+            </div>
+          </div>
+        </div>
+      {/if}
       <div id="locale-settings" class="mb-4">
         <p class="opacity-50 mb-3">{$_('settings_page.locale')}</p>
         <div class="grid grid-cols-3 mb-3">

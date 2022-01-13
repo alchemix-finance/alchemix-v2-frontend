@@ -184,7 +184,7 @@ const deposit = async () => {
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
-        refreshData();
+        refreshData({ token: $tempTx.yieldToken, vaultIndex: $tempTx.vaultIndex });
       });
     } catch (e) {
       setError(e.message);
@@ -196,6 +196,10 @@ const deposit = async () => {
 
 const depositUnderlying = async () => {
   console.log('depositing underlying');
+  const refreshPayload = {
+    token: $tempTx.underlyingToken,
+    vaultIndex: $tempTx.vaultIndex,
+  };
   const allowanceUnderlying = await getTokenAllowance(
     $tempTx.underlyingToken,
     $account.address,
@@ -213,16 +217,21 @@ const depositUnderlying = async () => {
     setError('Trying to deposit more than available');
   } else {
     try {
-      let tx;
       setPendingWallet();
       const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
-      tx = await contract.depositUnderlying($tempTx.yieldToken, amountToWei, $account.address, dataPackage, {
-        gasPrice: gas,
-      });
+      const tx = await contract.depositUnderlying(
+        $tempTx.yieldToken,
+        amountToWei,
+        $account.address,
+        dataPackage,
+        {
+          gasPrice: gas,
+        },
+      );
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
-        refreshData();
+        refreshData(refreshPayload);
       });
     } catch (e) {
       setError(e.message);
@@ -265,6 +274,8 @@ const multicall = async () => {
     setPendingTx();
     await provider.once(tx.hash, (transaction) => {
       setSuccessTx(transaction.transactionHash);
+      refreshData({ token: $tempTx.yieldToken });
+      refreshData({ token: $tempTx.underlyingToken, vaultIndex: $tempTx.vaultIndex });
     });
   } catch (e) {
     setError(e.message);
@@ -400,21 +411,27 @@ $: if ($tempTx.method !== null) {
   closeModal();
   methodLookup[$tempTx.method]();
 }
-
-// @dev forces rerendering of table content
-const refreshData = () => {
-  updateWalletBalance();
-  updateAlusdVault();
-  // rowsAll = [];
-  // rowsUnused = [];
-  // rowsUser = [];
-  // counterUnusedStrategies = 0;
-  // counterAllStrategies = 0;
-  // counterUserStrategies = 0;
-  // yieldTokenAlusd = [];
-  // underlyingTokenAlusd = [];
+/*
+ * @dev forces rerendering of table content, which is neccessary due to the prop structure supplied to tables
+ * @param payload an object with data to process
+ */
+const refreshData = async (payload) => {
+  if (payload.token) await updateWalletBalance(payload.token);
+  if (payload.vaultIndex.toString()) await updateAlusdVault(payload.vaultIndex);
+  const indexLocal = rowsAll.findIndex((row) => row.col5.vaultIndex === payload.vaultIndex);
+  const indexStore = $alusd.rows.findIndex((row) => row.token === rowsAll[indexLocal].col5.yieldToken);
+  rowsAll[indexLocal].deposited.value =
+    ($alusd.rows[indexStore].balance * $alusd.rows[indexStore].underlyingPerShare) /
+    10 ** $alusd.rows[indexStore].underlyingDecimals;
+  rowsAll[indexLocal].limit.value = $alusd.rows[indexStore].vaultDebt.toString();
+  rowsAll[indexLocal].col3.value = utils.formatUnits(
+    utils.parseUnits($alusd.rows[indexStore].tvl, $alusd.rows[indexStore].underlyingDecimals).toString(),
+    $alusd.rows[indexStore].underlyingDecimals,
+  );
+  rowsAll[indexLocal].col5.userDeposit = $alusd.rows[indexStore].balance;
+  rowsAll[indexLocal].col5.borrowLimit = $alusd.rows[indexStore].vaultDebt;
+  rowsAll[indexLocal].col5.openDebtAmount = $alusd.userDebt;
   getRandomData();
-  // renderVaults();
 };
 
 const renderVaults = async () => {
@@ -487,6 +504,7 @@ const renderVaults = async () => {
           yieldPricePerShare: $alusd.rows[index].yieldPerShareFormatted,
           yieldDecimals: $alusd.rows[index].yieldDecimals,
           underlyingDecimals: $alusd.rows[index].underlyingDecimals,
+          vaultIndex: index,
         },
       },
     };

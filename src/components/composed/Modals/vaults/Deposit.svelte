@@ -5,6 +5,8 @@ import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
 
+export let vaultIndex;
+
 export let yieldToken;
 export let underlyingToken;
 export let loanRatio;
@@ -31,6 +33,7 @@ const deposit = () => {
   $tempTx.yieldToken = yieldToken;
   $tempTx.underlyingToken = underlyingToken;
   $tempTx.targetAddress = null;
+  $tempTx.vaultIndex = vaultIndex;
   if (yieldAmnt && udrlyAmnt) {
     $tempTx.method = 'multicall';
   } else if (yieldAmnt && !udrlyAmnt) {
@@ -54,15 +57,12 @@ onMount(() => {
     const activeToken = $walletBalance.tokens.find((token) => token.address === yieldToken);
     yieldBalance = activeToken.balance;
     yieldSymbol = activeToken.symbol;
-    console.log(activeToken);
   }
   if (underlyingToken) {
     const activeUnderlying = $walletBalance.tokens.find((token) => token.address === underlyingToken);
     underlyingBalance = activeUnderlying.balance;
     underlyingSymbol = activeUnderlying.symbol;
-    console.log(activeUnderlying);
   }
-  console.log('props', yieldToken, underlyingToken, userDeposit, loanRatio, borrowLimit);
 });
 </script>
 

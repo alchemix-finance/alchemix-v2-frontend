@@ -13,8 +13,6 @@ const normalize = () => {
 
 $: value, normalize();
 $: $settings, normalize();
-$: key, normalize();
-$: key, console.log(key, value);
 </script>
 
 {#if prefix}{prefix}{/if}{normalizedValue}

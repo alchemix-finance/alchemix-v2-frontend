@@ -37,8 +37,6 @@ const ExpandedRowComponent = expandedRowCell && expandedRowCell.expandedRow.Expa
 $: if (isExpanded && !ExpandedRowComponent) {
   throw new Error('Row needs an ExpandedRowComponent when expanded');
 }
-
-$: key, console.log('key changed in bodyrow', key);
 </script>
 
 <style>
