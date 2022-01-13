@@ -610,14 +610,14 @@ $: if (!$alusd.loadingRowData && loading) {
     </div>
 
     <div class="w-full mb-8">
-      <ContainerWithHeader canToggle="{true}" isVisible="{$aggregate.totalDeposit > 0}">
+      <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
         <p slot="header" class="inline-block self-center">Aggregate</p>
         <div slot="body" class="bg-grey15">
           <AccountsPageBarCharts
-            totalDeposit="{$aggregate.totalDeposit}"
-            totalDebtLimit="{Math.floor($aggregate.totalDeposit / 2)}"
+            totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"
+            totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"
             aggregatedApy="0"
-            totalDebt="{Math.floor($aggregate.totalDeposit / 4)}"
+            totalDebt="{$aggregate.totalDebt.toFixed(2)}"
             totalInterest="0"
           />
         </div>

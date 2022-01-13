@@ -9,7 +9,7 @@ export let aggregatedApy;
 export let totalDebt;
 export let totalInterest;
 
-const withdrawable = totalDeposit - totalDebt;
+const withdrawable = (totalDeposit || 0) - (totalDebt || 0);
 
 // TODO: use tailwind exported colors everywhere
 const GREY = '#74767C';
@@ -44,8 +44,7 @@ const data = {
   labels: ['Withdrawable', 'Debt', 'Interest'],
   datasets: [
     {
-      label: 'Total amount',
-      data: [withdrawable, totalDebt, totalInterest],
+      data: [withdrawable || 0, totalDebt || 0, totalInterest || 0],
       backgroundColor: [background1],
       borderRadius: 5,
     },
@@ -83,13 +82,23 @@ const options = {
       },
     },
     y: {
-      suggestedMax: totalDeposit,
+      suggestedMax: Math.round(Math.floor(totalDeposit || 0) / 10) * 10,
 
       ticks: {
         padding: 10,
 
         callback: function (value) {
-          if ([0, totalDebtLimit, totalDeposit].includes(value)) {
+          // FIXME callback value happens in pre-defined steps
+          // check out the console log for this, the ticks almost never match the values of users
+          // that's why there's only dashed lines in certain cases (i.e. deposit = 10k)
+          console.log('callback value', value);
+          if (
+            [
+              0,
+              Math.round(Math.floor(totalDebtLimit) / 10) * 10,
+              Math.round(Math.floor(totalDeposit) / 10) * 10,
+            ].includes(value)
+          ) {
             return value.toLocaleString();
           }
 
@@ -112,21 +121,26 @@ const options = {
         tickColor: GREY,
 
         color: (context) => {
-          /*
-                                      index: 2
-                                      type: "tick"s
-                                      tick: {
-                                        $context: {tick: {…}, index: 2, type: 'tick'}
-                                        label: "2,000"
-                                        value: 2000
-                                      }
-                                    */
+          // index: 2
+          // type: "tick"s
+          // tick: {
+          //   $context: {tick: {…}, index: 2, type: 'tick'}
+          //   label: "2,000"
+          //   value: 2000
+          // }
 
-          if (context.tick.value === totalDebtLimit) {
+          console.log(
+            context,
+            context.tick.value,
+            Math.round(Math.floor(totalDebtLimit) / 10) * 10,
+            Math.round(Math.floor(totalDeposit) / 10) * 10,
+          );
+
+          if (context.tick.value === Math.round(Math.floor(totalDebtLimit) / 10) * 10) {
             return GREEN;
           }
 
-          if (context.tick.value === totalDeposit) {
+          if (context.tick.value === Math.round(Math.floor(totalDeposit) / 10) * 10) {
             return ORANGE;
           }
 
