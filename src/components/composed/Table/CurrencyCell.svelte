@@ -4,6 +4,7 @@ import settings from '../../../stores/settings';
 
 export let value;
 export let prefix;
+export let key;
 let normalizedValue;
 
 const normalize = () => {

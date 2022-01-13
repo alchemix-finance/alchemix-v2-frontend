@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 const defaults = {
   id: undefined,
+  supported: undefined,
 };
 
 const network = writable({

@@ -16,13 +16,14 @@ export let underlyingPricePerShare;
 export let yieldPricePerShare;
 export let yieldDecimals;
 export let underlyingDecimals;
+export let vaultIndex;
 
 const { open } = getContext('simple-modal');
 
 const openDeposit = () => {
   open(
     Deposit,
-    { yieldToken, underlyingToken, loanRatio, userDeposit, borrowLimit },
+    { yieldToken, underlyingToken, loanRatio, userDeposit, borrowLimit, vaultIndex },
     { ...modalStyle },
     {
       onClosed: () => {
@@ -48,6 +49,7 @@ const openWithdraw = () => {
       yieldPricePerShare,
       yieldDecimals,
       underlyingDecimals,
+      vaultIndex,
     },
     { ...modalStyle },
     {

@@ -20,8 +20,17 @@ toastConfig.subscribe((val) => {
 });
 
 /*
+ * @dev stores the new boolean for development purposes
+ * @param state the new setting
+ * */
+export function setVerbose(state) {
+  _settings.verboseConsole = state;
+  settings.set({ ..._settings });
+}
+
+/*
  * @dev stores the new base currency and conversion rates in state
- * @params currency the currency object for the new base currency
+ * @param currency the currency object for the new base currency
  * */
 export function setCurrency(currency) {
   _settings.baseCurrency = currency;
@@ -40,7 +49,7 @@ export function setCurrency(currency) {
 
 /*
  * @dev stores the new user language in state
- * @params lang the language object for the new user language
+ * @param lang the language object for the new user language
  * */
 export function setLanguage(lang) {
   _settings.userLanguage = lang;
@@ -61,7 +70,7 @@ export function setLanguage(lang) {
 
 /*
  * @dev stores the new default gas in state
- * @params gas the name of the new default gas
+ * @param gas the name of the new default gas
  * */
 export function setGas(gas) {
   _settings.defaultGas = gas;

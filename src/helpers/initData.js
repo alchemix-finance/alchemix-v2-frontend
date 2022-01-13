@@ -13,6 +13,7 @@ import vaults, { alusd, aggregate } from '../stores/vaults';
 import transmuters, { transmuterContracts } from '../stores/transmuters';
 import stakingPools, { poolLookup } from '../stores/stakingPools';
 import backgroundLoading from '../stores/backgroundLoading';
+import settings from '../stores/settings';
 
 // @dev enable verbose messages in console when debugging
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
@@ -33,7 +34,7 @@ function logData() {
       !_account.loadingFarmsConfigurations
     ) {
       stopStamp = Date.now();
-      if (debugging) {
+      if (debugging && _settings.verboseConsole) {
         console.log('====== Supported Tokens ======');
         console.log(tokenList);
         console.log('====== Wallet Balance ======');
@@ -50,13 +51,17 @@ function logData() {
       _backgroundLoading.active = false;
       _backgroundLoading.message = null;
       backgroundLoading.set({ ..._backgroundLoading });
-
       clearTimeout(retry);
     } else {
       logData();
     }
   }, 200);
 }
+
+let _settings;
+settings.subscribe((val) => {
+  _settings = val;
+});
 
 // @dev a series of buffer variables to keep data reactive
 let _account;
@@ -107,7 +112,6 @@ const tokenList = [];
  * @returns the token object from the walletBalance store
  * */
 async function tokenFinder(token) {
-  if (debugging) console.log(':: tokenFinder');
   return _walletBalance.tokens.find((item) => item.address === token);
 }
 
@@ -116,7 +120,6 @@ async function tokenFinder(token) {
  * @param tokens the list of token addresses
  *  */
 async function batchTokenCheck(tokens) {
-  if (debugging) console.log(':: batchTokenCheck');
   let counter = 0;
   const tokenFiller = async (token) => {
     const payload = {
@@ -145,7 +148,6 @@ async function batchTokenCheck(tokens) {
 
 // @dev retrieves the tokens supported by the alusd alchemist
 async function initAlusdAlchemistTokens() {
-  if (debugging) console.log(':: initAlusdAlchemistTokens');
   const contract = getContract('AlchemistV2_alUSD');
   const yieldTokens = await contract.getSupportedYieldTokens();
   const underlyingTokens = await contract.getSupportedUnderlyingTokens();
@@ -166,7 +168,6 @@ async function initAlusdAlchemistTokens() {
 
 // @dev retrieves the tokens supported by the staking pools
 async function initPoolTokens() {
-  if (debugging) console.log(':: initPoolTokens');
   const contract = getContract('StakingPools');
   _stakingPools.pools = ethers.BigNumber.from(await contract.poolCount()).toString();
   const dupeCheck = (token) => tokenList.some((entry) => entry === token);
@@ -181,7 +182,6 @@ async function initPoolTokens() {
 
 // @dev initializes the list of supported tokens
 async function initSupportedTokens() {
-  if (debugging) console.log(':: initSupportedTokens');
   await initAlusdAlchemistTokens();
   await initPoolTokens();
   _account.loadingSupportedTokens = false;
@@ -192,7 +192,6 @@ async function initSupportedTokens() {
 
 // @dev initializes the user's wallet balance
 async function initWalletBalance() {
-  if (debugging) console.log(':: initWalletBalance');
   const ethBalance = await ethers
     .getDefaultProvider(debugging ? process.env.LOCAL_NETWORK_URL : 'homestead')
     .getBalance(_account.address);
@@ -215,7 +214,6 @@ async function initWalletBalance() {
  * @returns void
  * */
 function vaultAlusdRowBuilder(tokens) {
-  if (debugging) console.log(':: vaultAlusdRowBuilder');
   if (_alusd.rows.length === 0) {
     const contract = getContract('AlchemistV2_alUSD');
     tokens.forEach(async (token) => {
@@ -290,7 +288,6 @@ const vaultAlusdRowBuilderQueue = (tokens) => {
 
 // @dev initializes the alUSD vault
 async function initAlusdVault() {
-  if (debugging) console.log(':: initAlusdVault');
   const contract = getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
   const rawRatio = await contract.minimumCollateralization();
@@ -305,7 +302,6 @@ async function initAlusdVault() {
 
 // @dev orchestrates initialization of all vaults
 async function initVaults() {
-  if (debugging) console.log(':: initVaults');
   await initAlusdVault();
   _account.loadingVaultConfigurations = false;
   account.set({ ..._account });
@@ -316,7 +312,6 @@ async function initVaults() {
 
 // @dev orchestrates initialization of all transmuters
 function initTransmuters() {
-  if (debugging) console.log(':: initTransmuters');
   if (_transmuters.props.length === 0) {
     let counter = 0;
     transmuterContracts.forEach(async (transmuter) => {
@@ -370,7 +365,6 @@ function initTransmuters() {
 
 // @dev orchestrates initialization of all farms
 async function initFarms() {
-  if (debugging) console.log(':: initFarms');
   if (_stakingPools.allPools.length === 0) {
     const contract = getContract('StakingPools');
     const poolCounter = parseInt(_stakingPools.pools, 10);
@@ -410,11 +404,50 @@ async function initFarms() {
   }
 }
 
+// @dev prints neato ascii art. bitches love ascii art
+function leet() {
+  console.log(
+    `%c  
+ ▄▄▄       ██▓     ▄████▄   ██░ ██ ▓█████  ███▄ ▄███▓ ██▓▒██   ██▒
+▒████▄    ▓██▒    ▒██▀ ▀█  ▓██░ ██▒▓█   ▀ ▓██▒▀█▀ ██▒▓██▒▒▒ █ █ ▒░
+▒██  ▀█▄  ▒██░    ▒▓█    ▄ ▒██▀▀██░▒███   ▓██    ▓██░▒██▒░░  █   ░
+░██▄▄▄▄██ ▒██░    ▒▓▓▄ ▄██▒░▓█ ░██ ▒▓█  ▄ ▒██    ▒██ ░██░ ░ █ █ ▒ 
+ ▓█   ▓██▒░██████▒▒ ▓███▀ ░░▓█▒░██▓░▒████▒▒██▒   ░██▒░██░▒██▒ ▒██▒
+ ▒▒   ▓▒█░░ ▒░▓  ░░ ░▒ ▒  ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ░  ░░▓  ▒▒ ░ ░▓ ░
+  ▒   ▒▒ ░░ ░ ▒  ░  ░  ▒    ▒ ░▒░ ░ ░ ░  ░░  ░      ░ ▒ ░░░   ░▒ ░
+  ░   ▒     ░ ░   ░         ░  ░░ ░   ░   ░      ░    ▒ ░ ░    ░  
+      ░  ░    ░  ░░ ░       ░  ░  ░   ░  ░       ░    ░   ░    ░  
+                  ░              
+                                                   
+=============================[ v2 ]=================================
+
+GitHub:   https://github.com/alchemix-finance
+Twitter:  https://twitter.com/alchemixfi
+Telegram: lmao no
+
+Make sure you're running this on ${
+      process.env.APP_URL ||
+      'if you can read this, the site you are visiting right now is probably trying to scam you'
+    }
+We will never ask you for your private key or seedphrase.
+
+========================[ DISCLAIMER ]==============================
+
+All rights reserved, no guarantees given.
+DeFi tools are not toys.
+Use at your own risk.
+
+  `,
+    'color: #F5C09A',
+  );
+}
+
 // @dev initializes a majority of data needed to render the site
 export default async function initData() {
   if (debugging) {
     startStamp = Date.now();
   }
+  leet();
   _backgroundLoading.message = 'Tokens';
   _backgroundLoading.active = true;
   backgroundLoading.set({ ..._backgroundLoading });

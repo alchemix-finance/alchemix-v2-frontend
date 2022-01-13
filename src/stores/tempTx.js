@@ -9,6 +9,7 @@ const defaults = {
   yieldToken: null,
   underlyingToken: null,
   targetAddress: null,
+  vaultIndex: null,
 };
 
 Object.freeze(defaults);

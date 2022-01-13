@@ -5,35 +5,36 @@ import TableBodyRow from './TableBodyRow.svelte';
 import TableHeaderCell from './TableHeaderCell.svelte';
 
 /*
-                        Table component
-
-                        Render: <Table rows="{rows}" columns="{columns}" />
-
-                        Rows is an array of rows.
-                        Each row can define what cell component it should use and additional props
-                        For example: [
-                          {
-                            column1: {
-                              CellComponent: SomeCellComponent
-                              expandedRow: {
-                                ExpandedRowComponent: SomeComponent,
-                                value|props
-                              }
-                              value|props
-                            }
-                          },
-                          {
-                            column2: {
-                              CellComponent: SomeCellComponent
-                              expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
-                              value|props
-                            }
-                          }
-                        ]
-                      */
+ * Table component
+ *
+ * Render: <Table rows="{rows}" columns="{columns}" />
+ *
+ * Rows is an array of rows.
+ * Each row can define what cell component it should use and additional props
+ * For example: [
+ *   {
+ *     column1: {
+ *       CellComponent: SomeCellComponent
+ *       expandedRow: {
+ *         ExpandedRowComponent: SomeComponent,
+ *         value|props
+ *       }
+ *       value|props
+ *     }
+ *   },
+ *   {
+ *     column2: {
+ *       CellComponent: SomeCellComponent
+ *       expandedRow: optional { ExpandedRowComponent: SomeComponent, value|props }
+ *       value|props
+ *     }
+ *   }
+ * ]
+ * */
 
 export let rows = [];
 export let columns = [];
+export let key;
 
 const numberOfColumns = columns.length;
 
@@ -45,6 +46,7 @@ const headerGroups = columns.map((col) => ({
 }));
 
 // parse provided row data to internal data structure
+// let sortedRows;
 let tableRows = rows.map((row, i) => ({
   cells: Object.keys(row).map((columnId) => ({
     columnId,
@@ -52,7 +54,14 @@ let tableRows = rows.map((row, i) => ({
   })),
   rowId: i,
 }));
-$: sortedRows = tableRows;
+
+$: sortedRows = rows.map((row, i) => ({
+  cells: Object.keys(row).map((columnId) => ({
+    columnId,
+    ...row[columnId],
+  })),
+  rowId: i,
+}));
 
 // TODO: Sorting needs to be debugged and is not yet supported
 let defaultSortOrder = SORT_ORDERS.asc;
@@ -82,8 +91,8 @@ const sortBy = (columnKey) => {
   </thead>
 
   <tbody>
-    {#each sortedRows as row, index}
-      <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" />
+    {#each sortedRows as row, index (key)}
+      <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" key="{key}" />
     {/each}
   </tbody>
 </table>

@@ -13,6 +13,7 @@ const settings = writable(
       locale: 'en-US',
     },
     defaultGas: 'standard',
+    verboseConsole: false,
   },
 );
 

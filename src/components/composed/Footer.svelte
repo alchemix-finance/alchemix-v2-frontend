@@ -9,7 +9,8 @@ const copyrightYear = () => {
 <div class="flex flex-col">
   <div class="flex flex-row">
     <div class="mr-11 w-60">
-      <p class="uppercase text-sm alcxTitle mb-5">{$_('alchemix')}</p>
+      <img src="images/icons/ALCX_Std_logo.svg" class="w-max mb-5" alt="The Alchemix logo" />
+
       <p class="text-sm mb-3">&copy; {copyrightYear()} {$_('alchemix_labs')}</p>
       <p class="text-sm mb-3 text-justify">
         {$_('footer_disclaimer')}
