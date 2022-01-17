@@ -1,5 +1,7 @@
 <script>
+import { utils } from 'ethers';
 import { _ } from 'svelte-i18n';
+import { BarLoader } from 'svelte-loading-spinners';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -12,8 +14,11 @@ import getContract from '../helpers/getContract';
 import getUserGas from '../helpers/getUserGas';
 import transmuters from '../stores/transmuters';
 import account from '../stores/account';
-import { ethers } from 'ethers';
-import { BarLoader } from 'svelte-loading-spinners';
+import tempTx, { tempTxReset } from '../stores/tempTx';
+import setTokenAllowance from '../helpers/setTokenAllowance';
+import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../helpers/setToast';
+import { getTokenDecimals } from '../helpers/getTokenData';
+import { getProvider } from '../helpers/walletManager';
 
 const toggleButtons = {
   transmuterSelect: {
@@ -37,7 +42,7 @@ const vaultFilter = (filter) => {
   const selector = ['transmuterSelect', 'modeSelect', 'stratSelect'];
   buttonToggler(selector[filter.id], filter.filter);
 };
-const userGas = getUserGas();
+
 const columns = [
   {
     columnId: 'col1',
@@ -78,34 +83,106 @@ const columns = [
     colSize: 2,
   },
 ];
-
 let rows = [];
-
-// the core transmuter contracts
-const transmuterContracts = [
-  getContract('TransmuterV2_DAI'),
-  getContract('TransmuterV2_USDC'),
-  getContract('TransmuterV2_USDT'),
-];
-
-// the alUSD contract
-
-const format = ethers.utils.formatUnits;
 
 const goTo = (url) => {
   window.open(url, '_blank');
 };
 
+const provider = getProvider();
+
+const deposit = async () => {
+  const contract = getContract($tempTx.transmuter);
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const allowance = $tempTx.alTokenAllowance;
+  console.log('allowance', allowance);
+  const amountToWei = utils.parseEther($tempTx.amountAlToken.toString());
+  if (!allowance) {
+    try {
+      await setTokenAllowance($tempTx.alToken, $tempTx.transmuterAddress);
+    } catch (e) {
+      setError(e.message);
+      console.trace(e);
+    }
+  }
+  try {
+    setPendingWallet();
+    const tx = await contract.deposit(amountToWei, $account.address, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      // TODO add refreshData here
+    });
+  } catch (e) {
+    setError(e.message);
+    console.trace(e);
+  }
+  tempTxReset();
+};
+
+const withdraw = async () => {
+  const contract = getContract($tempTx.transmuter);
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const amountToWei = utils.parseEther($tempTx.amountUnderlying);
+  try {
+    setPendingWallet();
+    const tx = await contract.withdraw(amountToWei, $account.address, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      // TODO add refreshData here
+    });
+  } catch (e) {
+    setError(e.message);
+    console.trace(e);
+  }
+  tempTxReset();
+};
+
+const claim = async () => {
+  const contract = getContract($tempTx.transmuter);
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const decimals = await getTokenDecimals($tempTx.underlyingToken);
+  const amountToWei = utils.parseUnits($tempTx.amountUnderlying, decimals);
+  try {
+    setPendingWallet();
+    const tx = await contract.withdraw(amountToWei, $account.address, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      // TODO add refreshData here
+    });
+  } catch (e) {
+    setError(e.message);
+    console.trace(e);
+  }
+  tempTxReset();
+};
+
+const methodLookup = {
+  deposit: deposit,
+  withdraw: withdraw,
+  claim: claim,
+};
+
 const renderTransmuters = () => {
   for (const prop of $transmuters.props) {
     const expandedProps = {
-      alToken: prop.getAlToken,
-      transmuterContract: prop.address,
-      allowance: prop.alTokenAllowance,
+      alToken: prop.alToken,
+      alTokenAllowance: prop.alTokenAllowance,
+      alTokenSymbol: prop.alTokenSymbol,
+      underlyingToken: prop.getUnderlyingToken,
+      underlyingTokenSymbol: prop.underlyingTokenSymbol,
       exchangedBalance: prop.exchangedBalance,
       unexchangedBalance: prop.unexchangedBalance,
-      alTokenSymbol: prop.alTokenSymbol,
-      underlyingTokenSymbol: prop.underlyingTokenSymbol,
+      transmuter: prop.transmuter,
+      address: prop.address,
     };
 
     const payload = {
@@ -145,6 +222,7 @@ const renderTransmuters = () => {
   $transmuters.fetching = false;
 };
 
+$: if ($tempTx.method !== null) methodLookup[$tempTx.method]();
 $: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
 </script>
 
@@ -218,6 +296,7 @@ $: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
           selected="{toggleButtons.transmuterSelect.aleth}"
           solid="{false}"
           borderSize="0"
+          disabled
           on:clicked="{() => vaultFilter({ id: 0, filter: 'aleth' })}"
         >
           <p slot="leftSlot">

@@ -340,11 +340,13 @@ function initTransmuters() {
       const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
       const totalDeposited = utils.formatEther(exchangedBN.add(unexchangedBN).toString());
       const payload = {
+        transmuter,
         address,
         getAlToken,
         alToken,
         alTokenAllowance,
         alTokenSymbol,
+        getUnderlyingToken,
         underlyingTokenSymbol,
         getTotalUnexchanged,
         getExchangedBalance,

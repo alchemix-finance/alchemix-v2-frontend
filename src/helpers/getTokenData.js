@@ -13,7 +13,7 @@ const provider = ethers.getDefaultProvider(debugging ? process.env.LOCAL_NETWORK
 
 /*
  * @dev retrieves symbol for a specific token
- * @params String the token address
+ * @param String the token address
  * @returns String the token symbol
  * */
 const getTokenSymbol = async (address) => {
@@ -23,7 +23,7 @@ const getTokenSymbol = async (address) => {
 
 /*
  * @dev retrieves balance for a specific token
- * @params String the token address
+ * @param String the token address
  * @returns String the token balance
  * */
 const getTokenBalance = async (address) => {
@@ -33,7 +33,7 @@ const getTokenBalance = async (address) => {
 
 /*
  * @dev retrieves name for a specific token
- * @params String the token address
+ * @param String the token address
  * @returns String the token name
  * */
 const getTokenName = async (address) => {
@@ -43,7 +43,7 @@ const getTokenName = async (address) => {
 
 /*
  * @dev retrieves decimals for a specific token
- * @params String the token address
+ * @param String the token address
  * @returns String the token decimals
  * */
 const getTokenDecimals = async (address) => {

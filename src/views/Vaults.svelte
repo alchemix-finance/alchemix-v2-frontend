@@ -164,13 +164,12 @@ const abiCoder = utils.defaultAbiCoder;
 
 const deposit = async () => {
   const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
-  console.log('allowance', allowance);
   const decimals = await getTokenDecimals($tempTx.yieldToken);
   const amountToWei = utils.parseUnits($tempTx.amountYield.toString(), decimals);
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   if (!allowance) {
     await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
-  console.log('deposit config', amountToWei, allowance);
   if ($tempTx.amountYield < 0) {
     setError('Trying to deposit more than available');
   } else {
@@ -178,7 +177,7 @@ const deposit = async () => {
       let tx;
       setPendingWallet();
       tx = await contract.deposit($tempTx.yieldToken, amountToWei, $account.address, {
-        gasPrice: getUserGas(),
+        gasPrice: gas,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
@@ -194,7 +193,6 @@ const deposit = async () => {
 };
 
 const depositUnderlying = async () => {
-  console.log('depositing underlying');
   const refreshPayload = {
     token: $tempTx.underlyingToken,
     vaultIndex: $tempTx.vaultIndex,
@@ -210,7 +208,6 @@ const depositUnderlying = async () => {
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
   }
-  console.log('deposit config', amountToWei, allowanceUnderlying);
   // TODO fix check for actual balance of token on wallet
   if ($tempTx.amount < 0) {
     setError('Trying to deposit more than available');
