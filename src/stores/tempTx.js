@@ -5,11 +5,17 @@ const defaults = {
   amountUnderlying: null,
   amountBorrow: null,
   amountRepay: null,
+  amountAlToken: null,
   method: null,
   yieldToken: null,
   underlyingToken: null,
+  alToken: null,
   targetAddress: null,
   vaultIndex: null,
+  transmuter: null,
+  transmuterAddress: null,
+  alTokenAllowance: null,
+  unexchangedBalance: null,
 };
 
 Object.freeze(defaults);
