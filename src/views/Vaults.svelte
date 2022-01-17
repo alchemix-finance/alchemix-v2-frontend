@@ -242,14 +242,16 @@ const depositUnderlying = async () => {
 };
 
 const multicall = async () => {
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   const allowanceUnderlying = await getTokenAllowance(
     $tempTx.underlyingToken,
     $account.address,
     contract.address,
   );
   const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
-  const yieldToWei = utils.parseEther($tempTx.amountYield.toString());
-  const underlyingToWei = utils.parseEther($tempTx.amountUnderlying.toString());
+  const decimals = await getTokenDecimals($tempTx.underlyingToken);
+  const yieldToWei = utils.parseUnits($tempTx.amountYield.toString(), decimals);
+  const underlyingToWei = utils.parseUnits($tempTx.amountUnderlying.toString(), decimals);
   if (!allowanceUnderlying) await setTokenAllowance($tempTx.underlyingToken, contract.address);
   if (!allowanceYield) await setTokenAllowance($tempTx.yieldToken, contract.address);
   try {
@@ -269,7 +271,7 @@ const multicall = async () => {
     ]);
     const dataPackage = [deposit, depositUnderlying];
     tx = await contract.multicall(dataPackage, {
-      gasPrice: getUserGas(),
+      gasPrice: gas,
     });
     setPendingTx();
     await provider.once(tx.hash, (transaction) => {
@@ -390,8 +392,36 @@ const withdrawUnderlying = async () => {
   tempClear();
 };
 
-const withdrawMulticall = () => {
-  setError('Multicall is not supported yet :(');
+const withdrawMulticall = async () => {
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+  try {
+    const withdrawUnderlyingEncoded = contractIface.encodeFunctionData('withdrawUnderlying', [
+      $tempTx.yieldToken,
+      $tempTx.amountUnderlying,
+      $account.address,
+      dataPackage,
+    ]);
+    const withdrawYieldEncoded = contractIface.encodeFunctionData('withdraw', [
+      $tempTx.yieldToken,
+      $tempTx.amountYield,
+      $account.address,
+    ]);
+    const txPackage = [withdrawUnderlyingEncoded, withdrawYieldEncoded];
+    setPendingWallet();
+    const tx = await contract.multicall(txPackage, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      refreshData({ token: $tempTx.yieldToken });
+      refreshData({ token: $tempTx.underlyingToken, vaultIndex: $tempTx.vaultIndex });
+    });
+  } catch (e) {
+    setError(e.message);
+    console.debug(e);
+  }
   tempClear();
 };
 
