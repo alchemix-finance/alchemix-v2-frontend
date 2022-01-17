@@ -399,13 +399,6 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "enableWhitelist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
             "inputs": [
                 {
                     "internalType": "uint256",
@@ -763,5 +756,5 @@
             "type": "function"
         }
     ],
-    "address": "0x3c58466f3eF69aa1DC140a3D0E6F05b648D43958"
+    "address": "0x000b57A5FA738E1dA0B600293E50ca319831eBf7"
 }

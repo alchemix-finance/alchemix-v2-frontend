@@ -196,16 +196,16 @@
             "type": "function"
         },
         {
-            "inputs": [
+            "inputs": [],
+            "name": "KEEPER",
+            "outputs": [
                 {
-                    "internalType": "address",
-                    "name": "value",
-                    "type": "address"
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
                 }
             ],
-            "name": "addKeeper",
-            "outputs": [],
-            "stateMutability": "nonpayable",
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -554,19 +554,6 @@
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "value",
-                    "type": "address"
-                }
-            ],
-            "name": "removeKeeper",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
                     "internalType": "bytes32",
                     "name": "role",
                     "type": "bytes32"
@@ -792,5 +779,5 @@
             "type": "function"
         }
     ],
-    "address": "0x210f64DDfa845adc0f205F3bAD6d01996621D362"
+    "address": "0xc311d2Ad0635Bb3b85a04Cc19C3c31158fEBf988"
 }

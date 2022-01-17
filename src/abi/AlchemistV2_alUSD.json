@@ -827,6 +827,19 @@
         },
         {
             "inputs": [],
+            "name": "FIXED_POINT_SCALAR",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "PERMIT_MINT_TYPEHASH",
             "outputs": [
                 {
@@ -1186,13 +1199,6 @@
                 }
             ],
             "name": "donate",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "enableWhitelist",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -2248,5 +2254,5 @@
             "type": "function"
         }
     ],
-    "address": "0xc0788867D8aa9E5B7E2A416690DC67158b293E8f"
+    "address": "0xbE2D5cF8d61b67d69340A29F1398fCE525cF87fD"
 }
