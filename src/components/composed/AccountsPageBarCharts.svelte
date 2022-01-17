@@ -1,5 +1,7 @@
 <script>
 import { onMount } from 'svelte';
+import global from '../../stores/global';
+import settings from '../../stores/settings';
 import BarChart from './Charts/BarChart.svelte';
 import tailwind from '../../../tailwind.config';
 
@@ -150,6 +152,18 @@ const options = {
     },
   },
 };
+
+let normalizedDeposit;
+let normalizedDebt;
+
+const normalize = () => {
+  normalizedDeposit = ((totalDeposit || 0) * $global.conversionRate).toFixed(2);
+  normalizedDebt = ((totalDebtLimit || 0) * $global.conversionRate).toFixed(2);
+};
+
+$: $settings, normalize();
+$: totalDebtLimit, normalize();
+$: totalDeposit, normalize();
 </script>
 
 <div class="h-96">
@@ -163,7 +177,7 @@ const options = {
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">Total Deposit</span>
-          <span class="text-lg">{totalDeposit}</span>
+          <span class="text-lg">{normalizedDeposit} {$settings.baseCurrency?.symbol || '$'}</span>
         </div>
         <div class="mr-8 flex items-center">
           <span class="text-green1 mr-05">
@@ -172,7 +186,7 @@ const options = {
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">Debt Limit</span>
-          <span class="text-lg">{totalDebtLimit}</span>
+          <span class="text-lg">{normalizedDebt} {$settings.baseCurrency?.symbol || '$'}</span>
         </div>
         <div class="flex items-center">
           <span class="text-grey2 mr-2">Aggregate APY</span>

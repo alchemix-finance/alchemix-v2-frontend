@@ -26,7 +26,6 @@ import getUserGas from '../helpers/getUserGas';
 import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
 import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
-import ChildUpdater from '../components/elements/ChildUpdater.svelte';
 import { updateWalletBalance, updateAlusdVault } from '../helpers/updateData';
 
 let counterAllStrategies = 0;
