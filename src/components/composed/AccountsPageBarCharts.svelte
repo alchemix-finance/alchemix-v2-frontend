@@ -93,7 +93,7 @@ const options = {
           // FIXME callback value happens in pre-defined steps
           // check out the console log for this, the ticks almost never match the values of users
           // that's why there's only dashed lines in certain cases (i.e. deposit = 10k)
-          console.log('callback value', value);
+          // console.log('callback value', value);
           if (
             [
               0,
@@ -131,12 +131,12 @@ const options = {
           //   value: 2000
           // }
 
-          console.log(
-            context,
-            context.tick.value,
-            Math.round(Math.floor(totalDebtLimit) / 10) * 10,
-            Math.round(Math.floor(totalDeposit) / 10) * 10,
-          );
+          // console.log(
+          //   context,
+          //   context.tick.value,
+          //   Math.round(Math.floor(totalDebtLimit) / 10) * 10,
+          //   Math.round(Math.floor(totalDeposit) / 10) * 10,
+          // );
 
           if (context.tick.value === Math.round(Math.floor(totalDebtLimit) / 10) * 10) {
             return GREEN;

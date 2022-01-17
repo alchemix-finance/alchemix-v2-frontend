@@ -455,7 +455,9 @@ export default async function initData() {
   if (debugging) {
     startStamp = Date.now();
   }
-  leet();
+  if (!_backgroundLoading.active) {
+    leet();
+  }
   _backgroundLoading.message = 'Tokens';
   _backgroundLoading.active = true;
   backgroundLoading.set({ ..._backgroundLoading });
