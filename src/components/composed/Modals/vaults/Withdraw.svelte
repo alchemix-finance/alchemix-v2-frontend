@@ -104,6 +104,7 @@ const withdraw = () => {
     targetAddress: null,
     vaultIndex,
   };
+  console.log(payload);
   tempTx.set({ ...payload });
 };
 

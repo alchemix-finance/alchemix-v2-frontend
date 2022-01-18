@@ -28,7 +28,7 @@ $: isVisible, (contentVisible = isVisible);
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              {#if contentVisible}
+              {#if !contentVisible}
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"

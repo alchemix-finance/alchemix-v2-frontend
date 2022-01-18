@@ -2,7 +2,7 @@ import { utils } from 'ethers';
 import backgroundLoading from '../stores/backgroundLoading';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
-import { alusd } from '../stores/vaults';
+import { alusd, aggregate } from '../stores/vaults';
 import { getTokenBalance } from './getTokenData';
 import getContract from './getContract';
 
@@ -26,10 +26,10 @@ alusd.subscribe((val) => {
   _alusd = val;
 });
 
-// let _aggregate;
-// aggregate.subscribe((val) => {
-//   _aggregate = val;
-// });
+let _aggregate;
+aggregate.subscribe((val) => {
+  _aggregate = val;
+});
 
 // const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
@@ -55,7 +55,7 @@ const setLoading = (msg) => {
  * @param token the address of the token to update
  * */
 export async function updateWalletBalance(token) {
-  setLoading('Updating');
+  setLoading('Updating', token);
   const index = _walletBalance.tokens.findIndex((entry) => entry.address === token);
   const uToken = _walletBalance.tokens[index];
   const balance = utils.formatUnits(await getTokenBalance(uToken.address), uToken.decimals);
@@ -108,6 +108,22 @@ export async function updateAlusdVault(vaultIndex) {
   }
   _alusd.loadingRowData = false;
   alusd.set({ ..._alusd });
+  clearLoading();
+  return true;
+}
+
+// @dev updates the alusd aggregate balances
+export async function updateAlusdAggregate() {
+  setLoading('Updating');
+  const contract = getContract('AlchemistV2_alUSD');
+  const rawDebt = await contract.accounts(_account.address);
+  const newDebt = parseFloat(utils.formatEther(rawDebt.debt.toString()));
+  console.log('debt old v new', _aggregate.totalDebt, newDebt);
+  if (newDebt !== _aggregate.totalDebt) {
+    console.log('updating aggregate debt');
+    _aggregate.totalDebt = newDebt;
+    aggregate.set({ ..._aggregate });
+  }
   clearLoading();
   return true;
 }
