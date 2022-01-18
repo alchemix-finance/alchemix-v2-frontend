@@ -90,6 +90,7 @@ const goTo = (url) => {
 };
 
 const provider = getProvider();
+const abiCoder = utils.defaultAbiCoder;
 
 const deposit = async () => {
   const contract = getContract($tempTx.transmuter);
@@ -101,7 +102,7 @@ const deposit = async () => {
     try {
       await setTokenAllowance($tempTx.alToken, $tempTx.transmuterAddress);
     } catch (e) {
-      setError(e.message);
+      setError(e.data ? await e.data.message : e.message);
       console.trace(e);
     }
   }
@@ -116,7 +117,7 @@ const deposit = async () => {
       // TODO add refreshData here
     });
   } catch (e) {
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
     console.trace(e);
   }
   tempTxReset();
@@ -137,7 +138,7 @@ const withdraw = async () => {
       // TODO add refreshData here
     });
   } catch (e) {
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
     console.trace(e);
   }
   tempTxReset();
@@ -148,9 +149,10 @@ const claim = async () => {
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   const decimals = await getTokenDecimals($tempTx.underlyingToken);
   const amountToWei = utils.parseUnits($tempTx.amountUnderlying, decimals);
+  const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
   try {
     setPendingWallet();
-    const tx = await contract.withdraw(amountToWei, $account.address, {
+    const tx = await contract.claim(amountToWei, $account.address, [$tempTx.underlyingToken], dataPackage, {
       gasPrice: gas,
     });
     setPendingTx();
@@ -159,7 +161,7 @@ const claim = async () => {
       // TODO add refreshData here
     });
   } catch (e) {
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
     console.trace(e);
   }
   tempTxReset();

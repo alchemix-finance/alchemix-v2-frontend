@@ -41,6 +41,7 @@ function logData() {
         console.table(_walletBalance.tokens);
         console.log('====== Vault Configuration ======');
         console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
+        console.log('Alchemist alUSD max debt:', _alusd.maxDebt, 'alUSD');
         console.table(_alusd.rows);
         console.log('====== Aggregated ======');
         console.log('Total deposited:', _aggregate.totalDeposit);
@@ -240,7 +241,9 @@ function vaultAlusdRowBuilder(tokens) {
       const position = await contract.positions(_account.address, token);
       const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
       const underlyingBalance = await getTokenBalance(underlyingToken);
-      const vaultDebt = (balance * underlyingPerShareFormatted) / _alusd.ratio;
+      const vaultDebt =
+        utils.formatEther(position.balance.mul(yieldPerShare).div(parseFloat(_alusd.ratio))).toString() /
+        10 ** underlyingDecimals;
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
       const depositPayload = {
         token,

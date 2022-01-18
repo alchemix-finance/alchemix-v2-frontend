@@ -74,7 +74,7 @@ const mint = () => {
 };
 
 onMount(() => {
-  availableAmount = maxDebt - currentDebt;
+  availableAmount = parseFloat(maxDebt) - parseFloat(currentDebt);
 });
 
 $: borrowAmount, updateValues();
