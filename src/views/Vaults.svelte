@@ -185,7 +185,7 @@ const deposit = async () => {
         refreshData({ token: $tempTx.yieldToken, vaultIndex: $tempTx.vaultIndex });
       });
     } catch (e) {
-      setError(e.message);
+      setError(e.data ? await e.data.message : e.message);
       console.debug(e);
     }
     tempClear();
@@ -230,7 +230,7 @@ const depositUnderlying = async () => {
         refreshData(refreshPayload);
       });
     } catch (e) {
-      setError(e.message);
+      setError(e.data ? await e.data.message : e.message);
       console.log(e);
     }
     tempClear();
@@ -276,7 +276,7 @@ const multicall = async () => {
       refreshData({ token: $tempTx.underlyingToken, vaultIndex: $tempTx.vaultIndex });
     });
   } catch (e) {
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
     console.debug(e);
   }
   tempClear();
@@ -297,7 +297,7 @@ const mint = async () => {
       setSuccessTx(transaction.transactionHash);
     });
   } catch (e) {
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
     console.error(e);
   }
   tempClear();
@@ -316,7 +316,7 @@ const repay = async () => {
     });
   } catch (e) {
     console.error(e);
-    setError(e.message);
+    setError(e.data.message);
   }
   tempClear();
 };
@@ -335,7 +335,7 @@ const liquidate = async () => {
     });
   } catch (e) {
     console.error(e);
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
   }
   tempClear();
 };
@@ -358,7 +358,7 @@ const withdraw = async () => {
     });
   } catch (e) {
     console.error(e);
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
   }
   tempClear();
 };
@@ -383,7 +383,7 @@ const withdrawUnderlying = async () => {
     });
   } catch (e) {
     console.error(e);
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
   }
   tempClear();
 };
@@ -415,7 +415,7 @@ const withdrawMulticall = async () => {
       refreshData({ token: $tempTx.underlyingToken, vaultIndex: $tempTx.vaultIndex });
     });
   } catch (e) {
-    setError(e.message);
+    setError(e.data ? await e.data.message : e.message);
     console.debug(e);
   }
   tempClear();

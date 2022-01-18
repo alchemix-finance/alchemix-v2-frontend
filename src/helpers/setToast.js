@@ -48,7 +48,7 @@ export function setError(message) {
   _toastConfig.closeOnMount = true;
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
-  _toastConfig.closeTimeout = 2000;
+  _toastConfig.closeTimeout = 4000;
   toastConfig.set({ ..._toastConfig });
 }
 
