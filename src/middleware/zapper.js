@@ -51,7 +51,11 @@ export async function getTokenPrices() {
 export async function getGasPrices() {
   await axios(connector('gas-price'))
     .then((result) => {
-      _global.gasPrices = result.data;
+      _global.gasPrices = {
+        standard: result.data.standard,
+        fast: result.data.fast,
+        instant: result.data.instant,
+      };
       global.set({ ..._global });
     })
     .catch((error) => {

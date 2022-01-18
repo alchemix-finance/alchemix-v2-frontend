@@ -1,35 +1,8 @@
 {
     "abi": [
         {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                }
-            ],
-            "name": "IllegalState",
-            "type": "error"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "yToken",
-                    "type": "address"
-                }
-            ],
-            "name": "InvalidYieldToken",
-            "type": "error"
-        },
-        {
             "inputs": [],
-            "name": "NoBurnableCredit",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "OnlyKeeper",
+            "name": "NotWhitelisted",
             "type": "error"
         },
         {
@@ -38,9 +11,21 @@
             "type": "error"
         },
         {
-            "anonymous": false,
             "inputs": [],
-            "name": "RefreshStrategies",
+            "name": "UnauthorizedER",
+            "type": "error"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "AccountAdded",
             "type": "event"
         },
         {
@@ -49,17 +34,125 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "AccountRemoved",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "admin",
+                    "type": "address"
+                }
+            ],
+            "name": "AdminUpdated",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "sender",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "recipient",
                     "type": "address"
                 },
                 {
                     "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address[]",
+                    "name": "yTokens",
+                    "type": "address[]"
+                }
+            ],
+            "name": "Claim",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "transmuter",
+                    "name": "sender",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Deposit",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "sender",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Exchange",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "bool",
+                    "name": "isPaused",
+                    "type": "bool"
+                }
+            ],
+            "name": "PauseUpdated",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "pendingAdmin",
                     "type": "address"
                 }
             ],
-            "name": "RegisterAsset",
+            "name": "PendingAdminUpdated",
             "type": "event"
         },
         {
@@ -139,34 +232,39 @@
         },
         {
             "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "alchemist",
-                    "type": "address"
-                }
-            ],
-            "name": "SetAlchemist",
+            "inputs": [],
+            "name": "WhitelistDisabled",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [],
+            "name": "WhitelistEnabled",
             "type": "event"
         },
         {
             "anonymous": false,
             "inputs": [
                 {
-                    "indexed": false,
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "sender",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "recipient",
                     "type": "address"
                 },
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "flowRate",
+                    "name": "amount",
                     "type": "uint256"
                 }
             ],
-            "name": "SetFlowRate",
+            "name": "Withdraw",
             "type": "event"
         },
         {
@@ -197,7 +295,7 @@
         },
         {
             "inputs": [],
-            "name": "KEEPER",
+            "name": "SENTINEL",
             "outputs": [
                 {
                     "internalType": "bytes32",
@@ -210,27 +308,7 @@
         },
         {
             "inputs": [],
-            "name": "alchemist",
-            "outputs": [
-                {
-                    "internalType": "contract IAlchemistV2",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "burnCredit",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "debtToken",
+            "name": "ZERO_ADDRESS",
             "outputs": [
                 {
                     "internalType": "address",
@@ -245,16 +323,90 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "addToWhitelist",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "buffer",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "recipient",
                     "type": "address"
                 },
+                {
+                    "internalType": "address[]",
+                    "name": "yTokens",
+                    "type": "address[]"
+                },
+                {
+                    "internalType": "bytes[]",
+                    "name": "yTokenParams",
+                    "type": "bytes[]"
+                }
+            ],
+            "name": "claim",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "owner",
+                    "type": "address"
+                }
+            ],
+            "name": "deposit",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "disableWhitelist",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
                 {
                     "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
                 }
             ],
-            "name": "depositFunds",
+            "name": "exchange",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -262,67 +414,16 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
+                    "internalType": "address",
+                    "name": "owner",
                     "type": "address"
                 }
             ],
-            "name": "flowAvailable",
+            "name": "getExchangedBalance",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "flowRate",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                }
-            ],
-            "name": "getAvailableFlow",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "getCredit",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "credit",
+                    "name": "exchangedBalance",
                     "type": "uint256"
                 }
             ],
@@ -351,40 +452,16 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
+                    "internalType": "address",
+                    "name": "owner",
                     "type": "address"
                 }
             ],
-            "name": "getTotalUnderlyingBuffered",
+            "name": "getUnexchangedBalance",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "totalBuffered",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "weightToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "token",
-                    "type": "address"
-                }
-            ],
-            "name": "getWeight",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "weight",
+                    "name": "unexchangedBalance",
                     "type": "uint256"
                 }
             ],
@@ -437,12 +514,17 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "_admin",
+                    "name": "_syntheticToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "contract IERC20Upgradeable",
+                    "name": "_underlyingToken",
                     "type": "address"
                 },
                 {
                     "internalType": "address",
-                    "name": "_debtToken",
+                    "name": "_buffer",
                     "type": "address"
                 }
             ],
@@ -452,14 +534,8 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "keepers",
+            "inputs": [],
+            "name": "isPaused",
             "outputs": [
                 {
                     "internalType": "bool",
@@ -473,82 +549,14 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "lastFlowrateUpdate",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "onERC20Received",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "refreshStrategies",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                },
-                {
                     "internalType": "address",
-                    "name": "_transmuter",
+                    "name": "account",
                     "type": "address"
                 }
             ],
-            "name": "registerAsset",
+            "name": "removeFromWhitelist",
             "outputs": [],
             "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "registeredUnderlyings",
-            "outputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -590,12 +598,12 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IAlchemistV2",
-                    "name": "_alchemist",
+                    "internalType": "address",
+                    "name": "_newCollateralSource",
                     "type": "address"
                 }
             ],
-            "name": "setAlchemist",
+            "name": "setCollateralSource",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -603,17 +611,12 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "_flowRate",
-                    "type": "uint256"
+                    "internalType": "bool",
+                    "name": "pauseState",
+                    "type": "bool"
                 }
             ],
-            "name": "setFlowrate",
+            "name": "setPause",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -622,21 +625,11 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "weightToken",
+                    "name": "_newSentinel",
                     "type": "address"
-                },
-                {
-                    "internalType": "contract IERC20Upgradeable[]",
-                    "name": "tokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "uint256[]",
-                    "name": "weights",
-                    "type": "uint256[]"
                 }
             ],
-            "name": "setWeights",
+            "name": "setSentinel",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -661,14 +654,8 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "transmuter",
+            "inputs": [],
+            "name": "syntheticToken",
             "outputs": [
                 {
                     "internalType": "address",
@@ -680,18 +667,12 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "weightings",
+            "inputs": [],
+            "name": "totalBuffered",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "totalWeight",
+                    "name": "",
                     "type": "uint256"
                 }
             ],
@@ -699,12 +680,65 @@
             "type": "function"
         },
         {
-            "inputs": [
+            "inputs": [],
+            "name": "totalUnexchanged",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "underlyingToken",
+            "outputs": [
                 {
                     "internalType": "contract IERC20Upgradeable",
-                    "name": "underlyingToken",
+                    "name": "",
                     "type": "address"
-                },
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "whitelist",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "whitelistActive",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
                 {
                     "internalType": "uint256",
                     "name": "amount",
@@ -714,70 +748,13 @@
                     "internalType": "address",
                     "name": "recipient",
                     "type": "address"
-                },
-                {
-                    "internalType": "address[]",
-                    "name": "yTokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "bytes[]",
-                    "name": "yTokenParams",
-                    "type": "bytes[]"
                 }
             ],
             "name": "withdraw",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "yieldToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "shares",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
-                }
-            ],
-            "name": "withdrawFromAlchemist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "yieldTokens",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
         }
     ],
-    "address": "0xa8cDa93962ea00A1A60222a5e6f652598b11296F"
+    "address": "0x882B8027105030B80d578DD1D41840b10accB252"
 }
