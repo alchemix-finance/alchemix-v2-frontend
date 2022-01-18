@@ -82,7 +82,12 @@ export async function updateAlusdVault(vaultIndex) {
   const balance = utils.formatUnits(position.balance.toString(), vault.yieldDecimals);
   const tvl = utils.formatUnits(params.balance.toString(), vault.underlyingDecimals);
   const underlyingBalance = await getTokenBalance(vault.underlyingToken);
-  const vaultDebt = (balance * vault.underlyingPerShareFormatted) / _alusd.ratio;
+  const vaultDebt = utils
+    .formatUnits(
+      position.balance.mul(vault.underlyingPerShare).div(parseFloat(_alusd.ratio)),
+      vault.underlyingDecimals * 2,
+    )
+    .toString();
   console.log('tvl', tvl, vault.tvl);
   if (tvl !== vault.tvl) {
     _alusd.rows[vaultIndex].tvl = tvl;

@@ -241,9 +241,12 @@ function vaultAlusdRowBuilder(tokens) {
       const position = await contract.positions(_account.address, token);
       const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
       const underlyingBalance = await getTokenBalance(underlyingToken);
-      const vaultDebt =
-        utils.formatEther(position.balance.mul(yieldPerShare).div(parseFloat(_alusd.ratio))).toString() /
-        10 ** underlyingDecimals;
+      const vaultDebt = utils
+        .formatUnits(
+          position.balance.mul(underlyingPerShare).div(parseFloat(_alusd.ratio)),
+          underlyingDecimals * 2,
+        )
+        .toString();
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
       const depositPayload = {
         token,
