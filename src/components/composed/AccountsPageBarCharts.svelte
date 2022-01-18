@@ -4,12 +4,14 @@ import global from '../../stores/global';
 import settings from '../../stores/settings';
 import BarChart from './Charts/BarChart.svelte';
 import tailwind from '../../../tailwind.config';
+import ChildUpdater from '../elements/ChildUpdater.svelte';
 
 export let totalDeposit;
 export let totalDebtLimit;
 export let aggregatedApy;
 export let totalDebt;
 export let totalInterest;
+export let forceState;
 
 const withdrawable = (totalDeposit || 0) - (totalDebt || 0);
 
@@ -164,6 +166,7 @@ const normalize = () => {
 $: $settings, normalize();
 $: totalDebtLimit, normalize();
 $: totalDeposit, normalize();
+$: forceState, console.log('force update', forceState, totalDebt);
 </script>
 
 <div class="h-96">
@@ -194,6 +197,8 @@ $: totalDeposit, normalize();
         </div>
       </div>
     </div>
-    <BarChart data="{data}" options="{options}" />
+    <ChildUpdater key="{forceState}">
+      <BarChart data="{data}" options="{options}" />
+    </ChildUpdater>
   </div>
 </div>

@@ -26,7 +26,7 @@ import getUserGas from '../helpers/getUserGas';
 import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
 import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
-import { updateWalletBalance, updateAlusdVault } from '../helpers/updateData';
+import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -293,8 +293,10 @@ const mint = async () => {
       gasPrice: gas,
     });
     setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
+    await provider.once(tx.hash, async (transaction) => {
       setSuccessTx(transaction.transactionHash);
+      await updateAlusdAggregate();
+      getRandomData();
     });
   } catch (e) {
     setError(e.data ? await e.data.message : e.message);
@@ -305,14 +307,18 @@ const mint = async () => {
 
 const repay = async () => {
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const underlyingToken = $tempTx.underlyingToken;
   try {
     setPendingWallet();
     const tx = await contract.repay($tempTx.underlyingToken, $tempTx.amountRepay, $account.address, {
       gasPrice: gas,
     });
     setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
+    await provider.once(tx.hash, async (transaction) => {
       setSuccessTx(transaction.transactionHash);
+      await updateWalletBalance(underlyingToken);
+      await updateAlusdAggregate();
+      getRandomData();
     });
   } catch (e) {
     console.error(e);
@@ -330,8 +336,10 @@ const liquidate = async () => {
       gasPrice: gas,
     });
     setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
+    await provider.once(tx.hash, async (transaction) => {
       setSuccessTx(transaction.transactionHash);
+      await updateAlusdAggregate();
+      getRandomData();
     });
   } catch (e) {
     console.error(e);
@@ -342,6 +350,10 @@ const liquidate = async () => {
 
 const withdraw = async () => {
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const refreshPayload = {
+    token: $tempTx.yieldToken,
+    vaultIndex: $tempTx.vaultIndex,
+  };
   try {
     setPendingWallet();
     const tx = await contract.withdraw(
@@ -355,6 +367,7 @@ const withdraw = async () => {
     setPendingTx();
     await provider.once(tx.hash, (transaction) => {
       setSuccessTx(transaction.transactionHash);
+      refreshData(refreshPayload);
     });
   } catch (e) {
     console.error(e);
@@ -366,6 +379,10 @@ const withdraw = async () => {
 const withdrawUnderlying = async () => {
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+  const refreshPayload = {
+    token: $tempTx.underlyingToken,
+    vaultIndex: $tempTx.vaultIndex,
+  };
   try {
     setPendingWallet();
     const tx = await contract.withdrawUnderlying(
@@ -380,6 +397,7 @@ const withdrawUnderlying = async () => {
     setPendingTx();
     await provider.once(tx.hash, (transaction) => {
       setSuccessTx(transaction.transactionHash);
+      refreshData(refreshPayload);
     });
   } catch (e) {
     console.error(e);
@@ -443,7 +461,7 @@ $: if ($tempTx.method !== null) {
  */
 const refreshData = async (payload) => {
   if (payload.token) await updateWalletBalance(payload.token);
-  if (payload.vaultIndex.toString()) await updateAlusdVault(payload.vaultIndex);
+  if (payload.vaultIndex) await updateAlusdVault(payload.vaultIndex);
   const indexLocal = rowsAll.findIndex((row) => row.col5.vaultIndex === payload.vaultIndex);
   const indexStore = $alusd.rows.findIndex((row) => row.token === rowsAll[indexLocal].col5.yieldToken);
   rowsAll[indexLocal].deposited.value =
@@ -457,6 +475,7 @@ const refreshData = async (payload) => {
   rowsAll[indexLocal].col5.userDeposit = $alusd.rows[indexStore].balance;
   rowsAll[indexLocal].col5.borrowLimit = $alusd.rows[indexStore].vaultDebt;
   rowsAll[indexLocal].col5.openDebtAmount = $alusd.userDebt;
+
   getRandomData();
 };
 
@@ -559,6 +578,8 @@ const getRandomData = () => {
 $: if (!$alusd.loadingRowData && loading) {
   renderVaults();
 }
+
+$: $aggregate.totalDebt, console.log('total debt aggregate changed', $aggregate.totalDebt);
 </script>
 
 <ViewContainer>
@@ -645,6 +666,7 @@ $: if (!$alusd.loadingRowData && loading) {
             aggregatedApy="0"
             totalDebt="{$aggregate.totalDebt.toFixed(2)}"
             totalInterest="0"
+            forceState="{foo}"
           />
         </div>
       </ContainerWithHeader>
