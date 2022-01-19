@@ -11,7 +11,6 @@ export let expandedRow = {};
 let value = '';
 let proposal;
 let vote;
-let pending = false;
 
 const provider = getProvider();
 
@@ -35,6 +34,18 @@ const initVote = async () => {
   }
 };
 
+// @dev finds urls in the description and makes them clickable
+const replaceUrl = () => {
+  const rule = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+  return proposal.body.replace(rule, (url) => {
+    let link = url;
+    if (!link.match('^https?://')) {
+      link = 'https://' + link;
+    }
+    return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="underline text-orange3">${url}</a>`;
+  });
+};
+
 const openOnSnapshot = () => {
   window.open(`https://snapshot.org/#/alchemixstakers.eth/proposal/${proposal.id}`, '_blank');
 };
@@ -48,7 +59,7 @@ $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === 
     <div class="w-full bg-grey10 rounded p-4">
       <p class="mb-3 opacity-50">{$_('governance_page.description')}</p>
       <p class="text-justify whitespace-pre-wrap w-full">
-        {@html proposal?.body}
+        {@html replaceUrl()}
       </p>
     </div>
     <div class="flex flex-col min-w-max bg-grey10 rounded p-4">
