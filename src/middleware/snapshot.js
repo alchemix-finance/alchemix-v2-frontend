@@ -37,6 +37,36 @@ function gqlConnector(queryBody) {
   };
 }
 
+export async function getVotesForAddress() {
+  const query = `{
+    votes (
+      first: 100
+      skip: 0
+      where: {
+        voter: "${_account.address}",
+        space: "alchemixstakers.eth"
+      }
+    ) {
+      id
+      voter
+      created
+      choice
+      proposal {
+        id
+      }
+    }
+  }`;
+  axios(gqlConnector(query))
+    .then((result) => {
+      if (debugging) console.table(result.data.data.votes);
+      _governance.userVotes = result.data.data.votes;
+      governance.set({ ..._governance });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 export async function getOpenProposals() {
   const query = `{
     proposals(
@@ -63,7 +93,7 @@ export async function getOpenProposals() {
   }`;
   axios(gqlConnector(query))
     .then((result) => {
-      if (debugging) console.log('result of snapshot', result.data.data.proposals);
+      if (debugging) console.table(result.data.data.proposals);
       _governance.proposals = result.data.data.proposals;
       _governance.fetching = false;
       governance.set({ ..._governance });
@@ -77,5 +107,12 @@ export async function sendVote(voteData) {
   if (debugging) console.log(_account.signer);
   // TODO check if supplied choice is valid for provided proposal
   // TODO callback to directly reflect a success/failure of voting on the governance page
-  await client.vote(_account.signer.provider, _account.address, space, voteData);
+  try {
+    await client.vote(_account.signer.provider, _account.address, space, voteData);
+    await getVotesForAddress();
+    return true;
+  } catch (e) {
+    console.trace(e);
+    return false;
+  }
 }

@@ -64,7 +64,8 @@
     "selectChoice": "Select your choice",
     "castVote": "Cast Vote",
     "closedVote": "Voting Closed",
-    "choose": "Your Vote"
+    "choose": "Your Vote",
+    "alreadyVoted": "You Already Voted"
   },
   "farm_page": {
     "title": "Farms",
