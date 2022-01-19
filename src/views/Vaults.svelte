@@ -569,8 +569,6 @@ const getRandomData = () => {
 $: if (!$alusd.loadingRowData && loading) {
   renderVaults();
 }
-
-$: $aggregate.totalDebt, console.log('total debt aggregate changed', $aggregate.totalDebt);
 </script>
 
 <ViewContainer>
