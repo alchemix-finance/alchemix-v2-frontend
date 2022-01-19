@@ -19,17 +19,19 @@ const provider = getProvider();
  * @dev constructs a payload and initiates snapshot voting
  * */
 const initVote = async () => {
-  const payload = {
-    proposal: expandedRow.proposalEntry.id,
-    choice: value,
-  };
-  try {
-    setPendingVote();
-    await sendVote(payload);
-    setSuccessVote();
-  } catch (e) {
-    setError(e.message);
-    console.trace(e);
+  if (proposal.state !== 'closed' && !vote) {
+    const payload = {
+      proposal: expandedRow.proposalEntry.id,
+      choice: value,
+    };
+    try {
+      setPendingVote();
+      await sendVote(payload);
+      setSuccessVote();
+    } catch (e) {
+      setError(e.message);
+      console.trace(e);
+    }
   }
 };
 
