@@ -170,26 +170,22 @@ const deposit = async () => {
   if (!allowance) {
     await setTokenAllowance($tempTx.yieldToken, contract.address);
   }
-  if ($tempTx.amountYield < 0) {
-    setError('Trying to deposit more than available');
-  } else {
-    try {
-      let tx;
-      setPendingWallet();
-      tx = await contract.deposit($tempTx.yieldToken, amountToWei, $account.address, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        refreshData({ token: $tempTx.yieldToken, vaultIndex: $tempTx.vaultIndex });
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.debug(e);
-    }
-    tempClear();
+  try {
+    let tx;
+    setPendingWallet();
+    tx = await contract.deposit($tempTx.yieldToken, amountToWei, $account.address, {
+      gasPrice: gas,
+    });
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      refreshData({ token: $tempTx.yieldToken, vaultIndex: $tempTx.vaultIndex });
+    });
+  } catch (e) {
+    setError(e.data ? await e.data.message : e.message);
+    console.debug(e);
   }
+  tempClear();
 };
 
 const depositUnderlying = async () => {
@@ -208,33 +204,28 @@ const depositUnderlying = async () => {
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);
   }
-  // TODO fix check for actual balance of token on wallet
-  if ($tempTx.amount < 0) {
-    setError('Trying to deposit more than available');
-  } else {
-    try {
-      setPendingWallet();
-      const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
-      const tx = await contract.depositUnderlying(
-        $tempTx.yieldToken,
-        amountToWei,
-        $account.address,
-        dataPackage,
-        {
-          gasPrice: gas,
-        },
-      );
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        refreshData(refreshPayload);
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.log(e);
-    }
-    tempClear();
+  try {
+    setPendingWallet();
+    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+    const tx = await contract.depositUnderlying(
+      $tempTx.yieldToken,
+      amountToWei,
+      $account.address,
+      dataPackage,
+      {
+        gasPrice: gas,
+      },
+    );
+    setPendingTx();
+    await provider.once(tx.hash, (transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      refreshData(refreshPayload);
+    });
+  } catch (e) {
+    setError(e.data ? await e.data.message : e.message);
+    console.log(e);
   }
+  tempClear();
 };
 
 const multicall = async () => {
@@ -578,8 +569,6 @@ const getRandomData = () => {
 $: if (!$alusd.loadingRowData && loading) {
   renderVaults();
 }
-
-$: $aggregate.totalDebt, console.log('total debt aggregate changed', $aggregate.totalDebt);
 </script>
 
 <ViewContainer>

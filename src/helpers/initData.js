@@ -241,12 +241,8 @@ function vaultAlusdRowBuilder(tokens) {
       const position = await contract.positions(_account.address, token);
       const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
       const underlyingBalance = await getTokenBalance(underlyingToken);
-      const vaultDebt = utils
-        .formatUnits(
-          position.balance.mul(underlyingPerShare).div(parseFloat(_alusd.ratio)),
-          underlyingDecimals * 2,
-        )
-        .toString();
+      const vaultDebtRaw = position.balance.mul(underlyingPerShare).div(parseFloat(_alusd.ratio));
+      const vaultDebt = utils.formatUnits(vaultDebtRaw, underlyingDecimals) / 10 ** underlyingDecimals;
       const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
       const depositPayload = {
         token,
@@ -268,14 +264,14 @@ function vaultAlusdRowBuilder(tokens) {
         underlyingDecimals,
         stratIsUsed,
         tvl,
-        vaultDebt,
+        vaultDebt: vaultDebt.toString(),
       };
       _alusd.rows.push(rowPayload);
       _alusd.maxDebt += vaultDebt;
       _aggregate.deposited.push(depositPayload);
       _aggregate.totalDeposit +=
         (parseFloat(depositPayload.balance) * underlyingPerShare) / 10 ** underlyingDecimals;
-      _aggregate.debtLimit += parseFloat(vaultDebt);
+      _aggregate.debtLimit += vaultDebt;
       aggregate.set({ ..._aggregate });
       alusd.set({ ..._alusd });
       if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;
