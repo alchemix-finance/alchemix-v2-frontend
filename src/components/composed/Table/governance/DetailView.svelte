@@ -3,35 +3,34 @@ import { slide } from 'svelte/transition';
 import { _ } from 'svelte-i18n';
 import { sendVote } from '../../../../middleware/snapshot';
 import governance from '../../../../stores/governance';
-import toastConfig from '../../../../stores/toast';
+import { setPendingVote, setSuccessVote, setError } from '../../../../helpers/setToast';
 import Button from '../../../elements/Button.svelte';
+import { getProvider } from '../../../../helpers/walletManager';
 
 export let expandedRow = {};
 let value = '';
 let proposal;
+let vote;
+let pending = false;
+
+const provider = getProvider();
 
 /*
  * @dev constructs a payload and initiates snapshot voting
  * */
-const initVote = () => {
-  if (proposal.state !== 'closed') {
-    const payload = {
-      proposal: expandedRow.proposalEntry.id,
-      choice: value,
-    };
-    sendVote(payload);
-  } else {
-    voteClosed();
+const initVote = async () => {
+  const payload = {
+    proposal: expandedRow.proposalEntry.id,
+    choice: value,
+  };
+  try {
+    setPendingVote();
+    await sendVote(payload);
+    setSuccessVote();
+  } catch (e) {
+    setError(e.message);
+    console.trace(e);
   }
-};
-
-const voteClosed = () => {
-  $toastConfig.kind = 'error';
-  $toastConfig.title = 'Sorry!';
-  $toastConfig.subtitle = 'Voting has finished.';
-  $toastConfig.spinner = false;
-  $toastConfig.closeTimeout = 2500;
-  $toastConfig.visible = true;
 };
 
 const openOnSnapshot = () => {
@@ -39,25 +38,23 @@ const openOnSnapshot = () => {
 };
 
 $: proposal = $governance.proposals?.find((proposal) => proposal.id === expandedRow.proposalEntry.id);
-
-$: console.log(proposal);
+$: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === proposal.id));
 </script>
 
-<div class="pb-4 pt-4 border-b border-grey10" transition:slide>
-  <div class="wrapper max-w-none grid grid-cols-12">
-    <div class="col-span-1"></div>
-    <div class="col-span-7 pr-8">
+<div class="p-4 border-b border-grey10" transition:slide>
+  <div class="flex flex-row space-x-4">
+    <div class="w-full bg-grey10 rounded p-4">
       <p class="mb-3 opacity-50">{$_('governance_page.description')}</p>
       <p class="text-justify whitespace-pre-wrap w-full">
         {@html proposal?.body}
       </p>
     </div>
-    <div class="col-span-4 pr-4">
+    <div class="flex flex-col min-w-max bg-grey10 rounded p-4">
       <p class="mb-3 opacity-50">
         {$_('governance_page.choose')}
       </p>
       <div id="selection" class="mb-6 w-auto">
-        {#if proposal.state !== 'closed'}
+        {#if proposal.state !== 'closed' && !vote}
           <select bind:value class="border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-full mb-3">
             <option value="null" selected disabled>
               {$_('governance_page.selectChoice')}
@@ -71,6 +68,8 @@ $: console.log(proposal);
         <Button
           label="{proposal.state === 'closed'
             ? $_('governance_page.closedVote')
+            : vote
+            ? $_('governance_page.alreadyVoted')
             : $_('governance_page.castVote')}"
           borderSize="1"
           height="h-8"
@@ -80,7 +79,7 @@ $: console.log(proposal);
           textColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
           hoverColor="{proposal.state === 'closed' ? '' : 'darkgreen2'}"
           backgroundColor="{proposal.state === 'closed' ? '' : 'darkgreen1'}"
-          noHoverEffect="{proposal.state === 'closed'}"
+          noHoverEffect="{proposal.state === 'closed' || vote}"
           on:clicked="{() => initVote()}"
         />
       </div>

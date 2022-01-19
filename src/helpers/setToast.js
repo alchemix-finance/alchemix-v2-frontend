@@ -65,3 +65,24 @@ export function setLoadingData(message, step, totalSteps) {
   _toastConfig.spinner = true;
   toastConfig.set({ ..._toastConfig });
 }
+
+export function setPendingVote() {
+  _toastConfig.visible = true;
+  _toastConfig.kind = 'pending';
+  _toastConfig.title = 'Pending';
+  _toastConfig.subtitle = 'Registering Vote on Snapshot';
+  _toastConfig.closeOnMount = false;
+  _toastConfig.spinner = true;
+  toastConfig.set({ ..._toastConfig });
+}
+
+export function setSuccessVote() {
+  _toastConfig.kind = 'success';
+  _toastConfig.title = 'Success';
+  _toastConfig.subtitle = 'Vote was registered';
+  _toastConfig.closeOnMount = true;
+  _toastConfig.spinner = false;
+  _toastConfig.visible = true;
+  _toastConfig.closeTimeout = 2000;
+  toastConfig.set({ ..._toastConfig });
+}

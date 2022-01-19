@@ -4,7 +4,7 @@ import { _ } from 'svelte-i18n';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-import { getOpenProposals } from '../middleware/snapshot';
+import { getOpenProposals, getVotesForAddress } from '../middleware/snapshot';
 import governance from '../stores/governance';
 import settings from '../stores/settings';
 import Button from '../components/elements/Button.svelte';
@@ -123,6 +123,7 @@ $: if ($governance.proposals.length > 0) {
 onMount(() => {
   if ($governance.proposals.length === 0) {
     getOpenProposals();
+    getVotesForAddress();
   }
 });
 </script>

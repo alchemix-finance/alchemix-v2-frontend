@@ -7,7 +7,10 @@ export let isExpanded = false;
 
 const handleClick = () => {
   onExpand(row.rowId);
+  isExpanded = !isExpanded;
 };
+
+// $: isExpanded, console.log('isExpanded', isExpanded);
 </script>
 
 <div class="flex justify-center items-center w-6">
