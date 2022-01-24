@@ -27,12 +27,14 @@ import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpe
 import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
+import Metrics from '../components/composed/Metrics.svelte';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
 let counterUnusedStrategies = 0;
 
 let loading = true;
+const showMetrics = true;
 
 let rowsAll = [];
 let rowsUser = [];
@@ -646,19 +648,27 @@ $: if (!$alusd.loadingRowData && loading) {
     </div>
 
     <div class="w-full mb-8">
-      <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
-        <p slot="header" class="inline-block self-center">Aggregate</p>
-        <div slot="body" class="bg-grey15">
-          <AccountsPageBarCharts
-            totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"
-            totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"
-            aggregatedApy="0"
-            totalDebt="{$aggregate.totalDebt.toFixed(2)}"
-            totalInterest="0"
-            forceState="{foo}"
-          />
-        </div>
-      </ContainerWithHeader>
+      {#if showMetrics}
+        <ContainerWithHeader>
+          <div slot="header" class="py-4 px-6">
+            <Metrics />
+          </div>
+        </ContainerWithHeader>
+      {:else}
+        <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
+          <p slot="header" class="inline-block self-center">Aggregate</p>
+          <div slot="body" class="bg-grey15">
+            <AccountsPageBarCharts
+              totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"
+              totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"
+              aggregatedApy="0"
+              totalDebt="{$aggregate.totalDebt.toFixed(2)}"
+              totalInterest="0"
+              forceState="{foo}"
+            />
+          </div>
+        </ContainerWithHeader>
+      {/if}
     </div>
 
     <div class="w-full mb-8">

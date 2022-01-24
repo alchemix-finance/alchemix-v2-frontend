@@ -42,6 +42,7 @@ function logData() {
         console.log('====== Vault Configuration ======');
         console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
         console.log('Alchemist alUSD max debt:', _alusd.maxDebt, 'alUSD');
+        console.table(_alusd.debtToken);
         console.table(_alusd.rows);
         console.log('====== Aggregated ======');
         console.log('Total deposited:', _aggregate.totalDeposit);
@@ -222,28 +223,32 @@ function vaultAlusdRowBuilder(tokens) {
   if (_alusd.rows.length === 0) {
     const contract = getContract('AlchemistV2_alUSD');
     tokens.forEach(async (token) => {
+      if (Object.keys(_alusd.debtToken).length === 0) {
+        const debtTokenAddress = await contract.debtToken();
+        _alusd.debtToken = await tokenFinder(debtTokenAddress);
+      }
       const params = await contract.getYieldTokenParameters(token);
       const underlyingToken = params.underlyingToken;
       const yieldConfig = await tokenFinder(token);
       const underlyingConfig = await tokenFinder(underlyingToken);
       const underlyingDecimals = underlyingConfig.decimals;
       const yieldDecimals = yieldConfig.decimals;
-      const underlyingPerShare = await contract.underlyingTokensPerShare(token);
+      const underlyingPerShare = await contract.getUnderlyingTokensPerShare(token);
       const underlyingPerShareFormatted = utils.formatUnits(
         underlyingPerShare.toString(),
         underlyingDecimals,
       );
-      const yieldPerShare = await contract.yieldTokensPerShare(token);
+      const yieldPerShare = await contract.getYieldTokensPerShare(token);
       const yieldPerShareFormatted = utils.formatUnits(yieldPerShare.toString(), yieldDecimals);
       const yieldSymbol = yieldConfig.symbol;
       const underlyingSymbol = underlyingConfig.symbol;
-      const tvl = utils.formatUnits(params.balance.toString(), underlyingDecimals);
+      const tvl = utils.formatUnits(params.activeBalance, underlyingDecimals);
       const position = await contract.positions(_account.address, token);
-      const balance = utils.formatUnits(position.balance.toString(), yieldDecimals);
+      const balance = utils.formatUnits(position.shares, yieldDecimals);
       const underlyingBalance = await getTokenBalance(underlyingToken);
-      const vaultDebtRaw = position.balance.mul(underlyingPerShare).div(parseFloat(_alusd.ratio));
+      const vaultDebtRaw = position.shares.mul(underlyingPerShare).div(parseFloat(_alusd.ratio));
       const vaultDebt = utils.formatUnits(vaultDebtRaw, underlyingDecimals) / 10 ** underlyingDecimals;
-      const stratIsUsed = utils.formatEther(position.balance.toString()) !== '0.0';
+      const stratIsUsed = utils.formatEther(position.shares) !== '0.0';
       const depositPayload = {
         token,
         symbol: yieldSymbol,
@@ -299,7 +304,6 @@ async function initAlusdVault() {
   const contract = getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
   const rawRatio = await contract.minimumCollateralization();
-
   _alusd.userDebt = utils.formatEther(rawDebt.debt.toString());
   _alusd.ratio = utils.formatEther(rawRatio.toString());
   alusd.set({ ..._alusd });

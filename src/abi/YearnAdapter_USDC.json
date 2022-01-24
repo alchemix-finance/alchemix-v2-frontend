@@ -17,17 +17,30 @@
             "type": "constructor"
         },
         {
-            "inputs": [],
-            "name": "MAX_BPS",
-            "outputs": [
+            "inputs": [
                 {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
+                    "internalType": "address",
+                    "name": "target",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "success",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
                 }
             ],
-            "stateMutability": "view",
-            "type": "function"
+            "name": "CallFailed",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "IllegalState",
+            "type": "error"
         },
         {
             "inputs": [],
@@ -153,5 +166,5 @@
             "type": "function"
         }
     ],
-    "address": "0x91A10eB75Cdcd019C569d07082ee2508F57543E8"
+    "address": "0xC2E61f0a4f4ca433D97DCf4ebD950Ca0B899f16C"
 }

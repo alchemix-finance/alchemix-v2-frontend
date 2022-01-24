@@ -56,6 +56,7 @@ const switchUnderlying = () => {
 
 $: repayAmount, updateBalances();
 $: underlyingSymbol, switchUnderlying();
+$: underlyingTokens, console.log(underlyingTokens);
 </script>
 
 <ContainerWithHeader>

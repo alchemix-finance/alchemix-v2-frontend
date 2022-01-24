@@ -12,6 +12,21 @@
             "type": "constructor"
         },
         {
+            "inputs": [],
+            "name": "IllegalArgument",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "IllegalState",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "Unauthorized",
+            "type": "error"
+        },
+        {
             "anonymous": false,
             "inputs": [
                 {
@@ -41,19 +56,6 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "alchemist",
-                    "type": "address"
-                }
-            ],
-            "name": "authorizeAlchemist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -100,6 +102,19 @@
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "alchemist",
+                    "type": "address"
+                }
+            ],
+            "name": "refreshAllowance",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -160,5 +175,5 @@
             "type": "receive"
         }
     ],
-    "address": "0xbFDfE117756423e713F462B2C4aE28e272Da6Cdc"
+    "address": "0x3c436228B50405ABa80917341ac49F917fA093E9"
 }

@@ -2,17 +2,12 @@
     "abi": [
         {
             "inputs": [],
-            "name": "NotWhitelisted",
-            "type": "error"
-        },
-        {
-            "inputs": [],
             "name": "Unauthorized",
             "type": "error"
         },
         {
             "inputs": [],
-            "name": "UnauthorizedER",
+            "name": "Unauthorized",
             "type": "error"
         },
         {
@@ -518,7 +513,7 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "_underlyingToken",
                     "type": "address"
                 },
@@ -624,19 +619,6 @@
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "_newSentinel",
-                    "type": "address"
-                }
-            ],
-            "name": "setSentinel",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
                     "internalType": "bytes4",
                     "name": "interfaceId",
                     "type": "bytes4"
@@ -697,9 +679,22 @@
             "name": "underlyingToken",
             "outputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "whitelistActive",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
                 }
             ],
             "stateMutability": "view",
@@ -713,20 +708,7 @@
                     "type": "address"
                 }
             ],
-            "name": "whitelist",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "whitelistActive",
+            "name": "whitelisted",
             "outputs": [
                 {
                     "internalType": "bool",
@@ -756,5 +738,5 @@
             "type": "function"
         }
     ],
-    "address": "0x6E25e9acA390Ed1392F014D81e54C9FBa4FCD674"
+    "address": "0xA23f2C400281A3fF72Ae6D091d0Ce14Dbd3D8E26"
 }

@@ -3,11 +3,31 @@
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
+                    "internalType": "address",
+                    "name": "target",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "success",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
                 }
             ],
+            "name": "CallFailed",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "IllegalArgument",
+            "type": "error"
+        },
+        {
+            "inputs": [],
             "name": "IllegalState",
             "type": "error"
         },
@@ -170,6 +190,25 @@
             "type": "event"
         },
         {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "source",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "bool",
+                    "name": "flag",
+                    "type": "bool"
+                }
+            ],
+            "name": "SetSource",
+            "type": "event"
+        },
+        {
             "inputs": [],
             "name": "ADMIN",
             "outputs": [
@@ -209,11 +248,35 @@
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "_yieldTokens",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "alchemist",
             "outputs": [
                 {
-                    "internalType": "contract IAlchemistV2",
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
                 }
@@ -262,7 +325,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
                 }
@@ -281,7 +344,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
                 }
@@ -300,7 +363,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 }
@@ -351,7 +414,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 }
@@ -459,25 +522,6 @@
                     "type": "address"
                 }
             ],
-            "name": "keepers",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
             "name": "lastFlowrateUpdate",
             "outputs": [
                 {
@@ -492,7 +536,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 },
@@ -517,7 +561,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 },
@@ -543,7 +587,7 @@
             "name": "registeredUnderlyings",
             "outputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
                 }
@@ -590,7 +634,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IAlchemistV2",
+                    "internalType": "address",
                     "name": "_alchemist",
                     "type": "address"
                 }
@@ -603,7 +647,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 },
@@ -622,11 +666,29 @@
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "source",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "flag",
+                    "type": "bool"
+                }
+            ],
+            "name": "setSource",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "weightToken",
                     "type": "address"
                 },
                 {
-                    "internalType": "contract IERC20Upgradeable[]",
+                    "internalType": "address[]",
                     "name": "tokens",
                     "type": "address[]"
                 },
@@ -639,6 +701,25 @@
             "name": "setWeights",
             "outputs": [],
             "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "sources",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -663,7 +744,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "",
                     "type": "address"
                 }
@@ -701,7 +782,7 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IERC20Upgradeable",
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 },
@@ -717,12 +798,12 @@
                 },
                 {
                     "internalType": "address[]",
-                    "name": "yTokens",
+                    "name": "yieldTokens",
                     "type": "address[]"
                 },
                 {
                     "internalType": "bytes[]",
-                    "name": "yTokenParams",
+                    "name": "yieldTokenParams",
                     "type": "bytes[]"
                 }
             ],
@@ -753,31 +834,7 @@
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "contract IERC20Upgradeable",
-                    "name": "",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "yieldTokens",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
         }
     ],
-    "address": "0x7Ba8575387A1d32277798E9fc26eCA76747Ea8A3"
+    "address": "0x80A2E312fDb45697D0B89AB025bA7026CD115A35"
 }

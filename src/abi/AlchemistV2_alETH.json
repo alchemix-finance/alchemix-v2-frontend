@@ -4,6 +4,27 @@
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "target",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "success",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                }
+            ],
+            "name": "CallFailed",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "yieldToken",
                     "type": "address"
                 },
@@ -22,41 +43,13 @@
             "type": "error"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                }
-            ],
+            "inputs": [],
             "name": "IllegalArgument",
             "type": "error"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                }
-            ],
-            "name": "IllegalState",
-            "type": "error"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                }
-            ],
-            "name": "InvalidArgument",
-            "type": "error"
-        },
-        {
             "inputs": [],
-            "name": "InvalidSignature",
+            "name": "IllegalState",
             "type": "error"
         },
         {
@@ -73,7 +66,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "repayLimit",
+                    "name": "available",
                     "type": "uint256"
                 }
             ],
@@ -115,21 +108,11 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "mintingLimit",
+                    "name": "available",
                     "type": "uint256"
                 }
             ],
             "name": "MintingLimitExceeded",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "NotWhitelisted",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "OnlyKeeper",
             "type": "error"
         },
         {
@@ -146,21 +129,11 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "repayLimit",
+                    "name": "available",
                     "type": "uint256"
                 }
             ],
             "name": "RepayLimitExceeded",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "SignatureDeadlineExceeded",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "SlippageExceeded",
             "type": "error"
         },
         {
@@ -175,19 +148,8 @@
             "type": "error"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                }
-            ],
-            "name": "Unauthorized",
-            "type": "error"
-        },
-        {
             "inputs": [],
-            "name": "UnauthorizedER",
+            "name": "Unauthorized",
             "type": "error"
         },
         {
@@ -238,7 +200,7 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "token",
+                    "name": "underlyingToken",
                     "type": "address"
                 }
             ],
@@ -251,13 +213,7 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "token",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "adapter",
+                    "name": "yieldToken",
                     "type": "address"
                 }
             ],
@@ -270,7 +226,7 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "value",
+                    "name": "admin",
                     "type": "address"
                 }
             ],
@@ -314,7 +270,13 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "withdrawer",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "yieldToken",
                     "type": "address"
                 },
                 {
@@ -433,7 +395,7 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "value",
+                    "name": "sentinel",
                     "type": "address"
                 },
                 {
@@ -452,7 +414,7 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "sender",
+                    "name": "owner",
                     "type": "address"
                 },
                 {
@@ -508,7 +470,26 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "value",
+                    "name": "maximumExpectedValue",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MaximumExpectedValueUpdated",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "yieldToken",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "maximumLoss",
                     "type": "uint256"
                 }
             ],
@@ -521,7 +502,7 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "value",
+                    "name": "minimumCollateralization",
                     "type": "uint256"
                 }
             ],
@@ -578,7 +559,7 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "value",
+                    "name": "pendingAdmin",
                     "type": "address"
                 }
             ],
@@ -591,7 +572,7 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "value",
+                    "name": "protocolFeeReceiver",
                     "type": "address"
                 }
             ],
@@ -604,7 +585,7 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "value",
+                    "name": "protocolFee",
                     "type": "uint256"
                 }
             ],
@@ -673,7 +654,7 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "value",
+                    "name": "sentinel",
                     "type": "address"
                 },
                 {
@@ -711,7 +692,26 @@
                 {
                     "indexed": false,
                     "internalType": "address",
-                    "name": "value",
+                    "name": "yieldToken",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "tokenAdapter",
+                    "type": "address"
+                }
+            ],
+            "name": "TokenAdapterUpdated",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "transmuter",
                     "type": "address"
                 }
             ],
@@ -734,7 +734,7 @@
                     "type": "bool"
                 }
             ],
-            "name": "UnderlyingTokenStatus",
+            "name": "UnderlyingTokenEnabled",
             "type": "event"
         },
         {
@@ -755,7 +755,7 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "sender",
+                    "name": "owner",
                     "type": "address"
                 },
                 {
@@ -796,7 +796,7 @@
                     "type": "bool"
                 }
             ],
-            "name": "YieldTokenStatus",
+            "name": "YieldTokenEnabled",
             "type": "event"
         },
         {
@@ -814,51 +814,12 @@
         },
         {
             "inputs": [],
-            "name": "DOMAIN_SEPARATOR",
-            "outputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
             "name": "FIXED_POINT_SCALAR",
             "outputs": [
                 {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "PERMIT_MINT_TYPEHASH",
-            "outputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "PERMIT_WITHDRAW_TYPEHASH",
-            "outputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
                 }
             ],
             "stateMutability": "view",
@@ -912,11 +873,16 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "token",
+                    "name": "underlyingToken",
                     "type": "address"
                 },
                 {
                     "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "repayLimitMinimum",
+                            "type": "uint256"
+                        },
                         {
                             "internalType": "uint256",
                             "name": "repayLimitMaximum",
@@ -925,6 +891,11 @@
                         {
                             "internalType": "uint256",
                             "name": "repayLimitBlocks",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "liquidationLimitMinimum",
                             "type": "uint256"
                         },
                         {
@@ -952,7 +923,7 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "token",
+                    "name": "yieldToken",
                     "type": "address"
                 },
                 {
@@ -1018,12 +989,17 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "withdrawer",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "yieldToken",
                     "type": "address"
                 },
                 {
                     "internalType": "uint256",
-                    "name": "amount",
+                    "name": "shares",
                     "type": "uint256"
                 }
             ],
@@ -1046,7 +1022,13 @@
                 }
             ],
             "name": "burn",
-            "outputs": [],
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -1204,6 +1186,35 @@
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "underlyingToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getLiquidationLimitInfo",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "currentLimit",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "rate",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "maximum",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "getMintLimitInfo",
             "outputs": [
@@ -1214,12 +1225,41 @@
                 },
                 {
                     "internalType": "uint256",
+                    "name": "rate",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
                     "name": "maximum",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "underlyingToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getRepayLimitInfo",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "currentLimit",
                     "type": "uint256"
                 },
                 {
                     "internalType": "uint256",
                     "name": "rate",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "maximum",
                     "type": "uint256"
                 }
             ],
@@ -1263,48 +1303,44 @@
             "name": "getUnderlyingTokenParameters",
             "outputs": [
                 {
-                    "internalType": "uint8",
-                    "name": "decimals",
-                    "type": "uint8"
-                },
+                    "components": [
+                        {
+                            "internalType": "uint8",
+                            "name": "decimals",
+                            "type": "uint8"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "conversionFactor",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "internalType": "struct IAlchemistV2State.UnderlyingTokenParams",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "yieldToken",
+                    "type": "address"
+                }
+            ],
+            "name": "getUnderlyingTokensPerShare",
+            "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "conversionFactor",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "enabled",
-                    "type": "bool"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "currentRepayLimit",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "maximumRepayLimit",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "repayLimitCooldownRate",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "currentLiquidateLimit",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "maximumLiquidateLimit",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "liquidateLimitCooldownRate",
+                    "name": "",
                     "type": "uint256"
                 }
             ],
@@ -1322,54 +1358,85 @@
             "name": "getYieldTokenParameters",
             "outputs": [
                 {
-                    "internalType": "uint8",
-                    "name": "decimals",
-                    "type": "uint8"
-                },
+                    "components": [
+                        {
+                            "internalType": "uint8",
+                            "name": "decimals",
+                            "type": "uint8"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "underlyingToken",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "adapter",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "maximumLoss",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "maximumExpectedValue",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "activeBalance",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "harvestableBalance",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "totalShares",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "expectedValue",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "accruedWeight",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "enabled",
+                            "type": "bool"
+                        }
+                    ],
+                    "internalType": "struct IAlchemistV2State.YieldTokenParams",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
                 {
                     "internalType": "address",
-                    "name": "underlyingToken",
+                    "name": "yieldToken",
                     "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "adapter",
-                    "type": "address"
-                },
+                }
+            ],
+            "name": "getYieldTokensPerShare",
+            "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "",
                     "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "balance",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "harvestBuffer",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "totalShares",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "expectedValue",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "accruedWeight",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "enabled",
-                    "type": "bool"
                 }
             ],
             "stateMutability": "view",
@@ -1429,6 +1496,11 @@
                         },
                         {
                             "internalType": "uint256",
+                            "name": "mintingLimitMinimum",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
                             "name": "mintingLimitMaximum",
                             "type": "uint256"
                         },
@@ -1438,7 +1510,7 @@
                             "type": "uint256"
                         }
                     ],
-                    "internalType": "struct IAlchemistV2AdminActions.Params",
+                    "internalType": "struct IAlchemistV2AdminActions.InitializationParams",
                     "name": "params",
                     "type": "tuple"
                 }
@@ -1514,7 +1586,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "amountUnderlying",
+                    "name": "amount",
                     "type": "uint256"
                 },
                 {
@@ -1626,25 +1698,6 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "nonces",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
             "inputs": [],
             "name": "pendingAdmin",
             "outputs": [
@@ -1655,92 +1708,6 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "value",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "deadline",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint8",
-                    "name": "v",
-                    "type": "uint8"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "r",
-                    "type": "bytes32"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "s",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "permitMint",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "owner",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "spender",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "value",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "deadline",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint8",
-                    "name": "v",
-                    "type": "uint8"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "r",
-                    "type": "bytes32"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "s",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "permitWithdraw",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -1773,7 +1740,7 @@
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "balance",
+                    "name": "shares",
                     "type": "uint256"
                 },
                 {
@@ -1843,7 +1810,13 @@
                 }
             ],
             "name": "repay",
-            "outputs": [],
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -1870,7 +1843,7 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "value",
+                    "name": "keeper",
                     "type": "address"
                 },
                 {
@@ -1880,6 +1853,24 @@
                 }
             ],
             "name": "setKeeper",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "yieldToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setMaximumExpectedValue",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -1958,7 +1949,7 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "value",
+                    "name": "sentinel",
                     "type": "address"
                 },
                 {
@@ -1976,6 +1967,37 @@
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "yieldToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "adapter",
+                    "type": "address"
+                }
+            ],
+            "name": "setTokenAdapter",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "value",
+                    "type": "address"
+                }
+            ],
+            "name": "setTransmuter",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "underlyingToken",
                     "type": "address"
                 },
@@ -1985,7 +2007,7 @@
                     "type": "bool"
                 }
             ],
-            "name": "setStatusUnderlyingToken",
+            "name": "setUnderlyingTokenEnabled",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -2003,20 +2025,7 @@
                     "type": "bool"
                 }
             ],
-            "name": "setStatusYieldToken",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "value",
-                    "type": "address"
-                }
-            ],
-            "name": "setTransmuter",
+            "name": "setYieldTokenEnabled",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -2048,33 +2057,8 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "yieldToken",
-                    "type": "address"
-                }
-            ],
-            "name": "underlyingTokensPerShare",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "whitelist",
+            "inputs": [],
+            "name": "whitelistActive",
             "outputs": [
                 {
                     "internalType": "bool",
@@ -2086,8 +2070,14 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "whitelistActive",
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "whitelisted",
             "outputs": [
                 {
                     "internalType": "bool",
@@ -2117,7 +2107,13 @@
                 }
             ],
             "name": "withdraw",
-            "outputs": [],
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -2131,6 +2127,11 @@
                 {
                     "internalType": "address",
                     "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "yieldToken",
                     "type": "address"
                 }
             ],
@@ -2154,7 +2155,7 @@
                 },
                 {
                     "internalType": "address",
-                    "name": "token",
+                    "name": "yieldToken",
                     "type": "address"
                 },
                 {
@@ -2169,7 +2170,13 @@
                 }
             ],
             "name": "withdrawFrom",
-            "outputs": [],
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -2197,7 +2204,13 @@
                 }
             ],
             "name": "withdrawUnderlying",
-            "outputs": [],
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -2210,7 +2223,7 @@
                 },
                 {
                     "internalType": "address",
-                    "name": "token",
+                    "name": "yieldToken",
                     "type": "address"
                 },
                 {
@@ -2230,19 +2243,6 @@
                 }
             ],
             "name": "withdrawUnderlyingFrom",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "yieldToken",
-                    "type": "address"
-                }
-            ],
-            "name": "yieldTokensPerShare",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -2250,9 +2250,9 @@
                     "type": "uint256"
                 }
             ],
-            "stateMutability": "view",
+            "stateMutability": "nonpayable",
             "type": "function"
         }
     ],
-    "address": "0x417B8585b179Ba7b2618c18bF4D6c919df3ff1A7"
+    "address": "0x9FD934c7DDbDfca287513fb2d2aB580c78b1b89B"
 }

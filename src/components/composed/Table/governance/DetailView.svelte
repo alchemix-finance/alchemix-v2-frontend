@@ -77,24 +77,33 @@ $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === 
             {/each}
           </select>
         {/if}
-
-        <Button
-          label="{proposal.state === 'closed'
-            ? $_('governance_page.closedVote')
-            : vote
-            ? $_('governance_page.alreadyVoted')
-            : $_('governance_page.castVote')}"
-          borderSize="1"
-          height="h-8"
-          width="w-full"
-          fontSize="text-md"
-          borderColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
-          textColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
-          hoverColor="{proposal.state === 'closed' ? '' : 'darkgreen2'}"
-          backgroundColor="{proposal.state === 'closed' ? '' : 'darkgreen1'}"
-          noHoverEffect="{proposal.state === 'closed' || vote}"
-          on:clicked="{() => initVote()}"
-        />
+        <div class="flex flex-col space-y-3">
+          <Button
+            label="{proposal.state === 'closed'
+              ? $_('governance_page.closedVote')
+              : vote
+              ? $_('governance_page.alreadyVoted')
+              : $_('governance_page.castVote')}"
+            borderSize="1"
+            height="h-8"
+            width="w-full"
+            fontSize="text-md"
+            borderColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
+            textColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
+            hoverColor="{proposal.state === 'closed' ? '' : 'darkgreen2'}"
+            backgroundColor="{proposal.state === 'closed' ? '' : 'darkgreen1'}"
+            noHoverEffect="{proposal.state === 'closed' || vote}"
+            on:clicked="{() => initVote()}"
+          />
+          <Button
+            label="{$_('governance_page.openOnSnapshot')}"
+            borderSize="1"
+            height="h-8"
+            width="w-full"
+            fontSize="text-md"
+            on:clicked="{() => openOnSnapshot()}"
+          />
+        </div>
       </div>
 
       <p class="mb-3 opacity-50">
@@ -122,16 +131,6 @@ $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === 
           </div>
         </div>
       {/each}
-      <div class="mt-3 mb-3">
-        <Button
-          label="{$_('governance_page.openOnSnapshot')}"
-          borderSize="1"
-          height="h-8"
-          width="w-full"
-          fontSize="text-md"
-          on:clicked="{() => openOnSnapshot()}"
-        />
-      </div>
     </div>
   </div>
 </div>

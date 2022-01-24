@@ -8,6 +8,7 @@ const defaults = {
     userDebt: 0,
     maxDebt: 0,
     ratio: undefined,
+    debtToken: {},
     yieldTokens: [],
     loadingRowData: true,
     rows: [],

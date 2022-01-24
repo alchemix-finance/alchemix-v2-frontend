@@ -29,7 +29,6 @@ let background1;
 onMount(() => {
   const canvas = document.getElementById('canvas');
   const context = canvas.getContext('2d');
-
   let background1Gradient = context.createLinearGradient(0, 0, 0, 300);
   background1Gradient.addColorStop(0, ORANGE);
   background1Gradient.addColorStop(0.99, OFF_BLACK);
