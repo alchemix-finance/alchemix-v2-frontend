@@ -7,6 +7,7 @@
     "makeEnv": "bash ./scripts/makeEnv.sh",
     "build": "cross-env NODE_ENV=production webpack",
     "vercel_debug_build": "echo $DEBUG_MODE; yarn makeEnv && webpack",
+    "dev:noabi": "yarn lint && webpack serve --port 5005",
     "dev": "yarn abi && yarn lint && webpack serve --port 5005",
     "lint": "yarn run prettier && yarn run lint:js",
     "lint:js": "npx eslint src/*.js src/**/*.js",

@@ -13,7 +13,7 @@ export let totalDebt;
 export let totalInterest;
 export let forceState;
 
-const withdrawable = (totalDeposit || 0) - (totalDebt || 0);
+$: withdrawable = (totalDeposit || 0) - (totalDebt || 0);
 
 // TODO: use tailwind exported colors everywhere
 const GREY = '#74767C';
@@ -43,7 +43,7 @@ onMount(() => {
   context.fillStyle = background1;
 });
 
-const data = {
+$: data = {
   labels: ['Withdrawable', 'Debt', 'Interest'],
   datasets: [
     {
@@ -54,7 +54,7 @@ const data = {
   ],
 };
 
-const options = {
+$: options = {
   responsive: true,
   maintainAspectRatio: false,
 

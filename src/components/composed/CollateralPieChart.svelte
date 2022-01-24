@@ -24,7 +24,12 @@ const legend = [
 const title = $_('collateral');
 const subTitle = `(${$_('everything')})`;
 
-const chartData = [45, 55];
+let chartData = [45, 55];
+
+setTimeout(() => {
+  console.log('Chart Updated');
+  chartData = [10, 90];
+}, 2000);
 </script>
 
 <PieChart

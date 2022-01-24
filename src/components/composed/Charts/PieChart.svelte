@@ -19,11 +19,11 @@ export let chartData = [];
 // the number of slices
 const count = chartData.length;
 
-const labels = legend.map((el) => el.label);
+$: labels = legend.map((el) => el.label);
 
 const getLabelColor = (label) => legend.find((el) => el.label === label)?.colorName;
 
-const data = {
+$: data = {
   labels,
   datasets: [
     {
@@ -33,7 +33,7 @@ const data = {
   ],
 };
 
-const options = {
+$: options = {
   // space at the center of the pie
   cutout: '85%',
 
