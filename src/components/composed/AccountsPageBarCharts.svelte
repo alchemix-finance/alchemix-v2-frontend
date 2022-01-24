@@ -85,16 +85,19 @@ $: options = {
       },
     },
     y: {
-      suggestedMax: Math.round(Math.floor(totalDeposit || 0) / 10) * 10,
+      suggestedMax: Math.round(Math.floor(totalDebtLimit || 0) / 10) * 10,
 
       ticks: {
-        padding: 10,
+        //If the stepSize is too big some dashed lines might now show
+        //If the totalDepositText shows 15 and the dashed lines shows 20 htat is because of rounding
+        stepSize: 1,
 
+        padding: 10,
         callback: function (value) {
           // FIXME callback value happens in pre-defined steps
           // check out the console log for this, the ticks almost never match the values of users
           // that's why there's only dashed lines in certain cases (i.e. deposit = 10k)
-          // console.log('callback value', value);
+          console.log('callback value', value);
           if (
             [
               0,
@@ -196,8 +199,6 @@ $: forceState, console.log('force update', forceState, totalDebt);
         </div>
       </div>
     </div>
-    <ChildUpdater key="{forceState}">
-      <BarChart data="{data}" options="{options}" />
-    </ChildUpdater>
+    <BarChart data="{data}" options="{options}" />
   </div>
 </div>
