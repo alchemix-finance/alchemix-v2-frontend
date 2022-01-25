@@ -17,7 +17,7 @@ const numericValidator = (value) => {
   }
 
   // Returns an error if the conditions are not meet
-  return [undefined, '!VALUE'];
+  return [undefined, 'ERROR'];
 };
 
 export { numericValidator };
