@@ -31,11 +31,6 @@ const title = `${$_('debt')}/${$_('credit')}`;
 const subTitle = `(${$_('everything')})`;
 
 let chartData = [40, 50, 10];
-
-setTimeout(() => {
-  console.log('Chart Updated');
-  chartData = [10, 90, 56];
-}, 2000);
 </script>
 
 <PieChart

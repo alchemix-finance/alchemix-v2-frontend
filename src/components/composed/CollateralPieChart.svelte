@@ -25,11 +25,6 @@ const title = $_('collateral');
 const subTitle = `(${$_('everything')})`;
 
 let chartData = [45, 55];
-
-setTimeout(() => {
-  console.log('Chart Updated');
-  chartData = [10, 90];
-}, 2000);
 </script>
 
 <PieChart

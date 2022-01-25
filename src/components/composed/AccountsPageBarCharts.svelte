@@ -101,7 +101,7 @@ $: options = {
           // FIXME callback value happens in pre-defined steps
           // check out the console log for this, the ticks almost never match the values of users
           // that's why there's only dashed lines in certain cases (i.e. deposit = 10k)
-          console.log('callback value', value);
+          // console.log('callback value', value);
           if ([0, Math.floor(totalDebtLimit), Math.floor(totalDeposit)].includes(value)) {
             return value.toLocaleString();
           }
