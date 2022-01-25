@@ -8,10 +8,13 @@ import BorderContainer from '../components/elements/BorderContainer.svelte';
 import Toast from '../components/elements/Toast.svelte';
 import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
+import Input from '../components/elements/Input.svelte';
 </script>
 
 <ViewContainer>
   <div>
+    <Input />
+
     <p>Labels</p>
     <h1>Container with border (non-styleable)</h1>
     <BorderContainer width="w-40">
