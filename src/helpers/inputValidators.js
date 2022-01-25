@@ -8,7 +8,7 @@ const isNumberRegEx = new RegExp(/^\d+\.?\d*$/);
 const numericValidator = (value) => {
   // Returns an empty value and not an error if the input is empty
   if (value === '') {
-    return ['', undefined];
+    return [undefined, undefined];
   }
 
   // Return the value just if the conditions are meet

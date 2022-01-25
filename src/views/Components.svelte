@@ -9,11 +9,24 @@ import Toast from '../components/elements/Toast.svelte';
 import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
 import Input from '../components/elements/Input.svelte';
+
+import { numericValidator } from '../helpers/inputValidators';
+
+let inputValue = '';
+let inputError;
 </script>
 
 <ViewContainer>
   <div>
-    <Input />
+    {inputError ?? 'no error'}
+    {inputValue ?? ''}
+    <Input
+      bind:value="{inputValue}"
+      bind:error="{inputError}"
+      placeholder="1"
+      validator="{numericValidator}"
+      class="p-5 bg-black2"
+    />
 
     <p>Labels</p>
     <h1>Container with border (non-styleable)</h1>
