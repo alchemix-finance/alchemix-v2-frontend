@@ -24,7 +24,7 @@ const legend = [
 const title = $_('collateral');
 const subTitle = `(${$_('everything')})`;
 
-const chartData = [45, 55];
+let chartData = [45, 55];
 </script>
 
 <PieChart

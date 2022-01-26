@@ -36,21 +36,17 @@ onMount(() => {
   });
 });
 
-afterUpdate(() => {
-  if (!chart) {
-    return;
-  }
-
+$: if (chart) {
   chart.data = data;
   chart.type = type;
   chart.options = options;
   chart.plugins = plugins;
 
   chart.update();
-});
+}
 
 onDestroy(() => {
-  chart = null;
+  if (chart) chart = null;
 });
 </script>
 

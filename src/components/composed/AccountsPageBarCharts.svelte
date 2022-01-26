@@ -13,7 +13,7 @@ export let totalDebt;
 export let totalInterest;
 export let forceState;
 
-const withdrawable = (totalDeposit || 0) - (totalDebt || 0);
+$: withdrawable = (totalDeposit || 0) - (totalDebt || 0);
 
 // TODO: use tailwind exported colors everywhere
 const GREY = '#74767C';
@@ -43,7 +43,7 @@ onMount(() => {
   context.fillStyle = background1;
 });
 
-const data = {
+$: data = {
   labels: ['Withdrawable', 'Debt', 'Interest'],
   datasets: [
     {
@@ -54,7 +54,11 @@ const data = {
   ],
 };
 
-const options = {
+function between(x, min, max) {
+  return x >= min && x <= max;
+}
+
+$: options = {
   responsive: true,
   maintainAspectRatio: false,
 
@@ -85,23 +89,20 @@ const options = {
       },
     },
     y: {
-      suggestedMax: Math.round(Math.floor(totalDeposit || 0) / 10) * 10,
+      suggestedMax: Math.floor(totalDebtLimit || 0),
 
       ticks: {
-        padding: 10,
+        //If the stepSize is too big some dashed lines might now show
+        //If the totalDepositText shows 15 and the dashed lines shows 20 htat is because of rounding
+        stepSize: 1,
 
+        padding: 10,
         callback: function (value) {
           // FIXME callback value happens in pre-defined steps
           // check out the console log for this, the ticks almost never match the values of users
           // that's why there's only dashed lines in certain cases (i.e. deposit = 10k)
           // console.log('callback value', value);
-          if (
-            [
-              0,
-              Math.round(Math.floor(totalDebtLimit) / 10) * 10,
-              Math.round(Math.floor(totalDeposit) / 10) * 10,
-            ].includes(value)
-          ) {
+          if ([0, Math.floor(totalDebtLimit), Math.floor(totalDeposit)].includes(value)) {
             return value.toLocaleString();
           }
 
@@ -139,13 +140,21 @@ const options = {
           //   Math.round(Math.floor(totalDeposit) / 10) * 10,
           // );
 
-          if (context.tick.value === Math.round(Math.floor(totalDebtLimit) / 10) * 10) {
+          if (between(context.tick.value, Math.floor(totalDebtLimit - 10), Math.floor(totalDebtLimit + 10))) {
             return GREEN;
           }
 
-          if (context.tick.value === Math.round(Math.floor(totalDeposit) / 10) * 10) {
+          if (between(context.tick.value, Math.floor(totalDeposit - 10), Math.floor(totalDeposit + 10))) {
             return ORANGE;
           }
+
+          // if (context.tick.value === Math.floor(totalDebtLimit)) {
+          //   return GREEN;
+          // }
+
+          // if (context.tick.value === Math.floor(totalDeposit)) {
+          //   return ORANGE;
+          // }
 
           return LIGHT_GREY;
         },
@@ -196,8 +205,6 @@ $: forceState, console.log('force update', forceState, totalDebt);
         </div>
       </div>
     </div>
-    <ChildUpdater key="{forceState}">
-      <BarChart data="{data}" options="{options}" />
-    </ChildUpdater>
+    <BarChart data="{data}" options="{options}" />
   </div>
 </div>

@@ -30,7 +30,7 @@ const legend = [
 const title = `${$_('debt')}/${$_('credit')}`;
 const subTitle = `(${$_('everything')})`;
 
-const chartData = [40, 50, 10];
+let chartData = [40, 50, 10];
 </script>
 
 <PieChart
