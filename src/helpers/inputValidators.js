@@ -1,4 +1,4 @@
-const isNumberRegEx = new RegExp(/^\d+\.?\d*$/);
+const isNumberRegEx = new RegExp(/^\d+\.?\d*$/g);
 
 /**
  * @dev Use the function to check if an input is numeric
@@ -9,6 +9,11 @@ const numericValidator = (value) => {
   // Returns an empty value and not an error if the input is empty
   if (value === '') {
     return [undefined, undefined];
+  }
+
+  if (RegExp(/^\D+/).test(value)) {
+    console.log('te');
+    return [undefined, 'ERROR'];
   }
 
   // Return the value just if the conditions are meet

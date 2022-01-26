@@ -1,6 +1,6 @@
 const inputErrorModifier = (value, error) => {
   if (error === 'ERROR') {
-    return 'border border-red1 border-opacity-90';
+    return 'outline-none rounded-sm border-2 border-red1 border-opacity-90';
   }
 
   return '';

@@ -11,6 +11,7 @@ import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte
 import Input from '../components/elements/Input.svelte';
 
 import { numericValidator } from '../helpers/inputValidators';
+import { inputErrorModifier } from '../helpers/inputModifiers';
 
 let inputValue = '';
 let inputError;
@@ -21,14 +22,17 @@ let inputError;
     {inputError ?? 'no error'}
     {inputValue ?? ''}
     <Input
+      type="number"
+      min="0"
       bind:value="{inputValue}"
       bind:error="{inputError}"
       placeholder="1"
       validator="{numericValidator}"
+      classModifier="{inputErrorModifier}"
       class="p-5 bg-black2"
     />
 
-    <p>Labels</p>
+    <p class="">Labels</p>
     <h1>Container with border (non-styleable)</h1>
     <BorderContainer width="w-40">
       <span> This component will draw a rounded border around any content that exists in it's slot. </span>
