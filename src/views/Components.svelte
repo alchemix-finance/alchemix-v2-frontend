@@ -10,9 +10,7 @@ import CollateralPieChart from '../components/composed/CollateralPieChart.svelte
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
 import Input from '../components/elements/Input.svelte';
 
-import { numericValidator } from '../helpers/inputValidators';
-import { inputErrorModifier } from '../helpers/inputModifiers';
-import { inputNumberLimiter } from '../helpers/inputLimiters';
+import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
 
 let inputValue = '';
 let inputError;
@@ -23,15 +21,13 @@ let inputError;
     {inputError ?? 'no error'}
     {inputValue ?? ''}
     <Input
-      type="number"
-      min="0"
       bind:value="{inputValue}"
       bind:error="{inputError}"
       placeholder="1"
       validator="{numericValidator}"
       classModifier="{inputErrorModifier}"
+      inputFilter="{floatFilter}"
       class="p-5 bg-black2"
-      keydownLimiter="{inputNumberLimiter()}"
     />
 
     <p class="">Labels</p>

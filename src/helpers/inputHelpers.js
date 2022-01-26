@@ -1,3 +1,11 @@
+const inputErrorModifier = (value, error) => {
+  if (error === 'ERROR') {
+    return 'outline-none rounded-sm border-2 border-red1 border-opacity-90';
+  }
+
+  return '';
+};
+
 const isNumberRegEx = new RegExp(/^\d+\.?\d*$/);
 
 /**
@@ -20,4 +28,13 @@ const numericValidator = (value) => {
   return [undefined, 'ERROR'];
 };
 
+// value > 0
+const integerFilter = (value) => /^\d*$/.test(value);
+const floatFilter = (value) => /^\d*[.,]?\d*$/.test(value);
+
+//Export validators
 export { numericValidator };
+//Export modifiers
+export { inputErrorModifier };
+//Export filters
+export { integerFilter, floatFilter };
