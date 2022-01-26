@@ -15,6 +15,8 @@ export let validator = (val) => [val, undefined];
  */
 export let classModifier = (value, error, node) => '';
 
+export let keydownLimiter = '';
+
 let _value;
 let _inputRef;
 
@@ -27,4 +29,5 @@ $: error = validator(_value ?? '')[1];
   class="{$$props.class} {classModifier(value, error, _inputRef)}"
   bind:value="{_value}"
   bind:this="{_inputRef}"
+  onkeydown="{keydownLimiter}"
 />

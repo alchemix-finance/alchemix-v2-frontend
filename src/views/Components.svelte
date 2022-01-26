@@ -12,6 +12,7 @@ import Input from '../components/elements/Input.svelte';
 
 import { numericValidator } from '../helpers/inputValidators';
 import { inputErrorModifier } from '../helpers/inputModifiers';
+import { inputNumberLimiter } from '../helpers/inputLimiters';
 
 let inputValue = '';
 let inputError;
@@ -30,6 +31,7 @@ let inputError;
       validator="{numericValidator}"
       classModifier="{inputErrorModifier}"
       class="p-5 bg-black2"
+      keydownLimiter="{inputNumberLimiter()}"
     />
 
     <p class="">Labels</p>
