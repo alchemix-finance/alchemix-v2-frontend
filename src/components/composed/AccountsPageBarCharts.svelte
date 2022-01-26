@@ -26,9 +26,12 @@ const MONTSERRAT = 'Montserrat, sans-serif';
 
 let background1;
 
+let canvas;
+let context;
+
 onMount(() => {
-  const canvas = document.getElementById('canvas');
-  const context = canvas.getContext('2d');
+  canvas = document.getElementById('canvas');
+  context = canvas.getContext('2d');
   let background1Gradient = context.createLinearGradient(0, 0, 0, 300);
   background1Gradient.addColorStop(0, ORANGE);
   background1Gradient.addColorStop(0.99, OFF_BLACK);
@@ -44,7 +47,7 @@ onMount(() => {
 });
 
 $: data = {
-  labels: ['Withdrawable', 'Debt', 'Interest'],
+  labels: [['Withdrawable'], ['Debt'], ['Interest']],
   datasets: [
     {
       data: [withdrawable || 0, totalDebt || 0, totalInterest || 0],
@@ -85,6 +88,19 @@ $: options = {
         font: {
           size: 16,
           family: MONTSERRAT,
+        },
+        callback: function (val, index, c) {
+          console.log(this.getLabelForValue(val));
+
+          if (this.getLabelForValue(val)[0].toUpperCase() === 'WITHDRAWABLE') {
+            return [...this.getLabelForValue(val), `${withdrawable} USD`];
+          } else if (this.getLabelForValue(val)[0].toUpperCase() === 'DEBT') {
+            return [...this.getLabelForValue(val), `${totalDebt} USD`];
+          } else if (this.getLabelForValue(val)[0].toUpperCase() === 'INTEREST') {
+            return [...this.getLabelForValue(val), `${totalInterest} %`];
+          }
+
+          return [...this.getLabelForValue(val), ``];
         },
       },
     },
