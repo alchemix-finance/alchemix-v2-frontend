@@ -32,9 +32,9 @@ const numericValidator = (value) => {
 const integerFilter = (value) => /^\d*$/.test(value);
 const floatFilter = (value) => /^\d*[.,]?\d*$/.test(value);
 
-//Export validators
+// Export validators
 export { numericValidator };
-//Export modifiers
+// Export modifiers
 export { inputErrorModifier };
-//Export filters
+// Export filters
 export { integerFilter, floatFilter };
