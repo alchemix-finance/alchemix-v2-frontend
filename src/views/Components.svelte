@@ -8,9 +8,9 @@ import BorderContainer from '../components/elements/BorderContainer.svelte';
 import Toast from '../components/elements/Toast.svelte';
 import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
-import Input from '../components/elements/Input.svelte';
+import Input from 'components/elements/Input.svelte';
 
-import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
+import { inputErrorModifier, numericValidator, floatFilter } from 'helpers/inputHelpers';
 
 let inputValue = '';
 let inputError;
