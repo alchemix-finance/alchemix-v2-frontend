@@ -13,22 +13,12 @@ import Input from '../components/elements/Input.svelte';
 import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
 
 let inputValue = '';
-let inputError;
 </script>
 
 <ViewContainer>
   <div>
-    {inputError ?? 'no error'}
     {inputValue ?? ''}
-    <Input
-      bind:value="{inputValue}"
-      bind:error="{inputError}"
-      placeholder="1"
-      validator="{numericValidator}"
-      classModifier="{inputErrorModifier}"
-      inputFilter="{floatFilter}"
-      class="p-5 bg-black2"
-    />
+    <Input bind:value="{inputValue}" placeholder="1" inputFilter="{floatFilter}" class="p-5 bg-black2" />
 
     <p class="">Labels</p>
     <h1>Container with border (non-styleable)</h1>
