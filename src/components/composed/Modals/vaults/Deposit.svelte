@@ -5,6 +5,8 @@ import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
 
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
 export let vaultIndex;
 
 export let yieldToken;
@@ -85,8 +87,7 @@ onMount(() => {
               : 'border-grey3'}"
           >
             <div class="w-full">
-              <input
-                type="number"
+              <InputNumber
                 id="yieldInput"
                 bind:value="{yieldDeposit}"
                 placeholder="~0.00 {yieldSymbol}"
@@ -137,8 +138,7 @@ onMount(() => {
               : 'border-grey3'}"
           >
             <div class="w-full">
-              <input
-                type="number"
+              <InputNumber
                 id="underlyingInput"
                 bind:value="{underlyingDeposit}"
                 placeholder="~0.00 {underlyingSymbol}"

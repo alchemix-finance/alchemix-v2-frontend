@@ -192,8 +192,7 @@ onMount(() => {
             : 'border-grey3'}"
         >
           <div class="w-full">
-            <input
-              type="number"
+            <InputNumber
               id="underlyingInput"
               bind:value="{underlyingWithdraw}"
               placeholder="~0.00 {underlyingSymbol}"
