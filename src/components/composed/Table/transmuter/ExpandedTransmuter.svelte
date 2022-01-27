@@ -7,6 +7,8 @@ import getUserGas from '../../../../helpers/getUserGas';
 import { setError } from '../../../../helpers/setToast';
 import { utils } from 'ethers';
 
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
 export let alToken;
 export let alTokenAllowance;
 export let alTokenSymbol;
@@ -111,8 +113,7 @@ const startTransaction = async () => {
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="depositInput"
           placeholder="~0.00 {alTokenSymbol}"
           bind:value="{depositAmount}"
@@ -160,8 +161,7 @@ const startTransaction = async () => {
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="withdrawInput"
           placeholder="~0.00 {alTokenSymbol}"
           bind:value="{withdrawAmount}"
@@ -209,8 +209,7 @@ const startTransaction = async () => {
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="claimInput"
           placeholder="~0.00 {underlyingTokenSymbol}"
           bind:value="{claimAmount}"

@@ -13,6 +13,10 @@ import InputNumber from '../components/elements/inputs/InputNumber.svelte';
 import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
 
 let inputValue = '';
+
+setInterval(() => {
+  inputValue = 21;
+}, 2000);
 </script>
 
 <ViewContainer>
