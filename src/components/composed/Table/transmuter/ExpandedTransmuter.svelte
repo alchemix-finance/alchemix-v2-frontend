@@ -92,13 +92,13 @@ const setMaxClaim = () => {
   claimAmount = exchangedBalance;
 };
 const clearDeposit = () => {
-  depositAmount = null;
+  depositAmount = '';
 };
 const clearWithdraw = () => {
-  withdrawAmount = null;
+  withdrawAmount = '';
 };
 const clearClaim = () => {
-  claimAmount = null;
+  claimAmount = '';
 };
 const startTransaction = async () => {
   await alert('metamask tx started');

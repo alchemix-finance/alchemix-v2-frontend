@@ -56,7 +56,7 @@ const updateValues = () => {
 };
 
 const clearBorrow = () => {
-  borrowAmount = null;
+  borrowAmount = '';
 };
 
 const setMaxBorrow = () => {
@@ -64,8 +64,8 @@ const setMaxBorrow = () => {
 };
 
 const clearTarget = () => {
-  targetWallet = null;
-  rng = null;
+  targetWallet = '';
+  rng = '';
   showError = false;
 };
 

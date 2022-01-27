@@ -31,7 +31,7 @@ const setUserVerified = (event) => {
 };
 
 const clearLiquidate = () => {
-  liquidateAmount = null;
+  liquidateAmount = '';
 };
 
 const setMaxLiquidate = () => {

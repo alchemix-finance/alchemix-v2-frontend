@@ -25,7 +25,7 @@ const setMaxRepay = () => {
 };
 
 const clearRepay = () => {
-  repayAmount = null;
+  repayAmount = '';
 };
 
 const repay = () => {

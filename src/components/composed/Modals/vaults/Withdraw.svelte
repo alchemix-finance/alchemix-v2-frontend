@@ -47,11 +47,11 @@ const initYield = () => {
 
 const setMaxYield = () => {
   yieldWithdraw = maxYieldWithdrawAmount;
-  underlyingWithdraw = null;
+  underlyingWithdraw = '';
 };
 
 const clearYield = () => {
-  yieldWithdraw = null;
+  yieldWithdraw = '';
 };
 
 const initUnderlying = () => {
@@ -61,11 +61,11 @@ const initUnderlying = () => {
 
 const setMaxUnderlying = () => {
   underlyingWithdraw = maxUnderlyingWithdrawAmount;
-  yieldWithdraw = null;
+  yieldWithdraw = '';
 };
 
 const clearUnderlying = () => {
-  underlyingWithdraw = null;
+  underlyingWithdraw = '';
 };
 
 const updateBalances = () => {
