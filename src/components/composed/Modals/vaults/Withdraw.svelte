@@ -6,7 +6,7 @@ import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
 
-import Input from '../../../elements/Input.svelte';
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
 export let vaultIndex;
 
@@ -147,10 +147,7 @@ onMount(() => {
             : 'border-grey3'}"
         >
           <div class="w-full">
-            <Input
-              type="number"
-              min="0.0"
-              step="0.01"
+            <InputNumber
               id="yieldInput"
               bind:value="{yieldWithdraw}"
               placeholder="~0.00 {yieldSymbol}"
