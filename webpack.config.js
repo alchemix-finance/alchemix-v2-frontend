@@ -68,6 +68,15 @@ module.exports = {
       os: require.resolve('os-browserify/browser'),
       stream: require.resolve('stream-browserify'),
     },
+    alias: {
+      components: path.resolve(__dirname, 'src/components/'),
+      views: path.resolve(__dirname, 'src/views/'),
+      stores: path.resolve(__dirname, 'src/stores/'),
+      middleware: path.resolve(__dirname, 'src/middleware/'),
+      locales: path.resolve(__dirname, 'src/locales/'),
+      helpers: path.resolve(__dirname, 'src/helpers/'),
+      styles: path.resolve(__dirname, 'src/styles/'),
+    },
   },
   plugins: [
     // remove previous build
