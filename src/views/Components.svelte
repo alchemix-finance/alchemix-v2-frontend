@@ -18,7 +18,14 @@ let inputValue = '';
 <ViewContainer>
   <div>
     {inputValue ?? ''}
-    <Input bind:value="{inputValue}" placeholder="1" inputFilter="{floatFilter}" class="p-5 bg-black2" />
+    <Input
+      minlength="1"
+      bind:value="{inputValue}"
+      placeholder="1"
+      inputmode="decimal"
+      inputFilter="{floatFilter}"
+      class="p-5 bg-black2"
+    />
 
     <p class="">Labels</p>
     <h1>Container with border (non-styleable)</h1>
