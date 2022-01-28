@@ -7,6 +7,7 @@ import getContract from '../../../../helpers/getContract';
 import getUserGas from '../../../../helpers/getUserGas';
 import { getProvider } from '../../../../helpers/walletManager';
 import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
 export let poolId;
 export let token;
@@ -98,7 +99,7 @@ const setMaxDeposit = () => {
 };
 
 const clearDeposit = () => {
-  depositAmount = null;
+  depositAmount = '';
 };
 
 const setMaxWithdraw = () => {
@@ -106,7 +107,7 @@ const setMaxWithdraw = () => {
 };
 
 const clearWithdraw = () => {
-  withdrawAmount = null;
+  withdrawAmount = '';
 };
 
 const setWithdrawValue = (event) => {
@@ -131,8 +132,7 @@ console.log('TOKEN IN FARM', token);
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="borrowInput"
           placeholder="~0.00 {token.symbol}"
           bind:value="{depositAmount}"
@@ -184,8 +184,7 @@ console.log('TOKEN IN FARM', token);
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="withdrawInput"
           placeholder="~0.00 {token.symbol}"
           bind:value="{withdrawAmount}"

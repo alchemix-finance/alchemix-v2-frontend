@@ -9,6 +9,8 @@ import Button from '../../../elements/Button.svelte';
 import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
 import tempTx from '../../../../stores/tempTx';
 
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
 export let debtToken;
 export let maxDebt;
 export let currentDebt;
@@ -54,7 +56,7 @@ const updateValues = () => {
 };
 
 const clearBorrow = () => {
-  borrowAmount = null;
+  borrowAmount = '';
 };
 
 const setMaxBorrow = () => {
@@ -62,8 +64,8 @@ const setMaxBorrow = () => {
 };
 
 const clearTarget = () => {
-  targetWallet = null;
-  rng = null;
+  targetWallet = '';
+  rng = '';
   showError = false;
 };
 
@@ -99,8 +101,7 @@ $: targetWalletVerified, updateValues();
       </label>
       <div class="flex bg-grey3 rounded border border-grey3">
         <div class="w-full">
-          <input
-            type="number"
+          <InputNumber
             id="borrowInput"
             placeholder="~0.00 {debtToken.symbol}"
             bind:value="{borrowAmount}"

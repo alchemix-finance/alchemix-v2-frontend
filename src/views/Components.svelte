@@ -8,11 +8,23 @@ import BorderContainer from '../components/elements/BorderContainer.svelte';
 import Toast from '../components/elements/Toast.svelte';
 import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
 import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
+import InputNumber from '../components/elements/inputs/InputNumber.svelte';
+
+import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
+
+let inputValue = '';
+
+setInterval(() => {
+  inputValue = 21;
+}, 2000);
 </script>
 
 <ViewContainer>
   <div>
-    <p>Labels</p>
+    {inputValue ?? ''}
+    <InputNumber minlength="1" bind:value="{inputValue}" placeholder="1" class="p-5 bg-black2" />
+
+    <p class="">Labels</p>
     <h1>Container with border (non-styleable)</h1>
     <BorderContainer width="w-40">
       <span> This component will draw a rounded border around any content that exists in it's slot. </span>

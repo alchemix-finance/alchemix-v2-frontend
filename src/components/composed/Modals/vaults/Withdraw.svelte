@@ -6,6 +6,8 @@ import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 import walletBalance from '../../../../stores/walletBalance';
 
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
 export let vaultIndex;
 
 export let yieldToken;
@@ -45,11 +47,11 @@ const initYield = () => {
 
 const setMaxYield = () => {
   yieldWithdraw = maxYieldWithdrawAmount;
-  underlyingWithdraw = null;
+  underlyingWithdraw = '';
 };
 
 const clearYield = () => {
-  yieldWithdraw = null;
+  yieldWithdraw = '';
 };
 
 const initUnderlying = () => {
@@ -59,11 +61,11 @@ const initUnderlying = () => {
 
 const setMaxUnderlying = () => {
   underlyingWithdraw = maxUnderlyingWithdrawAmount;
-  yieldWithdraw = null;
+  yieldWithdraw = '';
 };
 
 const clearUnderlying = () => {
-  underlyingWithdraw = null;
+  underlyingWithdraw = '';
 };
 
 const updateBalances = () => {
@@ -145,8 +147,7 @@ onMount(() => {
             : 'border-grey3'}"
         >
           <div class="w-full">
-            <input
-              type="number"
+            <InputNumber
               id="yieldInput"
               bind:value="{yieldWithdraw}"
               placeholder="~0.00 {yieldSymbol}"
@@ -191,8 +192,7 @@ onMount(() => {
             : 'border-grey3'}"
         >
           <div class="w-full">
-            <input
-              type="number"
+            <InputNumber
               id="underlyingInput"
               bind:value="{underlyingWithdraw}"
               placeholder="~0.00 {underlyingSymbol}"

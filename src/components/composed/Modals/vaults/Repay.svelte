@@ -4,6 +4,8 @@ import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
 import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
 
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
 export let underlyingTokens;
 export let underlyingPerShare;
 export let outstandingDebt;
@@ -23,7 +25,7 @@ const setMaxRepay = () => {
 };
 
 const clearRepay = () => {
-  repayAmount = null;
+  repayAmount = '';
 };
 
 const repay = () => {
@@ -79,8 +81,7 @@ $: underlyingTokens, console.log(underlyingTokens);
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="repayInput"
           placeholder="~0.00 {underlyingSymbol}"
           bind:value="{repayAmount}"

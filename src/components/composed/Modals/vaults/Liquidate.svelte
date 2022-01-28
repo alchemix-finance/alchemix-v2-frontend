@@ -5,6 +5,8 @@ import Button from '../../../elements/Button.svelte';
 import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
 import tempTx from '../../../../stores/tempTx';
 
+import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
 export let outstandingDebt;
 export let yieldTokens;
 
@@ -29,7 +31,7 @@ const setUserVerified = (event) => {
 };
 
 const clearLiquidate = () => {
-  liquidateAmount = null;
+  liquidateAmount = '';
 };
 
 const setMaxLiquidate = () => {
@@ -94,8 +96,7 @@ $: liquidateAmount, updateBalances();
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
-        <input
-          type="number"
+        <InputNumber
           id="liquidateInput"
           placeholder="~0.00 {tokenSymbol}"
           bind:value="{liquidateAmount}"
