@@ -35,19 +35,22 @@ let maxUnderlyingWithdrawAmount;
 let startingBalance;
 let remainingBalance;
 let projectedDebtLimit;
+let userSharesWei;
 
 let withdrawEnabled = false;
+let useMaxAmount = false;
 
 const initYield = () => {
-  const shadowBalance = parseFloat(userShares) * parseFloat(yieldPricePerShare);
-  const shadowDebt = openDebtAmount * parseFloat(underlyingPricePerShare);
+  const shadowBalance = (userSharesWei * yieldPricePerShare).toString();
+  const shadowDebt = openDebtAmount * FixedNumber.from(underlyingPricePerShare);
+  console.log('initYield', userShares, yieldPricePerShare, shadowBalance, shadowDebt);
   maxYieldWithdrawAmount = shadowBalance - shadowDebt * parseFloat(loanRatio);
   if (maxYieldWithdrawAmount < 0) maxYieldWithdrawAmount = 0;
 };
 
 const setMaxYield = () => {
   yieldWithdraw = maxYieldWithdrawAmount;
-  underlyingWithdraw = '';
+  clearUnderlying();
 };
 
 const clearYield = () => {
@@ -55,13 +58,13 @@ const clearYield = () => {
 };
 
 const initUnderlying = () => {
-  maxUnderlyingWithdrawAmount = startingBalance - openDebtAmount * parseFloat(loanRatio);
+  maxUnderlyingWithdrawAmount = startingBalance - FixedNumber.from(openDebtAmount) * parseFloat(loanRatio);
   if (maxUnderlyingWithdrawAmount < 0) maxUnderlyingWithdrawAmount = 0;
 };
 
 const setMaxUnderlying = () => {
   underlyingWithdraw = maxUnderlyingWithdrawAmount;
-  yieldWithdraw = '';
+  clearYield();
 };
 
 const clearUnderlying = () => {
@@ -70,22 +73,19 @@ const clearUnderlying = () => {
 
 const updateBalances = () => {
   const normalizedYieldAmount =
-    (yieldWithdraw / FixedNumber.from(yieldPricePerShare).toUnsafeFloat()) *
-    FixedNumber.from(underlyingPricePerShare).toUnsafeFloat();
-  yieldToShare = normalizedYieldAmount / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
-  underlyingToShare = underlyingWithdraw / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
+    (yieldWithdraw / FixedNumber.from(yieldPricePerShare)) * FixedNumber.from(underlyingPricePerShare);
+  console.log('updateBalances', normalizedYieldAmount, underlyingWithdraw, maxUnderlyingWithdrawAmount);
+  yieldToShare = normalizedYieldAmount / FixedNumber.from(underlyingPricePerShare) || 0;
+  underlyingToShare = underlyingWithdraw / FixedNumber.from(underlyingPricePerShare) || 0;
   remainingBalance = startingBalance - (normalizedYieldAmount || 0) - (underlyingWithdraw || 0);
-  projectedDebtLimit = remainingBalance / FixedNumber.from(loanRatio).toUnsafeFloat();
+  projectedDebtLimit = remainingBalance / FixedNumber.from(loanRatio);
   withdrawEnabled =
     (yieldToShare > 0 && yieldWithdraw <= maxYieldWithdrawAmount) ||
     (underlyingToShare > 0 && underlyingWithdraw <= maxUnderlyingWithdrawAmount);
 };
 
 const withdraw = () => {
-  const yieldFormatted = FixedNumber.from(yieldToShare.toString()).toUnsafeFloat().toFixed(yieldDecimals);
-  const underlyingFormatted = FixedNumber.from(underlyingToShare.toString())
-    .toUnsafeFloat()
-    .toFixed(underlyingDecimals);
+  console.log('withdraw', yieldToShare.toString(), underlyingToShare.toString());
   let method;
   if (parseFloat(yieldToShare) > 0 && (parseFloat(underlyingToShare) === 0 || !!!underlyingToShare)) {
     method = 'withdraw';
@@ -96,8 +96,8 @@ const withdraw = () => {
   }
   console.log('method', method);
   const payload = {
-    amountYield: utils.parseUnits(yieldFormatted, yieldDecimals),
-    amountUnderlying: utils.parseUnits(underlyingFormatted, underlyingDecimals),
+    amountYield: utils.parseUnits(yieldToShare.toString(), yieldDecimals),
+    amountUnderlying: utils.parseUnits(underlyingToShare.toString(), underlyingDecimals),
     amountBorrow: null,
     amountRepay: null,
     method,
@@ -107,6 +107,7 @@ const withdraw = () => {
     vaultIndex,
   };
   console.log(payload);
+  console.log(payload.amountUnderlying.toString());
   tempTx.set({ ...payload });
 };
 
@@ -116,9 +117,20 @@ $: underlyingWithdraw, updateBalances();
 onMount(() => {
   yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
   underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-  startingBalance = parseFloat(userShares) * parseFloat(underlyingPricePerShare);
+  startingBalance = userShares * underlyingPricePerShare;
   remainingBalance = startingBalance;
   projectedDebtLimit = borrowLimit;
+  userSharesWei = utils.parseUnits(userShares, underlyingDecimals);
+  console.log(
+    'mount',
+    userShares,
+    userSharesWei,
+    userSharesWei.toString(),
+    FixedNumber.from(userShares).toString(),
+    FixedNumber.from(userShares).toUnsafeFloat(),
+    startingBalance,
+    { ...$$props },
+  );
   initYield();
   initUnderlying();
 });

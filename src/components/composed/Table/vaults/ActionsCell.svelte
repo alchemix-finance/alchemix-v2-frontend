@@ -34,7 +34,6 @@ const openDeposit = () => {
 };
 
 const openWithdraw = () => {
-  console.log('decimals', yieldDecimals, underlyingDecimals);
   open(
     Withdraw,
     {
