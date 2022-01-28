@@ -315,7 +315,7 @@ const repay = async () => {
     });
   } catch (e) {
     console.error(e);
-    setError(e.data.message);
+    setError(e.data ? await e.data.message : e.message);
   }
   tempClear();
 };
