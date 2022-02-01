@@ -2,7 +2,7 @@
 import { onMount } from 'svelte';
 
 export let value;
-
+export let type = 'string';
 export let inputFilter = (filter) => true;
 
 let _value;
@@ -10,20 +10,21 @@ let _inputRef;
 
 const events = ['input', 'keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'];
 
-onMount(() => {
-  const onEvent = () => {
-    if (inputFilter(_inputRef.value)) {
-      _inputRef.oldValue = _value;
-      _inputRef.oldSelectionStart = _inputRef.selectionStart;
-      _inputRef.oldSelectionEnd = _inputRef.selectionEnd;
-    } else if (_inputRef.hasOwnProperty('oldValue')) {
-      _value = _inputRef.oldValue;
-      _inputRef.setSelectionRange(_inputRef.oldSelectionStart, _inputRef.oldSelectionEnd);
-    } else {
-      _value = '';
-    }
-  };
+function onEvent() {
+  if (inputFilter(this.value)) {
+    this.oldValue = _value;
+    this.oldSelectionStart = this.selectionStart;
+    this.oldSelectionEnd = this.selectionEnd;
+  } else if (this.hasOwnProperty('oldValue')) {
+    if (this.oldSelectionStart && this.oldSelectionEnd)
+      _inputRef.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+    _value = this.oldValue;
+  } else {
+    _value = '';
+  }
+}
 
+onMount(() => {
   events.forEach((event) => {
     _inputRef.addEventListener(event, onEvent);
   });
@@ -35,7 +36,14 @@ onMount(() => {
   };
 });
 
-$: value = _value;
+$: value = (() => {
+  switch (type) {
+    case 'number':
+      return Number(_value);
+    default:
+      return _value;
+  }
+})();
 </script>
 
 <input {...$$props} bind:value="{_value}" bind:this="{_inputRef}" />
