@@ -29,6 +29,7 @@ export let borderSize = '1';
     bg-{backgroundColor}
     shadow-lg
     z-30
+    w-full
     "
   >
     <slot name="options" />

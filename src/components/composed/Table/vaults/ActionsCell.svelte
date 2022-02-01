@@ -3,7 +3,7 @@ import Button from '../../../elements/Button.svelte';
 import Deposit from '../../../composed/Modals/vaults/Deposit.svelte';
 import Withdraw from '../../../composed/Modals/vaults/Withdraw.svelte';
 import { getContext } from 'svelte';
-import { modalStyle } from '../../../../stores/modal';
+import { modalStyle } from 'stores/modal';
 
 export let yieldToken;
 export let underlyingToken;

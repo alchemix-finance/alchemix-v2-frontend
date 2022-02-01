@@ -1,6 +1,6 @@
 <script>
 import { onMount } from 'svelte';
-import { utils, FixedNumber } from 'ethers';
+import { utils, FixedNumber, BigNumber } from 'ethers';
 import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
 import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
@@ -41,10 +41,9 @@ let withdrawEnabled = false;
 let useMaxAmount = false;
 
 const initYield = () => {
-  const shadowBalance = (userSharesWei * yieldPricePerShare).toString();
-  const shadowDebt = openDebtAmount * FixedNumber.from(underlyingPricePerShare);
-  console.log('initYield', userShares, yieldPricePerShare, shadowBalance, shadowDebt);
-  maxYieldWithdrawAmount = shadowBalance - shadowDebt * parseFloat(loanRatio);
+  const shadowBalance = userSharesWei * yieldPricePerShare;
+  const shadowDebt = openDebtAmount * underlyingPricePerShare;
+  maxYieldWithdrawAmount = utils.formatUnits((shadowBalance - shadowDebt).toString(), underlyingDecimals);
   if (maxYieldWithdrawAmount < 0) maxYieldWithdrawAmount = 0;
 };
 
@@ -58,7 +57,10 @@ const clearYield = () => {
 };
 
 const initUnderlying = () => {
-  maxUnderlyingWithdrawAmount = startingBalance - FixedNumber.from(openDebtAmount) * parseFloat(loanRatio);
+  maxUnderlyingWithdrawAmount = utils.formatUnits(
+    (startingBalance - openDebtAmount).toString(),
+    underlyingDecimals,
+  );
   if (maxUnderlyingWithdrawAmount < 0) maxUnderlyingWithdrawAmount = 0;
 };
 
@@ -72,13 +74,26 @@ const clearUnderlying = () => {
 };
 
 const updateBalances = () => {
-  const normalizedYieldAmount =
-    (yieldWithdraw / FixedNumber.from(yieldPricePerShare)) * FixedNumber.from(underlyingPricePerShare);
+  const normalizedYieldAmount = ((yieldWithdraw || 0) / yieldPricePerShare) * underlyingPricePerShare;
   console.log('updateBalances', normalizedYieldAmount, underlyingWithdraw, maxUnderlyingWithdrawAmount);
-  yieldToShare = normalizedYieldAmount / FixedNumber.from(underlyingPricePerShare) || 0;
-  underlyingToShare = underlyingWithdraw / FixedNumber.from(underlyingPricePerShare) || 0;
-  remainingBalance = startingBalance - (normalizedYieldAmount || 0) - (underlyingWithdraw || 0);
-  projectedDebtLimit = remainingBalance / FixedNumber.from(loanRatio);
+  yieldToShare = normalizedYieldAmount / underlyingPricePerShare || 0;
+  underlyingToShare =
+    utils.parseUnits((underlyingWithdraw || 0).toString(), underlyingDecimals) / underlyingPricePerShare || 0;
+  console.log(
+    'values',
+    startingBalance,
+    normalizedYieldAmount,
+    yieldToShare,
+    underlyingWithdraw,
+    underlyingToShare,
+  );
+  remainingBalance = utils.formatUnits(
+    (startingBalance || 0) -
+      utils.parseUnits((normalizedYieldAmount || 0).toString(), underlyingDecimals) -
+      utils.parseUnits((underlyingWithdraw || 0).toString(), underlyingDecimals),
+    underlyingDecimals,
+  );
+  projectedDebtLimit = remainingBalance / loanRatio;
   withdrawEnabled =
     (yieldToShare > 0 && yieldWithdraw <= maxYieldWithdrawAmount) ||
     (underlyingToShare > 0 && underlyingWithdraw <= maxUnderlyingWithdrawAmount);
@@ -97,7 +112,7 @@ const withdraw = () => {
   console.log('method', method);
   const payload = {
     amountYield: utils.parseUnits(yieldToShare.toString(), yieldDecimals),
-    amountUnderlying: utils.parseUnits(underlyingToShare.toString(), underlyingDecimals),
+    amountUnderlying: underlyingToShare.toString(),
     amountBorrow: null,
     amountRepay: null,
     method,
@@ -107,7 +122,7 @@ const withdraw = () => {
     vaultIndex,
   };
   console.log(payload);
-  console.log(payload.amountUnderlying.toString());
+  console.log(underlyingToShare, payload.amountUnderlying.toString());
   tempTx.set({ ...payload });
 };
 
@@ -117,10 +132,10 @@ $: underlyingWithdraw, updateBalances();
 onMount(() => {
   yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
   underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-  startingBalance = userShares * underlyingPricePerShare;
   remainingBalance = startingBalance;
   projectedDebtLimit = borrowLimit;
   userSharesWei = utils.parseUnits(userShares, underlyingDecimals);
+  startingBalance = userSharesWei * underlyingPricePerShare;
   console.log(
     'mount',
     userShares,
@@ -133,6 +148,12 @@ onMount(() => {
   );
   initYield();
   initUnderlying();
+  console.log('dum calcs');
+  const yieldAvail = userSharesWei * yieldPricePerShare;
+  console.log('yield avail', yieldAvail);
+  const yieldFormatted = utils.formatUnits(yieldAvail.toString(), underlyingDecimals);
+  console.log('yield formatted', yieldFormatted);
+  console.log('underlying avail', userSharesWei * underlyingPricePerShare);
 });
 </script>
 
@@ -241,7 +262,7 @@ onMount(() => {
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {startingBalance}
+      Deposit Balance: {startingBalance / 10 ** underlyingDecimals}
       -> {remainingBalance}
       <br />
       Borrow Limit: {borrowLimit} -> {projectedDebtLimit}
