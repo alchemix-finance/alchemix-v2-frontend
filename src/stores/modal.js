@@ -5,7 +5,7 @@ const defaults = {
   props: {},
 };
 
-export const modal = writable(defaults.modal);
+export const modal = writable(defaults);
 
 export const showModal = (component, props = {}) => {
   if (!component) {

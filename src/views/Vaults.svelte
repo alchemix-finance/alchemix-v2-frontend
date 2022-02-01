@@ -1,5 +1,4 @@
 <script>
-import { getContext } from 'svelte';
 import { _ } from 'svelte-i18n';
 import { utils } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -19,7 +18,6 @@ import ActionsCell from '../components/composed/Table/vaults/ActionsCell.svelte'
 import Borrow from '../components/composed/Modals/vaults/Borrow.svelte';
 import Repay from '../components/composed/Modals/vaults/Repay.svelte';
 import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
-import { modalStyle } from '../stores/modal';
 import tempTx, { defaults } from '../stores/tempTx';
 import { getProvider } from '../helpers/walletManager';
 import getUserGas from '../helpers/getUserGas';
@@ -28,6 +26,7 @@ import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
 import Metrics from '../components/composed/Metrics.svelte';
+import { showModal, hideModal } from 'stores/modal';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -80,39 +79,8 @@ let colsStrats = [
 
 let underlyingTokenAlusd = [];
 let yieldTokenAlusd = [];
-
-const { open } = getContext('simple-modal');
-const { close } = getContext('simple-modal');
-const openBorrowModal = () => {
-  open(
-    Borrow,
-    {
-      debtToken: {
-        symbol: 'alUSD',
-        address: '',
-      },
-      maxDebt: $alusd.maxDebt,
-      currentDebt: $alusd.userDebt,
-    },
-    {
-      ...modalStyle,
-    },
-  );
-};
-const openRepayModal = () => {
-  open(
-    Repay,
-    {
-      underlyingTokens: underlyingTokenAlusd,
-      outstandingDebt: $alusd.userDebt,
-    },
-    {
-      ...modalStyle,
-    },
-  );
-};
-const openLiquidateModal = () => {
-  open(
+/**
+ *   open(
     Liquidate,
     {
       outstandingDebt: $alusd.userDebt,
@@ -122,10 +90,31 @@ const openLiquidateModal = () => {
       ...modalStyle,
     },
   );
-};
-const closeModal = () => {
-  close();
-};
+ * 
+*/
+const openBorrowModal = () =>
+  showModal(Borrow, {
+    debtToken: {
+      symbol: 'alUSD',
+      address: '',
+    },
+    maxDebt: $alusd.maxDebt,
+    currentDebt: $alusd.userDebt,
+  });
+
+const openRepayModal = () =>
+  showModal(Repay, {
+    underlyingTokens: underlyingTokenAlusd,
+    outstandingDebt: $alusd.userDebt,
+  });
+
+const openLiquidateModal = () =>
+  showModal(Liquidate, {
+    outstandingDebt: $alusd.userDebt,
+    yieldTokens: yieldTokenAlusd,
+  });
+
+const closeModal = () => hideModal();
 
 const toggleButtons = {
   vaultSelect: {
