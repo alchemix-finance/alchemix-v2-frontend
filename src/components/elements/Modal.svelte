@@ -1,10 +1,10 @@
 <script>
-import { modal, hideModal } from 'stores/modal';
+import { modal, modalReset } from 'stores/modal';
 import { fade } from 'svelte/transition';
 
 function onClickBackground(e) {
   if (e.target !== this) return;
-  hideModal();
+  modalReset();
 }
 
 function onOutroStart(e) {

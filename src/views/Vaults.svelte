@@ -26,7 +26,7 @@ import setTokenAllowance from '../helpers/setTokenAllowance';
 import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
 import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
 import Metrics from '../components/composed/Metrics.svelte';
-import { showModal, hideModal } from 'stores/modal';
+import { showModal, modalReset } from 'stores/modal';
 
 let counterAllStrategies = 0;
 let counterUserStrategies = 0;
@@ -79,19 +79,7 @@ let colsStrats = [
 
 let underlyingTokenAlusd = [];
 let yieldTokenAlusd = [];
-/**
- *   open(
-    Liquidate,
-    {
-      outstandingDebt: $alusd.userDebt,
-      yieldTokens: yieldTokenAlusd,
-    },
-    {
-      ...modalStyle,
-    },
-  );
- * 
-*/
+
 const openBorrowModal = () =>
   showModal(Borrow, {
     debtToken: {
@@ -114,7 +102,7 @@ const openLiquidateModal = () =>
     yieldTokens: yieldTokenAlusd,
   });
 
-const closeModal = () => hideModal();
+const closeModal = () => modalReset();
 
 const toggleButtons = {
   vaultSelect: {

@@ -19,7 +19,7 @@ export const showModal = (component, props = {}) => {
   });
 };
 
-export const hideModal = () => {
+export const modalReset = () => {
   modal.set({
     component: undefined,
     props: {},

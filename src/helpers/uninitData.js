@@ -9,7 +9,7 @@ import { allowancesReset } from '../stores/allowances';
 import { globalReset } from '../stores/global';
 import { governanceReset } from '../stores/governance';
 import { metricsReset } from '../stores/metrics';
-import { modalReset } from '../stores/modal';
+import { modalReset } from 'stores/modal';
 import { walletBalanceReset } from '../stores/walletBalance';
 import { getFiatRates, getTokenPrices } from '../middleware/zapper';
 
