@@ -1,8 +1,8 @@
 import { writable } from 'svelte/store';
 
 const defaults = {
-  modalComponent: undefined,
-  modalProps: {},
+  component: undefined,
+  props: {},
 };
 
 export const modal = writable(defaults.modal);
@@ -14,14 +14,14 @@ export const showModal = (component, props = {}) => {
   }
 
   modal.set({
-    modalComponent: component,
-    modalProps: props,
+    component,
+    props,
   });
 };
 
 export const hideModal = () => {
   modal.set({
-    modalComponent: undefined,
-    modalProps: {},
+    component: undefined,
+    props: {},
   });
 };
