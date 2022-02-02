@@ -244,7 +244,8 @@ function vaultAlusdRowBuilder(tokens) {
       const underlyingSymbol = underlyingConfig.symbol;
       const tvl = utils.formatUnits(params.activeBalance, underlyingDecimals);
       const position = await contract.positions(_account.address, token);
-      const balance = utils.formatUnits(position.shares, yieldDecimals);
+      // const balance = utils.formatUnits(position.shares, yieldDecimals);
+      const balance = position.shares;
       const underlyingBalance = await getTokenBalance(underlyingToken);
       const vaultDebt =
         ((position.shares / _alusd.ratio) * underlyingPerShareFormatted) / 10 ** underlyingDecimals;

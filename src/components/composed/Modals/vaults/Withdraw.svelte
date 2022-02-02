@@ -8,6 +8,7 @@ import walletBalance from '../../../../stores/walletBalance';
 
 import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
+// @dev any balance value submitted through props is of type BigNumber, denoted in wei
 export let vaultIndex;
 export let yieldToken;
 export let underlyingToken;
@@ -22,17 +23,16 @@ export let yieldDecimals;
 export let underlyingDecimals;
 
 let withdrawEnabled = false;
-let useMaxAmount = false;
 
 let yieldSymbol;
 let yieldToShare;
-let yieldWithdrawAmount = '';
+let yieldWithdrawAmount = 0;
 let yieldWithdrawAmountWei;
 let maxYieldWithdrawAmount;
 
 let underlyingSymbol;
 let underlyingToShare;
-let underlyingWithdrawAmount = '';
+let underlyingWithdrawAmount = 0;
 let underlyingWithdrawAmountWei;
 let maxUnderlyingWithdrawAmount;
 
@@ -40,20 +40,26 @@ let startingBalance;
 let availableShares;
 let remainingBalance;
 let projectedDebtLimit;
-let userSharesWei;
 let openDebtAmountWei;
+
+let sharesWithdrawAmount;
+
+/*
+ * @param amount the BigNumber to turn into a human readable string
+ * @param decimals the Number of decimal places to use for calculations
+ * @param sharePrice the BigNumber to use as price for calculations
+ * @returns a formatted string
+ * */
+const toHuman = (amount, decimals, sharePrice) => {
+  const workingValue = utils.parseUnits(amount, decimals);
+  const scalar = BigNumber.from(10).pow(decimals);
+  return utils.formatUnits(workingValue.mul(scalar).div(sharePrice), decimals);
+};
 
 const initYield = () => {
   yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
-  console.log(
-    'inityield',
-    availableShares.toString(),
-    FixedNumber.from(yieldPricePerShare).toString(),
-    availableShares.mul(FixedNumber.from(yieldPricePerShare)).toString(),
-  );
-  maxYieldWithdrawAmount =
-    utils.formatUnits(availableShares.mul(FixedNumber.from(yieldPricePerShare)), underlyingDecimals) /
-    10 ** 18;
+  yieldToShare = userShares.mul(yieldPricePerShare).toString();
+  console.log(yieldToShare);
 };
 
 const setMaxYield = () => {
@@ -67,7 +73,6 @@ const clearYield = () => {
 
 const initUnderlying = () => {
   underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-  maxUnderlyingWithdrawAmount = startingBalance;
 };
 
 const setMaxUnderlying = () => {
@@ -79,7 +84,12 @@ const clearUnderlying = () => {
   underlyingWithdrawAmount = '';
 };
 
-const updateBalances = () => {};
+const updateBalances = () => {
+  if (underlyingWithdrawAmount) {
+    sharesWithdrawAmount = toHuman(underlyingWithdrawAmount, underlyingDecimals, underlyingPricePerShare);
+    console.log('huzza', sharesWithdrawAmount.toString());
+  }
+};
 
 const withdraw = () => {};
 
@@ -88,12 +98,7 @@ $: underlyingWithdrawAmount, updateBalances();
 
 onMount(() => {
   console.log('withdraw mounted with props', { ...$$props });
-  console.log(FixedNumber.from(underlyingPricePerShare).toString());
-  console.log(FixedNumber.from(underlyingPricePerShare));
-  userSharesWei = utils.parseUnits(userShares, underlyingDecimals);
-  openDebtAmountWei = utils.parseEther(openDebtAmount);
-  startingBalance = userShares * underlyingPricePerShare;
-  availableShares = userSharesWei.sub(openDebtAmountWei);
+
   initUnderlying();
   initYield();
 });

@@ -1,4 +1,5 @@
 <script>
+import { utils } from 'ethers';
 import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
 import Withdraw from '../../../../components/composed/Modals/vaults/Withdraw.svelte';
 import LocaleWrapper from '../../../LocaleWrapper.svelte';
@@ -9,11 +10,11 @@ const props = {
   underlyingToken: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
   loanRatio: '2.0',
   borrowLimit: '50',
-  userShares: '99.005828484942579537',
+  userShares: utils.parseUnits('99.005828484942579537', 18),
   openDebtAmount: '0.0',
   openDebtSymbol: 'alUSD',
-  underlyingPricePerShare: '1.010041545333956048',
-  yieldPricePerShare: '0.999999999999999999',
+  underlyingPricePerShare: utils.parseUnits('1.010041545333956048', 18),
+  yieldPricePerShare: utils.parseUnits('0.999999999999999999', 18),
   vaultIndex: 0,
   yieldDecimals: 18,
   underlyingDecimals: 18,
