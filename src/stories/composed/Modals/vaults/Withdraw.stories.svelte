@@ -5,28 +5,31 @@ import LocaleWrapper from '../../../LocaleWrapper.svelte';
 import walletBalance from '../../../../stores/walletBalance';
 
 const props = {
-  yieldToken: '0xdeadbeef',
-  underlyingToken: '0xcafefeed',
+  yieldToken: '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
+  underlyingToken: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
   loanRatio: '2.0',
-  borrowLimit: '50.0',
-  userShares: '99.006582596769872212',
-  openDebtAmount: '25.0',
+  borrowLimit: '50',
+  userShares: '99.005828484942579537',
+  openDebtAmount: '0.0',
   openDebtSymbol: 'alUSD',
-  underlyingPricePerShare: '1.010033852064928643',
-  yieldPricePerShare: '0.999992383231490907',
+  underlyingPricePerShare: '1.010041545333956048',
+  yieldPricePerShare: '0.999999999999999999',
+  vaultIndex: 0,
+  yieldDecimals: 18,
+  underlyingDecimals: 18,
 };
 
 walletBalance.set({
   tokens: [
     {
-      address: '0xdeadbeef',
+      address: '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
       symbol: 'yvDAI',
-      balance: '1337',
+      balance: '0.0',
     },
     {
-      address: '0xcafefeed',
+      address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
       symbol: 'DAI',
-      balance: '31337',
+      balance: '99779.206860148661822247',
     },
   ],
 });

@@ -9,7 +9,6 @@ import walletBalance from '../../../../stores/walletBalance';
 import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
 export let vaultIndex;
-
 export let yieldToken;
 export let underlyingToken;
 export let loanRatio;
@@ -22,138 +21,81 @@ export let yieldPricePerShare;
 export let yieldDecimals;
 export let underlyingDecimals;
 
-let yieldSymbol;
-let yieldWithdraw;
-let yieldToShare;
-let maxYieldWithdrawAmount;
-
-let underlyingSymbol;
-let underlyingWithdraw;
-let underlyingToShare;
-let maxUnderlyingWithdrawAmount;
-
-let startingBalance;
-let remainingBalance;
-let projectedDebtLimit;
-let userSharesWei;
-
 let withdrawEnabled = false;
 let useMaxAmount = false;
 
+let yieldSymbol;
+let yieldToShare;
+let yieldWithdrawAmount = '';
+let yieldWithdrawAmountWei;
+let maxYieldWithdrawAmount;
+
+let underlyingSymbol;
+let underlyingToShare;
+let underlyingWithdrawAmount = '';
+let underlyingWithdrawAmountWei;
+let maxUnderlyingWithdrawAmount;
+
+let startingBalance;
+let availableShares;
+let remainingBalance;
+let projectedDebtLimit;
+let userSharesWei;
+let openDebtAmountWei;
+
 const initYield = () => {
-  const shadowBalance = userSharesWei * yieldPricePerShare;
-  const shadowDebt = openDebtAmount * underlyingPricePerShare;
-  maxYieldWithdrawAmount = utils.formatUnits((shadowBalance - shadowDebt).toString(), underlyingDecimals);
-  if (maxYieldWithdrawAmount < 0) maxYieldWithdrawAmount = 0;
+  yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
+  console.log(
+    'inityield',
+    availableShares.toString(),
+    FixedNumber.from(yieldPricePerShare).toString(),
+    availableShares.mul(FixedNumber.from(yieldPricePerShare)).toString(),
+  );
+  maxYieldWithdrawAmount =
+    utils.formatUnits(availableShares.mul(FixedNumber.from(yieldPricePerShare)), underlyingDecimals) /
+    10 ** 18;
 };
 
 const setMaxYield = () => {
-  yieldWithdraw = maxYieldWithdrawAmount;
+  yieldWithdrawAmount = maxYieldWithdrawAmount;
   clearUnderlying();
 };
 
 const clearYield = () => {
-  yieldWithdraw = '';
+  yieldWithdrawAmount = '';
 };
 
 const initUnderlying = () => {
-  maxUnderlyingWithdrawAmount = utils.formatUnits(
-    (startingBalance - openDebtAmount).toString(),
-    underlyingDecimals,
-  );
-  if (maxUnderlyingWithdrawAmount < 0) maxUnderlyingWithdrawAmount = 0;
+  underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
+  maxUnderlyingWithdrawAmount = startingBalance;
 };
 
 const setMaxUnderlying = () => {
-  underlyingWithdraw = maxUnderlyingWithdrawAmount;
+  underlyingWithdrawAmount = maxUnderlyingWithdrawAmount;
   clearYield();
 };
 
 const clearUnderlying = () => {
-  underlyingWithdraw = '';
+  underlyingWithdrawAmount = '';
 };
 
-const updateBalances = () => {
-  const normalizedYieldAmount = ((yieldWithdraw || 0) / yieldPricePerShare) * underlyingPricePerShare;
-  console.log('updateBalances', normalizedYieldAmount, underlyingWithdraw, maxUnderlyingWithdrawAmount);
-  yieldToShare = normalizedYieldAmount / underlyingPricePerShare || 0;
-  underlyingToShare =
-    utils.parseUnits((underlyingWithdraw || 0).toString(), underlyingDecimals) / underlyingPricePerShare || 0;
-  console.log(
-    'values',
-    startingBalance,
-    normalizedYieldAmount,
-    yieldToShare,
-    underlyingWithdraw,
-    underlyingToShare,
-  );
-  remainingBalance = utils.formatUnits(
-    (startingBalance || 0) -
-      utils.parseUnits((normalizedYieldAmount || 0).toString(), underlyingDecimals) -
-      utils.parseUnits((underlyingWithdraw || 0).toString(), underlyingDecimals),
-    underlyingDecimals,
-  );
-  projectedDebtLimit = remainingBalance / loanRatio;
-  withdrawEnabled =
-    (yieldToShare > 0 && yieldWithdraw <= maxYieldWithdrawAmount) ||
-    (underlyingToShare > 0 && underlyingWithdraw <= maxUnderlyingWithdrawAmount);
-};
+const updateBalances = () => {};
 
-const withdraw = () => {
-  console.log('withdraw', yieldToShare.toString(), underlyingToShare.toString());
-  let method;
-  if (parseFloat(yieldToShare) > 0 && (parseFloat(underlyingToShare) === 0 || !!!underlyingToShare)) {
-    method = 'withdraw';
-  } else if ((parseFloat(yieldToShare) === 0 || !!!yieldToShare) && parseFloat(underlyingToShare) > 0) {
-    method = 'withdrawUnderlying';
-  } else {
-    method = 'withdrawMulticall';
-  }
-  console.log('method', method);
-  const payload = {
-    amountYield: utils.parseUnits(yieldToShare.toString(), yieldDecimals),
-    amountUnderlying: underlyingToShare.toString(),
-    amountBorrow: null,
-    amountRepay: null,
-    method,
-    yieldToken,
-    underlyingToken,
-    targetAddress: null,
-    vaultIndex,
-  };
-  console.log(payload);
-  console.log(underlyingToShare, payload.amountUnderlying.toString());
-  tempTx.set({ ...payload });
-};
+const withdraw = () => {};
 
-$: yieldWithdraw, updateBalances();
-$: underlyingWithdraw, updateBalances();
+$: yieldWithdrawAmount, updateBalances();
+$: underlyingWithdrawAmount, updateBalances();
 
 onMount(() => {
-  yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
-  underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-  remainingBalance = startingBalance;
-  projectedDebtLimit = borrowLimit;
+  console.log('withdraw mounted with props', { ...$$props });
+  console.log(FixedNumber.from(underlyingPricePerShare).toString());
+  console.log(FixedNumber.from(underlyingPricePerShare));
   userSharesWei = utils.parseUnits(userShares, underlyingDecimals);
-  startingBalance = userSharesWei * underlyingPricePerShare;
-  console.log(
-    'mount',
-    userShares,
-    userSharesWei,
-    userSharesWei.toString(),
-    FixedNumber.from(userShares).toString(),
-    FixedNumber.from(userShares).toUnsafeFloat(),
-    startingBalance,
-    { ...$$props },
-  );
-  initYield();
+  openDebtAmountWei = utils.parseEther(openDebtAmount);
+  startingBalance = userShares * underlyingPricePerShare;
+  availableShares = userSharesWei.sub(openDebtAmountWei);
   initUnderlying();
-  console.log('dum calcs');
-  const yieldAvail = userSharesWei * yieldPricePerShare;
-  console.log('yield avail', yieldAvail);
-  const yieldFormatted = utils.formatUnits(yieldAvail.toString(), underlyingDecimals);
-  console.log('yield formatted', yieldFormatted);
-  console.log('underlying avail', userSharesWei * underlyingPricePerShare);
+  initYield();
 });
 </script>
 
@@ -175,16 +117,16 @@ onMount(() => {
           {yieldSymbol}
         </label>
         <div
-          class="flex bg-grey3 rounded border {yieldWithdraw > maxYieldWithdrawAmount
+          class="flex bg-grey3 rounded border {yieldWithdrawAmount > maxYieldWithdrawAmount
             ? 'border-red3'
             : 'border-grey3'}"
         >
           <div class="w-full">
             <InputNumber
               id="yieldInput"
-              bind:value="{yieldWithdraw}"
+              bind:value="{yieldWithdrawAmount}"
               placeholder="~0.00 {yieldSymbol}"
-              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdraw >
+              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
               maxYieldWithdrawAmount
                 ? 'text-red3'
                 : 'text-lightgrey5'}"
@@ -220,16 +162,16 @@ onMount(() => {
           {underlyingSymbol}
         </label>
         <div
-          class="flex bg-grey3 rounded border {underlyingWithdraw > maxUnderlyingWithdrawAmount
+          class="flex bg-grey3 rounded border {underlyingWithdrawAmount > maxUnderlyingWithdrawAmount
             ? 'border-red3'
             : 'border-grey3'}"
         >
           <div class="w-full">
             <InputNumber
               id="underlyingInput"
-              bind:value="{underlyingWithdraw}"
+              bind:value="{underlyingWithdrawAmount}"
               placeholder="~0.00 {underlyingSymbol}"
-              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdraw >
+              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdrawAmount >
               maxUnderlyingWithdrawAmount
                 ? 'text-red3'
                 : 'text-lightgrey5'}"
@@ -262,7 +204,7 @@ onMount(() => {
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {startingBalance / 10 ** underlyingDecimals}
+      Deposit Balance: {startingBalance}
       -> {remainingBalance}
       <br />
       Borrow Limit: {borrowLimit} -> {projectedDebtLimit}
