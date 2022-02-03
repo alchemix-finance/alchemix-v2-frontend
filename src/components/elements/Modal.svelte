@@ -16,8 +16,10 @@ function onOutroStart(e) {
   <div
     on:click="{onClickBackground}"
     class="fixed inset-0 bg-grey30 bg-opacity-90 z-20 flex justify-center items-center"
+    transition:fade
+    on:outrostart="{onOutroStart}"
   >
-    <div class="w-1/3" transition:fade on:outrostart="{onOutroStart}">
+    <div class="w-1/3">
       <svelte:component this="{$modal.component}" {...$modal.props} />
     </div>
   </div>
