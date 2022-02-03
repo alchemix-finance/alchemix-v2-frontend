@@ -2,8 +2,7 @@
 // libraries
 import { onMount } from 'svelte';
 import { Router, Route } from 'svelte-routing';
-import Modal from 'svelte-simple-modal';
-import { modal } from './stores/modal';
+import Modal from 'components/elements/Modal.svelte';
 
 // middleware
 import { getFiatRates, getGasPrices, getTokenPrices } from './middleware/zapper';
@@ -58,7 +57,7 @@ onMount(async () => {
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 
-<Modal show="{$modal}">
+<Modal>
   <Router url="{url}">
     <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
       <div class="col-span-12 bg-grey30 pl-8 pt-5 pb-5 border-grey5 border-b">

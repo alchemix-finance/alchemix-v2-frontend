@@ -29,4 +29,11 @@ module.exports = {
     'no-await-in-loop': 0,
     'no-restricted-syntax': 0,
   },
+  settings: {
+    'import/resolver': {
+      webpack: {
+        config: './webpack.config.js',
+      },
+    },
+  },
 };
