@@ -27,14 +27,16 @@ let withdrawEnabled = false;
 let yieldSymbol;
 let yieldToShare;
 let yieldWithdrawAmount = 0;
-let yieldWithdrawAmountWei;
+let yieldWithdrawAmountShares;
 let maxYieldWithdrawAmount;
+let yieldExceeded = false;
 
 let underlyingSymbol;
 let underlyingToShare;
 let underlyingWithdrawAmount = 0;
-let underlyingWithdrawAmountWei;
+let underlyingWithdrawAmountShares;
 let maxUnderlyingWithdrawAmount;
+let underlyingExceeded = false;
 
 let startingBalance;
 let availableShares;
@@ -45,25 +47,25 @@ let openDebtAmountWei;
 let sharesWithdrawAmount;
 
 /*
- * @param amount the BigNumber to turn into a human readable string
+ * @param amount the String amount to transform into shares
  * @param decimals the Number of decimal places to use for calculations
  * @param sharePrice the BigNumber to use as price for calculations
- * @returns a formatted string
+ * @returns a BigNumber that represents the amount of shares
  * */
-const toHuman = (amount, decimals, sharePrice) => {
-  const workingValue = utils.parseUnits(amount, decimals);
+const toShares = (amount, decimals, sharePrice) => {
   const scalar = BigNumber.from(10).pow(decimals);
-  return utils.formatUnits(workingValue.mul(scalar).div(sharePrice), decimals);
+  return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
 };
 
 const initYield = () => {
   yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
-  yieldToShare = userShares.mul(yieldPricePerShare).toString();
-  console.log(yieldToShare);
+  const scalar = BigNumber.from(10).pow(yieldDecimals);
+  yieldToShare = userShares.mul(yieldPricePerShare).div(scalar);
+  maxYieldWithdrawAmount = utils.formatUnits(yieldToShare, yieldDecimals);
 };
 
 const setMaxYield = () => {
-  yieldWithdrawAmount = maxYieldWithdrawAmount;
+  yieldWithdrawAmount = utils.formatUnits(yieldToShare, yieldDecimals);
   clearUnderlying();
 };
 
@@ -73,6 +75,10 @@ const clearYield = () => {
 
 const initUnderlying = () => {
   underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
+  const scalar = BigNumber.from(10).pow(underlyingDecimals);
+  underlyingToShare = userShares.mul(underlyingPricePerShare).div(scalar);
+  maxUnderlyingWithdrawAmount = utils.formatUnits(underlyingToShare, underlyingDecimals);
+  console.log(underlyingToShare);
 };
 
 const setMaxUnderlying = () => {
@@ -86,8 +92,17 @@ const clearUnderlying = () => {
 
 const updateBalances = () => {
   if (underlyingWithdrawAmount) {
-    sharesWithdrawAmount = toHuman(underlyingWithdrawAmount, underlyingDecimals, underlyingPricePerShare);
-    console.log('huzza', sharesWithdrawAmount.toString());
+    underlyingWithdrawAmountShares = toShares(
+      underlyingWithdrawAmount,
+      underlyingDecimals,
+      underlyingPricePerShare,
+    );
+    underlyingExceeded = underlyingWithdrawAmountShares.gt(underlyingToShare);
+  }
+  if (yieldWithdrawAmount) {
+    yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldDecimals, yieldPricePerShare);
+    yieldExceeded = yieldWithdrawAmountShares.gt(yieldToShare);
+    console.log(yieldWithdrawAmountShares.toString(), yieldToShare.toString());
   }
 };
 
@@ -98,7 +113,8 @@ $: underlyingWithdrawAmount, updateBalances();
 
 onMount(() => {
   console.log('withdraw mounted with props', { ...$$props });
-
+  startingBalance = utils.formatUnits(userShares, underlyingDecimals);
+  remainingBalance = startingBalance;
   initUnderlying();
   initYield();
 });
@@ -121,18 +137,13 @@ onMount(() => {
           Available: {maxYieldWithdrawAmount}
           {yieldSymbol}
         </label>
-        <div
-          class="flex bg-grey3 rounded border {yieldWithdrawAmount > maxYieldWithdrawAmount
-            ? 'border-red3'
-            : 'border-grey3'}"
-        >
+        <div class="flex bg-grey3 rounded border {yieldExceeded ? 'border-red3' : 'border-grey3'}">
           <div class="w-full">
             <InputNumber
               id="yieldInput"
               bind:value="{yieldWithdrawAmount}"
               placeholder="~0.00 {yieldSymbol}"
-              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
-              maxYieldWithdrawAmount
+              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldExceeded
                 ? 'text-red3'
                 : 'text-lightgrey5'}"
             />
@@ -166,18 +177,13 @@ onMount(() => {
           Available: {maxUnderlyingWithdrawAmount}
           {underlyingSymbol}
         </label>
-        <div
-          class="flex bg-grey3 rounded border {underlyingWithdrawAmount > maxUnderlyingWithdrawAmount
-            ? 'border-red3'
-            : 'border-grey3'}"
-        >
+        <div class="flex bg-grey3 rounded border {underlyingExceeded ? 'border-red3' : 'border-grey3'}">
           <div class="w-full">
             <InputNumber
               id="underlyingInput"
               bind:value="{underlyingWithdrawAmount}"
               placeholder="~0.00 {underlyingSymbol}"
-              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdrawAmount >
-              maxUnderlyingWithdrawAmount
+              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingExceeded
                 ? 'text-red3'
                 : 'text-lightgrey5'}"
             />
