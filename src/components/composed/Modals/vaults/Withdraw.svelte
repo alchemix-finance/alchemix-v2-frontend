@@ -1,6 +1,6 @@
 <script>
 import { onMount } from 'svelte';
-import { utils, FixedNumber, BigNumber } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
 import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
@@ -21,6 +21,7 @@ export let underlyingPricePerShare;
 export let yieldPricePerShare;
 export let yieldDecimals;
 export let underlyingDecimals;
+export let aggregateBalance;
 
 let withdrawEnabled = false;
 
@@ -40,9 +41,11 @@ let underlyingExceeded = false;
 
 let startingBalance;
 let availableShares;
+let coveredDebt;
 let remainingBalance;
 let projectedDebtLimit;
-let openDebtAmountWei;
+let openDebtAmountFormatted;
+let borrowLimitFormatted;
 
 let sharesWithdrawAmount;
 
@@ -61,11 +64,19 @@ const initYield = () => {
   yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
   const scalar = BigNumber.from(10).pow(yieldDecimals);
   yieldToShare = userShares.mul(yieldPricePerShare).div(scalar);
-  maxYieldWithdrawAmount = utils.formatUnits(yieldToShare, yieldDecimals);
+  const maxAmountAvailable = coveredDebt.sub(openDebtAmount).mul(loanRatio.div(scalar)).gt(BigNumber.from(0));
+  maxYieldWithdrawAmount = maxAmountAvailable
+    ? utils.formatUnits(yieldToShare, yieldDecimals)
+    : utils.formatUnits(
+        yieldToShare.sub(openDebtAmount).gt(BigNumber.from(0))
+          ? yieldToShare.sub(openDebtAmount)
+          : BigNumber.from(0),
+        yieldDecimals,
+      );
 };
 
 const setMaxYield = () => {
-  yieldWithdrawAmount = utils.formatUnits(yieldToShare, yieldDecimals);
+  yieldWithdrawAmount = maxYieldWithdrawAmount;
   clearUnderlying();
 };
 
@@ -77,8 +88,15 @@ const initUnderlying = () => {
   underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
   const scalar = BigNumber.from(10).pow(underlyingDecimals);
   underlyingToShare = userShares.mul(underlyingPricePerShare).div(scalar);
-  maxUnderlyingWithdrawAmount = utils.formatUnits(underlyingToShare, underlyingDecimals);
-  console.log(underlyingToShare);
+  const maxAmountAvailable = coveredDebt.sub(openDebtAmount).mul(loanRatio.div(scalar)).gt(BigNumber.from(0));
+  maxUnderlyingWithdrawAmount = maxAmountAvailable
+    ? utils.formatUnits(underlyingToShare, underlyingDecimals)
+    : utils.formatUnits(
+        underlyingToShare.sub(openDebtAmount).gt(BigNumber.from(0))
+          ? underlyingToShare.sub(openDebtAmount)
+          : BigNumber.from(0),
+        underlyingDecimals,
+      );
 };
 
 const setMaxUnderlying = () => {
@@ -97,24 +115,77 @@ const updateBalances = () => {
       underlyingDecimals,
       underlyingPricePerShare,
     );
-    underlyingExceeded = underlyingWithdrawAmountShares.gt(underlyingToShare);
+    underlyingExceeded = underlyingWithdrawAmountShares.gt(userShares);
+  } else {
+    underlyingWithdrawAmountShares = BigNumber.from(0);
   }
   if (yieldWithdrawAmount) {
     yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldDecimals, yieldPricePerShare);
-    yieldExceeded = yieldWithdrawAmountShares.gt(yieldToShare);
-    console.log(yieldWithdrawAmountShares.toString(), yieldToShare.toString());
+    yieldExceeded = yieldWithdrawAmountShares.gt(userShares);
+  } else {
+    yieldWithdrawAmountShares = BigNumber.from(0);
   }
+  const remainingBalanceBN = userShares.sub(underlyingWithdrawAmountShares).sub(yieldWithdrawAmountShares);
+  sharesWithdrawAmount = underlyingWithdrawAmountShares.add(yieldWithdrawAmountShares);
+  remainingBalance = utils.formatUnits(remainingBalanceBN, underlyingDecimals);
+  const globalCover = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
+    .div(BigNumber.from(10).pow(18))
+    .div(loanRatio.div(BigNumber.from(10).pow(18)));
+  const freeCover = globalCover.sub(openDebtAmount).mul(loanRatio.div(BigNumber.from(10).pow(18)));
+  withdrawEnabled =
+    sharesWithdrawAmount.gt(BigNumber.from(0)) &&
+    sharesWithdrawAmount.lt(userShares) &&
+    sharesWithdrawAmount.lt(freeCover);
 };
 
-const withdraw = () => {};
+const withdraw = () => {
+  let method;
+  if (
+    yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
+    (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
+  ) {
+    method = 'withdraw';
+  } else if (
+    (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
+    underlyingWithdrawAmountShares.gt(BigNumber.from(0))
+  ) {
+    method = 'withdrawUnderlying';
+  } else {
+    method = 'withdrawMulticall';
+  }
+  const payload = {
+    amountYield: yieldWithdrawAmountShares,
+    amountUnderlying: underlyingWithdrawAmountShares,
+    amountBorrow: null,
+    amountRepay: null,
+    amountAlToken: null,
+    method,
+    yieldToken,
+    underlyingToken,
+    alToken: null,
+    targetAddress: null,
+    vaultIndex,
+    transmuter: null,
+    transmuterAddress: null,
+    alTokenAllowance: null,
+    unexchangedBalance: null,
+  };
+  tempTx.set({ ...payload });
+};
 
-$: yieldWithdrawAmount, updateBalances();
-$: underlyingWithdrawAmount, updateBalances();
+$: if (yieldWithdrawAmount) updateBalances();
+$: if (underlyingWithdrawAmount) updateBalances();
 
 onMount(() => {
-  console.log('withdraw mounted with props', { ...$$props });
+  coveredDebt = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
+    .div(BigNumber.from(10).pow(18))
+    .div(loanRatio.div(BigNumber.from(10).pow(18)));
   startingBalance = utils.formatUnits(userShares, underlyingDecimals);
   remainingBalance = startingBalance;
+  openDebtAmountFormatted = utils.formatUnits(openDebtAmount, underlyingDecimals);
+  borrowLimitFormatted = utils.formatUnits(borrowLimit, underlyingDecimals);
+  projectedDebtLimit = borrowLimitFormatted;
+  availableShares = userShares.sub(openDebtAmount);
   initUnderlying();
   initYield();
 });
@@ -124,17 +195,19 @@ onMount(() => {
   <div slot="header" class="p-4 text-sm flex justify-between">
     <p class="inline-block">Withdraw Collateral</p>
     <div>
-      {#if openDebtAmount !== '0.0'}
-        <p class="inline-block">Debt: {openDebtAmount} {openDebtSymbol} |</p>
+      {#if openDebtAmountFormatted !== '0.0'}
+        <p class="inline-block">Debt: {openDebtAmountFormatted} {openDebtSymbol} |</p>
       {/if}
-      <p class="inline-block">Loan Ratio: {100 / parseFloat(loanRatio)}%</p>
+      <p class="inline-block">
+        Loan Ratio: {100 / parseFloat(utils.formatEther(loanRatio))}%
+      </p>
     </div>
   </div>
   <div slot="body" class="p-4">
     <div class="flex space-x-4">
       <div class="w-full">
         <label for="yieldInput" class="text-sm text-lightgrey10">
-          Available: {maxYieldWithdrawAmount}
+          Available: ~{Math.round(parseFloat(maxYieldWithdrawAmount))}
           {yieldSymbol}
         </label>
         <div class="flex bg-grey3 rounded border {yieldExceeded ? 'border-red3' : 'border-grey3'}">
@@ -174,7 +247,7 @@ onMount(() => {
       </div>
       <div class="w-full">
         <label for="underlyingInput" class="text-sm text-lightgrey10">
-          Available: {maxUnderlyingWithdrawAmount}
+          Available: ~{Math.round(parseFloat(maxUnderlyingWithdrawAmount))}
           {underlyingSymbol}
         </label>
         <div class="flex bg-grey3 rounded border {underlyingExceeded ? 'border-red3' : 'border-grey3'}">
@@ -218,7 +291,7 @@ onMount(() => {
       Deposit Balance: {startingBalance}
       -> {remainingBalance}
       <br />
-      Borrow Limit: {borrowLimit} -> {projectedDebtLimit}
+      Borrow Limit: {borrowLimitFormatted} -> {projectedDebtLimit}
     </div>
 
     <Button

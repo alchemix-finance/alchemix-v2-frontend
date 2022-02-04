@@ -1,7 +1,7 @@
 <script>
 import { getContext } from 'svelte';
 import { _ } from 'svelte-i18n';
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -370,6 +370,7 @@ const withdraw = async () => {
 };
 
 const withdrawUnderlying = async () => {
+  console.log($tempTx);
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
   const refreshPayload = {
@@ -505,9 +506,15 @@ const renderVaults = async () => {
         },
         deposited: {
           CellComponent: CurrencyCell,
-          value:
-            ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
-            10 ** $alusd.rows[index].underlyingDecimals,
+          // value:
+          //   ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
+          //   10 ** $alusd.rows[index].underlyingDecimals,
+          value: utils.formatUnits(
+            $alusd.rows[index].balance
+              .mul($alusd.rows[index].underlyingPerShare)
+              .div(BigNumber.from(10).pow($alusd.rows[index].underlyingDecimals)),
+            $alusd.rows[index].underlyingDecimals,
+          ),
           colSize: 2,
         },
         limit: {
@@ -534,15 +541,16 @@ const renderVaults = async () => {
           yieldToken: token,
           underlyingToken: $alusd.rows[index].underlyingToken,
           userDeposit: $alusd.rows[index].balance,
-          loanRatio: $alusd.ratio,
+          loanRatio: utils.parseUnits($alusd.ratio, 18),
           borrowLimit: $alusd.rows[index].vaultDebt,
-          openDebtAmount: $alusd.userDebt,
+          openDebtAmount: utils.parseUnits($alusd.userDebt, 18),
           openDebtSymbol: 'alUSD',
           underlyingPricePerShare: $alusd.rows[index].underlyingPerShare,
           yieldPricePerShare: $alusd.rows[index].yieldPerShare,
           yieldDecimals: $alusd.rows[index].yieldDecimals,
           underlyingDecimals: $alusd.rows[index].underlyingDecimals,
           vaultIndex: index,
+          aggregateBalance: $aggregate.balance,
         },
       },
     };

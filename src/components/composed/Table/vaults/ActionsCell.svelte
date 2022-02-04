@@ -17,6 +17,7 @@ export let yieldPricePerShare;
 export let yieldDecimals;
 export let underlyingDecimals;
 export let vaultIndex;
+export let aggregateBalance;
 
 const { open } = getContext('simple-modal');
 
@@ -49,6 +50,7 @@ const openWithdraw = () => {
       yieldDecimals,
       underlyingDecimals,
       vaultIndex,
+      aggregateBalance,
     },
     { ...modalStyle },
     {
