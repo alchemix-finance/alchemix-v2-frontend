@@ -69,12 +69,6 @@
                     "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "address[]",
-                    "name": "yTokens",
-                    "type": "address[]"
                 }
             ],
             "name": "Claim",
@@ -351,16 +345,6 @@
                     "internalType": "address",
                     "name": "recipient",
                     "type": "address"
-                },
-                {
-                    "internalType": "address[]",
-                    "name": "yTokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "bytes[]",
-                    "name": "yTokenParams",
-                    "type": "bytes[]"
                 }
             ],
             "name": "claim",
@@ -738,5 +722,5 @@
             "type": "function"
         }
     ],
-    "address": "0xA23f2C400281A3fF72Ae6D091d0Ce14Dbd3D8E26"
+    "address": "0xA670EBcBD87c15C07533e08B1c64735E1F1C8e8e"
 }

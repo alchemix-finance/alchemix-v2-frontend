@@ -2,7 +2,7 @@
 export let tokenSymbol;
 export let tokenName;
 export let tokenBalance;
-let tokenIcon = 'images/token-icons/unknown.svg';
+let tokenIcon = '/images/token-icons/unknown.svg';
 
 // @dev truncates long balances to keep them readable
 const truncateBalance = (balance) => {
@@ -21,10 +21,12 @@ const truncateBalance = (balance) => {
 const getSource = async (filename) => {
   const xhr = new XMLHttpRequest();
   xhr.open('HEAD', `/images/token-icons/${filename}.png`);
+  xhr.responseType = 'blob';
   xhr.send();
   xhr.onreadystatechange = () => {
-    if (xhr.status !== 404) {
-      tokenIcon = `images/token-icons/${filename + '.png'}`;
+    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 404) {
+      if (xhr.response && xhr.response.type === 'image/png')
+        tokenIcon = `/images/token-icons/${filename + '.png'}`;
     }
   };
 };

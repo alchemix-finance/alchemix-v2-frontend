@@ -1,32 +1,27 @@
 import { writable } from 'svelte/store';
 
 const defaults = {
-  modal: null,
-  windowStyle: {},
-  modalStyle: {
-    styleBg: {
-      backdropFilter: 'blur(4px)',
-    },
-    styleWindow: {
-      backgroundColor: '#171B24',
-      borderColor: '#171B24',
-      color: '#f5f5f5',
-    },
-    styleContent: {
-      padding: 0,
-    },
-    closeButton: false,
-  },
+  component: undefined,
+  props: {},
 };
 
-export const modal = writable(defaults.modal);
-export const windowStyle = writable(defaults.windowStyle);
+export const modal = writable(defaults);
 
-export const modalStyle = {
-  ...defaults.modalStyle,
+export const showModal = (component, props = {}) => {
+  if (!component) {
+    console.warn('Modal component not passed');
+    return;
+  }
+
+  modal.set({
+    component,
+    props,
+  });
 };
 
 export const modalReset = () => {
-  modal.set(defaults.modal);
-  windowStyle.set(defaults.windowStyle);
+  modal.set({
+    component: undefined,
+    props: {},
+  });
 };

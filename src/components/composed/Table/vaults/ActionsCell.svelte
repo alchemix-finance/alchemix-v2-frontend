@@ -1,9 +1,11 @@
 <script>
-import Button from '../../../elements/Button.svelte';
-import Deposit from '../../../composed/Modals/vaults/Deposit.svelte';
-import Withdraw from '../../../composed/Modals/vaults/Withdraw.svelte';
-import { getContext } from 'svelte';
-import { modalStyle } from 'stores/modal';
+
+import Button from 'components/elements/Button.svelte';
+import Deposit from 'components/composed/Modals/vaults/Deposit.svelte';
+import Withdraw from 'components/composed/Modals/vaults/Withdraw.svelte';
+
+import { showModal } from 'stores/modal';
+
 
 export let yieldToken;
 export let underlyingToken;
@@ -19,47 +21,32 @@ export let underlyingDecimals;
 export let vaultIndex;
 export let aggregateBalance;
 
-const { open } = getContext('simple-modal');
+const openDeposit = () =>
+  showModal(Deposit, {
+    yieldToken,
+    underlyingToken,
+    loanRatio,
+    userDeposit,
+    borrowLimit,
+    vaultIndex,
+  });
 
-const openDeposit = () => {
-  open(
-    Deposit,
-    { yieldToken, underlyingToken, loanRatio, userDeposit, borrowLimit, vaultIndex },
-    { ...modalStyle },
-    {
-      onClosed: () => {
-        console.log('modal closed');
-      },
-    },
-  );
-};
-
-const openWithdraw = () => {
-  open(
-    Withdraw,
-    {
-      yieldToken,
-      underlyingToken,
-      loanRatio,
-      borrowLimit,
-      userShares: userDeposit,
-      openDebtAmount,
-      openDebtSymbol,
-      underlyingPricePerShare,
-      yieldPricePerShare,
-      yieldDecimals,
-      underlyingDecimals,
-      vaultIndex,
-      aggregateBalance,
-    },
-    { ...modalStyle },
-    {
-      onClosed: () => {
-        console.log('modal closed');
-      },
-    },
-  );
-};
+const openWithdraw = () =>
+  showModal(Withdraw, {
+    yieldToken,
+    underlyingToken,
+    loanRatio,
+    borrowLimit,
+    userShares: userDeposit,
+    openDebtAmount,
+    openDebtSymbol,
+    underlyingPricePerShare,
+    yieldPricePerShare,
+    yieldDecimals,
+    underlyingDecimals,
+    vaultIndex,
+    aggregateBalance,
+  });
 </script>
 
 <div class="flex justify-between space-x-2">
