@@ -1,9 +1,11 @@
 <script>
+
 import Button from 'components/elements/Button.svelte';
 import Deposit from 'components/composed/Modals/vaults/Deposit.svelte';
 import Withdraw from 'components/composed/Modals/vaults/Withdraw.svelte';
 
 import { showModal } from 'stores/modal';
+
 
 export let yieldToken;
 export let underlyingToken;
@@ -17,6 +19,7 @@ export let yieldPricePerShare;
 export let yieldDecimals;
 export let underlyingDecimals;
 export let vaultIndex;
+export let aggregateBalance;
 
 const openDeposit = () =>
   showModal(Deposit, {
@@ -42,6 +45,7 @@ const openWithdraw = () =>
     yieldDecimals,
     underlyingDecimals,
     vaultIndex,
+    aggregateBalance,
   });
 </script>
 

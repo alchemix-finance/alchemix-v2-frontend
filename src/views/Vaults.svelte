@@ -1,6 +1,6 @@
 <script>
 import { _ } from 'svelte-i18n';
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import ViewContainer from '../components/elements/ViewContainer.svelte';
 import PageHeader from '../components/elements/PageHeader.svelte';
 import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -145,7 +145,7 @@ const deposit = async () => {
   try {
     const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
     const decimals = await getTokenDecimals($tempTx.yieldToken);
-    const amountToWei = utils.parseUnits($tempTx.amountYield.toString(), decimals);
+    const amountToWei = $tempTx.amountYield;
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     if (!allowance) {
       await setTokenAllowance($tempTx.yieldToken, contract.address);
@@ -179,7 +179,7 @@ const depositUnderlying = async () => {
       contract.address,
     );
     const decimals = await getTokenDecimals($tempTx.underlyingToken);
-    const amountToWei = utils.parseUnits($tempTx.amountUnderlying.toString(), decimals);
+    const amountToWei = $tempTx.amountUnderlying;
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     if (!allowanceUnderlying) {
       await setTokenAllowance($tempTx.underlyingToken, contract.address);
@@ -217,8 +217,8 @@ const multicall = async () => {
     );
     const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
     const decimals = await getTokenDecimals($tempTx.underlyingToken);
-    const yieldToWei = utils.parseUnits($tempTx.amountYield.toString(), decimals);
-    const underlyingToWei = utils.parseUnits($tempTx.amountUnderlying.toString(), decimals);
+    const yieldToWei = $tempTx.amountYield;
+    const underlyingToWei = $tempTx.amountUnderlying;
     if (!allowanceUnderlying) await setTokenAllowance($tempTx.underlyingToken, contract.address);
     if (!allowanceYield) await setTokenAllowance($tempTx.yieldToken, contract.address);
 
@@ -348,6 +348,7 @@ const withdraw = async () => {
 };
 
 const withdrawUnderlying = async () => {
+  console.log($tempTx);
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
   const refreshPayload = {
@@ -489,9 +490,15 @@ const renderVaults = async () => {
         },
         deposited: {
           CellComponent: CurrencyCell,
-          value:
-            ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
-            10 ** $alusd.rows[index].underlyingDecimals,
+          // value:
+          //   ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
+          //   10 ** $alusd.rows[index].underlyingDecimals,
+          value: utils.formatUnits(
+            $alusd.rows[index].balance
+              .mul($alusd.rows[index].underlyingPerShare)
+              .div(BigNumber.from(10).pow($alusd.rows[index].underlyingDecimals)),
+            $alusd.rows[index].underlyingDecimals,
+          ),
           colSize: 2,
         },
         limit: {
@@ -518,15 +525,16 @@ const renderVaults = async () => {
           yieldToken: token,
           underlyingToken: $alusd.rows[index].underlyingToken,
           userDeposit: $alusd.rows[index].balance,
-          loanRatio: $alusd.ratio,
+          loanRatio: utils.parseUnits($alusd.ratio, 18),
           borrowLimit: $alusd.rows[index].vaultDebt,
-          openDebtAmount: $alusd.userDebt,
+          openDebtAmount: utils.parseUnits($alusd.userDebt, 18),
           openDebtSymbol: 'alUSD',
-          underlyingPricePerShare: $alusd.rows[index].underlyingPerShareFormatted,
-          yieldPricePerShare: $alusd.rows[index].yieldPerShareFormatted,
+          underlyingPricePerShare: $alusd.rows[index].underlyingPerShare,
+          yieldPricePerShare: $alusd.rows[index].yieldPerShare,
           yieldDecimals: $alusd.rows[index].yieldDecimals,
           underlyingDecimals: $alusd.rows[index].underlyingDecimals,
           vaultIndex: index,
+          aggregateBalance: $aggregate.balance,
         },
       },
     };
