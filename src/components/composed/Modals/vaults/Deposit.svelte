@@ -1,84 +1,84 @@
 <script>
-import { onMount } from 'svelte';
-import { utils, BigNumber } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import tempTx from '../../../../stores/tempTx';
-import walletBalance from '../../../../stores/walletBalance';
+  import { onMount } from 'svelte';
+  import { utils, BigNumber } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import tempTx from '../../../../stores/tempTx';
+  import walletBalance from '../../../../stores/walletBalance';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let vaultIndex;
+  export let vaultIndex;
 
-export let yieldToken;
-export let underlyingToken;
-export let loanRatio;
-export let userDeposit;
-export let borrowLimit;
-export let underlyingDecimals;
-export let yieldDecimals;
+  export let yieldToken;
+  export let underlyingToken;
+  export let loanRatio;
+  export let userDeposit;
+  export let borrowLimit;
+  export let underlyingDecimals;
+  export let yieldDecimals;
 
-let yieldBalance;
-let yieldSymbol;
-let underlyingBalance;
-let underlyingSymbol;
+  let yieldBalance;
+  let yieldSymbol;
+  let underlyingBalance;
+  let underlyingSymbol;
 
-let yieldDeposit;
-let underlyingDeposit;
-let totalDeposit;
-let projectedDebtLimit;
+  let yieldDeposit;
+  let underlyingDeposit;
+  let totalDeposit;
+  let projectedDebtLimit;
 
-let depositDisabled = true;
+  let depositDisabled = true;
 
-const deposit = () => {
-  let yieldAmnt;
-  let udrlyAmnt;
-  if (yieldDeposit) {
-    yieldAmnt = utils.parseUnits(yieldDeposit.toString(), yieldDecimals);
-    $tempTx.amountYield = yieldAmnt;
-  }
-  if (underlyingDeposit) {
-    udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
-    $tempTx.amountUnderlying = udrlyAmnt;
-  }
-  $tempTx.yieldToken = yieldToken;
-  $tempTx.underlyingToken = underlyingToken;
-  $tempTx.targetAddress = null;
-  $tempTx.vaultindex = vaultIndex;
-  if (yieldAmnt && udrlyAmnt) {
-    $tempTx.method = 'multicall';
-  } else if (yieldAmnt && !udrlyAmnt) {
-    $tempTx.method = 'deposit';
-  } else {
-    $tempTx.method = 'depositUnderlying';
-  }
-};
+  const deposit = () => {
+    let yieldAmnt;
+    let udrlyAmnt;
+    if (yieldDeposit) {
+      yieldAmnt = utils.parseUnits(yieldDeposit.toString(), yieldDecimals);
+      $tempTx.amountYield = yieldAmnt;
+    }
+    if (underlyingDeposit) {
+      udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
+      $tempTx.amountUnderlying = udrlyAmnt;
+    }
+    $tempTx.yieldToken = yieldToken;
+    $tempTx.underlyingToken = underlyingToken;
+    $tempTx.targetAddress = null;
+    $tempTx.vaultindex = vaultIndex;
+    if (yieldAmnt && udrlyAmnt) {
+      $tempTx.method = 'multicall';
+    } else if (yieldAmnt && !udrlyAmnt) {
+      $tempTx.method = 'deposit';
+    } else {
+      $tempTx.method = 'depositUnderlying';
+    }
+  };
 
-const updateBalances = () => {
-  const yieldDepositToWei = utils.parseUnits((yieldDeposit || 0).toString(), yieldDecimals);
-  const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
-  const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
-  totalDeposit = utils.formatEther(userDeposit.add(totalToWei));
-  projectedDebtLimit = utils.formatEther(
-    BigNumber.from(borrowLimit).add(
-      totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
-    ),
-  );
-  depositDisabled =
-    totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
-};
+  const updateBalances = () => {
+    const yieldDepositToWei = utils.parseUnits((yieldDeposit || 0).toString(), yieldDecimals);
+    const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
+    const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
+    totalDeposit = utils.formatEther(userDeposit.add(totalToWei));
+    projectedDebtLimit = utils.formatEther(
+      BigNumber.from(borrowLimit).add(
+        totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
+      ),
+    );
+    depositDisabled =
+      totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
+  };
 
-$: yieldDeposit, updateBalances();
-$: underlyingDeposit, updateBalances();
+  $: yieldDeposit, updateBalances();
+  $: underlyingDeposit, updateBalances();
 
-onMount(() => {
-  const yieldObject = $walletBalance.tokens.find((token) => token.address === yieldToken);
-  yieldSymbol = yieldObject.symbol;
-  yieldBalance = yieldObject.balance;
-  const underlyingObject = $walletBalance.tokens.find((token) => token.address === underlyingToken);
-  underlyingSymbol = underlyingObject.symbol;
-  underlyingBalance = underlyingObject.balance;
-});
+  onMount(() => {
+    const yieldObject = $walletBalance.tokens.find((token) => token.address === yieldToken);
+    yieldSymbol = yieldObject.symbol;
+    yieldBalance = yieldObject.balance;
+    const underlyingObject = $walletBalance.tokens.find((token) => token.address === underlyingToken);
+    underlyingSymbol = underlyingObject.symbol;
+    underlyingBalance = underlyingObject.balance;
+  });
 </script>
 
 <ContainerWithHeader>
