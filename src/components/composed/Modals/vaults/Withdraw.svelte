@@ -111,7 +111,7 @@ const clearUnderlying = () => {
 const updateBalances = () => {
   if (underlyingWithdrawAmount) {
     underlyingWithdrawAmountShares = toShares(
-      underlyingWithdrawAmount,
+      (underlyingWithdrawAmount || 0).toString(),
       underlyingDecimals,
       underlyingPricePerShare,
     );
@@ -120,7 +120,11 @@ const updateBalances = () => {
     underlyingWithdrawAmountShares = BigNumber.from(0);
   }
   if (yieldWithdrawAmount) {
-    yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldDecimals, yieldPricePerShare);
+    yieldWithdrawAmountShares = toShares(
+      (yieldWithdrawAmount || 0).toString(),
+      yieldDecimals,
+      yieldPricePerShare,
+    );
     yieldExceeded = yieldWithdrawAmountShares.gt(userShares);
   } else {
     yieldWithdrawAmountShares = BigNumber.from(0);

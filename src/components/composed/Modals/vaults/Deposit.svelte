@@ -55,8 +55,8 @@ const deposit = () => {
 };
 
 const updateBalances = () => {
-  const yieldDepositToWei = utils.parseUnits(yieldDeposit || '0', yieldDecimals);
-  const underlyingDepositToWei = utils.parseUnits(underlyingDeposit || '0', underlyingDecimals);
+  const yieldDepositToWei = utils.parseUnits((yieldDeposit || 0).toString(), yieldDecimals);
+  const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
   const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
   totalDeposit = utils.formatEther(userDeposit.add(totalToWei));
   projectedDebtLimit = utils.formatEther(
