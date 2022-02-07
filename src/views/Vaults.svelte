@@ -165,9 +165,11 @@ const provider = getProvider();
 const abiCoder = utils.defaultAbiCoder;
 
 const deposit = async () => {
+  console.table($tempTx);
+  console.log($tempTx.amountYield.toString());
   const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
   const decimals = await getTokenDecimals($tempTx.yieldToken);
-  const amountToWei = utils.parseUnits($tempTx.amountYield.toString(), decimals);
+  const amountToWei = $tempTx.amountYield;
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   if (!allowance) {
     await setTokenAllowance($tempTx.yieldToken, contract.address);
@@ -201,7 +203,7 @@ const depositUnderlying = async () => {
     contract.address,
   );
   const decimals = await getTokenDecimals($tempTx.underlyingToken);
-  const amountToWei = utils.parseUnits($tempTx.amountUnderlying.toString(), decimals);
+  const amountToWei = $tempTx.amountUnderlying;
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
   if (!allowanceUnderlying) {
     await setTokenAllowance($tempTx.underlyingToken, contract.address);

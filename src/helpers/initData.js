@@ -41,7 +41,7 @@ function logData() {
         console.table(_walletBalance.tokens);
         console.log('====== Vault Configuration ======');
         console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
-        console.log('Alchemist alUSD max debt:', _alusd.maxDebt, 'alUSD');
+        console.log('Alchemist alUSD max debt:', _alusd.maxDebt.toString(), 'alUSD');
         console.table(_alusd.debtToken);
         console.table(_alusd.rows);
         console.log('====== Aggregated ======');
@@ -250,7 +250,8 @@ function vaultAlusdRowBuilder(tokens) {
         .div(utils.parseUnits(_alusd.ratio, 18))
         .mul(underlyingPerShare)
         .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
-      const stratIsUsed = utils.formatEther(position.shares) !== '0.0';
+      const stratIsUsed =
+        parseFloat(utils.formatUnits(position.shares, underlyingDecimals)).toFixed(4) !== '0.0000';
       const depositPayload = {
         token,
         symbol: yieldSymbol,
@@ -274,7 +275,11 @@ function vaultAlusdRowBuilder(tokens) {
         vaultDebt: vaultDebt.toString(),
       };
       _alusd.rows.push(rowPayload);
-      _alusd.maxDebt += vaultDebt;
+      if (_alusd.maxDebt) {
+        _alusd.maxDebt = _alusd.maxDebt.add(vaultDebt);
+      } else {
+        _alusd.maxDebt = vaultDebt;
+      }
       _aggregate.deposited.push(depositPayload);
       _aggregate.totalDeposit +=
         (parseFloat(depositPayload.balance) * underlyingPerShare) / 10 ** underlyingDecimals;

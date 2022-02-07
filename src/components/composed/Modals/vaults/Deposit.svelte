@@ -1,5 +1,6 @@
 <script>
 import { onMount } from 'svelte';
+import { utils, BigNumber } from 'ethers';
 import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
 import Button from '../../../elements/Button.svelte';
 import tempTx from '../../../../stores/tempTx';
@@ -14,6 +15,8 @@ export let underlyingToken;
 export let loanRatio;
 export let userDeposit;
 export let borrowLimit;
+export let underlyingDecimals;
+export let yieldDecimals;
 
 let yieldBalance;
 let yieldSymbol;
@@ -28,14 +31,20 @@ let projectedDebtLimit;
 let depositDisabled = true;
 
 const deposit = () => {
-  const yieldAmnt = parseFloat(yieldDeposit);
-  const udrlyAmnt = parseFloat(underlyingDeposit);
-  if (yieldAmnt) $tempTx.amountYield = yieldAmnt;
-  if (udrlyAmnt) $tempTx.amountUnderlying = udrlyAmnt;
+  let yieldAmnt;
+  let udrlyAmnt;
+  if (yieldDeposit) {
+    yieldAmnt = utils.parseUnits(yieldDeposit.toString(), yieldDecimals);
+    $tempTx.amountYield = yieldAmnt;
+  }
+  if (underlyingDeposit) {
+    udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
+    $tempTx.amountUnderlying = udrlyAmnt;
+  }
   $tempTx.yieldToken = yieldToken;
   $tempTx.underlyingToken = underlyingToken;
   $tempTx.targetAddress = null;
-  $tempTx.vaultIndex = vaultIndex;
+  $tempTx.vaultindex = vaultIndex;
   if (yieldAmnt && udrlyAmnt) {
     $tempTx.method = 'multicall';
   } else if (yieldAmnt && !udrlyAmnt) {
@@ -46,36 +55,40 @@ const deposit = () => {
 };
 
 const updateBalances = () => {
-  totalDeposit = (parseFloat(yieldDeposit) || 0) + (parseFloat(underlyingDeposit) || 0);
-  projectedDebtLimit = parseFloat(totalDeposit) / parseFloat(loanRatio);
-  depositDisabled = yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance || !totalDeposit;
+  const yieldDepositToWei = utils.parseUnits(yieldDeposit || '0', yieldDecimals);
+  const underlyingDepositToWei = utils.parseUnits(underlyingDeposit || '0', underlyingDecimals);
+  const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
+  totalDeposit = utils.formatEther(userDeposit.add(totalToWei));
+  projectedDebtLimit = utils.formatEther(
+    BigNumber.from(borrowLimit).add(
+      totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
+    ),
+  );
+  depositDisabled =
+    totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
 };
 
 $: yieldDeposit, updateBalances();
 $: underlyingDeposit, updateBalances();
 
 onMount(() => {
-  if (yieldToken) {
-    const activeToken = $walletBalance.tokens.find((token) => token.address === yieldToken);
-    yieldBalance = activeToken.balance;
-    yieldSymbol = activeToken.symbol;
-  }
-  if (underlyingToken) {
-    const activeUnderlying = $walletBalance.tokens.find((token) => token.address === underlyingToken);
-    underlyingBalance = activeUnderlying.balance;
-    underlyingSymbol = activeUnderlying.symbol;
-  }
+  const yieldObject = $walletBalance.tokens.find((token) => token.address === yieldToken);
+  yieldSymbol = yieldObject.symbol;
+  yieldBalance = yieldObject.balance;
+  const underlyingObject = $walletBalance.tokens.find((token) => token.address === underlyingToken);
+  underlyingSymbol = underlyingObject.symbol;
+  underlyingBalance = underlyingObject.balance;
 });
 </script>
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex justify-between">
     <p class="inline-block">Deposit Collateral</p>
-    <p class="inline-block">Loan Ratio: {100 / parseFloat(loanRatio)}%</p>
+    <p class="inline-block">Loan Ratio: {100 / parseFloat(utils.formatEther(loanRatio))}%</p>
   </div>
   <div slot="body" class="p-4">
     <div class="flex space-x-4">
-      {#if yieldBalance !== '0.0'}
+      {#if yieldBalance > 0}
         <div class="w-full">
           <label for="yieldInput" class="text-sm text-lightgrey10">
             Available: {yieldBalance}
@@ -119,14 +132,14 @@ onMount(() => {
                 borderSize="0"
                 height="h-10"
                 on:clicked="{() => {
-                  yieldDeposit = null;
+                  yieldDeposit = '';
                 }}"
               />
             </div>
           </div>
         </div>
       {/if}
-      {#if underlyingBalance !== '0.0'}
+      {#if underlyingBalance > 0}
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
             Available: {underlyingBalance}
@@ -170,7 +183,7 @@ onMount(() => {
                 borderSize="0"
                 height="h-10"
                 on:clicked="{() => {
-                  underlyingDeposit = null;
+                  underlyingDeposit = '';
                 }}"
               />
             </div>
@@ -180,8 +193,9 @@ onMount(() => {
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {userDeposit} -> {totalDeposit || userDeposit}<br />
-      Borrow Limit: {borrowLimit} -> {projectedDebtLimit || borrowLimit}
+      Deposit Balance: {utils.formatEther(userDeposit)} -> {totalDeposit || utils.formatEther(userDeposit)}<br
+      />
+      Borrow Limit: {utils.formatEther(borrowLimit)} -> {projectedDebtLimit || utils.formatEther(borrowLimit)}
     </div>
 
     <Button
