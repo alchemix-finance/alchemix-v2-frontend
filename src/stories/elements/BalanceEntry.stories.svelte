@@ -1,7 +1,7 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import LocaleWrapper from '../LocaleWrapper.svelte';
-import BalanceEntry from '../../components/elements/BalanceEntry.svelte';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import LocaleWrapper from '../LocaleWrapper.svelte';
+  import BalanceEntry from '../../components/elements/BalanceEntry.svelte';
 </script>
 
 <Meta title="Stats/Balance Entry" component="{BalanceEntry}" />

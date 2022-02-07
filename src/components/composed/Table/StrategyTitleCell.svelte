@@ -1,6 +1,6 @@
 <script>
-export let icon = '';
-export let strategyName;
+  export let icon = '';
+  export let strategyName;
 </script>
 
 <div class="flex font-alcxTitles">

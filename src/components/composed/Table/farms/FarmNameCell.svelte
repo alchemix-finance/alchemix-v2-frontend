@@ -1,10 +1,10 @@
 <script>
-export let farmIcon;
-export let tokenIcon;
-export let farmName;
-export let farmSubtitle;
+  export let farmIcon;
+  export let tokenIcon;
+  export let farmName;
+  export let farmSubtitle;
 
-const defaultIcon = 'alcx_med.svg';
+  const defaultIcon = 'alcx_med.svg';
 </script>
 
 <div class="grid grid-cols-3 gap-8 w-full py-3">

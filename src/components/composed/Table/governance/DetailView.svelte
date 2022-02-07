@@ -1,57 +1,57 @@
 <script>
-import { slide } from 'svelte/transition';
-import { _ } from 'svelte-i18n';
-import { sendVote } from '../../../../middleware/snapshot';
-import governance from '../../../../stores/governance';
-import { setPendingVote, setSuccessVote, setError } from '../../../../helpers/setToast';
-import Button from '../../../elements/Button.svelte';
-import { getProvider } from '../../../../helpers/walletManager';
+  import { slide } from 'svelte/transition';
+  import { _ } from 'svelte-i18n';
+  import { sendVote } from '../../../../middleware/snapshot';
+  import governance from '../../../../stores/governance';
+  import { setPendingVote, setSuccessVote, setError } from '../../../../helpers/setToast';
+  import Button from '../../../elements/Button.svelte';
+  import { getProvider } from '../../../../helpers/walletManager';
 
-export let expandedRow = {};
-let value = '';
-let proposal;
-let vote;
+  export let expandedRow = {};
+  let value = '';
+  let proposal;
+  let vote;
 
-const provider = getProvider();
+  const provider = getProvider();
 
-/*
- * @dev constructs a payload and initiates snapshot voting
- * */
-const initVote = async () => {
-  if (proposal.state !== 'closed' && !vote) {
-    const payload = {
-      proposal: expandedRow.proposalEntry.id,
-      choice: value,
-    };
-    try {
-      setPendingVote();
-      await sendVote(payload);
-      setSuccessVote();
-    } catch (e) {
-      setError(e.message);
-      console.trace(e);
+  /*
+   * @dev constructs a payload and initiates snapshot voting
+   * */
+  const initVote = async () => {
+    if (proposal.state !== 'closed' && !vote) {
+      const payload = {
+        proposal: expandedRow.proposalEntry.id,
+        choice: value,
+      };
+      try {
+        setPendingVote();
+        await sendVote(payload);
+        setSuccessVote();
+      } catch (e) {
+        setError(e.message);
+        console.trace(e);
+      }
     }
-  }
-};
+  };
 
-// @dev finds urls in the description and makes them clickable
-const replaceUrl = () => {
-  const rule = /(((https?:\/\/)|(www\.))[^\s]+)/g;
-  return proposal.body.replace(rule, (url) => {
-    let link = url;
-    if (!link.match('^https?://')) {
-      link = 'https://' + link;
-    }
-    return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="underline text-orange3">${url}</a>`;
-  });
-};
+  // @dev finds urls in the description and makes them clickable
+  const replaceUrl = () => {
+    const rule = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+    return proposal.body.replace(rule, (url) => {
+      let link = url;
+      if (!link.match('^https?://')) {
+        link = 'https://' + link;
+      }
+      return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="underline text-orange3">${url}</a>`;
+    });
+  };
 
-const openOnSnapshot = () => {
-  window.open(`https://snapshot.org/#/alchemixstakers.eth/proposal/${proposal.id}`, '_blank');
-};
+  const openOnSnapshot = () => {
+    window.open(`https://snapshot.org/#/alchemixstakers.eth/proposal/${proposal.id}`, '_blank');
+  };
 
-$: proposal = $governance.proposals?.find((proposal) => proposal.id === expandedRow.proposalEntry.id);
-$: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === proposal.id));
+  $: proposal = $governance.proposals?.find((proposal) => proposal.id === expandedRow.proposalEntry.id);
+  $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === proposal.id));
 </script>
 
 <div class="p-4 border-b border-grey10" transition:slide>

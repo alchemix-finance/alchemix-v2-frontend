@@ -4,31 +4,31 @@ Used, for eg., in CollateralDropdown on Accounts page
 For a dropdown that opens on hover see /Dropdown
 -->
 <script>
-import { clickOutside } from '../../helpers/onClickOutside.js';
+  import { clickOutside } from '../../helpers/onClickOutside.js';
 
-let isOpen = false;
-const allOptionsOption = { name: 'All' };
-let activeOption = allOptionsOption.name;
+  let isOpen = false;
+  const allOptionsOption = { name: 'All' };
+  let activeOption = allOptionsOption.name;
 
-const handleOpen = () => {
-  isOpen = !isOpen;
-};
+  const handleOpen = () => {
+    isOpen = !isOpen;
+  };
 
-const handleOptionClick = (option) => {
-  activeOption = option;
-};
+  const handleOptionClick = (option) => {
+    activeOption = option;
+  };
 
-const handleClickOutside = () => {
-  isOpen = false;
-};
+  const handleClickOutside = () => {
+    isOpen = false;
+  };
 
-export let options = [];
+  export let options = [];
 </script>
 
 <style>
-.open {
-  transform: rotate(180deg);
-}
+  .open {
+    transform: rotate(180deg);
+  }
 </style>
 
 <div

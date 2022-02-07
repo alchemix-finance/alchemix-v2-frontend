@@ -1,108 +1,108 @@
 <script>
-import { slide } from 'svelte/transition';
-import Button from '../../../elements/Button.svelte';
-import walletBalance from '../../../../stores/walletBalance';
-import tempTx from '../../../../stores/tempTx';
-import getUserGas from '../../../../helpers/getUserGas';
-import { setError } from '../../../../helpers/setToast';
-import { utils } from 'ethers';
+  import { slide } from 'svelte/transition';
+  import Button from '../../../elements/Button.svelte';
+  import walletBalance from '../../../../stores/walletBalance';
+  import tempTx from '../../../../stores/tempTx';
+  import getUserGas from '../../../../helpers/getUserGas';
+  import { setError } from '../../../../helpers/setToast';
+  import { utils } from 'ethers';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let alToken;
-export let alTokenAllowance;
-export let alTokenSymbol;
-export let underlyingToken;
-export let underlyingTokenSymbol;
-export let exchangedBalance;
-export let unexchangedBalance;
-export let transmuter;
-export let address;
+  export let alToken;
+  export let alTokenAllowance;
+  export let alTokenSymbol;
+  export let underlyingToken;
+  export let underlyingTokenSymbol;
+  export let exchangedBalance;
+  export let unexchangedBalance;
+  export let transmuter;
+  export let address;
 
-let depositAmount;
-let withdrawAmount;
-let claimAmount;
+  let depositAmount;
+  let withdrawAmount;
+  let claimAmount;
 
-// const
-const format = utils.formatUnits;
+  // const
+  const format = utils.formatUnits;
 
-const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-const alTokenData = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
-let alTokenBalance;
-if (alTokenData) {
-  alTokenBalance = alTokenData.balance;
-  console.log('ATB', alTokenBalance);
-}
-console.log('altokenbal', alTokenData);
-
-const deposit = () => {
-  if (depositAmount > alTokenBalance) {
-    setError('Trying to deposit more than available');
-  } else {
-    $tempTx.transmuter = transmuter;
-    $tempTx.transmuterAddress = address;
-    $tempTx.alTokenAllowance = alTokenAllowance;
-    $tempTx.amountAlToken = depositAmount;
-    $tempTx.alToken = alToken;
-    $tempTx.method = 'deposit';
+  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+  const alTokenData = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
+  let alTokenBalance;
+  if (alTokenData) {
+    alTokenBalance = alTokenData.balance;
+    console.log('ATB', alTokenBalance);
   }
-};
+  console.log('altokenbal', alTokenData);
 
-const withdraw = async () => {
-  if (withdrawAmount > unexchangedBalance) {
-    setError('Trying to withdraw more than available');
-  } else {
-    $tempTx.transmuter = transmuter;
-    $tempTx.underlyingToken = underlyingToken;
-    $tempTx.amountUnderlying = withdrawAmount;
-    $tempTx.method = 'withdraw';
-  }
-};
+  const deposit = () => {
+    if (depositAmount > alTokenBalance) {
+      setError('Trying to deposit more than available');
+    } else {
+      $tempTx.transmuter = transmuter;
+      $tempTx.transmuterAddress = address;
+      $tempTx.alTokenAllowance = alTokenAllowance;
+      $tempTx.amountAlToken = depositAmount;
+      $tempTx.alToken = alToken;
+      $tempTx.method = 'deposit';
+    }
+  };
 
-const claim = async () => {
-  if (claimAmount > exchangedBalance) {
-    setError('Trying to claim more than available');
-  } else {
-    $tempTx.transmuter = transmuter;
-    $tempTx.underlyingToken = underlyingToken;
-    $tempTx.amountUnderlying = claimAmount;
-    $tempTx.method = 'claim';
-  }
-};
+  const withdraw = async () => {
+    if (withdrawAmount > unexchangedBalance) {
+      setError('Trying to withdraw more than available');
+    } else {
+      $tempTx.transmuter = transmuter;
+      $tempTx.underlyingToken = underlyingToken;
+      $tempTx.amountUnderlying = withdrawAmount;
+      $tempTx.method = 'withdraw';
+    }
+  };
 
-const setDepositValue = (event) => {
-  // TODO if new value < 1 wei -> depositAmount = 1 wei
-  depositAmount = (parseFloat(alTokenBalance) / 100) * event.detail.value;
-};
-const setWithdrawValue = (event) => {
-  // TODO if new value < 1 wei -> withdrawAmount = 1 wei
-  withdrawAmount = (parseFloat(unexchangedBalance) / 100) * event.detail.value;
-};
-const setClaimValue = (event) => {
-  claimAmount = (parseFloat(exchangedBalance) / 100) * event.detail.value;
-};
+  const claim = async () => {
+    if (claimAmount > exchangedBalance) {
+      setError('Trying to claim more than available');
+    } else {
+      $tempTx.transmuter = transmuter;
+      $tempTx.underlyingToken = underlyingToken;
+      $tempTx.amountUnderlying = claimAmount;
+      $tempTx.method = 'claim';
+    }
+  };
 
-const setMaxDeposit = () => {
-  depositAmount = alTokenBalance;
-};
-const setMaxWithdraw = () => {
-  withdrawAmount = unexchangedBalance;
-};
-const setMaxClaim = () => {
-  claimAmount = exchangedBalance;
-};
-const clearDeposit = () => {
-  depositAmount = '';
-};
-const clearWithdraw = () => {
-  withdrawAmount = '';
-};
-const clearClaim = () => {
-  claimAmount = '';
-};
-const startTransaction = async () => {
-  await alert('metamask tx started');
-};
+  const setDepositValue = (event) => {
+    // TODO if new value < 1 wei -> depositAmount = 1 wei
+    depositAmount = (parseFloat(alTokenBalance) / 100) * event.detail.value;
+  };
+  const setWithdrawValue = (event) => {
+    // TODO if new value < 1 wei -> withdrawAmount = 1 wei
+    withdrawAmount = (parseFloat(unexchangedBalance) / 100) * event.detail.value;
+  };
+  const setClaimValue = (event) => {
+    claimAmount = (parseFloat(exchangedBalance) / 100) * event.detail.value;
+  };
+
+  const setMaxDeposit = () => {
+    depositAmount = alTokenBalance;
+  };
+  const setMaxWithdraw = () => {
+    withdrawAmount = unexchangedBalance;
+  };
+  const setMaxClaim = () => {
+    claimAmount = exchangedBalance;
+  };
+  const clearDeposit = () => {
+    depositAmount = '';
+  };
+  const clearWithdraw = () => {
+    withdrawAmount = '';
+  };
+  const clearClaim = () => {
+    claimAmount = '';
+  };
+  const startTransaction = async () => {
+    await alert('metamask tx started');
+  };
 </script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>

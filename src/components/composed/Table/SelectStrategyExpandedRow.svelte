@@ -1,6 +1,6 @@
 <!--TODO: Make this component generic & pass all values as props -->
 <script>
-export let expandedRow;
+  export let expandedRow;
 </script>
 
 <div class="border border-grey5 mx-8 rounded mt-4 mb-6 font-alcxTitles">

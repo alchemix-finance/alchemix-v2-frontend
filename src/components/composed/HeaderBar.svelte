@@ -1,27 +1,27 @@
 <script>
-import { Link, navigate } from 'svelte-routing';
-import { connect, disconnect } from '../../helpers/walletManager';
-import { setCurrency, setGas } from '../../helpers/userSettings';
-import { _ } from 'svelte-i18n';
+  import { Link, navigate } from 'svelte-routing';
+  import { connect, disconnect } from '../../helpers/walletManager';
+  import { setCurrency, setGas } from '../../helpers/userSettings';
+  import { _ } from 'svelte-i18n';
 
-import account from '../../stores/account';
-import settings from '../../stores/settings';
-import global from '../../stores/global';
-import toastConfig from '../../stores/toast.js';
-import backgroundLoading from '../../stores/backgroundLoading';
-import Toast from '../elements/Toast.svelte';
-import Dropdown from '../elements/Dropdown.svelte';
-import GasCard from '../elements/GasCard.svelte';
-import LoadingIndicator from '../elements/LoadingIndicator.svelte';
-import * as LottiePlayer from '@lottiefiles/lottie-player';
+  import account from '../../stores/account';
+  import settings from '../../stores/settings';
+  import global from '../../stores/global';
+  import toastConfig from '../../stores/toast.js';
+  import backgroundLoading from '../../stores/backgroundLoading';
+  import Toast from '../elements/Toast.svelte';
+  import Dropdown from '../elements/Dropdown.svelte';
+  import GasCard from '../elements/GasCard.svelte';
+  import LoadingIndicator from '../elements/LoadingIndicator.svelte';
+  import * as LottiePlayer from '@lottiefiles/lottie-player';
 
-function goToSettings() {
-  navigate(`/settings`, { replace: false });
-}
+  function goToSettings() {
+    navigate(`/settings`, { replace: false });
+  }
 
-const userGas = (selector) => {
-  return selector.baseFeePerGas + selector.maxPriorityFeePerGas;
-};
+  const userGas = (selector) => {
+    return selector.baseFeePerGas + selector.maxPriorityFeePerGas;
+  };
 </script>
 
 <Toast

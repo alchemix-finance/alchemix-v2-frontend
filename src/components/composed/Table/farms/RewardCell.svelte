@@ -1,5 +1,5 @@
 <script>
-export let rewards = [];
+  export let rewards = [];
 </script>
 
 <div>

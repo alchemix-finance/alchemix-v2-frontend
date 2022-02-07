@@ -1,7 +1,7 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import LocaleWrapper from '../LocaleWrapper.svelte';
-import AssetCard from '../../components/elements/AssetCard.svelte';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import LocaleWrapper from '../LocaleWrapper.svelte';
+  import AssetCard from '../../components/elements/AssetCard.svelte';
 </script>
 
 <Meta title="Decorative/Asset Card" component="{AssetCard}" />

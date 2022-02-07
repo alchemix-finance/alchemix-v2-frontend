@@ -1,29 +1,29 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import Deposit from '../../../../components/composed/Modals/vaults/Deposit.svelte';
-import LocaleWrapper from '../../../LocaleWrapper.svelte';
-import walletBalance from '../../../../stores/walletBalance';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import Deposit from '../../../../components/composed/Modals/vaults/Deposit.svelte';
+  import LocaleWrapper from '../../../LocaleWrapper.svelte';
+  import walletBalance from '../../../../stores/walletBalance';
 
-const yieldToken = '0xdeadbeef';
-const underlyingToken = '0xcafefeed';
-const loanRatio = '2.0';
-const borrowLimit = '0.0';
-const userDeposit = '0.0';
+  const yieldToken = '0xdeadbeef';
+  const underlyingToken = '0xcafefeed';
+  const loanRatio = '2.0';
+  const borrowLimit = '0.0';
+  const userDeposit = '0.0';
 
-walletBalance.set({
-  tokens: [
-    {
-      address: '0xdeadbeef',
-      symbol: 'yvDAI',
-      balance: '1337',
-    },
-    {
-      address: '0xcafefeed',
-      symbol: 'DAI',
-      balance: '31337',
-    },
-  ],
-});
+  walletBalance.set({
+    tokens: [
+      {
+        address: '0xdeadbeef',
+        symbol: 'yvDAI',
+        balance: '1337',
+      },
+      {
+        address: '0xcafefeed',
+        symbol: 'DAI',
+        balance: '31337',
+      },
+    ],
+  });
 </script>
 
 <Meta

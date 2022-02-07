@@ -1,22 +1,22 @@
 <script>
-/*
- * View to display all available element components
- * */
-import ViewContainer from '../components/elements/ViewContainer.svelte';
-import Button from '../components/elements/Button.svelte';
-import BorderContainer from '../components/elements/BorderContainer.svelte';
-import Toast from '../components/elements/Toast.svelte';
-import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
-import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
-import InputNumber from '../components/elements/inputs/InputNumber.svelte';
+  /*
+   * View to display all available element components
+   * */
+  import ViewContainer from '../components/elements/ViewContainer.svelte';
+  import Button from '../components/elements/Button.svelte';
+  import BorderContainer from '../components/elements/BorderContainer.svelte';
+  import Toast from '../components/elements/Toast.svelte';
+  import CollateralPieChart from '../components/composed/CollateralPieChart.svelte';
+  import DebtCreditPieChart from '../components/composed/DebtCreditPieChart.svelte';
+  import InputNumber from '../components/elements/inputs/InputNumber.svelte';
 
-import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
+  import { inputErrorModifier, numericValidator, floatFilter } from '../helpers/inputHelpers';
 
-let inputValue = '';
+  let inputValue = '';
 
-setInterval(() => {
-  inputValue = 21;
-}, 2000);
+  setInterval(() => {
+    inputValue = 21;
+  }, 2000);
 </script>
 
 <ViewContainer>

@@ -1,6 +1,6 @@
 <script>
-export let apyRate;
-export let apyPeriod;
+  export let apyRate;
+  export let apyPeriod;
 </script>
 
 <div class="font-alcxTitles">

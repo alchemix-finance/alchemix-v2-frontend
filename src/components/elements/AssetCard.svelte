@@ -1,14 +1,14 @@
 <script>
-export let assetName = 'Alchemix Asset';
-export let assetTicker = 'alASS';
-export let currency;
-export let assetIcon;
-export let zapper;
-export let assetPrice;
+  export let assetName = 'Alchemix Asset';
+  export let assetTicker = 'alASS';
+  export let currency;
+  export let assetIcon;
+  export let zapper;
+  export let assetPrice;
 
-let formattedNumber;
+  let formattedNumber;
 
-$: assetPrice, (formattedNumber = new Intl.NumberFormat().format(assetPrice.toFixed(2)));
+  $: assetPrice, (formattedNumber = new Intl.NumberFormat().format(assetPrice.toFixed(2)));
 </script>
 
 <div class="flex flex-col rounded-3xl bg-grey10 bg-opacity-30 border border-lightgrey20 p-8 pb-0">

@@ -1,127 +1,127 @@
 <script>
-import { onMount } from 'svelte';
-import { utils, FixedNumber } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import tempTx from '../../../../stores/tempTx';
-import walletBalance from '../../../../stores/walletBalance';
+  import { onMount } from 'svelte';
+  import { utils, FixedNumber } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import tempTx from '../../../../stores/tempTx';
+  import walletBalance from '../../../../stores/walletBalance';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let vaultIndex;
+  export let vaultIndex;
 
-export let yieldToken;
-export let underlyingToken;
-export let loanRatio;
-export let userShares;
-export let borrowLimit;
-export let openDebtAmount;
-export let openDebtSymbol;
-export let underlyingPricePerShare;
-export let yieldPricePerShare;
-export let yieldDecimals;
-export let underlyingDecimals;
+  export let yieldToken;
+  export let underlyingToken;
+  export let loanRatio;
+  export let userShares;
+  export let borrowLimit;
+  export let openDebtAmount;
+  export let openDebtSymbol;
+  export let underlyingPricePerShare;
+  export let yieldPricePerShare;
+  export let yieldDecimals;
+  export let underlyingDecimals;
 
-let yieldSymbol;
-let yieldWithdraw;
-let yieldToShare;
-let maxYieldWithdrawAmount;
+  let yieldSymbol;
+  let yieldWithdraw;
+  let yieldToShare;
+  let maxYieldWithdrawAmount;
 
-let underlyingSymbol;
-let underlyingWithdraw;
-let underlyingToShare;
-let maxUnderlyingWithdrawAmount;
+  let underlyingSymbol;
+  let underlyingWithdraw;
+  let underlyingToShare;
+  let maxUnderlyingWithdrawAmount;
 
-let startingBalance;
-let remainingBalance;
-let projectedDebtLimit;
+  let startingBalance;
+  let remainingBalance;
+  let projectedDebtLimit;
 
-let withdrawEnabled = false;
+  let withdrawEnabled = false;
 
-const initYield = () => {
-  const shadowBalance = parseFloat(userShares) * parseFloat(yieldPricePerShare);
-  const shadowDebt = openDebtAmount * parseFloat(underlyingPricePerShare);
-  maxYieldWithdrawAmount = shadowBalance - shadowDebt * parseFloat(loanRatio);
-  if (maxYieldWithdrawAmount < 0) maxYieldWithdrawAmount = 0;
-};
-
-const setMaxYield = () => {
-  yieldWithdraw = maxYieldWithdrawAmount;
-  underlyingWithdraw = '';
-};
-
-const clearYield = () => {
-  yieldWithdraw = '';
-};
-
-const initUnderlying = () => {
-  maxUnderlyingWithdrawAmount = startingBalance - openDebtAmount * parseFloat(loanRatio);
-  if (maxUnderlyingWithdrawAmount < 0) maxUnderlyingWithdrawAmount = 0;
-};
-
-const setMaxUnderlying = () => {
-  underlyingWithdraw = maxUnderlyingWithdrawAmount;
-  yieldWithdraw = '';
-};
-
-const clearUnderlying = () => {
-  underlyingWithdraw = '';
-};
-
-const updateBalances = () => {
-  const normalizedYieldAmount =
-    (yieldWithdraw / FixedNumber.from(yieldPricePerShare).toUnsafeFloat()) *
-    FixedNumber.from(underlyingPricePerShare).toUnsafeFloat();
-  yieldToShare = normalizedYieldAmount / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
-  underlyingToShare = underlyingWithdraw / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
-  remainingBalance = startingBalance - (normalizedYieldAmount || 0) - (underlyingWithdraw || 0);
-  projectedDebtLimit = remainingBalance / FixedNumber.from(loanRatio).toUnsafeFloat();
-  withdrawEnabled =
-    (yieldToShare > 0 && yieldWithdraw <= maxYieldWithdrawAmount) ||
-    (underlyingToShare > 0 && underlyingWithdraw <= maxUnderlyingWithdrawAmount);
-};
-
-const withdraw = () => {
-  const yieldFormatted = FixedNumber.from(yieldToShare.toString()).toUnsafeFloat().toFixed(yieldDecimals);
-  const underlyingFormatted = FixedNumber.from(underlyingToShare.toString())
-    .toUnsafeFloat()
-    .toFixed(underlyingDecimals);
-  let method;
-  if (parseFloat(yieldToShare) > 0 && (parseFloat(underlyingToShare) === 0 || !!!underlyingToShare)) {
-    method = 'withdraw';
-  } else if ((parseFloat(yieldToShare) === 0 || !!!yieldToShare) && parseFloat(underlyingToShare) > 0) {
-    method = 'withdrawUnderlying';
-  } else {
-    method = 'withdrawMulticall';
-  }
-  console.log('method', method);
-  const payload = {
-    amountYield: utils.parseUnits(yieldFormatted, yieldDecimals),
-    amountUnderlying: utils.parseUnits(underlyingFormatted, underlyingDecimals),
-    amountBorrow: null,
-    amountRepay: null,
-    method,
-    yieldToken,
-    underlyingToken,
-    targetAddress: null,
-    vaultIndex,
+  const initYield = () => {
+    const shadowBalance = parseFloat(userShares) * parseFloat(yieldPricePerShare);
+    const shadowDebt = openDebtAmount * parseFloat(underlyingPricePerShare);
+    maxYieldWithdrawAmount = shadowBalance - shadowDebt * parseFloat(loanRatio);
+    if (maxYieldWithdrawAmount < 0) maxYieldWithdrawAmount = 0;
   };
-  console.log(payload);
-  tempTx.set({ ...payload });
-};
 
-$: yieldWithdraw, updateBalances();
-$: underlyingWithdraw, updateBalances();
+  const setMaxYield = () => {
+    yieldWithdraw = maxYieldWithdrawAmount;
+    underlyingWithdraw = '';
+  };
 
-onMount(() => {
-  yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
-  underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-  startingBalance = parseFloat(userShares) * parseFloat(underlyingPricePerShare);
-  remainingBalance = startingBalance;
-  projectedDebtLimit = borrowLimit;
-  initYield();
-  initUnderlying();
-});
+  const clearYield = () => {
+    yieldWithdraw = '';
+  };
+
+  const initUnderlying = () => {
+    maxUnderlyingWithdrawAmount = startingBalance - openDebtAmount * parseFloat(loanRatio);
+    if (maxUnderlyingWithdrawAmount < 0) maxUnderlyingWithdrawAmount = 0;
+  };
+
+  const setMaxUnderlying = () => {
+    underlyingWithdraw = maxUnderlyingWithdrawAmount;
+    yieldWithdraw = '';
+  };
+
+  const clearUnderlying = () => {
+    underlyingWithdraw = '';
+  };
+
+  const updateBalances = () => {
+    const normalizedYieldAmount =
+      (yieldWithdraw / FixedNumber.from(yieldPricePerShare).toUnsafeFloat()) *
+      FixedNumber.from(underlyingPricePerShare).toUnsafeFloat();
+    yieldToShare = normalizedYieldAmount / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
+    underlyingToShare = underlyingWithdraw / FixedNumber.from(underlyingPricePerShare).toUnsafeFloat() || 0;
+    remainingBalance = startingBalance - (normalizedYieldAmount || 0) - (underlyingWithdraw || 0);
+    projectedDebtLimit = remainingBalance / FixedNumber.from(loanRatio).toUnsafeFloat();
+    withdrawEnabled =
+      (yieldToShare > 0 && yieldWithdraw <= maxYieldWithdrawAmount) ||
+      (underlyingToShare > 0 && underlyingWithdraw <= maxUnderlyingWithdrawAmount);
+  };
+
+  const withdraw = () => {
+    const yieldFormatted = FixedNumber.from(yieldToShare.toString()).toUnsafeFloat().toFixed(yieldDecimals);
+    const underlyingFormatted = FixedNumber.from(underlyingToShare.toString())
+      .toUnsafeFloat()
+      .toFixed(underlyingDecimals);
+    let method;
+    if (parseFloat(yieldToShare) > 0 && (parseFloat(underlyingToShare) === 0 || !!!underlyingToShare)) {
+      method = 'withdraw';
+    } else if ((parseFloat(yieldToShare) === 0 || !!!yieldToShare) && parseFloat(underlyingToShare) > 0) {
+      method = 'withdrawUnderlying';
+    } else {
+      method = 'withdrawMulticall';
+    }
+    console.log('method', method);
+    const payload = {
+      amountYield: utils.parseUnits(yieldFormatted, yieldDecimals),
+      amountUnderlying: utils.parseUnits(underlyingFormatted, underlyingDecimals),
+      amountBorrow: null,
+      amountRepay: null,
+      method,
+      yieldToken,
+      underlyingToken,
+      targetAddress: null,
+      vaultIndex,
+    };
+    console.log(payload);
+    tempTx.set({ ...payload });
+  };
+
+  $: yieldWithdraw, updateBalances();
+  $: underlyingWithdraw, updateBalances();
+
+  onMount(() => {
+    yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
+    underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
+    startingBalance = parseFloat(userShares) * parseFloat(underlyingPricePerShare);
+    remainingBalance = startingBalance;
+    projectedDebtLimit = borrowLimit;
+    initYield();
+    initUnderlying();
+  });
 </script>
 
 <ContainerWithHeader>

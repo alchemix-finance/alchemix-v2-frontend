@@ -1,7 +1,7 @@
 <script>
-export let pageIcon;
-export let pageTitle;
-export let pageSubtitle;
+  export let pageIcon;
+  export let pageTitle;
+  export let pageSubtitle;
 </script>
 
 <div class="grid grid-cols-12 gap-6 w-full">

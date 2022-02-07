@@ -1,15 +1,15 @@
 <script>
-import { modal, modalReset } from 'stores/modal';
-import { fade } from 'svelte/transition';
+  import { modal, modalReset } from '@stores/modal';
+  import { fade } from 'svelte/transition';
 
-function onClickBackground(e) {
-  if (e.target !== this) return;
-  modalReset();
-}
+  function onClickBackground(e) {
+    if (e.target !== this) return;
+    modalReset();
+  }
 
-function onOutroStart(e) {
-  e.target.style.pointerEvents = 'none';
-}
+  function onOutroStart(e) {
+    e.target.style.pointerEvents = 'none';
+  }
 </script>
 
 {#if $modal.component}

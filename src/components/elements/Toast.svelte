@@ -1,74 +1,74 @@
 <script>
-import { fly } from 'svelte/transition';
-import toastConfig from '../../stores/toast.js';
-import cn from 'classnames';
-import { Circle } from 'svelte-loading-spinners';
+  import { fly } from 'svelte/transition';
+  import toastConfig from '../../stores/toast.js';
+  import cn from 'classnames';
+  import { Circle } from 'svelte-loading-spinners';
 
-import ToastIconButton from './ToastIconButton.svelte';
+  import ToastIconButton from './ToastIconButton.svelte';
 
-const TOAST_KINDS = {
-  PENDING: 'pending',
-  SUCCESS: 'success',
-  ERROR: 'error',
-};
+  const TOAST_KINDS = {
+    PENDING: 'pending',
+    SUCCESS: 'success',
+    ERROR: 'error',
+  };
 
-const pendingProps = {
-  'bg-bronze4': true,
-  'border-bronze1': true,
-};
+  const pendingProps = {
+    'bg-bronze4': true,
+    'border-bronze1': true,
+  };
 
-const successProps = {
-  'bg-black1': true,
-  'border-green2': true,
-};
+  const successProps = {
+    'bg-black1': true,
+    'border-green2': true,
+  };
 
-const errorProps = {
-  'bg-red2': true,
-  'border-red3': true,
-};
+  const errorProps = {
+    'bg-red2': true,
+    'border-red3': true,
+  };
 
-export let kind;
-export let title;
-export let subTitle;
+  export let kind;
+  export let title;
+  export let subTitle;
 
-export let showSpinner = true;
+  export let showSpinner = true;
 
-export let showOpenButton = true;
-export let onClickOpen = () => {};
+  export let showOpenButton = true;
+  export let onClickOpen = () => {};
 
-export let showCloseButton = true;
-export let closeTimeoutMs = 10000;
-export let closeOnMount = true;
-export let forceCloseToast = false;
-export let onClickClose = () => {};
+  export let showCloseButton = true;
+  export let closeTimeoutMs = 10000;
+  export let closeOnMount = true;
+  export let forceCloseToast = false;
+  export let onClickClose = () => {};
 
-export let isOpen = true;
-let handleClose = () => {
-  clearTimeout(closeTimer);
-  $toastConfig.visible = false;
-  $toastConfig.kind = '';
-  $toastConfig.title = '';
-  $toastConfig.subtitle = '';
-  $toastConfig.spinner = true;
-  $toastConfig.showOpenButton = false;
-  $toastConfig.etherscanUrl = '';
-  $toastConfig.showCloseButton = true;
-  $toastConfig.closeTimeout = 10000;
-  $toastConfig.closeOnMount = true;
-};
+  export let isOpen = true;
+  let handleClose = () => {
+    clearTimeout(closeTimer);
+    $toastConfig.visible = false;
+    $toastConfig.kind = '';
+    $toastConfig.title = '';
+    $toastConfig.subtitle = '';
+    $toastConfig.spinner = true;
+    $toastConfig.showOpenButton = false;
+    $toastConfig.etherscanUrl = '';
+    $toastConfig.showCloseButton = true;
+    $toastConfig.closeTimeout = 10000;
+    $toastConfig.closeOnMount = true;
+  };
 
-const closeTimer = () => {
-  if (isOpen && closeOnMount) {
-    setTimeout(() => {
-      handleClose();
-      onClickClose();
-    }, closeTimeoutMs);
-  }
-};
+  const closeTimer = () => {
+    if (isOpen && closeOnMount) {
+      setTimeout(() => {
+        handleClose();
+        onClickClose();
+      }, closeTimeoutMs);
+    }
+  };
 
-$: isOpen, closeTimer();
-$: closeOnMount, closeTimer();
-$: forceCloseToast, handleClose();
+  $: isOpen, closeTimer();
+  $: closeOnMount, closeTimer();
+  $: forceCloseToast, handleClose();
 </script>
 
 {#if isOpen}

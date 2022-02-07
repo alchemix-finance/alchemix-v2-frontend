@@ -1,10 +1,11 @@
 <script>
-export let type;
-export let depositAmount;
-export let depositAsset;
-export let creditLimit;
-export let borrowAmount;
-export let borrowAsset;
+  // eslint-disable-next-line unused-export-let
+  export let type;
+  export let depositAmount;
+  export let depositAsset;
+  export let creditLimit;
+  export let borrowAmount;
+  export let borrowAsset;
 </script>
 
 <div class="flex space-x-8 justify-between border-b border-grey10 pl-8 pr-4 py-4">

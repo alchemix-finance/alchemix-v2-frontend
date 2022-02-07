@@ -1,18 +1,18 @@
 <script>
-import global from '../../../stores/global';
-import settings from '../../../stores/settings';
+  import global from '../../../stores/global';
+  import settings from '../../../stores/settings';
 
-export let value;
-export let prefix;
-export let key;
-let normalizedValue;
+  export let value;
+  export let prefix;
+  export let key;
+  let normalizedValue;
 
-const normalize = () => {
-  normalizedValue = parseFloat((value || 0) * $global.conversionRate).toFixed(2);
-};
+  const normalize = () => {
+    normalizedValue = parseFloat((value || 0) * $global.conversionRate).toFixed(2);
+  };
 
-$: value, normalize();
-$: $settings, normalize();
+  $: value, normalize();
+  $: $settings, normalize();
 </script>
 
 {#if prefix}{prefix}{/if}{normalizedValue}

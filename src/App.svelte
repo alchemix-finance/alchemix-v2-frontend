@@ -1,58 +1,58 @@
 <script>
-// libraries
-import { onMount } from 'svelte';
-import { Router, Route } from 'svelte-routing';
-import Modal from 'components/elements/Modal.svelte';
+  // libraries
+  import { onMount } from 'svelte';
+  import { Router, Route } from 'svelte-routing';
+  import Modal from '@components/elements/Modal.svelte';
 
-// middleware
-import { getFiatRates, getGasPrices, getTokenPrices } from './middleware/zapper';
+  // middleware
+  import { getFiatRates, getGasPrices, getTokenPrices } from '@middleware/zapper';
 
-// composed components
-import HeaderBar from './components/composed/HeaderBar.svelte';
-import SideBar from './components/composed/SideBar.svelte';
-import Footer from './components/composed/Footer.svelte';
+  // composed components
+  import HeaderBar from '@components/composed/HeaderBar.svelte';
+  import SideBar from '@components/composed/SideBar.svelte';
+  import Footer from '@components/composed/Footer.svelte';
 
-// router configuration and views
-import Landing from './views/Landing.svelte';
-import Error from './views/Error.svelte';
-import Accounts from './views/Accounts.svelte';
-import Vaults from './views/Vaults.svelte';
-import Transmuter from './views/Transmuter.svelte';
-import Farms from './views/Farms.svelte';
-import Governance from './views/Governance.svelte';
-import Settings from './views/Settings.svelte';
+  // router configuration and views
+  import Landing from './views/Landing.svelte';
+  import Error from './views/Error.svelte';
+  import Accounts from './views/Accounts.svelte';
+  import Vaults from './views/Vaults.svelte';
+  import Transmuter from './views/Transmuter.svelte';
+  import Farms from './views/Farms.svelte';
+  import Governance from './views/Governance.svelte';
+  import Settings from './views/Settings.svelte';
 
-import { connect } from './helpers/walletManager';
+  import { connect } from '@helpers/walletManager';
 
-export let url = '';
+  export let url = '';
 
-// @dev to stop waste API request, stop the gas updates if needed
-let gasTimer;
+  // @dev to stop waste API request, stop the gas updates if needed
+  let gasTimer;
 
-const preselect = window.localStorage.getItem('userWallet');
-let walletChecked = false;
+  const preselect = window.localStorage.getItem('userWallet');
+  let walletChecked = false;
 
-function gasPriceUpdater() {
-  gasTimer = window.setTimeout(async () => {
-    await getGasPrices();
-    if (gasTimer !== 'stopped') gasPriceUpdater();
-  }, 10000);
-}
-
-function gasIdle() {
-  clearTimeout(gasTimer);
-  gasTimer = 'stopped';
-}
-
-onMount(async () => {
-  if (preselect !== null) {
-    await connect(preselect);
+  function gasPriceUpdater() {
+    gasTimer = window.setTimeout(async () => {
+      await getGasPrices();
+      if (gasTimer !== 'stopped') gasPriceUpdater();
+    }, 10000);
   }
-  walletChecked = true;
-  await getGasPrices();
-  await getFiatRates();
-  await getTokenPrices();
-});
+
+  function gasIdle() {
+    clearTimeout(gasTimer);
+    gasTimer = 'stopped';
+  }
+
+  onMount(async () => {
+    if (preselect !== null) {
+      await connect(preselect);
+    }
+    walletChecked = true;
+    await getGasPrices();
+    await getFiatRates();
+    await getTokenPrices();
+  });
 </script>
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />

@@ -1,10 +1,10 @@
 <script>
-import * as jdenticon from 'jdenticon';
+  import * as jdenticon from 'jdenticon';
 
-export let hash;
-export let bgColor = 'red1';
+  export let hash;
+  export let bgColor = 'red1';
 
-$: pfp = jdenticon.toSvg(hash || {}, 24);
+  $: pfp = jdenticon.toSvg(hash || {}, 24);
 </script>
 
 <div class="flex flex-row relative">

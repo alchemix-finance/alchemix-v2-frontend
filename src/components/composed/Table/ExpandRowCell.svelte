@@ -1,16 +1,16 @@
 <script>
-import Button from '../../elements/Button.svelte';
+  import Button from '../../elements/Button.svelte';
 
-export let row;
-export let onExpand;
-export let isExpanded = false;
+  export let row;
+  export let onExpand;
+  export let isExpanded = false;
 
-const handleClick = () => {
-  onExpand(row.rowId);
-  isExpanded = !isExpanded;
-};
+  const handleClick = () => {
+    onExpand(row.rowId);
+    isExpanded = !isExpanded;
+  };
 
-// $: isExpanded, console.log('isExpanded', isExpanded);
+  // $: isExpanded, console.log('isExpanded', isExpanded);
 </script>
 
 <div class="flex justify-center items-center w-6">

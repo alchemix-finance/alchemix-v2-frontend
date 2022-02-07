@@ -1,50 +1,50 @@
 <script>
-import { onDestroy, onMount } from 'svelte';
-import { globalHistory } from 'svelte-routing/src/history';
-import { _ } from 'svelte-i18n';
-import Wallet from './Wallet.svelte';
-import { routerGuard } from '../../helpers/routerGuard.js';
+  import { onDestroy, onMount } from 'svelte';
+  import { globalHistory } from 'svelte-routing/src/history';
+  import { _ } from 'svelte-i18n';
+  import Wallet from './Wallet.svelte';
+  import { routerGuard } from '../../helpers/routerGuard.js';
 
-const sidebarSetup = [
-  {
-    label: 'my_account',
-    path: 'accounts',
-    icon: 'vault_thick.svg',
-  },
-  {
-    label: 'vaults',
-    path: 'vaults',
-    icon: 'yield_thick.svg',
-  },
-  {
-    label: 'transmuter',
-    path: 'transmuter',
-    icon: 'transmuter_thick.svg',
-  },
-  {
-    label: 'farms',
-    path: 'farms',
-    icon: 'farm_thick.svg',
-  },
-  {
-    label: 'governance',
-    path: 'governance',
-    icon: 'alcx_thick.svg',
-  },
-];
+  const sidebarSetup = [
+    {
+      label: 'my_account',
+      path: 'accounts',
+      icon: 'vault_thick.svg',
+    },
+    {
+      label: 'vaults',
+      path: 'vaults',
+      icon: 'yield_thick.svg',
+    },
+    {
+      label: 'transmuter',
+      path: 'transmuter',
+      icon: 'transmuter_thick.svg',
+    },
+    {
+      label: 'farms',
+      path: 'farms',
+      icon: 'farm_thick.svg',
+    },
+    {
+      label: 'governance',
+      path: 'governance',
+      icon: 'alcx_thick.svg',
+    },
+  ];
 
-let pathname = window.location.pathname;
-let unsub;
+  let pathname = window.location.pathname;
+  let unsub;
 
-onMount(() => {
-  unsub = globalHistory.listen(({ location }) => {
-    pathname = location.pathname;
+  onMount(() => {
+    unsub = globalHistory.listen(({ location }) => {
+      pathname = location.pathname;
+    });
   });
-});
 
-onDestroy(() => {
-  unsub();
-});
+  onDestroy(() => {
+    unsub();
+  });
 </script>
 
 <div class="relative flex items-center justify-between">

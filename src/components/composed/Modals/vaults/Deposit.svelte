@@ -1,71 +1,71 @@
 <script>
-import { onMount } from 'svelte';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import tempTx from '../../../../stores/tempTx';
-import walletBalance from '../../../../stores/walletBalance';
+  import { onMount } from 'svelte';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import tempTx from '../../../../stores/tempTx';
+  import walletBalance from '../../../../stores/walletBalance';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let vaultIndex;
+  export let vaultIndex;
 
-export let yieldToken;
-export let underlyingToken;
-export let loanRatio;
-export let userDeposit;
-export let borrowLimit;
+  export let yieldToken;
+  export let underlyingToken;
+  export let loanRatio;
+  export let userDeposit;
+  export let borrowLimit;
 
-let yieldBalance;
-let yieldSymbol;
-let underlyingBalance;
-let underlyingSymbol;
+  let yieldBalance;
+  let yieldSymbol;
+  let underlyingBalance;
+  let underlyingSymbol;
 
-let yieldDeposit;
-let underlyingDeposit;
-let totalDeposit;
-let projectedDebtLimit;
+  let yieldDeposit;
+  let underlyingDeposit;
+  let totalDeposit;
+  let projectedDebtLimit;
 
-let depositDisabled = true;
+  let depositDisabled = true;
 
-const deposit = () => {
-  const yieldAmnt = parseFloat(yieldDeposit);
-  const udrlyAmnt = parseFloat(underlyingDeposit);
-  if (yieldAmnt) $tempTx.amountYield = yieldAmnt;
-  if (udrlyAmnt) $tempTx.amountUnderlying = udrlyAmnt;
-  $tempTx.yieldToken = yieldToken;
-  $tempTx.underlyingToken = underlyingToken;
-  $tempTx.targetAddress = null;
-  $tempTx.vaultIndex = vaultIndex;
-  if (yieldAmnt && udrlyAmnt) {
-    $tempTx.method = 'multicall';
-  } else if (yieldAmnt && !udrlyAmnt) {
-    $tempTx.method = 'deposit';
-  } else {
-    $tempTx.method = 'depositUnderlying';
-  }
-};
+  const deposit = () => {
+    const yieldAmnt = parseFloat(yieldDeposit);
+    const udrlyAmnt = parseFloat(underlyingDeposit);
+    if (yieldAmnt) $tempTx.amountYield = yieldAmnt;
+    if (udrlyAmnt) $tempTx.amountUnderlying = udrlyAmnt;
+    $tempTx.yieldToken = yieldToken;
+    $tempTx.underlyingToken = underlyingToken;
+    $tempTx.targetAddress = null;
+    $tempTx.vaultIndex = vaultIndex;
+    if (yieldAmnt && udrlyAmnt) {
+      $tempTx.method = 'multicall';
+    } else if (yieldAmnt && !udrlyAmnt) {
+      $tempTx.method = 'deposit';
+    } else {
+      $tempTx.method = 'depositUnderlying';
+    }
+  };
 
-const updateBalances = () => {
-  totalDeposit = (parseFloat(yieldDeposit) || 0) + (parseFloat(underlyingDeposit) || 0);
-  projectedDebtLimit = parseFloat(totalDeposit) / parseFloat(loanRatio);
-  depositDisabled = yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance || !totalDeposit;
-};
+  const updateBalances = () => {
+    totalDeposit = (parseFloat(yieldDeposit) || 0) + (parseFloat(underlyingDeposit) || 0);
+    projectedDebtLimit = parseFloat(totalDeposit) / parseFloat(loanRatio);
+    depositDisabled = yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance || !totalDeposit;
+  };
 
-$: yieldDeposit, updateBalances();
-$: underlyingDeposit, updateBalances();
+  $: yieldDeposit, updateBalances();
+  $: underlyingDeposit, updateBalances();
 
-onMount(() => {
-  if (yieldToken) {
-    const activeToken = $walletBalance.tokens.find((token) => token.address === yieldToken);
-    yieldBalance = activeToken.balance;
-    yieldSymbol = activeToken.symbol;
-  }
-  if (underlyingToken) {
-    const activeUnderlying = $walletBalance.tokens.find((token) => token.address === underlyingToken);
-    underlyingBalance = activeUnderlying.balance;
-    underlyingSymbol = activeUnderlying.symbol;
-  }
-});
+  onMount(() => {
+    if (yieldToken) {
+      const activeToken = $walletBalance.tokens.find((token) => token.address === yieldToken);
+      yieldBalance = activeToken.balance;
+      yieldSymbol = activeToken.symbol;
+    }
+    if (underlyingToken) {
+      const activeUnderlying = $walletBalance.tokens.find((token) => token.address === underlyingToken);
+      underlyingBalance = activeUnderlying.balance;
+      underlyingSymbol = activeUnderlying.symbol;
+    }
+  });
 </script>
 
 <ContainerWithHeader>

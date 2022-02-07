@@ -1,231 +1,231 @@
 <script>
-import { utils } from 'ethers';
-import { _ } from 'svelte-i18n';
-import { BarLoader } from 'svelte-loading-spinners';
-import ViewContainer from '../components/elements/ViewContainer.svelte';
-import PageHeader from '../components/elements/PageHeader.svelte';
-import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-import Button from '../components/elements/Button.svelte';
-import Table from '../components/composed/Table/Table.svelte';
-import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
-import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
-import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
-import getContract from '../helpers/getContract';
-import getUserGas from '../helpers/getUserGas';
-import transmuters from '../stores/transmuters';
-import account from '../stores/account';
-import tempTx, { tempTxReset } from '../stores/tempTx';
-import setTokenAllowance from '../helpers/setTokenAllowance';
-import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../helpers/setToast';
-import { getTokenDecimals } from '../helpers/getTokenData';
-import { getProvider } from '../helpers/walletManager';
+  import { utils } from 'ethers';
+  import { _ } from 'svelte-i18n';
+  import { BarLoader } from 'svelte-loading-spinners';
+  import ViewContainer from '../components/elements/ViewContainer.svelte';
+  import PageHeader from '../components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
+  import Button from '../components/elements/Button.svelte';
+  import Table from '../components/composed/Table/Table.svelte';
+  import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
+  import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
+  import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
+  import getContract from '../helpers/getContract';
+  import getUserGas from '../helpers/getUserGas';
+  import transmuters from '../stores/transmuters';
+  import account from '../stores/account';
+  import tempTx, { tempTxReset } from '../stores/tempTx';
+  import setTokenAllowance from '../helpers/setTokenAllowance';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../helpers/setToast';
+  import { getTokenDecimals } from '../helpers/getTokenData';
+  import { getProvider } from '../helpers/walletManager';
 
-const toggleButtons = {
-  transmuterSelect: {
-    all: true,
-    aleth: false,
-    alusd: false,
-  },
-};
+  const toggleButtons = {
+    transmuterSelect: {
+      all: true,
+      aleth: false,
+      alusd: false,
+    },
+  };
 
-const buttonToggler = (selector, key) => {
-  Object.keys(toggleButtons[selector]).forEach((entry) => {
-    if (toggleButtons[selector][entry] !== key) {
-      toggleButtons[selector][entry] = false;
+  const buttonToggler = (selector, key) => {
+    Object.keys(toggleButtons[selector]).forEach((entry) => {
+      if (toggleButtons[selector][entry] !== key) {
+        toggleButtons[selector][entry] = false;
+      }
+    });
+    toggleButtons[selector][key] = true;
+  };
+
+  // @dev logic for controlling the filtered views
+  const vaultFilter = (filter) => {
+    const selector = ['transmuterSelect', 'modeSelect', 'stratSelect'];
+    buttonToggler(selector[filter.id], filter.filter);
+  };
+
+  const columns = [
+    {
+      columnId: 'col1',
+      CellComponent: HeaderCell,
+      value: '',
+      colSize: 1,
+    },
+    {
+      columnId: 'col2',
+      CellComponent: HeaderCell,
+      value: 'Transmuter',
+      colSize: 2,
+    },
+    {
+      columnId: 'col3',
+      CellComponent: HeaderCell,
+      value: 'Deposited',
+      colSize: 2,
+    },
+    {
+      columnId: 'col4',
+      CellComponent: HeaderCell,
+      value: 'Withdrawable',
+      colSize: 2,
+    },
+    {
+      columnId: 'col6',
+      CellComponent: HeaderCell,
+      value: 'Claimable',
+      colSize: 2,
+    },
+    {
+      columnId: 'col5',
+      CellComponent: HeaderCell,
+      //Don't like this but better than APY for now.
+      //I think this needs a tool tip
+      value: 'Maturation Rate',
+      colSize: 2,
+    },
+  ];
+  let rows = [];
+
+  const goTo = (url) => {
+    window.open(url, '_blank');
+  };
+
+  const provider = getProvider();
+  const abiCoder = utils.defaultAbiCoder;
+
+  const deposit = async () => {
+    const contract = getContract($tempTx.transmuter);
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const allowance = $tempTx.alTokenAllowance;
+    console.log('allowance', allowance);
+    const amountToWei = utils.parseEther($tempTx.amountAlToken.toString());
+    if (!allowance) {
+      try {
+        await setTokenAllowance($tempTx.alToken, $tempTx.transmuterAddress);
+      } catch (e) {
+        setError(e.data ? await e.data.message : e.message);
+        console.trace(e);
+      }
     }
-  });
-  toggleButtons[selector][key] = true;
-};
-
-// @dev logic for controlling the filtered views
-const vaultFilter = (filter) => {
-  const selector = ['transmuterSelect', 'modeSelect', 'stratSelect'];
-  buttonToggler(selector[filter.id], filter.filter);
-};
-
-const columns = [
-  {
-    columnId: 'col1',
-    CellComponent: HeaderCell,
-    value: '',
-    colSize: 1,
-  },
-  {
-    columnId: 'col2',
-    CellComponent: HeaderCell,
-    value: 'Transmuter',
-    colSize: 2,
-  },
-  {
-    columnId: 'col3',
-    CellComponent: HeaderCell,
-    value: 'Deposited',
-    colSize: 2,
-  },
-  {
-    columnId: 'col4',
-    CellComponent: HeaderCell,
-    value: 'Withdrawable',
-    colSize: 2,
-  },
-  {
-    columnId: 'col6',
-    CellComponent: HeaderCell,
-    value: 'Claimable',
-    colSize: 2,
-  },
-  {
-    columnId: 'col5',
-    CellComponent: HeaderCell,
-    //Don't like this but better than APY for now.
-    //I think this needs a tool tip
-    value: 'Maturation Rate',
-    colSize: 2,
-  },
-];
-let rows = [];
-
-const goTo = (url) => {
-  window.open(url, '_blank');
-};
-
-const provider = getProvider();
-const abiCoder = utils.defaultAbiCoder;
-
-const deposit = async () => {
-  const contract = getContract($tempTx.transmuter);
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  const allowance = $tempTx.alTokenAllowance;
-  console.log('allowance', allowance);
-  const amountToWei = utils.parseEther($tempTx.amountAlToken.toString());
-  if (!allowance) {
     try {
-      await setTokenAllowance($tempTx.alToken, $tempTx.transmuterAddress);
+      setPendingWallet();
+      const tx = await contract.deposit(amountToWei, $account.address, {
+        gasPrice: gas,
+      });
+      setPendingTx();
+      await provider.once(tx.hash, (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        // TODO add refreshData here
+      });
     } catch (e) {
       setError(e.data ? await e.data.message : e.message);
       console.trace(e);
     }
-  }
-  try {
-    setPendingWallet();
-    const tx = await contract.deposit(amountToWei, $account.address, {
-      gasPrice: gas,
-    });
-    setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
-      setSuccessTx(transaction.transactionHash);
-      // TODO add refreshData here
-    });
-  } catch (e) {
-    setError(e.data ? await e.data.message : e.message);
-    console.trace(e);
-  }
-  tempTxReset();
-};
+    tempTxReset();
+  };
 
-const withdraw = async () => {
-  const contract = getContract($tempTx.transmuter);
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  const amountToWei = utils.parseEther($tempTx.amountUnderlying);
-  try {
-    setPendingWallet();
-    const tx = await contract.withdraw(amountToWei, $account.address, {
-      gasPrice: gas,
-    });
-    setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
-      setSuccessTx(transaction.transactionHash);
-      // TODO add refreshData here
-    });
-  } catch (e) {
-    setError(e.data ? await e.data.message : e.message);
-    console.trace(e);
-  }
-  tempTxReset();
-};
+  const withdraw = async () => {
+    const contract = getContract($tempTx.transmuter);
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const amountToWei = utils.parseEther($tempTx.amountUnderlying);
+    try {
+      setPendingWallet();
+      const tx = await contract.withdraw(amountToWei, $account.address, {
+        gasPrice: gas,
+      });
+      setPendingTx();
+      await provider.once(tx.hash, (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        // TODO add refreshData here
+      });
+    } catch (e) {
+      setError(e.data ? await e.data.message : e.message);
+      console.trace(e);
+    }
+    tempTxReset();
+  };
 
-const claim = async () => {
-  const contract = getContract($tempTx.transmuter);
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  const decimals = await getTokenDecimals($tempTx.underlyingToken);
-  const amountToWei = utils.parseUnits($tempTx.amountUnderlying, decimals);
-  const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
-  try {
-    setPendingWallet();
-    const tx = await contract.claim(amountToWei, $account.address, [$tempTx.underlyingToken], dataPackage, {
-      gasPrice: gas,
-    });
-    setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
-      setSuccessTx(transaction.transactionHash);
-      // TODO add refreshData here
-    });
-  } catch (e) {
-    setError(e.data ? await e.data.message : e.message);
-    console.trace(e);
-  }
-  tempTxReset();
-};
+  const claim = async () => {
+    const contract = getContract($tempTx.transmuter);
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const decimals = await getTokenDecimals($tempTx.underlyingToken);
+    const amountToWei = utils.parseUnits($tempTx.amountUnderlying, decimals);
+    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+    try {
+      setPendingWallet();
+      const tx = await contract.claim(amountToWei, $account.address, [$tempTx.underlyingToken], dataPackage, {
+        gasPrice: gas,
+      });
+      setPendingTx();
+      await provider.once(tx.hash, (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        // TODO add refreshData here
+      });
+    } catch (e) {
+      setError(e.data ? await e.data.message : e.message);
+      console.trace(e);
+    }
+    tempTxReset();
+  };
 
-const methodLookup = {
-  deposit: deposit,
-  withdraw: withdraw,
-  claim: claim,
-};
+  const methodLookup = {
+    deposit: deposit,
+    withdraw: withdraw,
+    claim: claim,
+  };
 
-const renderTransmuters = () => {
-  for (const prop of $transmuters.props) {
-    const expandedProps = {
-      alToken: prop.alToken,
-      alTokenAllowance: prop.alTokenAllowance,
-      alTokenSymbol: prop.alTokenSymbol,
-      underlyingToken: prop.getUnderlyingToken,
-      underlyingTokenSymbol: prop.underlyingTokenSymbol,
-      exchangedBalance: prop.exchangedBalance,
-      unexchangedBalance: prop.unexchangedBalance,
-      transmuter: prop.transmuter,
-      address: prop.address,
-    };
+  const renderTransmuters = () => {
+    for (const prop of $transmuters.props) {
+      const expandedProps = {
+        alToken: prop.alToken,
+        alTokenAllowance: prop.alTokenAllowance,
+        alTokenSymbol: prop.alTokenSymbol,
+        underlyingToken: prop.getUnderlyingToken,
+        underlyingTokenSymbol: prop.underlyingTokenSymbol,
+        exchangedBalance: prop.exchangedBalance,
+        unexchangedBalance: prop.unexchangedBalance,
+        transmuter: prop.transmuter,
+        address: prop.address,
+      };
 
-    const payload = {
-      col1: {
-        CellComponent: ExpandRowCell,
-        expandedRow: {
-          ExpandedRowComponent: ExpandedTransmuter,
+      const payload = {
+        col1: {
+          CellComponent: ExpandRowCell,
+          expandedRow: {
+            ExpandedRowComponent: ExpandedTransmuter,
+          },
+          ...expandedProps,
+          colSize: 1,
         },
-        ...expandedProps,
-        colSize: 1,
-      },
-      col2: {
-        value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
-        colSize: 2,
-        alignment: 'justify-self-start',
-      },
-      col3: {
-        value: prop.totalDeposited,
-        colSize: 2,
-      },
-      col4: {
-        value: prop.unexchangedBalance,
-        colSize: 2,
-      },
-      col6: {
-        value: prop.exchangedBalance,
-        colSize: 2,
-      },
-      col5: {
-        value: '455%',
-        colSize: 2,
-      },
-    };
+        col2: {
+          value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
+          colSize: 2,
+          alignment: 'justify-self-start',
+        },
+        col3: {
+          value: prop.totalDeposited,
+          colSize: 2,
+        },
+        col4: {
+          value: prop.unexchangedBalance,
+          colSize: 2,
+        },
+        col6: {
+          value: prop.exchangedBalance,
+          colSize: 2,
+        },
+        col5: {
+          value: '455%',
+          colSize: 2,
+        },
+      };
 
-    rows.push(payload);
-  }
-  $transmuters.fetching = false;
-};
+      rows.push(payload);
+    }
+    $transmuters.fetching = false;
+  };
 
-$: if ($tempTx.method !== null) methodLookup[$tempTx.method]();
-$: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
+  $: if ($tempTx.method !== null) methodLookup[$tempTx.method]();
+  $: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
 </script>
 
 <ViewContainer>

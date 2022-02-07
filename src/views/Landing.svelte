@@ -1,37 +1,37 @@
 <script>
-import { _ } from 'svelte-i18n';
-import Button from '../components/elements/Button.svelte';
-import BorderContainer from '../components/elements/BorderContainer.svelte';
-import AssetCard from '../components/elements/AssetCard.svelte';
-import ViewContainer from '../components/elements/ViewContainer.svelte';
-import settings from '../stores/settings';
-import global from '../stores/global';
-import { routerGuard } from '../helpers/routerGuard.js';
+  import { _ } from 'svelte-i18n';
+  import Button from '../components/elements/Button.svelte';
+  import BorderContainer from '../components/elements/BorderContainer.svelte';
+  import AssetCard from '../components/elements/AssetCard.svelte';
+  import ViewContainer from '../components/elements/ViewContainer.svelte';
+  import settings from '../stores/settings';
+  import global from '../stores/global';
+  import { routerGuard } from '../helpers/routerGuard.js';
 
-// TODO aggregate data from zapper
-const alAssets = [
-  {
-    name: 'Alchemix USD',
-    ticker: 'alUSD',
-    price: 0.0,
-    icon: 'alusd_med.svg',
-    color: 'bronze2',
-  },
-  {
-    name: 'Alchemix ETH',
-    ticker: 'alETH',
-    price: 0.0,
-    icon: 'aleth_med.svg',
-    color: 'blue3',
-  },
-  {
-    name: 'Alchemix Governance',
-    ticker: 'ALCX',
-    price: 0.0,
-    icon: 'alcx_med.svg',
-    color: 'bronze2',
-  },
-];
+  // TODO aggregate data from zapper
+  const alAssets = [
+    {
+      name: 'Alchemix USD',
+      ticker: 'alUSD',
+      price: 0.0,
+      icon: 'alusd_med.svg',
+      color: 'bronze2',
+    },
+    {
+      name: 'Alchemix ETH',
+      ticker: 'alETH',
+      price: 0.0,
+      icon: 'aleth_med.svg',
+      color: 'blue3',
+    },
+    {
+      name: 'Alchemix Governance',
+      ticker: 'ALCX',
+      price: 0.0,
+      icon: 'alcx_med.svg',
+      color: 'bronze2',
+    },
+  ];
 </script>
 
 <ViewContainer>

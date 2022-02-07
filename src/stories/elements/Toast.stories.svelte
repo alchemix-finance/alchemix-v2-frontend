@@ -1,6 +1,6 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import Toast from '../../components/elements/Toast.svelte';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import Toast from '../../components/elements/Toast.svelte';
 </script>
 
 <Meta

@@ -1,36 +1,36 @@
 <script>
-import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
 
-export let label;
-export let forceState;
+  export let label;
+  export let forceState;
 
-let checkboxState = false;
+  let checkboxState = false;
 
-const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-const broadcastValue = () => {
-  dispatch('toggleChange', {
-    value: checkboxState,
-  });
-};
+  const broadcastValue = () => {
+    dispatch('toggleChange', {
+      value: checkboxState,
+    });
+  };
 
-const updateState = () => {
-  checkboxState = false;
-};
+  const updateState = () => {
+    checkboxState = false;
+  };
 
-$: checkboxState, broadcastValue();
-$: forceState, updateState();
+  $: checkboxState, broadcastValue();
+  $: forceState, updateState();
 </script>
 
 <style>
-input:checked ~ .dot {
-  transform: translateX(100%);
-  background-color: #3eb88e;
-}
+  input:checked ~ .dot {
+    transform: translateX(100%);
+    background-color: #3eb88e;
+  }
 
-input:checked ~ .line {
-  background-color: #0e251d;
-}
+  input:checked ~ .line {
+    background-color: #0e251d;
+  }
 </style>
 
 <label class="flex items-center justify-between cursor-pointer">

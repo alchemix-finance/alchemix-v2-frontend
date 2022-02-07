@@ -1,78 +1,82 @@
 <script>
-import { utils, FixedNumber } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
-import tempTx from '../../../../stores/tempTx';
+  import { utils, FixedNumber } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
+  import tempTx from '../../../../stores/tempTx';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let outstandingDebt;
-export let yieldTokens;
+  export let outstandingDebt;
+  export let yieldTokens;
 
-let tokenAddress;
-let tokenSymbol;
-let tokenAmount;
-let tokenDecimals;
-let yieldPerShare;
-let underlyingPerShare;
-let underlyingAmount;
+  let tokenAddress;
+  let tokenSymbol;
+  let tokenAmount;
+  let tokenDecimals;
+  let yieldPerShare;
+  let underlyingPerShare;
+  let underlyingAmount;
 
-let liquidateAmount;
-let remainingDebt;
-let remainingDeposit;
+  let liquidateAmount;
+  let remainingDebt;
+  let remainingDeposit;
 
-let userVerified = false;
-let canLiquidate = false;
+  let userVerified = false;
+  let canLiquidate = false;
 
-const setUserVerified = (event) => {
-  userVerified = event.detail.value;
-  updateBalances();
-};
-
-const clearLiquidate = () => {
-  liquidateAmount = '';
-};
-
-const setMaxLiquidate = () => {
-  liquidateAmount = parseFloat(tokenAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : tokenAmount;
-};
-
-const updateBalances = () => {
-  remainingDebt =
-    parseFloat(liquidateAmount) > parseFloat(outstandingDebt) ? 0 : outstandingDebt - (liquidateAmount || 0);
-  remainingDeposit = tokenAmount - liquidateAmount;
-  underlyingAmount = (liquidateAmount / yieldPerShare) * underlyingPerShare;
-  canLiquidate =
-    parseFloat(liquidateAmount) > 0 && parseFloat(liquidateAmount) <= parseFloat(tokenAmount) && userVerified;
-};
-
-const switchUnderlying = () => {
-  if (tokenSymbol) {
-    const token = yieldTokens.find((entry) => entry.symbol === tokenSymbol);
-    tokenDecimals = token.decimals;
-    tokenAmount = token.balance * token.yieldPerShare;
-    tokenAddress = token.address;
-    yieldPerShare = token.yieldPerShare;
-    underlyingPerShare = token.underlyingPerShare;
-    clearLiquidate();
+  const setUserVerified = (event) => {
+    userVerified = event.detail.value;
     updateBalances();
-  }
-};
+  };
 
-const liquidate = () => {
-  const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(tokenDecimals);
-  const amountFormatted = FixedNumber.from(liquidateAmount).toUnsafeFloat().toFixed(tokenDecimals);
-  $tempTx.amountRepay =
-    parseFloat(liquidateAmount) > parseFloat(outstandingDebt)
-      ? utils.parseUnits(debtFormatted.toString(), tokenDecimals)
-      : utils.parseUnits(amountFormatted.toString(), tokenDecimals);
-  $tempTx.yieldToken = tokenAddress;
-  $tempTx.method = 'liquidate';
-};
+  const clearLiquidate = () => {
+    liquidateAmount = '';
+  };
 
-$: tokenSymbol, switchUnderlying();
-$: liquidateAmount, updateBalances();
+  const setMaxLiquidate = () => {
+    liquidateAmount = parseFloat(tokenAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : tokenAmount;
+  };
+
+  const updateBalances = () => {
+    remainingDebt =
+      parseFloat(liquidateAmount) > parseFloat(outstandingDebt)
+        ? 0
+        : outstandingDebt - (liquidateAmount || 0);
+    remainingDeposit = tokenAmount - liquidateAmount;
+    underlyingAmount = (liquidateAmount / yieldPerShare) * underlyingPerShare;
+    canLiquidate =
+      parseFloat(liquidateAmount) > 0 &&
+      parseFloat(liquidateAmount) <= parseFloat(tokenAmount) &&
+      userVerified;
+  };
+
+  const switchUnderlying = () => {
+    if (tokenSymbol) {
+      const token = yieldTokens.find((entry) => entry.symbol === tokenSymbol);
+      tokenDecimals = token.decimals;
+      tokenAmount = token.balance * token.yieldPerShare;
+      tokenAddress = token.address;
+      yieldPerShare = token.yieldPerShare;
+      underlyingPerShare = token.underlyingPerShare;
+      clearLiquidate();
+      updateBalances();
+    }
+  };
+
+  const liquidate = () => {
+    const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(tokenDecimals);
+    const amountFormatted = FixedNumber.from(liquidateAmount).toUnsafeFloat().toFixed(tokenDecimals);
+    $tempTx.amountRepay =
+      parseFloat(liquidateAmount) > parseFloat(outstandingDebt)
+        ? utils.parseUnits(debtFormatted.toString(), tokenDecimals)
+        : utils.parseUnits(amountFormatted.toString(), tokenDecimals);
+    $tempTx.yieldToken = tokenAddress;
+    $tempTx.method = 'liquidate';
+  };
+
+  $: tokenSymbol, switchUnderlying();
+  $: liquidateAmount, updateBalances();
 </script>
 
 <ContainerWithHeader>

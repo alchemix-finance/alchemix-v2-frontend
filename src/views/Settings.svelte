@@ -1,17 +1,17 @@
 <script>
-import { _ } from 'svelte-i18n';
-import Button from '../components/elements/Button.svelte';
-import Dropdown from '../components/elements/Dropdown.svelte';
-import ViewContainer from '../components/elements/ViewContainer.svelte';
-import BorderContainer from '../components/elements/BorderContainer.svelte';
-import GasCard from '../components/elements/GasCard.svelte';
-import global from '../stores/global';
-import settings from '../stores/settings';
-import account from '../stores/account';
-import { setCurrency, setLanguage, setGas, setVerbose } from '../helpers/userSettings';
-import { connect } from '../helpers/walletManager';
+  import { _ } from 'svelte-i18n';
+  import Button from '../components/elements/Button.svelte';
+  import Dropdown from '../components/elements/Dropdown.svelte';
+  import ViewContainer from '../components/elements/ViewContainer.svelte';
+  import BorderContainer from '../components/elements/BorderContainer.svelte';
+  import GasCard from '../components/elements/GasCard.svelte';
+  import global from '../stores/global';
+  import settings from '../stores/settings';
+  import account from '../stores/account';
+  import { setCurrency, setLanguage, setGas, setVerbose } from '../helpers/userSettings';
+  import { connect } from '../helpers/walletManager';
 
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE));
+  const debugging = Boolean(parseInt(process.env.DEBUG_MODE));
 </script>
 
 <ViewContainer>

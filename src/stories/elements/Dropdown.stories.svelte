@@ -1,7 +1,7 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import LocaleWrapper from '../LocaleWrapper.svelte';
-import Dropdown from '../../components/elements/Dropdown.svelte';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import LocaleWrapper from '../LocaleWrapper.svelte';
+  import Dropdown from '../../components/elements/Dropdown.svelte';
 </script>
 
 <Meta title="Inputs/Dropdown" component="{Dropdown}" />
