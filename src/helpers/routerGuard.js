@@ -1,6 +1,6 @@
 import { navigate } from 'svelte-routing';
 import { connect } from './walletManager';
-import account from '../stores/account';
+import account from '@stores/account';
 
 let _account;
 

@@ -13,7 +13,7 @@
   import getContract from '../helpers/getContract';
   import getUserGas from '../helpers/getUserGas';
   import transmuters from '../stores/transmuters';
-  import account from '../stores/account';
+  import account from '@stores/account';
   import tempTx, { tempTxReset } from '../stores/tempTx';
   import setTokenAllowance from '../helpers/setTokenAllowance';
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../helpers/setToast';

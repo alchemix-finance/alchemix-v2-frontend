@@ -1,5 +1,5 @@
 <script>
-  import account from '../../stores/account';
+  import account from '@stores/account';
   import walletBalance from '../../stores/walletBalance';
   import { BarLoader } from 'svelte-loading-spinners';
   import BalanceEntry from '../elements/BalanceEntry.svelte';

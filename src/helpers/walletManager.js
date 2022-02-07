@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { navigate } from 'svelte-routing';
 import Onboard from 'bnc-onboard';
-import account from '../stores/account';
+import account from '@stores/account';
 import toastConfig from '../stores/toast';
 import network from '../stores/network';
 import initData from './initData';

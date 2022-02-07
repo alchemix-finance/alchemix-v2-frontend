@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import backgroundLoading from '../stores/backgroundLoading';
-import account from '../stores/account';
+import account from '@stores/account';
 import walletBalance from '../stores/walletBalance';
 import { alusd, aggregate } from '../stores/vaults';
 import { getTokenBalance } from './getTokenData';

@@ -6,7 +6,7 @@
   import BorderContainer from '../elements/BorderContainer.svelte';
   import WalletBalance from './WalletBalance.svelte';
   import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
-  import account from '../../stores/account';
+  import account from '@stores/account';
   import network from '../../stores/network';
 
   let indicatorColor;

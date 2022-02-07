@@ -16,7 +16,7 @@
   import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
-  import account from '../stores/account';
+  import account from '@stores/account';
   import walletBalance from '../stores/walletBalance';
 
   const colsActive = [

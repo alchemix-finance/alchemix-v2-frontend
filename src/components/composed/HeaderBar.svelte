@@ -4,7 +4,7 @@
   import { setCurrency, setGas } from '../../helpers/userSettings';
   import { _ } from 'svelte-i18n';
 
-  import account from '../../stores/account';
+  import account from '@stores/account';
   import settings from '../../stores/settings';
   import global from '../../stores/global';
   import toastConfig from '../../stores/toast.js';
