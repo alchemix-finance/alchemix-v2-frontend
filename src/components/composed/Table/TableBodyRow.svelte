@@ -5,7 +5,6 @@
   export let numberOfColumns = 1;
   export let row = {};
   export let index = undefined;
-  export let key;
 
   let expandedRows = new Set();
 
@@ -52,16 +51,9 @@
     ? 'pt-4'
     : 'py-4 border-b border-grey10'}"
 >
-  {#each row.cells as cell, cellIndex}
+  {#each row.cells as cell}
     <td class="{getColumnWidth(cell.colSize)} {cell.alignment || 'justify-center'}">
-      <TableCell
-        {...cell}
-        row="{row}"
-        rowIndex="{index}"
-        onExpand="{onExpand}"
-        isExpanded="{isExpanded}"
-        key="{cellIndex}"
-      />
+      <TableCell {...cell} row="{row}" rowIndex="{index}" onExpand="{onExpand}" isExpanded="{isExpanded}" />
     </td>
   {/each}
 </tr>

@@ -92,7 +92,7 @@
 
   <tbody>
     {#each sortedRows as row, index}
-      <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" key="{index}" />
+      <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" />
     {/each}
   </tbody>
 </table>

@@ -4,7 +4,6 @@
 
   export let CellComponent;
   export let value;
-  export let key;
 </script>
 
 <div>
