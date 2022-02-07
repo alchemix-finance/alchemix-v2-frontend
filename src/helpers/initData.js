@@ -7,7 +7,7 @@ import {
   getTokenDecimals,
   getTokenAllowance,
 } from './getTokenData';
-import account from '../stores/account';
+import account from '@stores/account';
 import walletBalance from '../stores/walletBalance';
 import vaults, { alusd, aggregate } from '../stores/vaults';
 import transmuters, { transmuterContracts } from '../stores/transmuters';

@@ -7,8 +7,8 @@
   import Button from '../components/elements/Button.svelte';
   import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
   import { BarLoader } from 'svelte-loading-spinners';
-  import account from '../stores/account';
-  import { aggregate, alusd } from '@stores/vaults';
+  import account from '@stores/account';
+  import { aggregate, alusd } from '../stores/vaults';
   import getContract, { getFragment } from '../helpers/getContract';
   import { getTokenAllowance, getTokenDecimals } from '@helpers/getTokenData';
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';

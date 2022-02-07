@@ -7,9 +7,9 @@
   import GasCard from '../components/elements/GasCard.svelte';
   import global from '../stores/global';
   import settings from '../stores/settings';
-  import account from '../stores/account';
-  import { setCurrency, setLanguage, setGas, setVerbose } from '@helpers/userSettings';
-  import { connect } from '@helpers/walletManager';
+  import account from '@stores/account';
+  import { setCurrency, setLanguage, setGas, setVerbose } from '../helpers/userSettings';
+  import { connect } from '../helpers/walletManager';
 
   const debugging = Boolean(parseInt(process.env.DEBUG_MODE));
 </script>

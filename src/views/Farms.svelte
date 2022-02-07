@@ -20,7 +20,7 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
-  import account from '../stores/account';
+  import account from '@stores/account';
   import walletBalance from '../stores/walletBalance';
   import global from '../stores/global';
 
