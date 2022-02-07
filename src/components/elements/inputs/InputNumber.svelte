@@ -1,6 +1,6 @@
 <script>
 export let value;
-  
+
 import Input from '../Input.svelte';
 import { floatFilter } from '../../../helpers/inputHelpers';
 
@@ -10,4 +10,3 @@ $: value = parseFloat(_value) || '';
 </script>
 
 <Input {...$$props} bind:value="{_value}" inputFilter="{floatFilter}" />
-
