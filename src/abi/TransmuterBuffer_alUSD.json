@@ -35,21 +35,11 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "yToken",
+                    "name": "yieldToken",
                     "type": "address"
                 }
             ],
             "name": "InvalidYieldToken",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "NoBurnableCredit",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "OnlyKeeper",
             "type": "error"
         },
         {
@@ -292,6 +282,25 @@
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "currentExchanged",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "debtToken",
             "outputs": [
@@ -318,6 +327,24 @@
                 }
             ],
             "name": "depositFunds",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "yieldToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                }
+            ],
+            "name": "exchange",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -795,16 +822,6 @@
                     "internalType": "address",
                     "name": "recipient",
                     "type": "address"
-                },
-                {
-                    "internalType": "address[]",
-                    "name": "yieldTokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "bytes[]",
-                    "name": "yieldTokenParams",
-                    "type": "bytes[]"
                 }
             ],
             "name": "withdraw",
@@ -836,5 +853,5 @@
             "type": "function"
         }
     ],
-    "address": "0x80A2E312fDb45697D0B89AB025bA7026CD115A35"
+    "address": "0xb0376eAe7aC998CcA2AcA111446941D00FB60C37"
 }
