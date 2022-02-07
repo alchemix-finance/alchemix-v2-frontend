@@ -41,11 +41,11 @@ function logData() {
         console.table(_walletBalance.tokens);
         console.log('====== Vault Configuration ======');
         console.log('Alchemist alUSD user debt:', _alusd.userDebt, 'alUSD');
-        console.log('Alchemist alUSD max debt:', _alusd.maxDebt, 'alUSD');
+        console.log('Alchemist alUSD max debt:', _alusd.maxDebt.toString(), 'alUSD');
         console.table(_alusd.debtToken);
         console.table(_alusd.rows);
         console.log('====== Aggregated ======');
-        console.log('Total deposited:', _aggregate.totalDeposit);
+        console.log('Total deposited:', _aggregate.totalDeposit, _aggregate.balance.toString());
         console.log('Total debt:', _aggregate.totalDebt);
         console.table(_aggregate.deposited);
         console.log('====== Transmuter Configuration ======');
@@ -244,11 +244,14 @@ function vaultAlusdRowBuilder(tokens) {
       const underlyingSymbol = underlyingConfig.symbol;
       const tvl = utils.formatUnits(params.activeBalance, underlyingDecimals);
       const position = await contract.positions(_account.address, token);
-      const balance = utils.formatUnits(position.shares, yieldDecimals);
+      const balance = position.shares;
       const underlyingBalance = await getTokenBalance(underlyingToken);
-      const vaultDebt =
-        ((position.shares / _alusd.ratio) * underlyingPerShareFormatted) / 10 ** underlyingDecimals;
-      const stratIsUsed = utils.formatEther(position.shares) !== '0.0';
+      const vaultDebt = balance
+        .div(utils.parseUnits(_alusd.ratio, 18))
+        .mul(underlyingPerShare)
+        .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
+      const stratIsUsed =
+        parseFloat(utils.formatUnits(position.shares, underlyingDecimals)).toFixed(4) !== '0.0000';
       const depositPayload = {
         token,
         symbol: yieldSymbol,
@@ -272,11 +275,24 @@ function vaultAlusdRowBuilder(tokens) {
         vaultDebt: vaultDebt.toString(),
       };
       _alusd.rows.push(rowPayload);
-      _alusd.maxDebt += vaultDebt;
+      if (_alusd.maxDebt) {
+        _alusd.maxDebt = _alusd.maxDebt.add(vaultDebt);
+      } else {
+        _alusd.maxDebt = vaultDebt;
+      }
       _aggregate.deposited.push(depositPayload);
       _aggregate.totalDeposit +=
         (parseFloat(depositPayload.balance) * underlyingPerShare) / 10 ** underlyingDecimals;
       _aggregate.debtLimit += vaultDebt;
+      const balanceValue = utils
+        .parseUnits(utils.formatUnits(balance, underlyingDecimals), 18)
+        .mul(underlyingPerShare)
+        .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
+      if (_aggregate.balance) {
+        _aggregate.balance = _aggregate.balance.add(balanceValue);
+      } else {
+        _aggregate.balance = balanceValue;
+      }
       aggregate.set({ ..._aggregate });
       alusd.set({ ..._alusd });
       if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;

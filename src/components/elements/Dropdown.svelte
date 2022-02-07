@@ -29,6 +29,7 @@ For a dropdown that opens on hover see /DropdownOnClick
     bg-{backgroundColor}
     shadow-lg
     z-30
+    w-full
     "
   >
     <slot name="options" />

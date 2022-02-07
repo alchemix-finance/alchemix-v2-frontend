@@ -79,12 +79,13 @@ export async function updateAlusdVault(vaultIndex) {
   const vault = _alusd.rows[vaultIndex];
   const params = await contract.getYieldTokenParameters(vault.token);
   const position = await contract.positions(_account.address, vault.token);
-  const balance = utils.formatUnits(position.balance.toString(), vault.yieldDecimals);
-  const tvl = utils.formatUnits(params.balance.toString(), vault.underlyingDecimals);
+  console.log('position', position);
+  const balance = utils.formatUnits(position.shares, vault.yieldDecimals);
+  const tvl = utils.formatUnits(params.activeBalance, vault.underlyingDecimals);
   const underlyingBalance = await getTokenBalance(vault.underlyingToken);
   const vaultDebt = utils
     .formatUnits(
-      position.balance.mul(vault.underlyingPerShare).div(parseFloat(_alusd.ratio)),
+      position.shares.mul(vault.underlyingPerShare).div(parseFloat(_alusd.ratio)),
       vault.underlyingDecimals * 2,
     )
     .toString();
