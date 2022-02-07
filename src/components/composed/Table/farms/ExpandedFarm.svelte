@@ -1,40 +1,82 @@
 <script>
-import { slide } from 'svelte/transition';
-import { utils } from 'ethers';
-import Button from '../../../elements/Button.svelte';
-import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
-import getContract from '../../../../helpers/getContract';
-import getUserGas from '../../../../helpers/getUserGas';
-import { getProvider } from '../../../../helpers/walletManager';
-import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { slide } from 'svelte/transition';
+  import { utils } from 'ethers';
+  import Button from '../../../elements/Button.svelte';
+  import BalanceQuickSelect from '../../../composed/BalanceQuickSelect.svelte';
+  import getContract from '../../../../helpers/getContract';
+  import getUserGas from '../../../../helpers/getUserGas';
+  import { getProvider } from '../../../../helpers/walletManager';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let poolId;
-export let token;
-export let stakedBalance;
-export let unclaimedRewards;
-export let reward;
+  export let poolId;
+  export let token;
+  export let stakedBalance;
+  export let unclaimedRewards;
+  export let reward;
 
-let depositAmount;
-let withdrawAmount;
+  let depositAmount;
+  let withdrawAmount;
 
-const contract = getContract('StakingPools');
-const provider = getProvider();
+  const contract = getContract('StakingPools');
+  const provider = getProvider();
 
-const updateDepositAmount = (event) => {
-  depositAmount = event.detail.value;
-};
+  const updateDepositAmount = (event) => {
+    depositAmount = event.detail.value;
+  };
 
-const deposit = async () => {
-  const amountToWei = utils.parseEther(depositAmount.toString());
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  if (depositAmount > token.balance) {
-    setError('Trying to deposit more than available');
-  } else {
+  const deposit = async () => {
+    const amountToWei = utils.parseEther(depositAmount.toString());
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    if (depositAmount > token.balance) {
+      setError('Trying to deposit more than available');
+    } else {
+      try {
+        let tx;
+        setPendingWallet();
+        tx = await contract.deposit(poolId, amountToWei, {
+          gasPrice: gas,
+        });
+        setPendingTx();
+        await provider.once(tx.hash, (transaction) => {
+          setSuccessTx(transaction.transactionHash);
+        });
+      } catch (e) {
+        setError(e.message);
+        console.debug(e);
+      }
+    }
+  };
+
+  const withdraw = async () => {
+    const amountToWei = utils.parseEther(withdrawAmount.toString());
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    if (withdrawAmount > stakedBalance) {
+      setError('Trying to withdraw more than available');
+    } else {
+      try {
+        let tx;
+        setPendingWallet();
+        tx = await contract.withdraw(poolId, amountToWei, {
+          gasPrice: gas,
+        });
+        setPendingTx();
+        await provider.once(tx.hash, (transaction) => {
+          setSuccessTx(transaction.transactionHash);
+        });
+      } catch (e) {
+        setError(e.message);
+        console.debug(e);
+      }
+    }
+  };
+
+  const claim = async () => {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     try {
       let tx;
       setPendingWallet();
-      tx = await contract.deposit(poolId, amountToWei, {
+      tx = await contract.claim(poolId, {
         gasPrice: gas,
       });
       setPendingTx();
@@ -45,77 +87,35 @@ const deposit = async () => {
       setError(e.message);
       console.debug(e);
     }
-  }
-};
+  };
 
-const withdraw = async () => {
-  const amountToWei = utils.parseEther(withdrawAmount.toString());
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  if (withdrawAmount > stakedBalance) {
-    setError('Trying to withdraw more than available');
-  } else {
-    try {
-      let tx;
-      setPendingWallet();
-      tx = await contract.withdraw(poolId, amountToWei, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-      });
-    } catch (e) {
-      setError(e.message);
-      console.debug(e);
-    }
-  }
-};
+  const setDepositValue = (event) => {
+    // TODO if new value < 1 wei -> depositAmount = 1 wei
+    depositAmount = (parseFloat(token.balance) / 100) * event.detail.value;
+  };
 
-const claim = async () => {
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  try {
-    let tx;
-    setPendingWallet();
-    tx = await contract.claim(poolId, {
-      gasPrice: gas,
-    });
-    setPendingTx();
-    await provider.once(tx.hash, (transaction) => {
-      setSuccessTx(transaction.transactionHash);
-    });
-  } catch (e) {
-    setError(e.message);
-    console.debug(e);
-  }
-};
+  const setMaxDeposit = () => {
+    depositAmount = token.balance;
+  };
 
-const setDepositValue = (event) => {
-  // TODO if new value < 1 wei -> depositAmount = 1 wei
-  depositAmount = (parseFloat(token.balance) / 100) * event.detail.value;
-};
+  const clearDeposit = () => {
+    depositAmount = '';
+  };
 
-const setMaxDeposit = () => {
-  depositAmount = token.balance;
-};
+  const setMaxWithdraw = () => {
+    withdrawAmount = stakedBalance;
+  };
 
-const clearDeposit = () => {
-  depositAmount = '';
-};
+  const clearWithdraw = () => {
+    withdrawAmount = '';
+  };
 
-const setMaxWithdraw = () => {
-  withdrawAmount = stakedBalance;
-};
+  const setWithdrawValue = (event) => {
+    // TODO if new value < 1 wei -> withdrawAmount = 1 wei
+    withdrawAmount = (parseFloat(stakedBalance) / 100) * event.detail.value;
+  };
 
-const clearWithdraw = () => {
-  withdrawAmount = '';
-};
-
-const setWithdrawValue = (event) => {
-  // TODO if new value < 1 wei -> withdrawAmount = 1 wei
-  withdrawAmount = (parseFloat(stakedBalance) / 100) * event.detail.value;
-};
-
-console.log('TOKEN IN FARM', token);
+  console.log('TOKEN IN FARM', token);
 </script>
 
 <!-- NOTE -- the token object is not working at the moment so I had to put in placeholders for styling -->

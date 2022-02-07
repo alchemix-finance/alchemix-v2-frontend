@@ -1,6 +1,6 @@
 <script>
-import { Meta, Story } from '@storybook/addon-svelte-csf';
-import ViewContainer from '../../components/elements/ViewContainer.svelte';
+  import { Meta, Story } from '@storybook/addon-svelte-csf';
+  import ViewContainer from '../../components/elements/ViewContainer.svelte';
 </script>
 
 <Meta title="Decorative/View Container" component="{ViewContainer}" />

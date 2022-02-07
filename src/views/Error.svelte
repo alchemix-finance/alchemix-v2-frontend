@@ -1,5 +1,5 @@
 <script>
-import ViewContainer from '../components/elements/ViewContainer.svelte';
+  import ViewContainer from '../components/elements/ViewContainer.svelte';
 </script>
 
 <ViewContainer>

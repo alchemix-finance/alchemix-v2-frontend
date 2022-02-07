@@ -1,7 +1,7 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import LocaleWrapper from '../LocaleWrapper.svelte';
-import Button from '../../components/elements/Button.svelte';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import LocaleWrapper from '../LocaleWrapper.svelte';
+  import Button from '../../components/elements/Button.svelte';
 </script>
 
 <Meta title="Inputs/Button" component="{Button}" />

@@ -1,9 +1,9 @@
 <script>
-import { _ } from 'svelte-i18n';
+  import { _ } from 'svelte-i18n';
 
-const copyrightYear = () => {
-  return `2020 - ${new Date().getFullYear()}`;
-};
+  const copyrightYear = () => {
+    return `2020 - ${new Date().getFullYear()}`;
+  };
 </script>
 
 <div class="flex flex-col">

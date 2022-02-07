@@ -1,7 +1,7 @@
 <script>
-import { Meta, Story } from '@storybook/addon-svelte-csf';
-import Wallet from '../../components/composed/Wallet.svelte';
-import LocaleWrapper from '../LocaleWrapper.svelte';
+  import { Meta, Story } from '@storybook/addon-svelte-csf';
+  import Wallet from '../../components/composed/Wallet.svelte';
+  import LocaleWrapper from '../LocaleWrapper.svelte';
 </script>
 
 <Meta title="Functional/Wallet" component="{Wallet}" />

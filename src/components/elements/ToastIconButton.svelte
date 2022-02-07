@@ -1,6 +1,6 @@
 <script>
-export let icon;
-export let onClick;
+  export let icon;
+  export let onClick;
 </script>
 
 <div

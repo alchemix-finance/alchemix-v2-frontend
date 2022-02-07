@@ -1,16 +1,8 @@
 <script>
-import account from '../../stores/account';
-import walletBalance from '../../stores/walletBalance';
-import { BarLoader } from 'svelte-loading-spinners';
-import BalanceEntry from '../elements/BalanceEntry.svelte';
-
-let updateKey;
-
-const randomKey = () => {
-  updateKey = Math.floor(Math.random() * 1000000);
-};
-
-$: $walletBalance.tokens, randomKey();
+  import account from '../../stores/account';
+  import walletBalance from '../../stores/walletBalance';
+  import { BarLoader } from 'svelte-loading-spinners';
+  import BalanceEntry from '../elements/BalanceEntry.svelte';
 </script>
 
 {#if $account.loadingWalletBalance}
@@ -18,7 +10,7 @@ $: $walletBalance.tokens, randomKey();
     <BarLoader color="#F5C59F" />
   </div>
 {:else}
-  {#each $walletBalance.tokens as token (updateKey)}
+  {#each $walletBalance.tokens as token}
     {#if token.balance !== '0.0'}
       <BalanceEntry tokenSymbol="{token.symbol}" tokenName="{token.name}" tokenBalance="{token.balance}" />
     {/if}

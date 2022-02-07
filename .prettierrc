@@ -3,12 +3,22 @@
   "printWidth": 110,
   "semi": true,
   "singleQuote": true,
-  "svelteAllowShorthand": false,
-  "svelteBracketNewLine": true,
-  "svelteIndentScriptAndStyle": false,
-  "svelteSortOrder": "options-scripts-styles-markup",
-  "svelteStrictMode": true,
   "tabWidth": 2,
   "trailingComma": "all",
-  "useTabs": false
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": {
+        "svelteBracketNewLine": true,
+        "svelteAllowShorthand": false,
+        "svelteSortOrder": "options-scripts-styles-markup",
+        "plugins": [ "prettier-plugin-svelte" ],
+        "svelteStrictMode": true,
+        "svelteIndentScriptAndStyle": true
+      }
+    }
+  ],
+  "pluginSearchDirs": [ "." ]
 }
+

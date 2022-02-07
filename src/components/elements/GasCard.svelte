@@ -1,22 +1,22 @@
 <script>
-import { _ } from 'svelte-i18n';
-import { createEventDispatcher } from 'svelte';
-export let description = 'standard';
-export let gasFee = {
-  maxFeePerGas: 0,
-  baseFeePerGas: 0,
-  maxPriorityFeePerGas: 0,
-};
-export let cardColor = 'lightgrey20';
-export let isActive = false;
-export let compactView = false;
+  import { _ } from 'svelte-i18n';
+  import { createEventDispatcher } from 'svelte';
+  export let description = 'standard';
+  export let gasFee = {
+    maxFeePerGas: 0,
+    baseFeePerGas: 0,
+    maxPriorityFeePerGas: 0,
+  };
+  export let cardColor = 'lightgrey20';
+  export let isActive = false;
+  export let compactView = false;
 
-const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-// @dev emits an event 'gasSelected'
-const eventCheck = () => {
-  if (!isActive) dispatch('gasSelected');
-};
+  // @dev emits an event 'gasSelected'
+  const eventCheck = () => {
+    if (!isActive) dispatch('gasSelected');
+  };
 </script>
 
 <div

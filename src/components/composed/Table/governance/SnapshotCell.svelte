@@ -1,5 +1,5 @@
 <script>
-export let snapshot;
+  export let snapshot;
 </script>
 
 <div class="py-3">

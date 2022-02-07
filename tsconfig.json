@@ -1,0 +1,29 @@
+{
+  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte", "webpack.config.ts"],
+  "exclude": ["node_modules/*", "dist/*", "public/*", "scripts/*"],
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "target": "ES6",
+    "importsNotUsedAsValues": "remove",
+    "isolatedModules": false,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "strict": false,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+      "@stores/*": ["src/stores/*"],
+      "@components/*": ["src/components/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@locales/*": ["src/locales/*"],
+      "@middleware/*": ["src/middleware/*"],
+      "@views/*": ["src/views/*"],
+      "@styles/*": ["src/styles/*"]
+    }
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}

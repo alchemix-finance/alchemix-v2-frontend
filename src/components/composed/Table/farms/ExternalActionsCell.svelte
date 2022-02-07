@@ -1,11 +1,11 @@
 <script>
-import Button from '../../../elements/Button.svelte';
+  import Button from '../../../elements/Button.svelte';
 
-export let actions = [];
+  export let actions = [];
 
-const goToExternal = (link) => {
-  window.open(link, '_blank');
-};
+  const goToExternal = (link) => {
+    window.open(link, '_blank');
+  };
 </script>
 
 <div class="grid grid-cols-{actions.length} gap-6">

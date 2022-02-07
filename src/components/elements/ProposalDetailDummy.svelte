@@ -1,29 +1,29 @@
 <script>
-import { onMount } from 'svelte';
-import BorderContainer from './BorderContainer.svelte';
-import { getProposalVotes, sendVote } from '../../middleware/snapshot';
-export let expandedRow = {};
-let value = '';
-let votes = {};
+  import { onMount } from 'svelte';
+  import BorderContainer from './BorderContainer.svelte';
+  import { getProposalVotes, sendVote } from '../../middleware/snapshot';
+  export let expandedRow = {};
+  let value = '';
+  let votes = {};
 
-/*
- * @dev constructs a payload and initiates snapshot voting
- * */
-const initializeVote = () => {
-  const payload = {
-    proposal: expandedRow.proposalEntry.id,
-    choice: value + 1,
+  /*
+   * @dev constructs a payload and initiates snapshot voting
+   * */
+  const initializeVote = () => {
+    const payload = {
+      proposal: expandedRow.proposalEntry.id,
+      choice: value + 1,
+    };
+    sendVote(payload);
   };
-  sendVote(payload);
-};
 
-onMount(async () => {
-  if (!expandedRow.proposalEntry?.results) {
-    await getProposalVotes(expandedRow.proposalEntry.id);
-  }
-});
+  onMount(async () => {
+    if (!expandedRow.proposalEntry?.results) {
+      await getProposalVotes(expandedRow.proposalEntry.id);
+    }
+  });
 
-$: votes = { ...expandedRow.proposalEntry.results };
+  $: votes = { ...expandedRow.proposalEntry.results };
 </script>
 
 <BorderContainer>

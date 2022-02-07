@@ -1,44 +1,44 @@
 <script>
-import { onMount } from 'svelte';
-import { utils } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
-import Button from '../../../elements/Button.svelte';
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
-import Dropdown from '../../../elements/Dropdown.svelte';
+  import { onMount } from 'svelte';
+  import { utils } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import Dropdown from '../../../elements/Dropdown.svelte';
 
-let riskAccepted = false;
-let token = 'alUSD';
-let allowance;
-let eoa;
-let eoaValid = false;
-let eoaVerified = false;
-let showError = false;
-let rng;
+  let riskAccepted = false;
+  let token = 'alUSD';
+  let allowance;
+  let eoa;
+  let eoaValid = false;
+  let eoaVerified = false;
+  let showError = false;
+  let rng;
 
-const setToken = (tokenName) => {
-  token = tokenName;
-};
+  const setToken = (tokenName) => {
+    token = tokenName;
+  };
 
-const setRiskAccepted = (event) => {
-  riskAccepted = event.detail.value;
-};
+  const setRiskAccepted = (event) => {
+    riskAccepted = event.detail.value;
+  };
 
-const verifyAddress = (event) => {
-  try {
-    eoaValid = utils.getAddress(eoa);
-    showError = false;
-    eoaVerified = event.detail.value;
-  } catch {
-    eoaValid = false;
-    showError = true;
-    rng = Math.floor(Math.random() * 100000);
-  }
-};
+  const verifyAddress = (event) => {
+    try {
+      eoaValid = utils.getAddress(eoa);
+      showError = false;
+      eoaVerified = event.detail.value;
+    } catch {
+      eoaValid = false;
+      showError = true;
+      rng = Math.floor(Math.random() * 100000);
+    }
+  };
 
-const submitApproval = () => {
-  alert('yeeeeet the baby');
-};
+  const submitApproval = () => {
+    alert('yeeeeet the baby');
+  };
 </script>
 
 <ContainerWithHeader>

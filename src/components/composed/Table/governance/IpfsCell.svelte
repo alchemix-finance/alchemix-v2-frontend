@@ -1,6 +1,6 @@
 <script>
-export let ipfsId;
-export let ipfsShort;
+  export let ipfsId;
+  export let ipfsShort;
 </script>
 
 <div class="py-3">

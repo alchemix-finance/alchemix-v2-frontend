@@ -1,198 +1,204 @@
 <script>
-import { onMount } from 'svelte';
-import { utils, BigNumber } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import tempTx from '../../../../stores/tempTx';
-import walletBalance from '../../../../stores/walletBalance';
+  import { onMount } from 'svelte';
+  import { utils, BigNumber } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import tempTx from '../../../../stores/tempTx';
+  import walletBalance from '../../../../stores/walletBalance';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-// @dev any balance value submitted through props is of type BigNumber, denoted in wei
-export let vaultIndex;
-export let yieldToken;
-export let underlyingToken;
-export let loanRatio;
-export let userShares;
-export let borrowLimit;
-export let openDebtAmount;
-export let openDebtSymbol;
-export let underlyingPricePerShare;
-export let yieldPricePerShare;
-export let yieldDecimals;
-export let underlyingDecimals;
-export let aggregateBalance;
+  // @dev any balance value submitted through props is of type BigNumber, denoted in wei
+  export let vaultIndex;
+  export let yieldToken;
+  export let underlyingToken;
+  export let loanRatio;
+  export let userShares;
+  export let borrowLimit;
+  export let openDebtAmount;
+  export let openDebtSymbol;
+  export let underlyingPricePerShare;
+  export let yieldPricePerShare;
+  export let yieldDecimals;
+  export let underlyingDecimals;
+  export let aggregateBalance;
 
-let withdrawEnabled = false;
+  let withdrawEnabled = false;
 
-let yieldSymbol;
-let yieldToShare;
-let yieldWithdrawAmount = 0;
-let yieldWithdrawAmountShares;
-let maxYieldWithdrawAmount;
-let yieldExceeded = false;
+  let yieldSymbol;
+  let yieldToShare;
+  let yieldWithdrawAmount = 0;
+  let yieldWithdrawAmountShares;
+  let maxYieldWithdrawAmount;
+  let yieldExceeded = false;
 
-let underlyingSymbol;
-let underlyingToShare;
-let underlyingWithdrawAmount = 0;
-let underlyingWithdrawAmountShares;
-let maxUnderlyingWithdrawAmount;
-let underlyingExceeded = false;
+  let underlyingSymbol;
+  let underlyingToShare;
+  let underlyingWithdrawAmount = 0;
+  let underlyingWithdrawAmountShares;
+  let maxUnderlyingWithdrawAmount;
+  let underlyingExceeded = false;
 
-let startingBalance;
-let availableShares;
-let coveredDebt;
-let remainingBalance;
-let projectedDebtLimit;
-let openDebtAmountFormatted;
-let borrowLimitFormatted;
+  let startingBalance;
+  let availableShares;
+  let coveredDebt;
+  let remainingBalance;
+  let projectedDebtLimit;
+  let openDebtAmountFormatted;
+  let borrowLimitFormatted;
 
-let sharesWithdrawAmount;
+  let sharesWithdrawAmount;
 
-/*
- * @param amount the String amount to transform into shares
- * @param decimals the Number of decimal places to use for calculations
- * @param sharePrice the BigNumber to use as price for calculations
- * @returns a BigNumber that represents the amount of shares
- * */
-const toShares = (amount, decimals, sharePrice) => {
-  const scalar = BigNumber.from(10).pow(decimals);
-  return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
-};
-
-const initYield = () => {
-  yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
-  const scalar = BigNumber.from(10).pow(yieldDecimals);
-  yieldToShare = userShares.mul(yieldPricePerShare).div(scalar);
-  const maxAmountAvailable = coveredDebt.sub(openDebtAmount).mul(loanRatio.div(scalar)).gt(BigNumber.from(0));
-  maxYieldWithdrawAmount = maxAmountAvailable
-    ? utils.formatUnits(yieldToShare, yieldDecimals)
-    : utils.formatUnits(
-        yieldToShare.sub(openDebtAmount).gt(BigNumber.from(0))
-          ? yieldToShare.sub(openDebtAmount)
-          : BigNumber.from(0),
-        yieldDecimals,
-      );
-};
-
-const setMaxYield = () => {
-  yieldWithdrawAmount = maxYieldWithdrawAmount;
-  clearUnderlying();
-};
-
-const clearYield = () => {
-  yieldWithdrawAmount = '';
-};
-
-const initUnderlying = () => {
-  underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-  const scalar = BigNumber.from(10).pow(underlyingDecimals);
-  underlyingToShare = userShares.mul(underlyingPricePerShare).div(scalar);
-  const maxAmountAvailable = coveredDebt.sub(openDebtAmount).mul(loanRatio.div(scalar)).gt(BigNumber.from(0));
-  maxUnderlyingWithdrawAmount = maxAmountAvailable
-    ? utils.formatUnits(underlyingToShare, underlyingDecimals)
-    : utils.formatUnits(
-        underlyingToShare.sub(openDebtAmount).gt(BigNumber.from(0))
-          ? underlyingToShare.sub(openDebtAmount)
-          : BigNumber.from(0),
-        underlyingDecimals,
-      );
-};
-
-const setMaxUnderlying = () => {
-  underlyingWithdrawAmount = maxUnderlyingWithdrawAmount;
-  clearYield();
-};
-
-const clearUnderlying = () => {
-  underlyingWithdrawAmount = '';
-};
-
-const updateBalances = () => {
-  if (underlyingWithdrawAmount) {
-    underlyingWithdrawAmountShares = toShares(
-      (underlyingWithdrawAmount || 0).toString(),
-      underlyingDecimals,
-      underlyingPricePerShare,
-    );
-    underlyingExceeded = underlyingWithdrawAmountShares.gt(userShares);
-  } else {
-    underlyingWithdrawAmountShares = BigNumber.from(0);
-  }
-  if (yieldWithdrawAmount) {
-    yieldWithdrawAmountShares = toShares(
-      (yieldWithdrawAmount || 0).toString(),
-      yieldDecimals,
-      yieldPricePerShare,
-    );
-    yieldExceeded = yieldWithdrawAmountShares.gt(userShares);
-  } else {
-    yieldWithdrawAmountShares = BigNumber.from(0);
-  }
-  const remainingBalanceBN = userShares.sub(underlyingWithdrawAmountShares).sub(yieldWithdrawAmountShares);
-  sharesWithdrawAmount = underlyingWithdrawAmountShares.add(yieldWithdrawAmountShares);
-  remainingBalance = utils.formatUnits(remainingBalanceBN, underlyingDecimals);
-  const globalCover = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
-    .div(BigNumber.from(10).pow(18))
-    .div(loanRatio.div(BigNumber.from(10).pow(18)));
-  const freeCover = globalCover.sub(openDebtAmount).mul(loanRatio.div(BigNumber.from(10).pow(18)));
-  withdrawEnabled =
-    sharesWithdrawAmount.gt(BigNumber.from(0)) &&
-    sharesWithdrawAmount.lt(userShares) &&
-    sharesWithdrawAmount.lt(freeCover);
-};
-
-const withdraw = () => {
-  let method;
-  if (
-    yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
-    (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
-  ) {
-    method = 'withdraw';
-  } else if (
-    (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
-    underlyingWithdrawAmountShares.gt(BigNumber.from(0))
-  ) {
-    method = 'withdrawUnderlying';
-  } else {
-    method = 'withdrawMulticall';
-  }
-  const payload = {
-    amountYield: yieldWithdrawAmountShares,
-    amountUnderlying: underlyingWithdrawAmountShares,
-    amountBorrow: null,
-    amountRepay: null,
-    amountAlToken: null,
-    method,
-    yieldToken,
-    underlyingToken,
-    alToken: null,
-    targetAddress: null,
-    vaultIndex,
-    transmuter: null,
-    transmuterAddress: null,
-    alTokenAllowance: null,
-    unexchangedBalance: null,
+  /*
+   * @param amount the String amount to transform into shares
+   * @param decimals the Number of decimal places to use for calculations
+   * @param sharePrice the BigNumber to use as price for calculations
+   * @returns a BigNumber that represents the amount of shares
+   * */
+  const toShares = (amount, decimals, sharePrice) => {
+    const scalar = BigNumber.from(10).pow(decimals);
+    return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
   };
-  tempTx.set({ ...payload });
-};
 
-$: if (yieldWithdrawAmount) updateBalances();
-$: if (underlyingWithdrawAmount) updateBalances();
+  const initYield = () => {
+    yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
+    const scalar = BigNumber.from(10).pow(yieldDecimals);
+    yieldToShare = userShares.mul(yieldPricePerShare).div(scalar);
+    const maxAmountAvailable = coveredDebt
+      .sub(openDebtAmount)
+      .mul(loanRatio.div(scalar))
+      .gt(BigNumber.from(0));
+    maxYieldWithdrawAmount = maxAmountAvailable
+      ? utils.formatUnits(yieldToShare, yieldDecimals)
+      : utils.formatUnits(
+          yieldToShare.sub(openDebtAmount).gt(BigNumber.from(0))
+            ? yieldToShare.sub(openDebtAmount)
+            : BigNumber.from(0),
+          yieldDecimals,
+        );
+  };
 
-onMount(() => {
-  coveredDebt = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
-    .div(BigNumber.from(10).pow(18))
-    .div(loanRatio.div(BigNumber.from(10).pow(18)));
-  startingBalance = utils.formatUnits(userShares, underlyingDecimals);
-  remainingBalance = startingBalance;
-  openDebtAmountFormatted = utils.formatUnits(openDebtAmount, underlyingDecimals);
-  borrowLimitFormatted = utils.formatUnits(borrowLimit, underlyingDecimals);
-  projectedDebtLimit = borrowLimitFormatted;
-  availableShares = userShares.sub(openDebtAmount);
-  initUnderlying();
-  initYield();
-});
+  const setMaxYield = () => {
+    yieldWithdrawAmount = maxYieldWithdrawAmount;
+    clearUnderlying();
+  };
+
+  const clearYield = () => {
+    yieldWithdrawAmount = '';
+  };
+
+  const initUnderlying = () => {
+    underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
+    const scalar = BigNumber.from(10).pow(underlyingDecimals);
+    underlyingToShare = userShares.mul(underlyingPricePerShare).div(scalar);
+    const maxAmountAvailable = coveredDebt
+      .sub(openDebtAmount)
+      .mul(loanRatio.div(scalar))
+      .gt(BigNumber.from(0));
+    maxUnderlyingWithdrawAmount = maxAmountAvailable
+      ? utils.formatUnits(underlyingToShare, underlyingDecimals)
+      : utils.formatUnits(
+          underlyingToShare.sub(openDebtAmount).gt(BigNumber.from(0))
+            ? underlyingToShare.sub(openDebtAmount)
+            : BigNumber.from(0),
+          underlyingDecimals,
+        );
+  };
+
+  const setMaxUnderlying = () => {
+    underlyingWithdrawAmount = maxUnderlyingWithdrawAmount;
+    clearYield();
+  };
+
+  const clearUnderlying = () => {
+    underlyingWithdrawAmount = '';
+  };
+
+  const updateBalances = () => {
+    if (underlyingWithdrawAmount) {
+      underlyingWithdrawAmountShares = toShares(
+        (underlyingWithdrawAmount || 0).toString(),
+        underlyingDecimals,
+        underlyingPricePerShare,
+      );
+      underlyingExceeded = underlyingWithdrawAmountShares.gt(userShares);
+    } else {
+      underlyingWithdrawAmountShares = BigNumber.from(0);
+    }
+    if (yieldWithdrawAmount) {
+      yieldWithdrawAmountShares = toShares(
+        (yieldWithdrawAmount || 0).toString(),
+        yieldDecimals,
+        yieldPricePerShare,
+      );
+      yieldExceeded = yieldWithdrawAmountShares.gt(userShares);
+    } else {
+      yieldWithdrawAmountShares = BigNumber.from(0);
+    }
+    const remainingBalanceBN = userShares.sub(underlyingWithdrawAmountShares).sub(yieldWithdrawAmountShares);
+    sharesWithdrawAmount = underlyingWithdrawAmountShares.add(yieldWithdrawAmountShares);
+    remainingBalance = utils.formatUnits(remainingBalanceBN, underlyingDecimals);
+    const globalCover = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
+      .div(BigNumber.from(10).pow(18))
+      .div(loanRatio.div(BigNumber.from(10).pow(18)));
+    const freeCover = globalCover.sub(openDebtAmount).mul(loanRatio.div(BigNumber.from(10).pow(18)));
+    withdrawEnabled =
+      sharesWithdrawAmount.gt(BigNumber.from(0)) &&
+      sharesWithdrawAmount.lt(userShares) &&
+      sharesWithdrawAmount.lt(freeCover);
+  };
+
+  const withdraw = () => {
+    let method;
+    if (
+      yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
+      (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
+    ) {
+      method = 'withdraw';
+    } else if (
+      (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
+      underlyingWithdrawAmountShares.gt(BigNumber.from(0))
+    ) {
+      method = 'withdrawUnderlying';
+    } else {
+      method = 'withdrawMulticall';
+    }
+    const payload = {
+      amountYield: yieldWithdrawAmountShares,
+      amountUnderlying: underlyingWithdrawAmountShares,
+      amountBorrow: null,
+      amountRepay: null,
+      amountAlToken: null,
+      method,
+      yieldToken,
+      underlyingToken,
+      alToken: null,
+      targetAddress: null,
+      vaultIndex,
+      transmuter: null,
+      transmuterAddress: null,
+      alTokenAllowance: null,
+      unexchangedBalance: null,
+    };
+    tempTx.set({ ...payload });
+  };
+
+  $: if (yieldWithdrawAmount) updateBalances();
+  $: if (underlyingWithdrawAmount) updateBalances();
+
+  onMount(() => {
+    coveredDebt = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
+      .div(BigNumber.from(10).pow(18))
+      .div(loanRatio.div(BigNumber.from(10).pow(18)));
+    startingBalance = utils.formatUnits(userShares, underlyingDecimals);
+    remainingBalance = startingBalance;
+    openDebtAmountFormatted = utils.formatUnits(openDebtAmount, underlyingDecimals);
+    borrowLimitFormatted = utils.formatUnits(borrowLimit, underlyingDecimals);
+    projectedDebtLimit = borrowLimitFormatted;
+    availableShares = userShares.sub(openDebtAmount);
+    initUnderlying();
+    initYield();
+  });
 </script>
 
 <ContainerWithHeader>

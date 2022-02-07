@@ -1,64 +1,64 @@
 <script>
-import { utils, FixedNumber } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import tempTx from '../../../../stores/tempTx';
+  import { utils, FixedNumber } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import tempTx from '../../../../stores/tempTx';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let underlyingTokens;
-export let underlyingPerShare;
-export let outstandingDebt;
+  export let underlyingTokens;
+  export let underlyingPerShare;
+  export let outstandingDebt;
 
-let underlyingAmount;
-let underlyingSymbol;
-let underlyingToken;
-let underlyingDecimals;
+  let underlyingAmount;
+  let underlyingSymbol;
+  let underlyingToken;
+  let underlyingDecimals;
 
-let repayAmount;
-let canRepay = false;
-let remainingDebt;
+  let repayAmount;
+  let canRepay = false;
+  let remainingDebt;
 
-const setMaxRepay = () => {
-  repayAmount =
-    parseFloat(underlyingAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : underlyingAmount;
-};
+  const setMaxRepay = () => {
+    repayAmount =
+      parseFloat(underlyingAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : underlyingAmount;
+  };
 
-const clearRepay = () => {
-  repayAmount = '';
-};
+  const clearRepay = () => {
+    repayAmount = '';
+  };
 
-const repay = () => {
-  const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(underlyingDecimals);
-  const repayFormatted = FixedNumber.from(repayAmount).toUnsafeFloat().toFixed(underlyingDecimals);
-  $tempTx.amountRepay =
-    parseFloat(repayAmount) > parseFloat(outstandingDebt)
-      ? utils.parseUnits(debtFormatted.toString(), underlyingDecimals)
-      : utils.parseUnits(repayFormatted.toString(), underlyingDecimals);
-  $tempTx.underlyingToken = underlyingToken;
-  $tempTx.method = 'repay';
-};
+  const repay = () => {
+    const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(underlyingDecimals);
+    const repayFormatted = FixedNumber.from(repayAmount).toUnsafeFloat().toFixed(underlyingDecimals);
+    $tempTx.amountRepay =
+      parseFloat(repayAmount) > parseFloat(outstandingDebt)
+        ? utils.parseUnits(debtFormatted.toString(), underlyingDecimals)
+        : utils.parseUnits(repayFormatted.toString(), underlyingDecimals);
+    $tempTx.underlyingToken = underlyingToken;
+    $tempTx.method = 'repay';
+  };
 
-const updateBalances = () => {
-  remainingDebt =
-    parseFloat(repayAmount) > parseFloat(outstandingDebt) ? 0 : outstandingDebt - (repayAmount || 0);
-  canRepay = parseFloat(repayAmount) > 0 && parseFloat(repayAmount) <= parseFloat(underlyingAmount);
-};
+  const updateBalances = () => {
+    remainingDebt =
+      parseFloat(repayAmount) > parseFloat(outstandingDebt) ? 0 : outstandingDebt - (repayAmount || 0);
+    canRepay = parseFloat(repayAmount) > 0 && parseFloat(repayAmount) <= parseFloat(underlyingAmount);
+  };
 
-const switchUnderlying = () => {
-  if (underlyingSymbol) {
-    const token = underlyingTokens.find((entry) => entry.symbol === underlyingSymbol);
-    underlyingDecimals = token.decimals;
-    underlyingAmount = utils.formatUnits(token.balance, underlyingDecimals);
-    underlyingToken = token.address;
-    clearRepay();
-    updateBalances();
-  }
-};
+  const switchUnderlying = () => {
+    if (underlyingSymbol) {
+      const token = underlyingTokens.find((entry) => entry.symbol === underlyingSymbol);
+      underlyingDecimals = token.decimals;
+      underlyingAmount = utils.formatUnits(token.balance, underlyingDecimals);
+      underlyingToken = token.address;
+      clearRepay();
+      updateBalances();
+    }
+  };
 
-$: repayAmount, updateBalances();
-$: underlyingSymbol, switchUnderlying();
-$: underlyingTokens, console.log(underlyingTokens);
+  $: repayAmount, updateBalances();
+  $: underlyingSymbol, switchUnderlying();
+  $: underlyingTokens, console.log(underlyingTokens);
 </script>
 
 <ContainerWithHeader>

@@ -1,7 +1,7 @@
 <script>
-import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-import LocaleWrapper from '../LocaleWrapper.svelte';
-import AvatarWithIndicator from '../../components/elements/AvatarWithIndicator.svelte';
+  import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
+  import LocaleWrapper from '../LocaleWrapper.svelte';
+  import AvatarWithIndicator from '../../components/elements/AvatarWithIndicator.svelte';
 </script>
 
 <Meta title="Decorative/AvatarWithIndicator" component="{AvatarWithIndicator}" />

@@ -1,10 +1,9 @@
 <script>
-// Generic table cell component which renders the given cell component and passes it all props
-// or simply returns value assuming it's renderable
+  // Generic table cell component which renders the given cell component and passes it all props
+  // or simply returns value assuming it's renderable
 
-export let CellComponent;
-export let value;
-export let key;
+  export let CellComponent;
+  export let value;
 </script>
 
 <div>

@@ -1,88 +1,88 @@
 <script>
-// TODO if users have not deposited anything or maxDebt is 0, include a deposit input, craft a multitx
+  // TODO if users have not deposited anything or maxDebt is 0, include a deposit input, craft a multitx
 
-import { onMount } from 'svelte';
-import { slide } from 'svelte/transition';
-import { utils } from 'ethers';
-import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-import Button from '../../../elements/Button.svelte';
-import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
-import tempTx from '../../../../stores/tempTx';
+  import { onMount } from 'svelte';
+  import { slide } from 'svelte/transition';
+  import { utils } from 'ethers';
+  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
+  import tempTx from '../../../../stores/tempTx';
 
-import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
-export let debtToken;
-export let maxDebt;
-export let currentDebt;
+  export let debtToken;
+  export let maxDebt;
+  export let currentDebt;
 
-let availableAmount;
-let borrowAmount;
-let exportAndTransfer = false;
-let targetWallet;
-let targetWalletValid = false;
-let showError = false;
-let rng;
-let targetWalletVerified = false;
-let canBorrow = false;
+  let availableAmount;
+  let borrowAmount;
+  let exportAndTransfer = false;
+  let targetWallet;
+  let targetWalletValid = false;
+  let showError = false;
+  let rng;
+  let targetWalletVerified = false;
+  let canBorrow = false;
 
-const setExportAndTransfer = (event) => {
-  exportAndTransfer = event.detail.value;
-};
+  const setExportAndTransfer = (event) => {
+    exportAndTransfer = event.detail.value;
+  };
 
-const verifyAddress = (event) => {
-  try {
-    targetWalletValid = utils.getAddress(targetWallet);
-    showError = false;
-    targetWalletVerified = event.detail.value;
-  } catch {
-    targetWalletValid = false;
-    showError = true;
-    rng = Math.floor(Math.random() * 100000);
-  }
-};
-
-const updateValues = () => {
-  const canBorrowPreFlight = borrowAmount <= maxDebt - currentDebt && borrowAmount > 0;
-  if (exportAndTransfer) {
-    if (!targetWallet) {
+  const verifyAddress = (event) => {
+    try {
+      targetWalletValid = utils.getAddress(targetWallet);
+      showError = false;
+      targetWalletVerified = event.detail.value;
+    } catch {
+      targetWalletValid = false;
+      showError = true;
       rng = Math.floor(Math.random() * 100000);
-      targetWalletVerified = false;
     }
-    canBorrow = targetWalletVerified && canBorrowPreFlight;
-  } else {
-    targetWalletVerified = false;
-    canBorrow = canBorrowPreFlight;
-  }
-};
+  };
 
-const clearBorrow = () => {
-  borrowAmount = '';
-};
+  const updateValues = () => {
+    const canBorrowPreFlight = borrowAmount <= maxDebt - currentDebt && borrowAmount > 0;
+    if (exportAndTransfer) {
+      if (!targetWallet) {
+        rng = Math.floor(Math.random() * 100000);
+        targetWalletVerified = false;
+      }
+      canBorrow = targetWalletVerified && canBorrowPreFlight;
+    } else {
+      targetWalletVerified = false;
+      canBorrow = canBorrowPreFlight;
+    }
+  };
 
-const setMaxBorrow = () => {
-  borrowAmount = availableAmount;
-};
+  const clearBorrow = () => {
+    borrowAmount = '';
+  };
 
-const clearTarget = () => {
-  targetWallet = '';
-  rng = '';
-  showError = false;
-};
+  const setMaxBorrow = () => {
+    borrowAmount = availableAmount;
+  };
 
-const mint = () => {
-  $tempTx.amountBorrow = borrowAmount;
-  $tempTx.targetAddress = targetWallet;
-  $tempTx.method = 'mint';
-};
+  const clearTarget = () => {
+    targetWallet = '';
+    rng = '';
+    showError = false;
+  };
 
-onMount(() => {
-  availableAmount = parseFloat(maxDebt) - parseFloat(currentDebt);
-});
+  const mint = () => {
+    $tempTx.amountBorrow = borrowAmount;
+    $tempTx.targetAddress = targetWallet;
+    $tempTx.method = 'mint';
+  };
 
-$: borrowAmount, updateValues();
-$: exportAndTransfer, updateValues();
-$: targetWallet, updateValues();
-$: targetWalletVerified, updateValues();
+  onMount(() => {
+    availableAmount = parseFloat(maxDebt) - parseFloat(currentDebt);
+  });
+
+  $: borrowAmount, updateValues();
+  $: exportAndTransfer, updateValues();
+  $: targetWallet, updateValues();
+  $: targetWalletVerified, updateValues();
 </script>
 
 <ContainerWithHeader>

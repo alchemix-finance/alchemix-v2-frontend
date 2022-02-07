@@ -1,14 +1,14 @@
 <script>
-import { createEventDispatcher } from 'svelte';
-import Button from '../elements/Button.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import Button from '../elements/Button.svelte';
 
-const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-const setInputValue = (percentage) => {
-  dispatch('setInputValue', {
-    value: percentage,
-  });
-};
+  const setInputValue = (percentage) => {
+    dispatch('setInputValue', {
+      value: percentage,
+    });
+  };
 </script>
 
 <div class="grid grid-cols-4 gap-2">

@@ -1,8 +1,8 @@
 <script>
-import metrics from '../../stores/metrics';
+  import metrics from '../../stores/metrics';
 
-const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
-const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
+  const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
+  const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
 </script>
 
 <div class="flex font-alcxTitles text-lg tracking-wide justify-between">

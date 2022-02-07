@@ -1,35 +1,35 @@
 <script>
-import { onMount, onDestroy } from 'svelte';
-import * as LottiePlayer from '@lottiefiles/lottie-player';
-import backgroundLoading from '../../stores/backgroundLoading';
+  import { onMount, onDestroy } from 'svelte';
+  import * as LottiePlayer from '@lottiefiles/lottie-player';
+  import backgroundLoading from '../../stores/backgroundLoading';
 
-let startStamp;
-let timer;
-let showRefresh = false;
+  let startStamp;
+  let timer;
+  let showRefresh = false;
 
-const retryPopup = () => {
-  timer = setTimeout(() => {
-    if ((Date.now() - startStamp) / 1000 > 15) {
-      showRefresh = true;
-      clearTimeout(timer);
-    } else {
-      retryPopup();
-    }
-  }, 200);
-};
+  const retryPopup = () => {
+    timer = setTimeout(() => {
+      if ((Date.now() - startStamp) / 1000 > 15) {
+        showRefresh = true;
+        clearTimeout(timer);
+      } else {
+        retryPopup();
+      }
+    }, 200);
+  };
 
-const refresh = () => {
-  location.reload();
-};
+  const refresh = () => {
+    location.reload();
+  };
 
-onMount(() => {
-  startStamp = Date.now();
-  retryPopup();
-});
-onDestroy(() => {
-  clearTimeout(timer);
-  showRefresh = false;
-});
+  onMount(() => {
+    startStamp = Date.now();
+    retryPopup();
+  });
+  onDestroy(() => {
+    clearTimeout(timer);
+    showRefresh = false;
+  });
 </script>
 
 {#if showRefresh}

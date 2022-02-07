@@ -1,57 +1,57 @@
 <script>
-import { slide } from 'svelte/transition';
+  import { slide } from 'svelte/transition';
 
-import { connect } from '../../helpers/walletManager';
-import Button from '../elements/Button.svelte';
-import BorderContainer from '../elements/BorderContainer.svelte';
-import WalletBalance from './WalletBalance.svelte';
-import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
-import account from '../../stores/account';
-import network from '../../stores/network';
+  import { connect } from '../../helpers/walletManager';
+  import Button from '../elements/Button.svelte';
+  import BorderContainer from '../elements/BorderContainer.svelte';
+  import WalletBalance from './WalletBalance.svelte';
+  import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
+  import account from '../../stores/account';
+  import network from '../../stores/network';
 
-let indicatorColor;
-let balanceCollapsed = true;
-let supportedNetwork = true;
+  let indicatorColor;
+  let balanceCollapsed = true;
+  let supportedNetwork = true;
 
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+  const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
-/*
- * @dev returns ENS or truncates the long address string for better visuals
- * @param address the wallet address to truncate
- * @returns the formatted address
- * */
-const resolveAddress = (address) => {
-  return $account.ens || `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
-};
+  /*
+   * @dev returns ENS or truncates the long address string for better visuals
+   * @param address the wallet address to truncate
+   * @returns the formatted address
+   * */
+  const resolveAddress = (address) => {
+    return $account.ens || `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
+  };
 
-/*
- * @dev sets the indicator color to green if the connected network is correct, orange if it is wrong
- * */
-const resolveIndicator = (networkId) => {
-  const targetNetwork = parseInt(debugging ? process.env.LOCAL_NETWORK_ID : process.env.NETWORK_ID);
-  indicatorColor = networkId === targetNetwork ? 'green1' : 'orange1';
-  supportedNetwork = networkId === targetNetwork;
-};
+  /*
+   * @dev sets the indicator color to green if the connected network is correct, orange if it is wrong
+   * */
+  const resolveIndicator = (networkId) => {
+    const targetNetwork = parseInt(debugging ? process.env.LOCAL_NETWORK_ID : process.env.NETWORK_ID);
+    indicatorColor = networkId === targetNetwork ? 'green1' : 'orange1';
+    supportedNetwork = networkId === targetNetwork;
+  };
 
-/*
- * @dev opens etherscan for the currently logged in wallet
- * */
-function openEtherscan() {
-  window.open(`https://etherscan.io/address/${$account.address}`, '_blank');
-}
+  /*
+   * @dev opens etherscan for the currently logged in wallet
+   * */
+  function openEtherscan() {
+    window.open(`https://etherscan.io/address/${$account.address}`, '_blank');
+  }
 
-const toggleCollapse = () => {
-  balanceCollapsed = !balanceCollapsed;
-};
+  const toggleCollapse = () => {
+    balanceCollapsed = !balanceCollapsed;
+  };
 
-$: $network, resolveIndicator($network.id);
+  $: $network, resolveIndicator($network.id);
 </script>
 
 <style>
-.min-w-wallet {
-  /*  prevent "connect wallet" button to wrap */
-  min-width: 210px;
-}
+  .min-w-wallet {
+    /*  prevent "connect wallet" button to wrap */
+    min-width: 210px;
+  }
 </style>
 
 <BorderContainer>

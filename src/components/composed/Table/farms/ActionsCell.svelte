@@ -1,17 +1,17 @@
 <script>
-import Button from '../../../elements/Button.svelte';
-import ExitCell from './ExitCell.svelte';
+  import Button from '../../../elements/Button.svelte';
+  import ExitCell from './ExitCell.svelte';
 
-export let poolId;
-export let row;
-export let onExpand;
-export let label;
-export let isExpanded = false;
+  export let poolId;
+  export let row;
+  export let onExpand;
+  export let label;
+  export let isExpanded = false;
 
-const handleClick = () => {
-  isExpanded = !isExpanded;
-  onExpand(row.rowId);
-};
+  const handleClick = () => {
+    isExpanded = !isExpanded;
+    onExpand(row.rowId);
+  };
 </script>
 
 <div class="flex justify-between space-x-2">
