@@ -8,3 +8,7 @@ export const DefaultDerivedState = Object.freeze({
   Value: undefined,
   Status: DerivedStatus.LOADING,
 });
+
+export const useDerived = (state: typeof DefaultDerivedState) => {
+  return [state.Value, state.Status];
+};
