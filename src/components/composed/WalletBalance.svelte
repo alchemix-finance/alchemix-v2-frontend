@@ -3,11 +3,6 @@
   import walletBalance from '../../stores/walletBalance';
   import { BarLoader } from 'svelte-loading-spinners';
   import BalanceEntry from '../elements/BalanceEntry.svelte';
-
-  if (1 === 5) {
-    console.log('Test');
-    console.log('Test');
-  }
 </script>
 
 {#if $account.loadingWalletBalance}
