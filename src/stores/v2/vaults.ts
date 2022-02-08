@@ -114,19 +114,20 @@ import { ethers } from 'ethers';
 import { makeProviderStore, provider } from '@stores/v2/accounts';
 import { contractWrapper } from '@helpers/contractWrapper';
 import { DefaultDerivedState, DerivedStatus } from '@helpers/storeHelpers';
+import { createNotifyStore } from '@stores/v2/notify';
 
 export const SupportedVaults = Object.freeze({
   alUSD: 0,
   alETH: 1,
 });
 
-export const VaultsConstants = {
+export const VAULTS = {
   [SupportedVaults.alUSD]: {
     contractSelector: 'AlchemistV2_alUSD',
   },
 };
 
-async function fetchVaultInfo(vaultId: number, contractSelector: string, signer: ethers.Signer) {
+async function fetchVaultsHeadInfo(vaultId: number, contractSelector: string, signer: ethers.Signer) {
   const address = await signer.getAddress();
 
   const { instance } = contractWrapper(contractSelector, signer);
@@ -142,43 +143,75 @@ async function fetchVaultInfo(vaultId: number, contractSelector: string, signer:
   return { vaultId, rawDebt, rawRatio };
 }
 
-export const makeVaultsStore = (_provider: ReturnType<typeof makeProviderStore>) => {
+export const makeActiveVaultStore = () => {
   const _currentVault = writable([SupportedVaults.alUSD]);
 
-  const derivedVaultInfoGenerator = (vaultId: number, contractSelector: string) =>
-    derived(
-      [_provider.signer],
-      ([$signer], _set) => {
-        fetchVaultInfo(vaultId, contractSelector, $signer)
-          .then((res) => {
-            _set({ Value: { ...res }, Status: DerivedStatus.LOADED });
-          })
-          .catch((e) => {
-            console.error(`[makeVaultsStore/fetchVaultInfo]: ${e}`);
-            _set({ Value: undefined, Status: DerivedStatus.ERROR });
-          });
+  return {
+    ..._currentVault,
+  };
+};
+
+// TODO: Create function to select the choosen vault
+export const makeVaultsHeadStore = (_provider: ReturnType<typeof makeProviderStore>) => {
+  let _vaultsHead = [];
+
+  const vaultsHeadNotifier = createNotifyStore({
+    vaultId: undefined,
+  });
+  // const derivedVaultInfoGenerator = (vaultId: number, contractSelector: string) =>
+  //   derived(
+  //     [_provider.signer],
+  //     ([$signer], _set) => {
+  //       fetchVaultInfo(vaultId, contractSelector, $signer)
+  //         .then((res) => {
+  //           _set({ Value: { ...res }, Status: DerivedStatus.LOADED });
+  //         })
+  //         .catch((e) => {
+  //           console.error(`[makeVaultsStore/fetchVaultInfo]: ${e}`);
+  //           _set({ Value: undefined, Status: DerivedStatus.ERROR });
+  //         });
+  //
+  //       return () => {
+  //         _set({ Value: undefined, Status: DerivedStatus.LOADING });
+  //       };
+  //     },
+  //     { ...DefaultDerivedState },
+  //   );
+
+  return {
+    vaultsInfo: derived(
+      [_provider.signer, vaultsHeadNotifier],
+      ([$signer, $notifier], _set) => {
+        if ($signer && !$notifier.value) {
+          const vaultsPromises = Object.keys(VAULTS).map((vaultId) =>
+            fetchVaultsHeadInfo(Number(vaultId), VAULTS[vaultId].contractSelector, $signer),
+          );
+
+          Promise.allSettled([...vaultsPromises])
+            .then((_vaults) => {
+              _vaultsHead = [..._vaults];
+
+              _set({ Value: _vaultsHead, Status: DerivedStatus.LOADED });
+            })
+            .catch((error) => {
+              console.error(`[makeVaultsHeadStore/vaultInfo]: ${error}`);
+
+              _set({ Value: undefined, Status: DerivedStatus.ERROR });
+            });
+        } else {
+          // TODO: use notifiers to update just a value
+        }
 
         return () => {
           _set({ Value: undefined, Status: DerivedStatus.LOADING });
         };
       },
       { ...DefaultDerivedState },
-    );
-
-  const _vaultsInfo = {
-    [SupportedVaults.alUSD]: derivedVaultInfoGenerator(
-      SupportedVaults.alUSD,
-      VaultsConstants[SupportedVaults.alUSD].contractSelector,
     ),
-  };
-
-  return {
-    active: _currentVault,
-    getVaultInfo: (vaultId) => [_vaultsInfo[vaultId]],
+    notifyVaultUpdate: (vaultId) => vaultsHeadNotifier.notify(vaultId),
   };
 };
 
-const vaults = makeVaultsStore(provider);
+export const activeVault = makeActiveVaultStore();
 
-// Remove
-const trs = vaults.getVaultInfo(1);
+export const vaultsHead = makeVaultsHeadStore(provider);
