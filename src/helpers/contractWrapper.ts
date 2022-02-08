@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { genericAbi } from '@stores/externalContracts';
 
 export const contractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
   const contractData = require(`../abi/${selector}.json`);
@@ -8,5 +9,17 @@ export const contractWrapper = (selector: string, signer: ethers.Signer, address
     fragment: new ethers.utils.Interface(contractData.abi),
     address: contractData.address,
     instance: _instance,
+  };
+};
+
+export const erc20Contract = (address: string, signer: ethers.Signer) => {
+  const _contract = new ethers.Contract(address, genericAbi, signer);
+
+  return {
+    name: async () => _contract.name(),
+    symbol: async () => _contract.symbol(),
+    decimals: async () => _contract.decimals(),
+    balanceOf: async (walletAddress: string) => _contract.balanceOf(walletAddress),
+    allowanceOf: async (owner: string, spender: string) => _contract.allowance(owner, spender),
   };
 };

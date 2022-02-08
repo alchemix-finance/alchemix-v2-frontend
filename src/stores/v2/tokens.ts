@@ -65,7 +65,7 @@ export const makeTokensStore = (providerInstance: ReturnType<typeof makeProvider
   const { signer } = providerInstance;
 
   return {
-    tokenList: derived(
+    allTokens: derived(
       [signer],
       ([$signer], _set) => {
         if ($signer) {
