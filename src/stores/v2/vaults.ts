@@ -158,25 +158,6 @@ export const makeVaultsHeadStore = (_provider: ReturnType<typeof makeProviderSto
   const vaultsHeadNotifier = createNotifyStore({
     vaultId: undefined,
   });
-  // const derivedVaultInfoGenerator = (vaultId: number, contractSelector: string) =>
-  //   derived(
-  //     [_provider.signer],
-  //     ([$signer], _set) => {
-  //       fetchVaultInfo(vaultId, contractSelector, $signer)
-  //         .then((res) => {
-  //           _set({ Value: { ...res }, Status: DerivedStatus.LOADED });
-  //         })
-  //         .catch((e) => {
-  //           console.error(`[makeVaultsStore/fetchVaultInfo]: ${e}`);
-  //           _set({ Value: undefined, Status: DerivedStatus.ERROR });
-  //         });
-  //
-  //       return () => {
-  //         _set({ Value: undefined, Status: DerivedStatus.LOADING });
-  //       };
-  //     },
-  //     { ...DefaultDerivedState },
-  //   );
 
   return {
     vaultsInfo: derived(
