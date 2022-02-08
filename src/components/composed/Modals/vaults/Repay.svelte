@@ -18,6 +18,7 @@
   let repayAmount;
   let canRepay = false;
   let remainingDebt;
+  let method;
 
   const setMaxRepay = () => {
     repayAmount =
@@ -36,7 +37,7 @@
         ? utils.parseUnits(debtFormatted.toString(), underlyingDecimals)
         : utils.parseUnits(repayFormatted.toString(), underlyingDecimals);
     $tempTx.underlyingToken = underlyingToken;
-    $tempTx.method = 'repay';
+    $tempTx.method = method;
   };
 
   const updateBalances = () => {
@@ -51,6 +52,7 @@
       underlyingDecimals = token.decimals;
       underlyingAmount = utils.formatUnits(token.balance, underlyingDecimals);
       underlyingToken = token.address;
+      method = token.method;
       clearRepay();
       updateBalances();
     }
