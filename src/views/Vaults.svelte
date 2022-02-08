@@ -185,7 +185,7 @@
         await setTokenAllowance($tempTx.underlyingToken, contract.address);
       }
       setPendingWallet();
-      const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+      const dataPackage = utils.parseEther('0');
       const tx = await contract.depositUnderlying(
         $tempTx.yieldToken,
         amountToWei,
@@ -332,7 +332,7 @@
 
   const liquidate = async () => {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+    const dataPackage = utils.parseEther('0');
     try {
       setPendingWallet();
       const tx = await contract.liquidate($tempTx.yieldToken, $tempTx.amountRepay, dataPackage, {
@@ -382,7 +382,7 @@
   const withdrawUnderlying = async () => {
     console.log($tempTx);
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+    const dataPackage = utils.parseEther('0');
     const refreshPayload = {
       token: $tempTx.underlyingToken,
       vaultIndex: $tempTx.vaultIndex,
@@ -412,7 +412,7 @@
 
   const withdrawMulticall = async () => {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
+    const dataPackage = utils.parseEther('0');
     try {
       const withdrawUnderlyingEncoded = contractIface.encodeFunctionData('withdrawUnderlying', [
         $tempTx.yieldToken,
