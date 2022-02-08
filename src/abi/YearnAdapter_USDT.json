@@ -34,39 +34,13 @@
                     "type": "bytes"
                 }
             ],
-            "name": "CallFailed",
+            "name": "ERC20CallFailed",
             "type": "error"
         },
         {
             "inputs": [],
             "name": "IllegalState",
             "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "defaultUnwrapData",
-            "outputs": [
-                {
-                    "internalType": "bytes",
-                    "name": "",
-                    "type": "bytes"
-                }
-            ],
-            "stateMutability": "pure",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "defaultWrapData",
-            "outputs": [
-                {
-                    "internalType": "bytes",
-                    "name": "",
-                    "type": "bytes"
-                }
-            ],
-            "stateMutability": "pure",
-            "type": "function"
         },
         {
             "inputs": [],
@@ -120,9 +94,9 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
+                    "internalType": "uint256",
+                    "name": "maximumLoss",
+                    "type": "uint256"
                 }
             ],
             "name": "unwrap",
@@ -149,9 +123,9 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
+                    "internalType": "uint256",
+                    "name": "maximumLoss",
+                    "type": "uint256"
                 }
             ],
             "name": "wrap",
@@ -166,5 +140,5 @@
             "type": "function"
         }
     ],
-    "address": "0x9B298ff5Dc029cFE34fB4271e60c51db1264548D"
+    "address": "0xca30827Cc4deac7F47FBfe7Df2D926B7375aa9d9"
 }
