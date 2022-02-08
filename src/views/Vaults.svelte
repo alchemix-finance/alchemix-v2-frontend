@@ -298,6 +298,38 @@
     tempClear();
   };
 
+  const burn = async () => {
+    console.log('burn', $tempTx, $tempTx.amountRepay.toString());
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const debtToken = $tempTx.underlyingToken;
+    const burnAmount = $tempTx.amountRepay;
+    const allowanceBurn = await getTokenAllowance(
+      $tempTx.underlyingToken,
+      $account.address,
+      contract.address,
+    );
+    try {
+      setPendingWallet();
+      if (!allowanceBurn) {
+        await setTokenAllowance($tempTx.underlyingToken, contract.address);
+      }
+      const tx = await contract.burn(burnAmount, $account.address, {
+        gasPrice: gas,
+      });
+      setPendingTx();
+      await provider.once(tx.hash, async (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        await updateWalletBalance(debtToken);
+        await updateAlusdAggregate();
+        getRandomData();
+      });
+    } catch (e) {
+      console.error(e);
+      setError(e.data ? await e.data.message : e.message);
+    }
+    tempClear();
+  };
+
   const liquidate = async () => {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
@@ -420,6 +452,7 @@
     withdrawMulticall: withdrawMulticall,
     mint: mint,
     repay: repay,
+    burn: burn,
     liquidate: liquidate,
   };
 
@@ -459,6 +492,12 @@
 
   const renderVaults = async () => {
     // alUSD Alchemist only atm
+    console.log($alusd.debtToken);
+    underlyingTokenAlusd.push({
+      ...$alusd.debtToken,
+      balance: utils.parseUnits($alusd.debtToken.balance, $alusd.debtToken.decimals),
+      method: 'burn',
+    });
     for (const token of $alusd.yieldTokens) {
       const index = $alusd.rows.findIndex((row) => row.token === token);
       yieldTokenAlusd.push({
@@ -474,6 +513,7 @@
         address: $alusd.rows[index].underlyingToken,
         balance: $alusd.rows[index].underlyingBalance,
         decimals: $alusd.rows[index].underlyingDecimals,
+        method: 'repay',
       });
       const payload = {
         type: $alusd.rows[index].stratIsUsed ? 'used' : 'unused',
