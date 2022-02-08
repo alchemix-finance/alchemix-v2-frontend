@@ -95,7 +95,8 @@ export const makeBalancesStore = (
               _set({ Value: [], Status: DerivedStatus.ERROR });
             });
         } else {
-          // Update balances
+          // Update balance when requested
+          // TODO: Add the necessary method to update just a token balance
         }
         return () => {
           _set({ Value: _balances, Status: DerivedStatus.LOADING });
