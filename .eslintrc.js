@@ -31,7 +31,7 @@ module.exports = {
     'no-restricted-syntax': 0,
     '@typescript-eslint/naming-convention': 0,
     '@typescript-eslint/no-use-before-define': 0,
-    'svelte3/unused-export-let': 0,
+    '@typescript-eslint/no-unused-vars': 'off',
   },
   env: {
     browser: true,
