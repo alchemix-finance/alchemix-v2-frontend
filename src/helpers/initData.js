@@ -118,7 +118,7 @@ const tokenList = [];
  * @returns the token object from the walletBalance store
  * */
 async function tokenFinder(token) {
-  return _walletBalance.tokens.find((item) => item.address === token);
+  return _walletBalance.tokens.find((item) => item.address.toUpperCase() === token.toUpperCase());
 }
 
 /*
