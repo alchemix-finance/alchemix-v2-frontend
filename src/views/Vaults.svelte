@@ -146,19 +146,20 @@
       const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
       const decimals = await getTokenDecimals($tempTx.yieldToken);
       const amountToWei = $tempTx.amountYield;
+      const token = $tempTx.yieldToken;
+      const vaultIndex = $tempTx.vaultIndex;
       const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+      setPendingWallet();
       if (!allowance) {
         await setTokenAllowance($tempTx.yieldToken, contract.address);
       }
-      let tx;
-      setPendingWallet();
-      tx = await contract.deposit($tempTx.yieldToken, amountToWei, $account.address, {
+      const tx = await contract.deposit($tempTx.yieldToken, amountToWei, $account.address, {
         gasPrice: gas,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {
         setSuccessTx(transaction.transactionHash);
-        refreshData({ token: $tempTx.yieldToken, vaultIndex: $tempTx.vaultIndex });
+        refreshData({ token, vaultIndex });
       });
     } catch (e) {
       setError(e.data ? await e.data.message : e.message);
@@ -465,19 +466,20 @@
    * @param payload an object with data to process
    */
   const refreshData = async (payload) => {
-    if (payload.token)
-      await updateWalletBalance(payload.token).catch((e) =>
-        console.error(`[Vaults.svelte/refreshData/updateWalletBalance]: ${e}`),
-      );
-    if (payload.vaultIndex)
-      await updateAlusdVault(payload.vaultIndex).catch((e) =>
-        console.error(`[Vaults.svelte/refreshData/updateAlusdVault]: ${e}`),
-      );
+    await updateWalletBalance(payload.token).catch((e) =>
+      console.error(`[Vaults.svelte/refreshData/updateWalletBalance]: ${e}`),
+    );
+    await updateAlusdVault(payload.vaultIndex).catch((e) =>
+      console.error(`[Vaults.svelte/refreshData/updateAlusdVault]: ${e}`),
+    );
     const indexLocal = rowsAll.findIndex((row) => row.col5.vaultIndex === payload.vaultIndex);
     const indexStore = $alusd.rows.findIndex((row) => row.token === rowsAll[indexLocal].col5.yieldToken);
-    rowsAll[indexLocal].deposited.value =
-      ($alusd.rows[indexStore].balance * $alusd.rows[indexStore].underlyingPerShare) /
-      10 ** $alusd.rows[indexStore].underlyingDecimals;
+    rowsAll[indexLocal].deposited.value = utils.formatUnits(
+      $alusd.rows[indexStore].balance
+        .mul($alusd.rows[indexStore].underlyingPerShare)
+        .div(BigNumber.from(10).pow($alusd.rows[indexStore].underlyingDecimals)),
+      $alusd.rows[indexStore].underlyingDecimals,
+    );
     rowsAll[indexLocal].limit.value = $alusd.rows[indexStore].vaultDebt.toString();
     rowsAll[indexLocal].col3.value = utils.formatUnits(
       utils.parseUnits($alusd.rows[indexStore].tvl, $alusd.rows[indexStore].underlyingDecimals).toString(),
@@ -485,14 +487,15 @@
     );
     rowsAll[indexLocal].col5.userDeposit = $alusd.rows[indexStore].balance;
     rowsAll[indexLocal].col5.borrowLimit = $alusd.rows[indexStore].vaultDebt;
-    rowsAll[indexLocal].col5.openDebtAmount = $alusd.userDebt;
-
+    rowsAll[indexLocal].col5.openDebtAmount = utils.parseUnits(
+      $alusd.userDebt,
+      $alusd.rows[indexStore].underlyingDecimals,
+    );
     getRandomData();
   };
 
   const renderVaults = async () => {
     // alUSD Alchemist only atm
-    console.log($alusd.debtToken);
     underlyingTokenAlusd.push({
       ...$alusd.debtToken,
       balance: utils.parseUnits($alusd.debtToken.balance, $alusd.debtToken.decimals),
@@ -530,9 +533,6 @@
           },
           deposited: {
             CellComponent: CurrencyCell,
-            // value:
-            //   ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
-            //   10 ** $alusd.rows[index].underlyingDecimals,
             value: utils.formatUnits(
               $alusd.rows[index].balance
                 .mul($alusd.rows[index].underlyingPerShare)

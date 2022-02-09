@@ -44,7 +44,7 @@
     $tempTx.yieldToken = yieldToken;
     $tempTx.underlyingToken = underlyingToken;
     $tempTx.targetAddress = null;
-    $tempTx.vaultindex = vaultIndex;
+    $tempTx.vaultIndex = vaultIndex;
     if (yieldAmnt && udrlyAmnt) {
       $tempTx.method = 'multicall';
     } else if (yieldAmnt && !udrlyAmnt) {
@@ -58,11 +58,12 @@
     const yieldDepositToWei = utils.parseUnits((yieldDeposit || 0).toString(), yieldDecimals);
     const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
     const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
-    totalDeposit = utils.formatEther(userDeposit.add(totalToWei));
-    projectedDebtLimit = utils.formatEther(
+    totalDeposit = utils.formatUnits(userDeposit.add(totalToWei), underlyingDecimals);
+    projectedDebtLimit = utils.formatUnits(
       BigNumber.from(borrowLimit).add(
         totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
       ),
+      underlyingDecimals,
     );
     depositDisabled =
       totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
