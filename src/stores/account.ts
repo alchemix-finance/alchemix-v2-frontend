@@ -1,4 +1,5 @@
 import { derived, writable } from 'svelte/store';
+import { DefaultDerivedState, DerivedStatus } from '@helpers/storeHelpers';
 
 const defaults = {
   loadingSupportedTokens: true,
@@ -8,8 +9,8 @@ const defaults = {
   loadingFarmsConfigurations: true,
   address: undefined,
   signer: undefined,
-  ens: undefined,
   provider: undefined,
+  ens: undefined,
 };
 
 const account = writable({
