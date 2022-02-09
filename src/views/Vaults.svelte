@@ -268,6 +268,7 @@
       await provider.once(tx.hash, async (transaction) => {
         setSuccessTx(transaction.transactionHash);
         await updateAlusdAggregate();
+        refreshValueArrays();
         getRandomData();
       });
     } catch (e) {
@@ -290,6 +291,7 @@
         setSuccessTx(transaction.transactionHash);
         await updateWalletBalance(underlyingToken);
         await updateAlusdAggregate();
+        refreshValueArrays();
         getRandomData();
       });
     } catch (e) {
@@ -322,6 +324,7 @@
         setSuccessTx(transaction.transactionHash);
         await updateWalletBalance(debtToken);
         await updateAlusdAggregate();
+        refreshValueArrays();
         getRandomData();
       });
     } catch (e) {
@@ -343,6 +346,7 @@
       await provider.once(tx.hash, async (transaction) => {
         setSuccessTx(transaction.transactionHash);
         await updateAlusdAggregate();
+        refreshValueArrays();
         getRandomData();
       });
     } catch (e) {
@@ -487,10 +491,14 @@
     );
     rowsAll[indexLocal].col5.userDeposit = $alusd.rows[indexStore].balance;
     rowsAll[indexLocal].col5.borrowLimit = $alusd.rows[indexStore].vaultDebt;
-    rowsAll[indexLocal].col5.openDebtAmount = utils.parseUnits(
-      $alusd.userDebt,
-      $alusd.rows[indexStore].underlyingDecimals,
-    );
+    console.log($alusd.userDebt, $alusd.userDebt.toString(), $alusd.rows[indexStore].underlyingDecimals);
+    rowsAll[indexLocal].col5.openDebtAmount = utils.parseUnits($alusd.userDebt, 18);
+    refreshValueArrays();
+    getRandomData();
+  };
+
+  // @dev updates the arrays used to feed data to "borrow", "repay" and "liquidate" modals
+  const refreshValueArrays = () => {
     underlyingTokenAlusd.length = 0;
     yieldTokenAlusd.length = 0;
     underlyingTokenAlusd.push({
@@ -516,7 +524,6 @@
         method: 'repay',
       });
     }
-    getRandomData();
   };
 
   const renderVaults = async () => {

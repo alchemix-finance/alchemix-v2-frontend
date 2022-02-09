@@ -75,7 +75,7 @@
       tokenAmount = token.balance.mul(yieldPerShare).div(scalar);
       tokenAmountFormatted = utils.formatUnits(tokenAmount, tokenDecimals);
       tokenAddress = token.address;
-      debtToWei = utils.parseUnits(outstandingDebt, tokenDecimals);
+      debtToWei = utils.parseUnits(outstandingDebt, 18);
       clearLiquidate();
       updateBalances();
     }

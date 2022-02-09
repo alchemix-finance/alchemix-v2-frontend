@@ -26,6 +26,8 @@
   let yieldDeposit;
   let underlyingDeposit;
   let totalDeposit;
+
+  let startingDebtLimit;
   let projectedDebtLimit;
 
   let depositDisabled = true;
@@ -59,12 +61,16 @@
     const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
     const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
     totalDeposit = utils.formatUnits(userDeposit.add(totalToWei), underlyingDecimals);
-    projectedDebtLimit = utils.formatUnits(
-      BigNumber.from(borrowLimit).add(
-        totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
-      ),
-      underlyingDecimals,
-    );
+    if (totalToWei.gt(BigNumber.from(0))) {
+      projectedDebtLimit = utils.formatUnits(
+        BigNumber.from(borrowLimit).add(
+          totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
+        ),
+        underlyingDecimals,
+      );
+    } else {
+      projectedDebtLimit = startingDebtLimit;
+    }
     depositDisabled =
       totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
   };
@@ -79,6 +85,10 @@
     const underlyingObject = $walletBalance.tokens.find((token) => token.address === underlyingToken);
     underlyingSymbol = underlyingObject.symbol;
     underlyingBalance = underlyingObject.balance;
+    startingDebtLimit = utils.formatUnits(
+      BigNumber.from(borrowLimit).div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
+      underlyingDecimals,
+    );
   });
 </script>
 
@@ -194,9 +204,9 @@
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {utils.formatEther(userDeposit)} -> {totalDeposit || utils.formatEther(userDeposit)}<br
-      />
-      Borrow Limit: {utils.formatEther(borrowLimit)} -> {projectedDebtLimit || utils.formatEther(borrowLimit)}
+      Deposit Balance: {utils.formatUnits(userDeposit, underlyingDecimals)}
+      -> {totalDeposit}<br />
+      Borrow Limit: {startingDebtLimit} -> {projectedDebtLimit}
     </div>
 
     <Button
