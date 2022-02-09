@@ -193,6 +193,50 @@ export const makeVaultsHeadStore = (_provider: ReturnType<typeof makeProviderSto
   };
 };
 
+/*
+ *  Fetch the default vault and add it to the list
+ *  Refetch a category of vaults when refetch is called
+ *  Refetch just a vault id
+ * */
+export const makeVaultsBodyStore = (_provider: ReturnType<typeof makeProviderStore>) => {
+  let fetchedVaults = writable([]);
+  let notifyUpdate = createNotifyStore<{
+    operationType: 'SINGLE_VAULT' | 'VAULT_CATEGORY';
+    vaultId: number;
+    vaultCategory: number;
+  }>({
+    operationType: undefined,
+    vaultId: undefined,
+    vaultCategory: undefined,
+  });
+
+  let _vaultsBody = [];
+  const defaultVaultToFetch = SupportedVaults.alUSD;
+
+  return {
+    fetchedVaults,
+    vaultsBody: derived(
+      [_provider.signer, notifyUpdate],
+      ([$signer, $notifier], _set) => {
+        const { vaultCategory, vaultId, operationType } = $notifier.value;
+
+        //Initial Loading
+        if ($signer && vaultId === undefined && vaultCategory === undefined) {
+        } else if ($signer && operationType === 'VAULT_CATEGORY' && vaultCategory !== undefined) {
+          // Fetch just a category
+        } else {
+          // Fetch just a vault id
+        }
+
+        return () => {
+          _set({ Value: undefined, Status: DerivedStatus.LOADING });
+        };
+      },
+      { ...DefaultDerivedState },
+    ),
+  };
+};
+
 export const activeVault = makeActiveVaultStore();
 
 export const vaultsHead = makeVaultsHeadStore(provider);
