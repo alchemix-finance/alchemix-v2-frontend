@@ -7,7 +7,12 @@ export type StoreType = {
   accountAddress: string;
   provider: providers.Web3Provider;
   balances: AsyncStoreType<any[]>;
-  tokens: AsyncStoreType<{ [key in VaultType]?: [] }>;
+  tokens: AsyncStoreType<{
+    [key in VaultType]?: {
+      yieldTokens: any[];
+      uyTokens: any[];
+    };
+  }>;
 };
 
 /*
@@ -15,7 +20,7 @@ export type StoreType = {
  *  [2]: []
  * */
 
-export const rawAccountStore = writable<StoreType>({
+export const rawStore = writable<StoreType>({
   accountAddress: '',
   provider: undefined,
   balances: { status: StoreState.LOADING, value: [] },
@@ -23,10 +28,10 @@ export const rawAccountStore = writable<StoreType>({
 });
 
 export default {
-  address: [createDerivator<StoreType, string>(rawAccountStore, 'accountAddress')],
-  provider: [createDerivator<StoreType, providers.Web3Provider>(rawAccountStore, 'provider')],
+  address: [createDerivator<StoreType, string>(rawStore, 'accountAddress')],
+  provider: [createDerivator<StoreType, providers.Web3Provider>(rawStore, 'provider')],
   balances: [
-    createAsyncDerivator<StoreType, any[]>(rawAccountStore, 'balances', 'value'),
-    createAsyncDerivator<StoreType, StoreState>(rawAccountStore, 'balances', 'status'),
+    createAsyncDerivator<StoreType, any[]>(rawStore, 'balances', 'value'),
+    createAsyncDerivator<StoreType, StoreState>(rawStore, 'balances', 'status'),
   ],
 };
