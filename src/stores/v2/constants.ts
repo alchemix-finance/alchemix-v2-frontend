@@ -1,7 +1,10 @@
-import { VaultType } from '@stores/v2/types';
+export enum VaultTypes {
+  alUSD,
+  alETH,
+}
 
-export default {
-  [VaultType.alUSD]: {
+export const VaultConstants = {
+  [VaultTypes.alUSD]: {
     alchemistContractSelector: 'AlchemistV2_alUSD',
   },
 };
