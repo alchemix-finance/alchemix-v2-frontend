@@ -247,7 +247,7 @@ function vaultAlusdRowBuilder(tokens) {
       const balance = position.shares;
       const underlyingBalance = await getTokenBalance(underlyingToken);
       const vaultDebt = balance
-        .div(utils.parseUnits(_alusd.ratio, 18))
+        .div(utils.parseUnits(_alusd.ratio, underlyingDecimals))
         .mul(underlyingPerShare)
         .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
       const stratIsUsed =

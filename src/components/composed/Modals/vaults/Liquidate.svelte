@@ -1,5 +1,5 @@
 <script>
-  import { utils, FixedNumber } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
   import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
@@ -13,6 +13,7 @@
   let tokenAddress;
   let tokenSymbol;
   let tokenAmount;
+  let tokenAmountFormatted;
   let tokenDecimals;
   let yieldPerShare;
   let underlyingPerShare;
@@ -20,7 +21,13 @@
 
   let liquidateAmount;
   let remainingDebt;
+  let remainingDebtFormatted;
   let remainingDeposit;
+  let remainingDepositFormatted;
+
+  let debtToWei;
+  let tokenAmountToShares;
+  let liquidateAmountToWei;
 
   let userVerified = false;
   let canLiquidate = false;
@@ -35,42 +42,47 @@
   };
 
   const setMaxLiquidate = () => {
-    liquidateAmount = parseFloat(tokenAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : tokenAmount;
+    liquidateAmount = tokenAmount.gte(debtToWei) ? outstandingDebt : tokenAmountFormatted;
   };
 
   const updateBalances = () => {
-    remainingDebt =
-      parseFloat(liquidateAmount) > parseFloat(outstandingDebt)
-        ? 0
-        : outstandingDebt - (liquidateAmount || 0);
-    remainingDeposit = tokenAmount - liquidateAmount;
-    underlyingAmount = (liquidateAmount / yieldPerShare) * underlyingPerShare;
-    canLiquidate =
-      parseFloat(liquidateAmount) > 0 &&
-      parseFloat(liquidateAmount) <= parseFloat(tokenAmount) &&
-      userVerified;
+    if (liquidateAmount) {
+      liquidateAmountToWei = utils.parseUnits(liquidateAmount.toString() || '0', tokenDecimals);
+      remainingDebt = liquidateAmountToWei.gt(debtToWei)
+        ? BigNumber.from(0)
+        : debtToWei.sub(liquidateAmountToWei);
+      remainingDebtFormatted = utils.formatUnits(remainingDebt, tokenDecimals);
+      remainingDeposit = liquidateAmountToWei.gt(tokenAmount)
+        ? BigNumber.from(0)
+        : tokenAmount?.sub(liquidateAmountToWei) || BigNumber.from(0);
+      remainingDepositFormatted = utils.formatUnits(remainingDeposit, tokenDecimals);
+      underlyingAmount = liquidateAmountToWei.div(yieldPerShare).mul(underlyingPerShare);
+      canLiquidate =
+        liquidateAmountToWei.gt(BigNumber.from(0)) && liquidateAmountToWei.lte(tokenAmount) && userVerified;
+    } else {
+      remainingDebtFormatted = outstandingDebt;
+      remainingDepositFormatted = tokenAmountFormatted;
+    }
   };
 
   const switchUnderlying = () => {
     if (tokenSymbol) {
       const token = yieldTokens.find((entry) => entry.symbol === tokenSymbol);
+      const scalar = BigNumber.from(10).pow(token.decimals);
       tokenDecimals = token.decimals;
-      tokenAmount = token.balance * token.yieldPerShare;
+      yieldPerShare = utils.parseUnits(token.yieldPerShare, tokenDecimals);
+      underlyingPerShare = utils.parseUnits(token.underlyingPerShare, tokenDecimals);
+      tokenAmount = token.balance.mul(yieldPerShare).div(scalar);
+      tokenAmountFormatted = utils.formatUnits(tokenAmount, tokenDecimals);
       tokenAddress = token.address;
-      yieldPerShare = token.yieldPerShare;
-      underlyingPerShare = token.underlyingPerShare;
+      debtToWei = utils.parseUnits(outstandingDebt, 18);
       clearLiquidate();
       updateBalances();
     }
   };
 
   const liquidate = () => {
-    const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(tokenDecimals);
-    const amountFormatted = FixedNumber.from(liquidateAmount).toUnsafeFloat().toFixed(tokenDecimals);
-    $tempTx.amountRepay =
-      parseFloat(liquidateAmount) > parseFloat(outstandingDebt)
-        ? utils.parseUnits(debtFormatted.toString(), tokenDecimals)
-        : utils.parseUnits(amountFormatted.toString(), tokenDecimals);
+    $tempTx.amountRepay = liquidateAmountToWei.gt(debtToWei) ? debtToWei : liquidateAmountToWei;
     $tempTx.yieldToken = tokenAddress;
     $tempTx.method = 'liquidate';
   };
@@ -95,7 +107,7 @@
   </div>
   <div slot="body" class="flex flex-col space-y-4 p-4">
     <label for="liquidateInput" class="text-sm text-lightgrey10">
-      Available: {tokenAmount}
+      Available: ~{parseFloat(tokenAmountFormatted).toFixed(4)}
       {tokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -131,9 +143,9 @@
       </div>
     </div>
     <div class="w-full text-sm text-lightgrey10">
-      Outstanding Debt: {outstandingDebt} -> {remainingDebt} <br />
-      Remaining Deposit: {tokenAmount}
-      {tokenSymbol} -> {remainingDeposit}
+      Outstanding Debt: {outstandingDebt} -> {remainingDebtFormatted} <br />
+      Remaining Deposit: {tokenAmountFormatted}
+      {tokenSymbol} -> {remainingDepositFormatted}
       {tokenSymbol}
     </div>
     <ToggleSwitch

@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import backgroundLoading from '../stores/backgroundLoading';
 import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
@@ -79,35 +79,28 @@ export async function updateAlusdVault(vaultIndex) {
   const vault = _alusd.rows[vaultIndex];
   const params = await contract.getYieldTokenParameters(vault.token);
   const position = await contract.positions(_account.address, vault.token);
-  console.log('position', position);
-  const balance = utils.formatUnits(position.shares, vault.yieldDecimals);
+  const underlyingPerShare = await contract.getUnderlyingTokensPerShare(vault.token);
+  const balance = position.shares;
   const tvl = utils.formatUnits(params.activeBalance, vault.underlyingDecimals);
   const underlyingBalance = await getTokenBalance(vault.underlyingToken);
-  const vaultDebt = utils
-    .formatUnits(
-      position.shares.mul(vault.underlyingPerShare).div(parseFloat(_alusd.ratio)),
-      vault.underlyingDecimals * 2,
-    )
-    .toString();
-  console.log('tvl', tvl, vault.tvl);
+  const vaultDebt = balance
+    .div(utils.parseUnits(_alusd.ratio, vault.underlyingDecimals))
+    .mul(underlyingPerShare)
+    .div(BigNumber.from(10).pow(vault.underlyingDecimals));
   if (tvl !== vault.tvl) {
     _alusd.rows[vaultIndex].tvl = tvl;
     alusd.set({ ..._alusd });
   }
-  console.log('underlyingBalance', underlyingBalance, vault.underlyingBalance);
   if (underlyingBalance !== vault.underlyingBalance) {
     _alusd.rows[vaultIndex].underlyingBalance = underlyingBalance;
     alusd.set({ ..._alusd });
   }
-  console.log('vaultDebt', vaultDebt, vault.vaultDebt);
-  console.log('maxDebt', _alusd.maxDebt);
-  if (vaultDebt !== vault.vaultDebt) {
-    const debtDiff = vaultDebt - vault.vaultDebt;
+  if (!vaultDebt.eq(vault.vaultDebt)) {
+    const debtDiff = vaultDebt.sub(vault.vaultDebt);
     _alusd.rows[vaultIndex].vaultDebt = vaultDebt;
-    _alusd.maxDebt += debtDiff;
+    _alusd.maxDebt = _alusd.maxDebt.add(debtDiff);
     alusd.set({ ..._alusd });
   }
-  console.log('balance', balance, vault.balance);
   if (balance !== vault.balance) {
     _alusd.rows[vaultIndex].balance = balance;
     alusd.set({ ..._alusd });

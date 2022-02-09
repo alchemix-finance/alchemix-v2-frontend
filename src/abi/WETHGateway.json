@@ -50,7 +50,7 @@
             "name": "WETH",
             "outputs": [
                 {
-                    "internalType": "contract IWETH",
+                    "internalType": "contract IWETH9",
                     "name": "",
                     "type": "address"
                 }
@@ -81,9 +81,9 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
+                    "internalType": "uint256",
+                    "name": "maximumLoss",
+                    "type": "uint256"
                 }
             ],
             "name": "depositUnderlying",
@@ -160,9 +160,9 @@
                     "type": "address"
                 },
                 {
-                    "internalType": "bytes",
-                    "name": "data",
-                    "type": "bytes"
+                    "internalType": "uint256",
+                    "name": "maximumLoss",
+                    "type": "uint256"
                 }
             ],
             "name": "withdrawUnderlying",
@@ -175,5 +175,5 @@
             "type": "receive"
         }
     ],
-    "address": "0x24afaBc0d364B77b898E3e1455c04a79ee5B28ce"
+    "address": "0xf0A67c0c2F07ea33aAb2F9dd84FA0c4F03eC3A8c"
 }
