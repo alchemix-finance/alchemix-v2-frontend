@@ -491,6 +491,31 @@
       $alusd.userDebt,
       $alusd.rows[indexStore].underlyingDecimals,
     );
+    underlyingTokenAlusd.length = 0;
+    yieldTokenAlusd.length = 0;
+    underlyingTokenAlusd.push({
+      ...$alusd.debtToken,
+      balance: utils.parseUnits($alusd.debtToken.balance, $alusd.debtToken.decimals),
+      method: 'burn',
+    });
+    for (const token of $alusd.yieldTokens) {
+      const index = $alusd.rows.findIndex((row) => row.token === token);
+      yieldTokenAlusd.push({
+        symbol: $alusd.rows[index].yieldSymbol,
+        address: token,
+        balance: $alusd.rows[index].balance,
+        decimals: $alusd.rows[index].yieldDecimals,
+        yieldPerShare: $alusd.rows[index].yieldPerShareFormatted,
+        underlyingPerShare: $alusd.rows[index].underlyingPerShareFormatted,
+      });
+      underlyingTokenAlusd.push({
+        symbol: $alusd.rows[index].underlyingSymbol,
+        address: $alusd.rows[index].underlyingToken,
+        balance: $alusd.rows[index].underlyingBalance,
+        decimals: $alusd.rows[index].underlyingDecimals,
+        method: 'repay',
+      });
+    }
     getRandomData();
   };
 

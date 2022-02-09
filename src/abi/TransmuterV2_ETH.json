@@ -1,40 +1,40 @@
 {
     "abi": [
         {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "target",
+                    "type": "address"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "success",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "bytes",
+                    "name": "data",
+                    "type": "bytes"
+                }
+            ],
+            "name": "ERC20CallFailed",
+            "type": "error"
+        },
+        {
             "inputs": [],
-            "name": "Unauthorized",
+            "name": "IllegalArgument",
+            "type": "error"
+        },
+        {
+            "inputs": [],
+            "name": "IllegalState",
             "type": "error"
         },
         {
             "inputs": [],
             "name": "Unauthorized",
             "type": "error"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "AccountAdded",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "AccountRemoved",
-            "type": "event"
         },
         {
             "anonymous": false,
@@ -124,11 +124,11 @@
                 {
                     "indexed": false,
                     "internalType": "bool",
-                    "name": "isPaused",
+                    "name": "flag",
                     "type": "bool"
                 }
             ],
-            "name": "PauseUpdated",
+            "name": "Paused",
             "type": "event"
         },
         {
@@ -221,18 +221,6 @@
         },
         {
             "anonymous": false,
-            "inputs": [],
-            "name": "WhitelistDisabled",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [],
-            "name": "WhitelistEnabled",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
             "inputs": [
                 {
                     "indexed": true,
@@ -309,19 +297,6 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "addToWhitelist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
             "inputs": [],
             "name": "buffer",
             "outputs": [
@@ -366,13 +341,6 @@
                 }
             ],
             "name": "deposit",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "disableWhitelist",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -505,6 +473,11 @@
                     "internalType": "address",
                     "name": "_buffer",
                     "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_whitelist",
+                    "type": "address"
                 }
             ],
             "name": "initialize",
@@ -523,19 +496,6 @@
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "account",
-                    "type": "address"
-                }
-            ],
-            "name": "removeFromWhitelist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -673,31 +633,12 @@
         },
         {
             "inputs": [],
-            "name": "whitelistActive",
+            "name": "whitelist",
             "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
                 {
                     "internalType": "address",
                     "name": "",
                     "type": "address"
-                }
-            ],
-            "name": "whitelisted",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
                 }
             ],
             "stateMutability": "view",
@@ -722,5 +663,5 @@
             "type": "function"
         }
     ],
-    "address": "0x93d71bBf8678895dEc92A18bA9F56361c373b2EB"
+    "address": "0x392b4AD3985e2FB8A5F2402FDF2aF270bC7C6250"
 }
