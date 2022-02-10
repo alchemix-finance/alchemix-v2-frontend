@@ -19,7 +19,11 @@ For a dropdown that opens on hover see /DropdownOnClick
 <div class="dropdown inline-block relative w-full">
   <slot name="label" />
   <div
-    class="dropdown-menu absolute hidden border{borderSize === '1' ? '' : `-${borderSize}`}
+    class="
+    dropdown-menu
+    absolute
+    hidden
+    border{borderSize === '1' ? '' : `-${borderSize}`}
     border-{borderColor}
     right-0
     rounded-lg
@@ -29,7 +33,8 @@ For a dropdown that opens on hover see /DropdownOnClick
     bg-{backgroundColor}
     shadow-lg
     z-30
-    w-full
+    min-w-full
+    max-w-max
     "
   >
     <slot name="options" />

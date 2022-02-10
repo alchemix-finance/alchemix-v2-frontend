@@ -8,8 +8,8 @@
   import global from '../stores/global';
   import settings from '../stores/settings';
   import account from '../stores/account';
-  import { setCurrency, setLanguage, setGas, setVerbose } from '../helpers/userSettings';
-  import { connect } from '../helpers/walletManager';
+  import { setCurrency, setLanguage, setGas, setVerbose } from '@helpers/userSettings';
+  import { connect } from '@helpers/walletManager';
 
   const debugging = Boolean(parseInt(process.env.DEBUG_MODE));
 </script>
@@ -42,15 +42,15 @@
                   <p class="mr-3 w-full text-center">{$settings.verboseConsole}</p>
                   <p>▾</p>
                 </div>
-                <ul class="w-max" slot="options">
+                <ul class="w-full" slot="options">
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
+                    class="w-full cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
                     on:click="{() => setVerbose(false)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">False</p>
                   </li>
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
+                    class="w-full cursor-pointer h-8 px-3 py-1 hover:bg-grey10 border-t border-grey10"
                     on:click="{() => setVerbose(true)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">True</p>
@@ -76,10 +76,10 @@
                 </p>
                 <p>▾</p>
               </div>
-              <ul slot="options" class="w-max">
+              <ul slot="options" class="w-full">
                 {#each $global.allCurrencies as currency}
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
+                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10 border-t border-grey10"
                     on:click="{() => setCurrency(currency)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
@@ -104,10 +104,10 @@
                 </p>
                 <p>▾</p>
               </div>
-              <ul slot="options" class="w-max">
+              <ul slot="options" class="w-full">
                 {#each $global.languages as language}
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10"
+                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10 border-t border-grey10"
                     on:click="{() => setLanguage(language)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
