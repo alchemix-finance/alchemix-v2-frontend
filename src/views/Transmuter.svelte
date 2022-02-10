@@ -10,15 +10,16 @@
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
   import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
+  import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import getContract from '../helpers/getContract';
   import getUserGas from '../helpers/getUserGas';
   import transmuters from '../stores/transmuters';
   import account from '../stores/account';
   import tempTx, { tempTxReset } from '../stores/tempTx';
-  import setTokenAllowance from '../helpers/setTokenAllowance';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../helpers/setToast';
-  import { getTokenDecimals } from '../helpers/getTokenData';
-  import { getProvider } from '../helpers/walletManager';
+  import setTokenAllowance from '@helpers/setTokenAllowance';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import { getTokenDecimals } from '@helpers/getTokenData';
+  import { getProvider } from '@helpers/walletManager';
 
   const toggleButtons = {
     transmuterSelect: {
@@ -196,10 +197,18 @@
           ...expandedProps,
           colSize: 1,
         },
+        // col2: {
+        //   value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
+        //   colSize: 2,
+        //   alignment: 'justify-self-start',
+        // },
         col2: {
-          value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
+          CellComponent: FarmNameCell,
+          farmIcon: prop.alTokenSymbol.toLowerCase() + '.png',
+          tokenIcon: prop.underlyingTokenSymbol.toLowerCase(),
+          farmName: prop.transmuterName,
+          farmSubtitle: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
           colSize: 2,
-          alignment: 'justify-self-start',
         },
         col3: {
           value: prop.totalDeposited,

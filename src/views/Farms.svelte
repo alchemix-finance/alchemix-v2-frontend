@@ -1,4 +1,5 @@
 <script>
+  import { utils } from 'ethers';
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -14,6 +15,7 @@
   import ExternalFarms from '../components/composed/Table/farms/ExternalFarms.svelte';
   import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
   import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
+  import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
   import account from '../stores/account';
@@ -119,18 +121,56 @@
       $stakingPools.allPools.forEach((pool) => {
         const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
         if (pool.poolConfig && pool.reward !== '0.0') {
-          const expandedProps = {
-            poolId: pool.poolId,
-            token: userToken,
-            stakedBalance: pool.userDeposit,
-            unclaimedRewards: pool.userUnclaimed,
-            reward: pool.rewardToken,
-          };
+          let expandedProps;
+          let rewards;
+          let component;
+          switch (pool.type) {
+            case 'sushi':
+              expandedProps = {
+                token: {
+                  balance: pool.slpBalance,
+                  symbol: 'SLP',
+                },
+                stakedBalance: pool.userDeposit,
+                unclaimedAlcx: pool.rewardsAlcx,
+                unclaimedSushi: pool.rewardsSushi,
+                slpBalance: pool.slpBalance,
+              };
+              rewards = [
+                {
+                  iconName: 'alchemix',
+                  tokenName: 'ALCX',
+                },
+                {
+                  iconName: 'sushi',
+                  tokenName: 'SUSHI',
+                },
+              ];
+              component = ExpandedSushiFarm;
+              break;
+            case 'internal':
+            default:
+              expandedProps = {
+                poolId: pool.poolId,
+                token: userToken,
+                stakedBalance: pool.userDeposit,
+                unclaimedRewards: pool.userUnclaimed,
+                reward: pool.rewardToken,
+              };
+              rewards = [
+                {
+                  iconName: 'alchemix',
+                  tokenName: 'ALCX',
+                },
+              ];
+              component = ExpandedFarm;
+              break;
+          }
           const payload = {
             col0: {
               CellComponent: ExpandRowCell,
               expandedRow: {
-                ExpandedRowComponent: ExpandedFarm,
+                ExpandedRowComponent: component,
               },
               ...expandedProps,
               colSize: 1,
@@ -146,17 +186,12 @@
             },
             col2: {
               // TODO calculate fiat values
-              value: pool.tvl,
+              value: utils.formatEther(pool.tvl),
               colSize: 2,
             },
             col3: {
               CellComponent: RewardCell,
-              rewards: [
-                {
-                  iconName: 'alchemix',
-                  tokenName: 'ALCX',
-                },
-              ],
+              rewards: rewards,
               colSize: 3,
             },
             col4: {
@@ -167,7 +202,7 @@
               CellComponent: ActionsCell,
               label: 'Manage',
               expandedRow: {
-                ExpandedRowComponent: ExpandedFarm,
+                ExpandedRowComponent: component,
               },
               ...expandedProps,
               colSize: 3,

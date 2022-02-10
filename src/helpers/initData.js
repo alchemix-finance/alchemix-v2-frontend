@@ -1,5 +1,5 @@
 import { ethers, utils } from 'ethers';
-import getContract, { getAddress } from './getContract';
+import getContract, { getExternalContract, getAddress, getExternalAddress } from './getContract';
 import {
   getTokenSymbol,
   getTokenBalance,
@@ -11,7 +11,7 @@ import account from '../stores/account';
 import walletBalance from '../stores/walletBalance';
 import vaults, { alusd, aggregate } from '../stores/vaults';
 import transmuters, { transmuterContracts } from '../stores/transmuters';
-import stakingPools, { poolLookup } from '../stores/stakingPools';
+import stakingPools, { poolLookup, externalLookup } from '../stores/stakingPools';
 import backgroundLoading from '../stores/backgroundLoading';
 import settings from '../stores/settings';
 
@@ -250,6 +250,7 @@ function vaultAlusdRowBuilder(tokens) {
         .div(utils.parseUnits(_alusd.ratio, underlyingDecimals))
         .mul(underlyingPerShare)
         .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
+      console.log(vaultDebt.toString());
       const stratIsUsed =
         parseFloat(utils.formatUnits(position.shares, underlyingDecimals)).toFixed(4) !== '0.0000';
       const depositPayload = {
@@ -281,9 +282,17 @@ function vaultAlusdRowBuilder(tokens) {
         _alusd.maxDebt = vaultDebt;
       }
       _aggregate.deposited.push(depositPayload);
-      _aggregate.totalDeposit +=
-        (parseFloat(depositPayload.balance) * underlyingPerShare) / 10 ** underlyingDecimals;
-      _aggregate.debtLimit += vaultDebt;
+      if (_aggregate.totalDeposit) {
+        _aggregate.totalDeposit = _aggregate.totalDeposit.add(balance);
+      } else {
+        _aggregate.totalDeposit = balance;
+      }
+      if (_aggregate.debtLimit) {
+        _aggregate.debtLimit = _aggregate.debtLimit.add(vaultDebt);
+      } else {
+        _aggregate.debtLimit = vaultDebt;
+      }
+      console.log(_aggregate.debtLimit.toString());
       const balanceValue = utils
         .parseUnits(utils.formatUnits(balance, underlyingDecimals), 18)
         .mul(underlyingPerShare)
@@ -319,6 +328,7 @@ const vaultAlusdRowBuilderQueue = (tokens) => {
 async function initAlusdVault() {
   const contract = getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
+  console.log(rawDebt.toString());
   const rawRatio = await contract.minimumCollateralization();
   _alusd.userDebt = utils.formatEther(rawDebt.debt.toString());
   _alusd.ratio = utils.formatEther(rawRatio.toString());
@@ -339,6 +349,21 @@ async function initVaults() {
   vaults.set({ ..._vaults });
   return true;
 }
+
+const transmuterNames = [
+  {
+    token: 'dai',
+    name: 'van Helmont',
+  },
+  {
+    token: 'usdc',
+    name: 'Ge Hong',
+  },
+  {
+    token: 'usdt',
+    name: 'Paracelsus',
+  },
+];
 
 // @dev orchestrates initialization of all transmuters
 function initTransmuters() {
@@ -361,6 +386,9 @@ function initTransmuters() {
       const exchangedBN = ethers.BigNumber.from(getExchangedBalance);
       const unexchangedBN = ethers.BigNumber.from(getUnexchangedBalance);
       const totalDeposited = utils.formatEther(exchangedBN.add(unexchangedBN).toString());
+      const transmuterName = transmuterNames.find(
+        (item) => item.token === underlyingTokenSymbol.toLowerCase(),
+      ).name;
       const payload = {
         transmuter,
         address,
@@ -378,6 +406,7 @@ function initTransmuters() {
         exchangedBN,
         unexchangedBN,
         totalDeposited,
+        transmuterName,
       };
       _transmuters.props.push(payload);
       transmuters.set({ ..._transmuters });
@@ -398,6 +427,7 @@ function initTransmuters() {
 // @dev orchestrates initialization of all farms
 async function initFarms() {
   if (_stakingPools.allPools.length === 0) {
+    await initSushiFarm();
     const contract = getContract('StakingPools');
     const poolCounter = parseInt(_stakingPools.pools, 10);
     for (let i = 0; i < poolCounter; i++) {
@@ -409,8 +439,8 @@ async function initFarms() {
       const userDeposit = utils.formatEther(checkUserDeposit.toString());
       const checkUserUnclaimed = await contract.getStakeTotalUnclaimed(_account.address, i);
       const userUnclaimed = utils.formatEther(checkUserUnclaimed.toString());
-      const checkTvl = await contract.getPoolTotalDeposited(i);
-      const tvl = utils.formatEther(checkTvl.toString());
+      const tvl = await contract.getPoolTotalDeposited(i);
+      // const tvl = utils.formatEther(checkTvl.toString());
       const poolConfig = poolLookup.find((pool) => pool.address === token);
       const rewardToken = 'ALCX';
       const payload = {
@@ -422,7 +452,9 @@ async function initFarms() {
         poolConfig,
         rewardToken,
         poolId: i,
+        type: 'internal',
       };
+      console.log('pool payload', payload);
       _stakingPools.allPools.push(payload);
       stakingPools.set({ ..._stakingPools });
       if (i + 1 === poolCounter) {
@@ -434,6 +466,45 @@ async function initFarms() {
     _account.loadingFarmsConfigurations = false;
     account.set({ ..._account });
   }
+}
+
+// @dev sets up sushi farm
+async function initSushiFarm() {
+  // @dev set up contract instances
+  const mcv2Contract = getExternalContract('SushiMasterchefV2');
+  const mcv2Address = getExternalAddress('SushiMasterchefV2');
+  const onsenContract = getExternalContract('SushiOnsenRewarder');
+  const slpContract = getExternalContract('SushiLP');
+  const slpAddress = getExternalAddress('SushiLP');
+  // @dev grab data from contracts
+  const slpBalance = await getTokenBalance(slpAddress);
+  const rewardsSushi = await mcv2Contract.pendingSushi(0, _account.address);
+  const rewardsAlcx = await onsenContract.pendingToken(0, _account.address);
+  const userDeposit = await mcv2Contract.userInfo(0, _account.address);
+  const totalDeposit = await slpContract.balanceOf(mcv2Address);
+  const reserve = await slpContract.getReserves();
+  const totalSupply = await slpContract.totalSupply();
+  const alcxPerBlock = await onsenContract.tokenPerBlock();
+  const sushiPerBlock = await mcv2Contract.sushiPerBlock();
+  const poolConfig = externalLookup.find((pool) => pool.address === mcv2Address);
+  const payload = {
+    type: 'sushi',
+    reward: 'yes',
+    token: slpAddress,
+    rewardsSushi,
+    rewardsAlcx,
+    slpBalance,
+    userDeposit,
+    tvl: totalDeposit,
+    reserve,
+    totalSupply,
+    alcxPerBlock,
+    sushiPerBlock,
+    poolConfig,
+  };
+  _stakingPools.allPools.push(payload);
+  stakingPools.set({ ..._stakingPools });
+  return true;
 }
 
 // @dev prints neato ascii art. bitches love ascii art

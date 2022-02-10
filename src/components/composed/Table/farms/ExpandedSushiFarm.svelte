@@ -1,119 +1,43 @@
 <script>
   import { slide } from 'svelte/transition';
-  import { utils } from 'ethers';
-  import Button from '../../../elements/Button.svelte';
-  import getContract from '../../../../helpers/getContract';
-  import getUserGas from '../../../../helpers/getUserGas';
-  import { getProvider } from '@helpers/walletManager';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
-  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { utils, BigNumber } from 'ethers';
+  import { getExternalContract } from '@helpers/getContract';
+  import Button from '@components/elements/Button.svelte';
+  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
 
-  export let poolId;
   export let token;
   export let stakedBalance;
-  export let unclaimedRewards;
-  export let reward;
+  export let unclaimedAlcx;
+  export let unclaimedSushi;
+  export let slpBalance;
 
   let depositAmount;
   let withdrawAmount;
 
-  const contract = getContract('StakingPools');
-  const provider = getProvider();
-
-  const deposit = async () => {
-    const amountToWei = utils.parseEther(depositAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    if (depositAmount > token.balance) {
-      setError('Trying to deposit more than available');
-    } else {
-      try {
-        let tx;
-        setPendingWallet();
-        tx = await contract.deposit(poolId, amountToWei, {
-          gasPrice: gas,
-        });
-        setPendingTx();
-        await provider.once(tx.hash, (transaction) => {
-          setSuccessTx(transaction.transactionHash);
-        });
-      } catch (e) {
-        setError(e.message);
-        console.debug(e);
-      }
-    }
-  };
-
-  const withdraw = async () => {
-    const amountToWei = utils.parseEther(withdrawAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    if (withdrawAmount > stakedBalance) {
-      setError('Trying to withdraw more than available');
-    } else {
-      try {
-        let tx;
-        setPendingWallet();
-        tx = await contract.withdraw(poolId, amountToWei, {
-          gasPrice: gas,
-        });
-        setPendingTx();
-        await provider.once(tx.hash, (transaction) => {
-          setSuccessTx(transaction.transactionHash);
-        });
-      } catch (e) {
-        setError(e.message);
-        console.debug(e);
-      }
-    }
-  };
-
-  const claim = async () => {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    try {
-      let tx;
-      setPendingWallet();
-      tx = await contract.claim(poolId, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-      });
-    } catch (e) {
-      setError(e.message);
-      console.debug(e);
-    }
-  };
+  const mcv2contract = getExternalContract('SushiMasterchefV2');
 
   const setMaxDeposit = () => {
-    depositAmount = token.balance;
+    depositAmount = utils.formatEther(slpBalance);
   };
-
   const clearDeposit = () => {
     depositAmount = '';
   };
 
   const setMaxWithdraw = () => {
-    withdrawAmount = stakedBalance;
+    withdrawAmount = utils.formatEther(stakedBalance.amount);
   };
-
   const clearWithdraw = () => {
     withdrawAmount = '';
   };
 
-  const setWithdrawValue = (event) => {
-    // TODO if new value < 1 wei -> withdrawAmount = 1 wei
-    withdrawAmount = (parseFloat(stakedBalance) / 100) * event.detail.value;
-  };
-</script>
+  console.table($$props);
 
-<!-- NOTE -- the token object is not working at the moment so I had to put in placeholders for styling -->
+  $: unclaimedAlcxFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedAlcx)));
+  $: unclaimedSushiFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedSushi)));
+</script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
   <div class="p-4 flex flex-col space-y-4">
-    <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
-    <div class="w-full self-center">
-      <p>{token.balance} {token.symbol}</p>
-    </div> -->
     <label for="borrowInput" class="text-sm text-lightgrey10">
       Available: {token.balance}
       {token.symbol}
@@ -161,9 +85,10 @@
       on:clicked="{() => deposit()}"
     />
   </div>
+
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      Available: {stakedBalance}
+      Available: {stakedBalance.amount}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -209,14 +134,19 @@
       on:clicked="{() => withdraw()}"
     />
   </div>
-
   <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10"> Rewards: </label>
     <div class="flex bg-grey3 rounded border border-grey3">
-      <div class="w-full">
-        <div class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 bg-grey3">
-          {unclaimedRewards}
-          {reward}
+      <div class="w-full flex flex-row">
+        <div class="w-full rounded appearance-none text-xl text-right h-full py-3 px-14 bg-grey3">
+          <p>
+            {unclaimedAlcxFormatted}
+            ALCX
+          </p>
+          <p class="mb-0">
+            {unclaimedSushiFormatted}
+            SUSHI
+          </p>
         </div>
       </div>
     </div>
