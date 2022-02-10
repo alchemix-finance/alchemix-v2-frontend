@@ -1,8 +1,9 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
-import { BalanceType, TokensType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType, TokensType } from '@stores/v2/alcxStore';
 import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 import { poolLookup } from '@stores/stakingPools';
+import { token } from '@components/composed/Table/farms/ExpandedFarm.svelte';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -53,4 +54,52 @@ export function getFullTokenList(tokenList: TokensType) {
   });
 
   return _list;
+}
+
+export async function fetchDataForVault(
+  signer: ethers.Signer,
+  contractInstance: ethers.Contract,
+  tokenAddress: string,
+  accountAddress: string,
+  balancesArr: BalanceType[],
+  debtRatio: ethers.BigNumber,
+): Promise<BodyVaultType> {
+  // const position = await contract.positions(_account.address, token);
+  const _yToken = balancesArr.find((elm) => elm.address === tokenAddress);
+
+  const position = await contractInstance.positions(accountAddress, tokenAddress);
+  const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
+  const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
+
+  const _uyToken = balancesArr.find((elm) => elm.address === tokenParams.underlyingToken);
+
+  const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(token);
+
+  const uyInstance = erc20Contract(_uyToken.address, signer);
+
+  const uyBalance = await uyInstance.balanceOf(accountAddress);
+
+  const debt = position.shares
+    .div(debtRatio)
+    .mul(underlyingPerShare)
+    .div(ethers.BigNumber.from(10))
+    .pow(_uyToken.decimals);
+
+  const isUsed = BigNumber.from(position.shares).gt(BigNumber.from(0));
+
+  return {
+    symbol: _yToken.symbol,
+    address: tokenAddress,
+    balance: position.shares,
+    tvl: tokenParams.activeBalance,
+    yieldPerShare: yieldPerShare,
+    underlyingAddress: tokenParams.underlyingToken,
+    underlyingBalance: uyBalance,
+    underlyingDecimals: _uyToken.decimals,
+    underlyingSymbol: _uyToken.symbol,
+    underlyingPerShare: underlyingPerShare,
+    decimals: _yToken.decimals,
+    debt: debt,
+    isUsed: isUsed,
+  };
 }
