@@ -14,8 +14,6 @@ import transmuters, { transmuterContracts } from '../stores/transmuters';
 import stakingPools, { poolLookup } from '../stores/stakingPools';
 import backgroundLoading from '../stores/backgroundLoading';
 import settings from '../stores/settings';
-import { VaultData, VaultTypes } from '@helpers/constants';
-import { writable } from 'svelte/store';
 
 // @dev enable verbose messages in console when debugging
 const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
