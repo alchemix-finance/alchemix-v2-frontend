@@ -69,3 +69,26 @@ export const updateAllVaultBody = (vault: VaultTypes, vaultsBodies: BodyVaultTyp
       _draftState.vaults[vault].vaultBody = [...vaultsBodies];
     }),
   );
+
+export const updateVaultByIndex = (vault: VaultTypes, vaultIndex: number, vaultBody: BodyVaultType) =>
+  alcxStore.update((_store) =>
+    produce(_store, (_draftState) => {
+      _draftState.vaults[vault].vaultBody[vaultIndex] = {
+        ..._draftState.vaults[vault].vaultBody[vaultIndex],
+        ...vaultBody,
+      };
+    }),
+  );
+
+export const updateVaultByAddress = (vault: VaultTypes, vaultAddress: string, vaultBody: BodyVaultType) =>
+  alcxStore.update((_store) =>
+    produce(_store, (_draftState) => {
+      const index = _draftState.vaults[vault].vaultBody.findIndex((vault) => vault.address === vaultAddress);
+      if (index !== -1) {
+        _draftState.vaults[vault].vaultBody[index] = {
+          ..._draftState.vaults[vault].vaultBody[index],
+          ...vaultBody,
+        };
+      }
+    }),
+  );

@@ -16,6 +16,7 @@ export type BodyVaultType = {
   balance: ethers.BigNumber;
   decimals: number;
   yieldPerShare: ethers.BigNumber;
+  underlyingAddress: string;
   underlyingPerShare: ethers.BigNumber;
   underlyingSymbol: string;
   underlyingBalance: ethers.BigNumber;
