@@ -2,7 +2,6 @@ import { BigNumber, ethers } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TokensType } from '@stores/v2/alcxStore';
 import { arrayDoubleCheck } from '@helpers/arrayHelpers';
-import { poolLookup } from '@stores/stakingPools';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -39,22 +38,7 @@ export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer) 
   return _tokens.map((token) => fetchDataForToken(token, signer));
 };
 
-export function getFullTokenList(tokenList: TokensType) {
-  const _list = [...poolLookup.map((pool) => pool.address)];
-
-  Object.keys(tokenList).forEach((vaultKey) => {
-    Object.keys(tokenList[vaultKey]).forEach((tokenKey) => {
-      tokenList[vaultKey][tokenKey].forEach((address) => {
-        if (arrayDoubleCheck(address, tokenList[vaultKey][tokenKey])) {
-          _list.push(address);
-        }
-      });
-    });
-  });
-
-  return _list;
-}
-
+// Remove the debt
 export async function fetchDataForVault(
   signer: ethers.Signer,
   contractInstance: ethers.Contract,

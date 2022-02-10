@@ -1,92 +1,92 @@
-import alcxStore, { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
 import { produce } from 'immer';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
+import { addressStore, providerStore, balancesStore, vaultsStore, tokensStore } from './alcxStore';
 
 export const updateAddress = (address: string) => {
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.address = address;
-    }),
-  );
+  addressStore.set(address);
 };
 
 export const updateProvider = (provider: providers.Web3Provider) => {
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.provider = provider;
-    }),
-  );
+  providerStore.set(provider);
 };
 
-export const updateENS = (ensAddress: string) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.ens = ensAddress;
-    }),
-  );
-
-export const updateAllBalances = (balances: BalanceType[]) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.balances = balances;
-    }),
-  );
+export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(balances);
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      const index = _draftState.balances.findIndex((bal) => bal.address === balanceAddress);
-      if (index !== -1) _draftState.balances[index].balance = balanceAmount;
-    }),
-  );
+  balancesStore.update((_prevStore) => {
+    const index = _prevStore.findIndex((bal) => bal.address === balanceAddress);
+    if (index !== -1) _prevStore[index].balance = balanceAmount;
 
-export const updateAllTokens = (vault: VaultTypes, _yTokens: string[], _uyTokens: string[]) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.tokens[vault].yieldTokens = _yTokens;
-      _draftState.tokens[vault].underlyingTokens = _uyTokens;
-    }),
-  );
+    return _prevStore;
+  });
+
+export const updateAllTokens = (vault: VaultTypes, _yTokens: string[], _uyTokens: string[]) => {
+  tokensStore.update((_prevStore) => ({
+    ..._prevStore,
+    [vault]: {
+      yieldTokens: _yTokens,
+      underlyingTokens: _uyTokens,
+    },
+  }));
+};
 
 export const updateVaultDebt = (vault: VaultTypes, debt: any) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.vaults[vault].debt = debt;
-    }),
-  );
+  vaultsStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vault]: {
+        ..._store[vault],
+        debt: debt,
+      },
+    };
+
+    return _store;
+  });
 
 export const updateVaultRatio = (vault: VaultTypes, ratio: ethers.BigNumber) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.vaults[vault].ratio = ratio;
-    }),
-  );
+  vaultsStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vault]: {
+        ..._store[vault],
+        ratio: ratio,
+      },
+    };
+
+    return _store;
+  });
 
 export const updateAllVaultBody = (vault: VaultTypes, vaultsBodies: BodyVaultType[]) =>
-  alcxStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState.vaults[vault].vaultBody = [...vaultsBodies];
-    }),
-  );
+  vaultsStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vault]: {
+        ..._store[vault],
+        vaultBody: [...vaultsBodies],
+      },
+    };
+    return _store;
+  });
 
 export const updateVaultByIndex = (vault: VaultTypes, vaultIndex: number, vaultBody: BodyVaultType) =>
-  alcxStore.update((_store) =>
+  vaultsStore.update((_store) =>
     produce(_store, (_draftState) => {
-      _draftState.vaults[vault].vaultBody[vaultIndex] = {
-        ..._draftState.vaults[vault].vaultBody[vaultIndex],
+      _draftState[vault].vaultBody[vaultIndex] = {
+        ..._draftState[vault].vaultBody[vaultIndex],
         ...vaultBody,
       };
     }),
   );
 
 export const updateVaultByAddress = (vault: VaultTypes, vaultAddress: string, vaultBody: BodyVaultType) =>
-  alcxStore.update((_store) =>
+  vaultsStore.update((_store) =>
     produce(_store, (_draftState) => {
-      const index = _draftState.vaults[vault].vaultBody.findIndex((vault) => vault.address === vaultAddress);
+      const index = _draftState[vault].vaultBody.findIndex((vault) => vault.address === vaultAddress);
       if (index !== -1) {
-        _draftState.vaults[vault].vaultBody[index] = {
-          ..._draftState.vaults[vault].vaultBody[index],
+        _draftState[vault].vaultBody[index] = {
+          ..._draftState[vault].vaultBody[index],
           ...vaultBody,
         };
       }

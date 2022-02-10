@@ -26,37 +26,23 @@ export type BodyVaultType = {
   debt: any;
 };
 
-export type TokensType = {
-  [key in VaultTypes]?: {
+export interface TokensType {
+  [key: number]: {
     yieldTokens: string[];
     underlyingTokens: string[];
   };
-};
+}
 
-export type VaultsType = {
-  [key in VaultTypes]?: {
+export interface VaultsType {
+  [key: number]: {
     debt: any;
     ratio: ethers.BigNumber;
     vaultBody: BodyVaultType[];
   };
-};
-
-export interface AlcxStore {
-  address: string;
-  provider: providers.Web3Provider;
-  ens: string;
-  balances: BalanceType[];
-  tokens: TokensType;
-  vaults: VaultsType;
 }
 
-export const alcxStore = writable<AlcxStore>({
-  address: undefined,
-  provider: undefined,
-  ens: undefined,
-  balances: [],
-  tokens: {},
-  vaults: {},
-});
-
-export default alcxStore;
+export const addressStore = writable<string>(undefined);
+export const providerStore = writable<providers.Web3Provider>(undefined);
+export const balancesStore = writable<BalanceType[]>([]);
+export const tokensStore = writable<TokensType>({});
+export const vaultsStore = writable<VaultsType>({});
