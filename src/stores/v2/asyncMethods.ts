@@ -2,13 +2,16 @@ import { AlcxStore } from '@stores/v2/alcxStore';
 import {
   fetchDataForETH,
   fetchDataForToken,
+  fetchDataForVault,
   generateTokenPromises,
   getFullTokenList,
 } from '@stores/v2/helpers';
 import {
   updateAllBalances,
   updateAllTokens,
+  updateAllVaultBody,
   updateOneBalance,
+  updateVaultByAddress,
   updateVaultDebt,
   updateVaultRatio,
 } from '@stores/v2/methods';
@@ -95,4 +98,56 @@ export async function fetchVaultRatio(store: AlcxStore, vaultId: VaultTypes) {
   const rawRatio = await instance.minimumCollateralization();
 
   updateVaultRatio(vaultId, rawRatio);
+}
+
+export async function fetchAllVaultsBodies(store: AlcxStore, vaultId: VaultTypes) {
+  if (!store.provider) {
+    console.error(`[fetchVaultDebt]: store.provider is undefined`);
+    return Promise.reject(`[fetchVaultDebt]: store.provider is undefined`);
+  }
+
+  const { instance } = contractWrapper(
+    VaultConstants[vaultId].alchemistContractSelector,
+    store.provider.getSigner(),
+  );
+
+  const fetchVaultPromises = store.tokens[vaultId].yieldTokens.map((tokenAddress) => {
+    return fetchDataForVault(
+      store.provider.getSigner(),
+      instance,
+      tokenAddress,
+      store.address,
+      store.balances,
+      store.vaults[vaultId].ratio,
+    );
+  });
+
+  return Promise.all([...fetchVaultPromises]).then((vaults) => {
+    updateAllVaultBody(vaultId, vaults);
+  });
+}
+
+export async function fetchVaultBodyByAddress(store: AlcxStore, vaultId: VaultTypes, vaultAddress: string) {
+  if (!store.provider) {
+    console.error(`[fetchVaultDebt]: store.provider is undefined`);
+    return Promise.reject(`[fetchVaultDebt]: store.provider is undefined`);
+  }
+
+  const { instance } = contractWrapper(
+    VaultConstants[vaultId].alchemistContractSelector,
+    store.provider.getSigner(),
+  );
+
+  const fetchDataPromise = fetchDataForVault(
+    store.provider.getSigner(),
+    instance,
+    vaultAddress,
+    store.address,
+    store.balances,
+    store.vaults[vaultId].ratio,
+  );
+
+  return fetchDataPromise.then((vault) => {
+    updateVaultByAddress(vaultId, vaultAddress, vault);
+  });
 }

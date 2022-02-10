@@ -3,7 +3,6 @@ import { erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TokensType } from '@stores/v2/alcxStore';
 import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 import { poolLookup } from '@stores/stakingPools';
-import { token } from '@components/composed/Table/farms/ExpandedFarm.svelte';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -73,7 +72,7 @@ export async function fetchDataForVault(
 
   const _uyToken = balancesArr.find((elm) => elm.address === tokenParams.underlyingToken);
 
-  const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(token);
+  const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
 
   const uyInstance = erc20Contract(_uyToken.address, signer);
 
