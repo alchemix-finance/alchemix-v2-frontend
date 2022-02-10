@@ -1,7 +1,7 @@
 <script>
   import { Link, navigate } from 'svelte-routing';
-  import { connect, disconnect } from '../../helpers/walletManager';
-  import { setCurrency, setGas } from '../../helpers/userSettings';
+  import { connect, disconnect } from '@helpers/walletManager';
+  import { setCurrency, setGas } from '@helpers/userSettings';
   import { _ } from 'svelte-i18n';
 
   import account from '../../stores/account';
@@ -120,7 +120,7 @@
         <p class="pr-2">{$settings.baseCurrency?.symbol}</p>
         <p>▾</p>
       </div>
-      <ul slot="options" class="w-20">
+      <ul slot="options" class="w-full">
         {#each $global.allCurrencies as currency}
           <li
             class="cursor-pointer h-8 hover:bg-grey10 border-t border-grey10"
