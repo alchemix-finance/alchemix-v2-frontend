@@ -1,4 +1,4 @@
 export enum VaultTypes {
-  alUSD,
-  alETH,
+  alUSD = 0,
+  alETH = 1,
 }
