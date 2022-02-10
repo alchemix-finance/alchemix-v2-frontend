@@ -6,6 +6,7 @@ import toastConfig from '../stores/toast';
 import network from '../stores/network';
 import initData from './initData';
 import { uninitData } from './uninitData';
+import { updateAddress, updateProvider } from '@stores/v2/methods';
 
 let _toastConfig;
 let _network;
@@ -95,9 +96,13 @@ const onboard = Onboard({
     wallet: async (result) => {
       const { provider } = result;
       ethersProvider = new ethers.providers.Web3Provider(provider);
+      updateProvider(ethersProvider);
       _account.provider = ethersProvider;
       account.set({ ..._account });
       window.localStorage.setItem('userWallet', result.name);
+    },
+    address: (address) => {
+      updateAddress(address);
     },
     // @dev react to changes in the wallet's network
     network: async (result) => {
