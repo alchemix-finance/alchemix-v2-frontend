@@ -107,7 +107,15 @@ export async function fetchAllVaultsBodies(
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
   const fetchVaultPromises = tokens[vaultId].yieldTokens.map((tokenAddress) => {
-    return fetchDataForVault(signer, instance, tokenAddress, accountAddress, balances, vaults[vaultId].ratio);
+    return fetchDataForVault(
+      vaultId,
+      signer,
+      instance,
+      tokenAddress,
+      accountAddress,
+      balances,
+      vaults[vaultId].ratio,
+    );
   });
 
   return Promise.all([...fetchVaultPromises]).then((vaults) => {

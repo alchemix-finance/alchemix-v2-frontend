@@ -497,10 +497,113 @@
     getRandomData();
   };
 
-  function reactiveVaultsRendering(_vaultsStore) {
-    return _vaultsStore[VaultTypes.alUSD].vaultBody.map(() => {
-      return ``;
-    });
+  const strategyTypes = {
+    used: (_vault) => _vault.balance.gt(BigNumber.from(0)),
+    unused: (_vault) => _vault.balance.lte(BigNumber.from(0)),
+    all: (_vault) => true,
+  };
+
+  let currentStrategy = strategyTypes['all'];
+
+  $: currentVaultsBasedOnType =
+    Object.keys($vaultsStore)
+      .map((vTypeId) => {
+        if ($vaultsSelector.includes(parseInt(vTypeId))) {
+          return $vaultsStore[parseInt(vTypeId)].vaultBody;
+        }
+      })
+      .filter((elm) => elm !== undefined)
+      .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
+
+  $: currentVaultsBasedOnStrategyType = currentVaultsBasedOnType.filter(currentStrategy) ?? [];
+
+  $: currentRowsOnCurrentStrategyType = currentVaultsBasedOnStrategyType.map((vault, index) => {
+    console.log(vault);
+
+    return {
+      type: vault.isUsed ? 'used' : 'unused',
+      alchemist: 'alusd',
+      row: {
+        col2: {
+          CellComponent: FarmNameCell,
+          farmName: vault.symbol,
+          farmSubtitle: 'Yearn ' + vault.underlyingSymbol,
+          farmIcon: 'alusd_med.svg',
+          tokenIcon: `${vault.underlyingSymbol}`.toLowerCase(),
+          colSize: 3,
+          alignment: 'justify-self-start',
+        },
+        deposited: {
+          CellComponent: CurrencyCell,
+          // value:
+          //   ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
+          //   10 ** $alusd.rows[index].underlyingDecimals,
+          value:
+            utils.formatUnits(
+              vault.balance
+                .mul(vault.underlyingPerShare)
+                .div(BigNumber.from(10).pow(vault.underlyingDecimals)),
+              vault.underlyingDecimals,
+            ) ?? 0,
+          colSize: 2,
+        },
+        limit: {
+          CellComponent: CurrencyCell,
+          value: utils.formatUnits(vault.debt, vault.underlyingDecimals),
+          prefix: '+',
+          colSize: 2,
+        },
+        col3: {
+          CellComponent: CurrencyCell,
+          value: utils.formatUnits(vault.tvl, vault.underlyingDecimals),
+          colSize: 2,
+        },
+        col4: {
+          value: 'N/A',
+          colSize: 2,
+        },
+        col5: {
+          CellComponent: ActionsCell,
+          colSize: 3,
+          yieldToken: vault.address,
+          underlyingToken: vault.underlyingAddress,
+          userDeposit: vault.balance,
+          loanRatio: utils.parseUnits($alusd.ratio, 18),
+          borrowLimit: vault.debt,
+          openDebtAmount: utils.parseUnits('0', 18), // Fix
+          openDebtSymbol: 'alUSD',
+          underlyingPricePerShare: vault.underlyingPerShare,
+          yieldPricePerShare: vault.yieldPerShare,
+          yieldDecimals: vault.decimals,
+          underlyingDecimals: vault.underlyingDecimals,
+          vaultIndex: index,
+          aggregateBalance: $aggregate.balance,
+        },
+      },
+    };
+  });
+
+  $: console.log('old', rowsAll);
+
+  $: console.log('strategies', currentRowsOnCurrentStrategyType);
+
+  function reactiveVaultsRendering(_vaultsStore, _selectedVaultsStore) {
+    if (!_vaultsStore) {
+      console.error('[reactiveVaultsRendering]: vaultStore is empty!');
+      return [];
+    }
+
+    let bvaults = Object.keys(_vaultsStore)
+      .map((vTypeId) => {
+        if (_selectedVaultsStore.includes(parseInt(vTypeId))) {
+          return _vaultsStore[parseInt(vTypeId)].vaultBody;
+        }
+      })
+      .filter((elm) => elm !== undefined)
+      .reduce((accumulator, value) => accumulator.concat(value), []);
+    // .filter((v) => v.balance.lte(BigNumber.from(0)));
+
+    return bvaults;
   }
 
   const renderVaults = async () => {
@@ -638,6 +741,9 @@
       </div>
     </ContainerWithHeader>
   {:else}
+    {#each reactiveVaultsRendering($vaultsStore, $vaultsSelector) as vault}
+      {vault.symbol}
+    {/each}
     <div class="w-full mb-8 grid grid-cols-2 gap-8">
       <div class="col-span-1">
         <ContainerWithHeader>
@@ -720,7 +826,10 @@
             selected="{toggleButtons.stratSelect.used}"
             solid="{false}"
             borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 2, filter: 'used' })}"
+            on:clicked="{() => {
+              vaultFilter({ id: 2, filter: 'used' });
+              currentStrategy = strategyTypes['used'];
+            }}"
           />
 
           <Button
@@ -730,7 +839,10 @@
             selected="{toggleButtons.stratSelect.all}"
             solid="{false}"
             borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 2, filter: 'all' })}"
+            on:clicked="{() => {
+              vaultFilter({ id: 2, filter: 'all' });
+              currentStrategy = strategyTypes['all'];
+            }}"
           />
 
           <Button
@@ -740,7 +852,10 @@
             selected="{toggleButtons.stratSelect.unused}"
             solid="{false}"
             borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 2, filter: 'unused' })}"
+            on:clicked="{() => {
+              vaultFilter({ id: 2, filter: 'unused' });
+              currentStrategy = strategyTypes['unused'];
+            }}"
           />
         </div>
         <div slot="body">
@@ -753,7 +868,11 @@
               </div>
             {/if}
           {:else if toggleButtons.stratSelect.all}
-            <Table rows="{rowsAll}" columns="{colsStrats}" key="{foo}" />
+            <Table
+              rows="{[...currentRowsOnCurrentStrategyType.map((obj) => obj.row)]}"
+              columns="{colsStrats}"
+              key="{foo}"
+            />
           {:else if toggleButtons.stratSelect.unused}
             {#if rowsUnused.length > 0}
               <Table rows="{rowsUnused}" columns="{colsStrats}" key="{foo}" />

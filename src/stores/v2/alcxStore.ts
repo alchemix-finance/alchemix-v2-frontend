@@ -11,6 +11,7 @@ export type BalanceType = {
 };
 
 export type BodyVaultType = {
+  type: VaultTypes;
   symbol: string;
   address: string;
   balance: ethers.BigNumber;
