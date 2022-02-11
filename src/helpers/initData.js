@@ -427,7 +427,9 @@ function initTransmuters() {
 // @dev orchestrates initialization of all farms
 async function initFarms() {
   if (_stakingPools.allPools.length === 0) {
+    // @dev init external farms first
     await initSushiFarm();
+    // @dev continue routine for internal farms
     const contract = getContract('StakingPools');
     const poolCounter = parseInt(_stakingPools.pools, 10);
     for (let i = 0; i < poolCounter; i++) {
@@ -468,7 +470,7 @@ async function initFarms() {
   }
 }
 
-// @dev sets up sushi farm
+// @dev sets up external sushi farm
 async function initSushiFarm() {
   // @dev set up contract instances
   const mcv2Contract = getExternalContract('SushiMasterchefV2');
@@ -486,6 +488,8 @@ async function initSushiFarm() {
   const totalSupply = await slpContract.totalSupply();
   const alcxPerBlock = await onsenContract.tokenPerBlock();
   const sushiPerBlock = await mcv2Contract.sushiPerBlock();
+  const underlying0 = await slpContract.token0();
+  const underlying1 = await slpContract.token1();
   const poolConfig = externalLookup.find((pool) => pool.address === mcv2Address);
   const payload = {
     type: 'sushi',
@@ -500,6 +504,8 @@ async function initSushiFarm() {
     totalSupply,
     alcxPerBlock,
     sushiPerBlock,
+    underlying0,
+    underlying1,
     poolConfig,
   };
   _stakingPools.allPools.push(payload);

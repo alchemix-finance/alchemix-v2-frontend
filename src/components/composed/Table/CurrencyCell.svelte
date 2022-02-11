@@ -8,7 +8,11 @@
   let normalizedValue;
 
   const normalize = () => {
-    normalizedValue = parseFloat((value || 0) * $global.conversionRate).toFixed(2);
+    console.log('settings', $settings);
+    normalizedValue = new Intl.NumberFormat($settings.userLanguage.locale, {
+      style: 'currency',
+      currency: $settings.baseCurrency.symbol,
+    }).format(parseFloat(((value || 0) * $global.conversionRate).toFixed(2)));
   };
 
   $: value, normalize();
@@ -16,4 +20,3 @@
 </script>
 
 {#if prefix}{prefix}{/if}{normalizedValue}
-{$settings.baseCurrency?.symbol || '$'}

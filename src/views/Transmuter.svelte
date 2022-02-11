@@ -11,6 +11,7 @@
   import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
+  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import getContract from '../helpers/getContract';
   import getUserGas from '../helpers/getUserGas';
   import transmuters from '../stores/transmuters';
@@ -197,28 +198,26 @@
           ...expandedProps,
           colSize: 1,
         },
-        // col2: {
-        //   value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
-        //   colSize: 2,
-        //   alignment: 'justify-self-start',
-        // },
         col2: {
           CellComponent: FarmNameCell,
-          farmIcon: prop.alTokenSymbol.toLowerCase() + '.png',
+          farmIcon: prop.alTokenSymbol.toLowerCase() + '_med.svg',
           tokenIcon: prop.underlyingTokenSymbol.toLowerCase(),
           farmName: prop.transmuterName,
           farmSubtitle: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
           colSize: 2,
         },
         col3: {
+          CellComponent: CurrencyCell,
           value: prop.totalDeposited,
           colSize: 2,
         },
         col4: {
+          CellComponent: CurrencyCell,
           value: prop.unexchangedBalance,
           colSize: 2,
         },
         col6: {
+          CellComponent: CurrencyCell,
           value: prop.exchangedBalance,
           colSize: 2,
         },

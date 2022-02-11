@@ -16,10 +16,12 @@
   import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
   import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
   import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
+  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
   import account from '../stores/account';
   import walletBalance from '../stores/walletBalance';
+  import global from '../stores/global';
 
   const colsActive = [
     {
@@ -114,6 +116,13 @@
     const selector = ['farmSelect', 'modeSelect', 'stratSelect'];
     buttonToggler(selector[filter.id], filter.filter);
   };
+  /*
+   * @param token the address of the token
+   * @returns the token price from zapper's price api
+   * */
+  const getPrice = (token) => {
+    return $global.tokenPrices.find((entry) => entry.address.toUpperCase() === token.toUpperCase())?.price;
+  };
 
   let loading = true;
   const renderFarms = async () => {
@@ -124,6 +133,7 @@
           let expandedProps;
           let rewards;
           let component;
+          let tvl;
           switch (pool.type) {
             case 'sushi':
               expandedProps = {
@@ -147,6 +157,12 @@
                 },
               ];
               component = ExpandedSushiFarm;
+              const price0 = getPrice(pool.underlying0);
+              const price1 = getPrice(pool.underlying1);
+              const value0 = parseFloat(utils.formatEther(pool.reserve._reserve0)) * price0;
+              const value1 = parseFloat(utils.formatEther(pool.reserve._reserve1)) * price1;
+              tvl = value0 + value1;
+              console.log(pool.reserve._reserve0.toString(), pool.reserve._reserve1.toString());
               break;
             case 'internal':
             default:
@@ -164,6 +180,13 @@
                 },
               ];
               component = ExpandedFarm;
+              // @lord forgive me for I'm about to sin
+              const price = getPrice(
+                pool.poolConfig.tokenIcon === 'saddle'
+                  ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+                  : pool.token,
+              );
+              tvl = parseFloat(utils.formatEther(pool.tvl)) * price;
               break;
           }
           const payload = {
@@ -185,8 +208,8 @@
               alignment: 'justify-self-start',
             },
             col2: {
-              // TODO calculate fiat values
-              value: utils.formatEther(pool.tvl),
+              CellComponent: CurrencyCell,
+              value: tvl,
               colSize: 2,
             },
             col3: {

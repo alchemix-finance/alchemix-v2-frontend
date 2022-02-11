@@ -19,6 +19,10 @@
     navigate(`/settings`, { replace: false });
   }
 
+  const goToHelp = () => {
+    window.open('https://alchemix-finance.gitbook.io/alchemix-finance/', '_blank');
+  };
+
   const userGas = (selector) => {
     return selector.baseFeePerGas + selector.maxPriorityFeePerGas;
   };
@@ -170,8 +174,11 @@
         <li class="cursor-pointer hover:bg-grey10 h-8" on:click="{goToSettings}">
           <p class="text-center">{$_('settings')}</p>
         </li>
-        <li class="cursor-default h-8 border-b border-t border-grey10">
-          <p class="text-center opacity-50">{$_('help')}</p>
+        <li
+          class="cursor-pointer hover:bg-grey10 h-8 border-b border-t border-grey10"
+          on:click="{() => goToHelp()}"
+        >
+          <p class="text-center">{$_('help')}</p>
         </li>
         <li class="cursor-pointer h-8 hover:bg-grey10" on:click="{$account.signer ? disconnect : connect}">
           <p class="text-center">

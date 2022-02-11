@@ -2,6 +2,10 @@
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
   import { getExternalContract } from '@helpers/getContract';
+  import getUserGas from '@helpers/getUserGas';
+  import { getProvider } from '@helpers/walletManager';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import account from '@stores/account';
   import Button from '@components/elements/Button.svelte';
   import InputNumber from '@components/elements/inputs/InputNumber.svelte';
 
@@ -15,12 +19,35 @@
   let withdrawAmount;
 
   const mcv2contract = getExternalContract('SushiMasterchefV2');
+  const provider = getProvider();
 
   const setMaxDeposit = () => {
     depositAmount = utils.formatEther(slpBalance);
   };
   const clearDeposit = () => {
     depositAmount = '';
+  };
+  const deposit = async () => {
+    const depositToWei = utils.parseEther(depositAmount.toString());
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    if (depositToWei.gt(slpBalance)) {
+      setError('Trying to deposit more than available');
+    } else {
+      try {
+        setPendingWallet();
+        const tx = await mcv2contract.deposit(0, depositToWei, $account.address, {
+          gasPrice: gas,
+        });
+        setPendingTx();
+        await provider.once(tx.hash, (transaction) => {
+          setSuccessTx(transaction.transactionHash);
+        });
+        clearDeposit();
+      } catch (e) {
+        setError(e.message);
+        console.debug(e);
+      }
+    }
   };
 
   const setMaxWithdraw = () => {
@@ -29,9 +56,51 @@
   const clearWithdraw = () => {
     withdrawAmount = '';
   };
+  const withdraw = async () => {
+    const withdrawToWei = utils.parseEther(withdrawAmount.toString());
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    if (withdrawToWei.gt(stakedBalance.amount)) {
+      setError('Trying to withdraw more than available');
+    } else {
+      try {
+        setPendingWallet();
+        const tx = await mcv2contract.withdrawAndHarvest(0, withdrawToWei, $account.address, {
+          gasPrice: gas,
+        });
+        setPendingTx();
+        await provider.once(tx.hash, (transaction) => {
+          setSuccessTx(transaction.transactionHash);
+        });
+        clearWithdraw();
+      } catch (e) {
+        setError(e.message);
+        console.debug(e);
+      }
+    }
+  };
 
-  console.table($$props);
+  const claim = async () => {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    try {
+      setPendingWallet();
+      const tx = await mcv2contract.harvest(0, $account.address, {
+        gasPrice: gas,
+      });
+      setPendingTx();
+      await provider.once(tx.hash, (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+      });
+    } catch (e) {
+      setError(e.message);
+      console.debug(e);
+    }
+  };
 
+  $: canClaim =
+    parseFloat(utils.formatEther(unclaimedAlcx)) + parseFloat(utils.formatEther(unclaimedSushi)) > 0;
+  $: canWithdraw =
+    (!!withdrawAmount && withdrawAmount !== '0.0') || stakedBalance.amount.gt(BigNumber.from(0));
+  $: canDeposit = (!!depositAmount && depositAmount !== '0.0') || token.balance > 0;
   $: unclaimedAlcxFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedAlcx)));
   $: unclaimedSushiFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedSushi)));
 </script>
@@ -82,13 +151,14 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
+      disabled="{!canDeposit}"
       on:clicked="{() => deposit()}"
     />
   </div>
 
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      Available: {stakedBalance.amount}
+      Available: {stakedBalance.amount.toString()}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -131,6 +201,7 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
+      disabled="{!canWithdraw}"
       on:clicked="{() => withdraw()}"
     />
   </div>
@@ -158,6 +229,7 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
+      disabled="{!canClaim}"
       on:clicked="{() => claim()}"
     />
   </div>
