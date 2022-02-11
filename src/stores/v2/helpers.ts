@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TokensType } from '@stores/v2/alcxStore';
+import { VaultTypes } from './types';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -39,6 +40,7 @@ export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer) 
 
 // Remove the debt
 export async function fetchDataForVault(
+  vaultType: VaultTypes,
   signer: ethers.Signer,
   contractInstance: ethers.Contract,
   tokenAddress: string,
@@ -64,19 +66,23 @@ export async function fetchDataForVault(
   // Check if debtRatio is null
   const _debtRatio = debtRatio ?? BigNumber.from(0);
 
-  // Check if the debt is 0
-  const debt =
-    position.shares > 0
-      ? position.shares
-          .div(_debtRatio)
-          .mul(underlyingPerShare)
-          .div(ethers.BigNumber.from(10))
-          .pow(_uyToken.decimals)
-      : BigNumber.from(0);
+  /**
+   *  const vaultDebt = balance
+        .div(utils.parseUnits(_alusd.ratio, 18))
+        .mul(underlyingPerShare)
+        .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
+   * 
+   */
+
+  const debt = position.shares
+    .mul(underlyingPerShare.div(BigNumber.from(10).pow(_uyToken.decimals)))
+    .div(_debtRatio.div(BigNumber.from(10).pow(18)));
+  // .pow(_uyToken.decimals)
 
   const isUsed = BigNumber.from(position.shares).gt(BigNumber.from(0));
 
   return {
+    type: vaultType,
     symbol: _yToken.symbol,
     address: tokenAddress,
     balance: position.shares,
