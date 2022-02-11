@@ -6,6 +6,7 @@
     fetchAllVaultsBodies,
     fetchBalanceByAddress,
     fetchVaultDebt,
+    fetchVaultRatio,
     fetchVaultTokens,
   } from 'src/stores/v2/asyncMethods';
   import { VaultTypes } from 'src/stores/v2/types';
@@ -20,6 +21,8 @@
     await fetchAllBalances([$signer, $fullTokenList]);
 
     await fetchVaultDebt(VaultTypes.alUSD, [$addressStore, $signer]);
+
+    await fetchVaultRatio(VaultTypes.alUSD, [$signer]);
 
     console.log($vaultsStore[VaultTypes.alUSD]);
 
