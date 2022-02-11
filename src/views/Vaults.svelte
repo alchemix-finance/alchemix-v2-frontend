@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -27,6 +27,13 @@
   import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
+
+  import { vaultsStore, VaultsType } from '@stores/v2/alcxStore';
+  import { VaultTypes } from 'src/stores/v2/types';
+  import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
+  import makeSelectorStore from 'src/stores/v2/selectorStore';
+
+  const vaultsSelector = makeSelectorStore([VaultTypes.alUSD]);
 
   let counterAllStrategies = 0;
   let counterUserStrategies = 0;
@@ -490,6 +497,12 @@
     getRandomData();
   };
 
+  function reactiveVaultsRendering(_vaultsStore) {
+    return _vaultsStore[VaultTypes.alUSD].vaultBody.map(() => {
+      return ``;
+    });
+  }
+
   const renderVaults = async () => {
     // alUSD Alchemist only atm
     console.log($alusd.debtToken);
@@ -629,46 +642,40 @@
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
-            <Button
-              label="All Vaults"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.vaultSelect.all}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'all' })}"
-            >
-              <p slot="leftSlot">
-                <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
-              </p>
-            </Button>
-            <Button
-              disabled
-              label="alETH"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.vaultSelect.aleth}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'aleth' })}"
-            >
-              <p slot="leftSlot">
-                <img src="images/icons/aleth_med.svg" alt="aleth vaults" class="w-5 h-5" />
-              </p>
-            </Button>
-            <Button
-              label="alUSD"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.vaultSelect.alusd}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'alusd' })}"
-            >
-              <p slot="leftSlot">
-                <img src="images/icons/alusd_med.svg" alt="alusd vaults" class="w-5 h-5" />
-              </p>
-            </Button>
+            {#if AllowedVaultTypes.length > 1}
+              <Button
+                label="All Vaults"
+                width="w-max"
+                canToggle="{true}"
+                selected="{vaultsSelector.isSelectedAll($vaultsSelector, AllowedVaultTypes)}"
+                solid="{false}"
+                borderSize="0"
+                on:clicked="{() => vaultsSelector.select(AllowedVaultTypes)}"
+              >
+                <p slot="leftSlot">
+                  <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
+                </p>
+              </Button>
+            {/if}
+            {#each AllowedVaultTypes as vaultType}
+              <Button
+                label="{VaultTypesInfos[vaultType].name}"
+                width="w-max"
+                canToggle="{true}"
+                selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
+                solid="{false}"
+                borderSize="0"
+                on:clicked="{() => vaultsSelector.select([vaultType])}"
+              >
+                <p slot="leftSlot">
+                  <img
+                    src="{VaultTypesInfos[vaultType].icon}"
+                    alt="{VaultTypesInfos[vaultType].name} vaults"
+                    class="w-5 h-5"
+                  />
+                </p>
+              </Button>
+            {/each}
           </div>
         </ContainerWithHeader>
       </div>

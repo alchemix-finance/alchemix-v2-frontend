@@ -1,7 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TokensType } from '@stores/v2/alcxStore';
-import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -62,11 +61,18 @@ export async function fetchDataForVault(
 
   const uyBalance = await uyInstance.balanceOf(accountAddress);
 
-  const debt = position.shares
-    .div(debtRatio)
-    .mul(underlyingPerShare)
-    .div(ethers.BigNumber.from(10))
-    .pow(_uyToken.decimals);
+  // Check if debtRatio is null
+  const _debtRatio = debtRatio ?? BigNumber.from(0);
+
+  // Check if the debt is 0
+  const debt =
+    position.shares > 0
+      ? position.shares
+          .div(_debtRatio)
+          .mul(underlyingPerShare)
+          .div(ethers.BigNumber.from(10))
+          .pow(_uyToken.decimals)
+      : BigNumber.from(0);
 
   const isUsed = BigNumber.from(position.shares).gt(BigNumber.from(0));
 
