@@ -1,4 +1,5 @@
 <script>
+  import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';

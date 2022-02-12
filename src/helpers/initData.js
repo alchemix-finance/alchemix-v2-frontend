@@ -582,6 +582,14 @@ All rights reserved, no guarantees given.
 DeFi tools are not toys.
 Use at your own risk.
 
+=========================[ CREDITS ]================================
+
+[ ICONS ]
+* CC-BY, FontAwesome (https://fontawesome.com/)
+  "globe", "speech bubbles"
+* CC0 1.0, Simple Icons et al. (https://simpleicons.org/)
+  "gitbook", "amp", "discord", "twitter", "github", "substack"
+
   `,
     'color: #F5C09A',
   );

@@ -38,6 +38,7 @@
   "max": "Max",
   "depositing": "Depositing",
   "to": "To",
+  "proudly_using": "Proudly Using",
   "landing": {
     "intro_title": "Take Out A Self-Repaying Loan",
     "intro_subtitle": "Increase capital efficiency by borrowing the future yield of your deposit today.",
@@ -78,5 +79,8 @@
   "vaults_page": {
     "title": "Vaults",
     "subtitle": "Deposit collateral and borrow your future yield right away"
+  },
+  "accounts_page": {
+    "select_strategies": "View all strategies"
   }
 }

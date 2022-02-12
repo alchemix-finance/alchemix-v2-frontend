@@ -1,13 +1,13 @@
 <script>
   import { slide } from 'svelte/transition';
 
-  import { connect } from '../../helpers/walletManager';
+  import { connect } from '@helpers/walletManager';
   import Button from '../elements/Button.svelte';
   import BorderContainer from '../elements/BorderContainer.svelte';
   import WalletBalance from './WalletBalance.svelte';
   import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
-  import account from '../../stores/account';
-  import network from '../../stores/network';
+  import account from '@stores/account';
+  import network from '@stores/network';
 
   let indicatorColor;
   let balanceCollapsed = true;
