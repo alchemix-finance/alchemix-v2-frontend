@@ -108,7 +108,7 @@
 
 <!-- NOTE -- the token object is not working at the moment so I had to put in placeholders for styling -->
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
   <div class="p-4 flex flex-col space-y-4">
     <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
     <div class="w-full self-center">

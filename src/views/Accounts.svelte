@@ -1,17 +1,20 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
-  import ViewContainer from '../components/elements/ViewContainer.svelte';
-  import PageHeader from '../components/elements/PageHeader.svelte';
-  import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-  import Metrics from '../components/composed/Metrics.svelte';
-  import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
-  import { aggregate, alusd } from '../stores/vaults';
+  import ViewContainer from '@components/elements/ViewContainer.svelte';
+  import PageHeader from '@components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import Metrics from '@components/composed/Metrics.svelte';
+  import AccountsPageBarCharts from '@components/composed/AccountsPageBarCharts.svelte';
+  import { aggregate, alusd } from '@stores/vaults';
   import { BarLoader } from 'svelte-loading-spinners';
-  import Table from '../components/composed/Table/Table.svelte';
-  import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
-  import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
-  import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
+  import Table from '@components/composed/Table/Table.svelte';
+  import HeaderCell from '@components/composed/Table/HeaderCell.svelte';
+  import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
+  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
+  import BorderContainer from '@components/elements/BorderContainer.svelte';
+  import Button from '@components/elements/Button.svelte';
+  import { routerGuard } from '@helpers/routerGuard';
 
   let loading = true;
 
@@ -42,6 +45,8 @@
       colSize: 2,
     },
   ];
+
+  let hasStrategies = false;
 
   const renderAccounts = async () => {
     // alUSD Alchemist only atm
@@ -88,6 +93,7 @@
       }
     }
     loading = false;
+    hasStrategies = rowsUser.length > 0;
   };
 
   $: if (!$alusd.loadingRowData && loading) {
@@ -120,7 +126,7 @@
     <!--    </div>-->
 
     <div class="w-full mb-8">
-      <ContainerWithHeader canToggle="{true}">
+      <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}">
         <p slot="header" class="inline-block self-center">Aggregate</p>
         <div slot="body" class="px-4 pb-4 bg-grey15">
           <AccountsPageBarCharts
@@ -141,7 +147,40 @@
           {#if rowsUser.length > 0}
             <Table rows="{rowsUser}" columns="{colsUser}" />
           {:else}
-            <p class="text-center">You have no active strategies at the moment.</p>
+            <div class="flex flex-col my-4">
+              <p class="text-center w-full mt-8">You don't have any active strategies.</p>
+              <div class="flex justify-center mt-8 mb-4">
+                <BorderContainer width="w-80">
+                  <Button
+                    label="{$_('accounts_page.select_strategies')}"
+                    fontSize="text-md"
+                    borderSize="1"
+                    on:clicked="{() => routerGuard('vaults')}"
+                  >
+                    <img
+                      src="images/token-icons/ALCX.png"
+                      slot="leftSlot"
+                      class="w-6 h-6"
+                      alt="The Alchemix Logo"
+                    />
+                    <svg
+                      slot="rightSlot"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                  </Button>
+                </BorderContainer>
+              </div>
+            </div>
           {/if}
         </div>
       </ContainerWithHeader>

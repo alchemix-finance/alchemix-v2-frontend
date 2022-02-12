@@ -105,7 +105,7 @@
   $: unclaimedCrvFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedCrv))).toFixed(4);
 </script>
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
   <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10">
       Available: {token.balance}
