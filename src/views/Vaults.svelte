@@ -503,13 +503,23 @@
     getRandomData();
   };
 
-  const strategyTypes = {
-    used: (_vault) => _vault.balance.gt(BigNumber.from(0)),
-    unused: (_vault) => _vault.balance.lte(BigNumber.from(0)),
-    all: (_vault) => true,
+  const TypeOfStrategies = Object.freeze({
+    USED: 0,
+    UNUSED: 1,
+    ALL: 2,
+  });
+
+  const strategyFilterFunc = {
+    [TypeOfStrategies.USED]: (_vault) => _vault.balance.gt(BigNumber.from(0)),
+    [TypeOfStrategies.UNUSED]: (_vault) => _vault.balance.lte(BigNumber.from(0)),
+    [TypeOfStrategies.ALL]: (_vault) => true,
   };
 
-  let currentStrategy = strategyTypes['all'];
+  let currentStrategy = TypeOfStrategies.ALL;
+
+  function countStrategiesForTypeOfStrategy(streategyFuncFilter, vaults) {
+    return vaults.filter(streategyFuncFilter).length ?? 0;
+  }
 
   $: currentVaultsBasedOnType =
     Object.keys($vaultsStore)
@@ -521,11 +531,10 @@
       .filter((elm) => elm !== undefined)
       .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
 
-  $: currentVaultsBasedOnStrategyType = currentVaultsBasedOnType.filter(currentStrategy) ?? [];
+  $: currentVaultsBasedOnStrategyType =
+    currentVaultsBasedOnType.filter(strategyFilterFunc[currentStrategy]) ?? [];
 
   $: currentRowsOnCurrentStrategyType = currentVaultsBasedOnStrategyType.map((vault, index) => {
-    console.log(vault);
-
     return {
       type: vault.isUsed ? 'used' : 'unused',
       alchemist: 'alusd',
@@ -739,7 +748,12 @@
       counterAllStrategies += 1;
     }
     loading = false;
-    getRandomData();
+  };
+
+  $: noVaultsForStrategyText = {
+    [TypeOfStrategies.USED]: `You don't have any active strategies.`,
+    [TypeOfStrategies.UNUSED]: `You are using all available strategies.`,
+    [TypeOfStrategies.ALL]: `No available strategies available at this moment.`,
   };
 
   let foo;
@@ -772,47 +786,46 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    {#each reactiveVaultsRendering($vaultsStore, $vaultsSelector) as vault}
-      {vault.symbol}
-    {/each}
     <div class="w-full mb-8 grid grid-cols-2 gap-8">
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
-            {#if AllowedVaultTypes.length > 1}
-              <Button
-                label="All Vaults"
-                width="w-max"
-                canToggle="{true}"
-                selected="{vaultsSelector.isSelectedAll($vaultsSelector, AllowedVaultTypes)}"
-                solid="{false}"
-                borderSize="0"
-                on:clicked="{() => vaultsSelector.select(AllowedVaultTypes)}"
-              >
-                <p slot="leftSlot">
-                  <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
-                </p>
-              </Button>
-            {/if}
-            {#each AllowedVaultTypes as vaultType}
-              <Button
-                label="{VaultTypesInfos[vaultType].name}"
-                width="w-max"
-                canToggle="{true}"
-                selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
-                solid="{false}"
-                borderSize="0"
-                on:clicked="{() => vaultsSelector.select([vaultType])}"
-              >
-                <p slot="leftSlot">
-                  <img
-                    src="{VaultTypesInfos[vaultType].icon}"
-                    alt="{VaultTypesInfos[vaultType].name} vaults"
-                    class="w-5 h-5"
-                  />
-                </p>
-              </Button>
-            {/each}
+            <div class=" items-center flex gap-1">
+              {#if AllowedVaultTypes.length > 1}
+                <Button
+                  label="All Vaults"
+                  width="w-max"
+                  canToggle="{true}"
+                  selected="{vaultsSelector.isSelectedAll($vaultsSelector, AllowedVaultTypes)}"
+                  solid="{false}"
+                  borderSize="0"
+                  on:clicked="{() => vaultsSelector.select(AllowedVaultTypes)}"
+                >
+                  <p slot="leftSlot">
+                    <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
+                  </p>
+                </Button>
+              {/if}
+              {#each AllowedVaultTypes as vaultType}
+                <Button
+                  label="{VaultTypesInfos[vaultType].name}"
+                  width="w-max"
+                  canToggle="{true}"
+                  selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
+                  solid="{false}"
+                  borderSize="0"
+                  on:clicked="{() => vaultsSelector.select([vaultType])}"
+                >
+                  <p slot="leftSlot">
+                    <img
+                      src="{VaultTypesInfos[vaultType].icon}"
+                      alt="{VaultTypesInfos[vaultType].name} vaults"
+                      class="w-5 h-5"
+                    />
+                  </p>
+                </Button>
+              {/each}
+            </div>
           </div>
         </ContainerWithHeader>
       </div>
@@ -851,46 +864,63 @@
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 flex space-x-4">
           <Button
-            label="{$_('table.your_strategies_select')} ({counterUserStrategies})"
+            label="{$_('table.your_strategies_select')} ({countStrategiesForTypeOfStrategy(
+              strategyFilterFunc[TypeOfStrategies.USED],
+              currentVaultsBasedOnType,
+            )})"
             width="w-max"
             canToggle="{true}"
-            selected="{toggleButtons.stratSelect.used}"
+            selected="{currentStrategy === TypeOfStrategies.USED}"
             solid="{false}"
             borderSize="0"
             on:clicked="{() => {
-              vaultFilter({ id: 2, filter: 'used' });
-              currentStrategy = strategyTypes['used'];
+              currentStrategy = TypeOfStrategies.USED;
             }}"
           />
 
           <Button
-            label="{$_('table.all_strategies_select')} ({counterAllStrategies})"
+            label="{$_('table.all_strategies_select')} ({countStrategiesForTypeOfStrategy(
+              strategyFilterFunc[TypeOfStrategies.ALL],
+              currentVaultsBasedOnType,
+            )})"
             width="w-max"
             canToggle="{true}"
-            selected="{toggleButtons.stratSelect.all}"
+            selected="{currentStrategy === TypeOfStrategies.ALL}"
             solid="{false}"
             borderSize="0"
             on:clicked="{() => {
-              vaultFilter({ id: 2, filter: 'all' });
-              currentStrategy = strategyTypes['all'];
+              currentStrategy = TypeOfStrategies.ALL;
             }}"
           />
 
           <Button
-            label="{$_('table.unused_strategies_select')} ({counterUnusedStrategies})"
+            label="{$_('table.unused_strategies_select')} ({countStrategiesForTypeOfStrategy(
+              strategyFilterFunc[TypeOfStrategies.UNUSED],
+              currentVaultsBasedOnType,
+            )})"
             width="w-max"
             canToggle="{true}"
-            selected="{toggleButtons.stratSelect.unused}"
+            selected="{currentStrategy === TypeOfStrategies.UNUSED}"
             solid="{false}"
             borderSize="0"
             on:clicked="{() => {
-              vaultFilter({ id: 2, filter: 'unused' });
-              currentStrategy = strategyTypes['unused'];
+              currentStrategy = TypeOfStrategies.UNUSED;
             }}"
           />
         </div>
         <div slot="body">
-          {#if toggleButtons.stratSelect.used}
+          {#if currentRowsOnCurrentStrategyType.length > 0}
+            <Table
+              rows="{[...currentRowsOnCurrentStrategyType.map((obj) => obj.row)]}"
+              columns="{colsStrats}"
+              key="{foo}"
+            />
+          {:else}
+            <div class="flex justify-center my-4">
+              <p>{noVaultsForStrategyText[currentStrategy]}</p>
+            </div>
+          {/if}
+          <!-- {#if toggleButtons.stratSelect.used}
             {#if rowsUser.length > 0}
               <Table rows="{rowsUser}" columns="{colsStrats}" key="{foo}" />
             {:else}
@@ -912,7 +942,7 @@
                 <p>{$_('table.all_strategies')}</p>
               </div>
             {/if}
-          {/if}
+          {/if} -->
         </div>
       </ContainerWithHeader>
     </div>
