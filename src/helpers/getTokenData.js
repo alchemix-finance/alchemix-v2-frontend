@@ -60,8 +60,8 @@ const getTokenDecimals = async (address) => {
  * */
 const getTokenAllowance = async (token, owner, spender) => {
   const contract = new ethers.Contract(token, genericAbi, provider);
-  const allowanceCheck = contract.allowance(owner, spender);
-  return BigNumber.from(await allowanceCheck).toString() !== '0';
+  const allowanceCheck = await contract.allowance(owner, spender);
+  return BigNumber.from(allowanceCheck).toString() !== '0';
 };
 
 export { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals, getTokenAllowance };

@@ -1,4 +1,5 @@
 <script>
+  import { utils, BigNumber } from 'ethers';
   import { onMount } from 'svelte';
   import global from '../../stores/global';
   import settings from '../../stores/settings';
@@ -13,7 +14,20 @@
   export let totalInterest;
   export let forceState;
 
-  $: withdrawable = (totalDeposit || 0) - (totalDebt || 0);
+  // $: withdrawable = (totalDeposit || 0) - (totalDebt || 0);
+  // ((totalDepositFormatted || 0) * $global.conversionRate).toFixed(2)
+  // FIXME debt needs a supplied ratio to calculate the proper withdrawable amount
+  $: withdrawable = (
+    parseFloat(
+      utils.formatEther(
+        totalDeposit.sub(utils.parseEther(BigNumber.from(totalDebt).mul(BigNumber.from(2)).toString())),
+      ),
+    ) * $global.conversionRate
+  ).toFixed(2);
+  $: totalDepositFormatted = parseFloat(utils.formatEther(totalDeposit));
+  $: totalDebtLimitFormatted = parseFloat(utils.formatEther(totalDeposit.div(BigNumber.from(2))));
+  $: totalDebtFormatted = parseFloat(totalDebt.toString());
+  $: console.log(totalDepositFormatted, totalDebtLimitFormatted, totalDebtFormatted);
 
   // TODO: use tailwind exported colors everywhere
   const GREY = '#74767C';
@@ -50,7 +64,7 @@
     labels: [['Withdrawable'], ['Debt'], ['Interest']],
     datasets: [
       {
-        data: [withdrawable || 0, totalDebt || 0, totalInterest || 0],
+        data: [withdrawable || 0, totalDebtFormatted || 0, totalInterest || 0],
         backgroundColor: [background1],
         borderRadius: 5,
       },
@@ -58,6 +72,7 @@
   };
 
   function between(x, min, max) {
+    console.log('between', x, min, max);
     return x >= min && x <= max;
   }
 
@@ -93,9 +108,15 @@
             console.log(this.getLabelForValue(val));
 
             if (this.getLabelForValue(val)[0].toUpperCase() === 'WITHDRAWABLE') {
-              return [...this.getLabelForValue(val), `${withdrawable} USD`];
+              return [
+                ...this.getLabelForValue(val),
+                `${withdrawable} ${$settings.baseCurrency?.symbol || '$'}`,
+              ];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === 'DEBT') {
-              return [...this.getLabelForValue(val), `${totalDebt} USD`];
+              return [
+                ...this.getLabelForValue(val),
+                `${totalDebtFormatted} ${$settings.baseCurrency?.symbol || '$'}`,
+              ];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === 'INTEREST') {
               return [...this.getLabelForValue(val), `${totalInterest} %`];
             }
@@ -105,20 +126,13 @@
         },
       },
       y: {
-        suggestedMax: Math.floor(totalDebtLimit || 0),
+        suggestedMax: Math.floor(totalDebtLimitFormatted || 0),
 
         ticks: {
-          //If the stepSize is too big some dashed lines might now show
-          //If the totalDepositText shows 15 and the dashed lines shows 20 htat is because of rounding
           stepSize: 1,
-
           padding: 10,
           callback: function (value) {
-            // FIXME callback value happens in pre-defined steps
-            // check out the console log for this, the ticks almost never match the values of users
-            // that's why there's only dashed lines in certain cases (i.e. deposit = 10k)
-            // console.log('callback value', value);
-            if ([0, Math.floor(totalDebtLimit), Math.floor(totalDeposit)].includes(value)) {
+            if ([0, Math.floor(totalDebtLimitFormatted), Math.floor(totalDepositFormatted)].includes(value)) {
               return value.toLocaleString();
             }
 
@@ -141,38 +155,26 @@
           tickColor: GREY,
 
           color: (context) => {
-            // index: 2
-            // type: "tick"s
-            // tick: {
-            //   $context: {tick: {…}, index: 2, type: 'tick'}
-            //   label: "2,000"
-            //   value: 2000
-            // }
-
-            // console.log(
-            //   context,
-            //   context.tick.value,
-            //   Math.round(Math.floor(totalDebtLimit) / 10) * 10,
-            //   Math.round(Math.floor(totalDeposit) / 10) * 10,
-            // );
-
+            console.log(context.tick);
             if (
-              between(context.tick.value, Math.floor(totalDebtLimit - 10), Math.floor(totalDebtLimit + 10))
+              between(
+                context.tick.value,
+                Math.floor(totalDebtLimitFormatted - 10),
+                Math.floor(totalDebtLimitFormatted + 10),
+              )
             ) {
               return GREEN;
             }
 
-            if (between(context.tick.value, Math.floor(totalDeposit - 10), Math.floor(totalDeposit + 10))) {
+            if (
+              between(
+                context.tick.value,
+                Math.floor(totalDepositFormatted - 10),
+                Math.floor(totalDepositFormatted + 10),
+              )
+            ) {
               return ORANGE;
             }
-
-            // if (context.tick.value === Math.floor(totalDebtLimit)) {
-            //   return GREEN;
-            // }
-
-            // if (context.tick.value === Math.floor(totalDeposit)) {
-            //   return ORANGE;
-            // }
 
             return LIGHT_GREY;
           },
@@ -181,18 +183,8 @@
     },
   };
 
-  let normalizedDeposit;
-  let normalizedDebt;
-
-  const normalize = () => {
-    normalizedDeposit = ((totalDeposit || 0) * $global.conversionRate).toFixed(2);
-    normalizedDebt = ((totalDebtLimit || 0) * $global.conversionRate).toFixed(2);
-  };
-
-  $: $settings, normalize();
-  $: totalDebtLimit, normalize();
-  $: totalDeposit, normalize();
-  $: forceState, console.log('force update', forceState, totalDebt);
+  $: normalizedDeposit = ((totalDepositFormatted || 0) * $global.conversionRate).toFixed(2);
+  $: normalizedDebt = ((totalDebtLimitFormatted || 0) * $global.conversionRate).toFixed(2);
 </script>
 
 <div class="h-96">

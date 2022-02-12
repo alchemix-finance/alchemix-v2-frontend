@@ -26,6 +26,8 @@
   let yieldDeposit;
   let underlyingDeposit;
   let totalDeposit;
+
+  let startingDebtLimit;
   let projectedDebtLimit;
 
   let depositDisabled = true;
@@ -44,7 +46,7 @@
     $tempTx.yieldToken = yieldToken;
     $tempTx.underlyingToken = underlyingToken;
     $tempTx.targetAddress = null;
-    $tempTx.vaultindex = vaultIndex;
+    $tempTx.vaultIndex = vaultIndex;
     if (yieldAmnt && udrlyAmnt) {
       $tempTx.method = 'multicall';
     } else if (yieldAmnt && !udrlyAmnt) {
@@ -58,12 +60,17 @@
     const yieldDepositToWei = utils.parseUnits((yieldDeposit || 0).toString(), yieldDecimals);
     const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
     const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
-    totalDeposit = utils.formatEther(userDeposit.add(totalToWei));
-    projectedDebtLimit = utils.formatEther(
-      BigNumber.from(borrowLimit).add(
-        totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
-      ),
-    );
+    totalDeposit = utils.formatUnits(userDeposit.add(totalToWei), underlyingDecimals);
+    if (totalToWei.gt(BigNumber.from(0))) {
+      projectedDebtLimit = utils.formatUnits(
+        BigNumber.from(borrowLimit).add(
+          totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
+        ),
+        underlyingDecimals,
+      );
+    } else {
+      projectedDebtLimit = startingDebtLimit;
+    }
     depositDisabled =
       totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
   };
@@ -78,6 +85,10 @@
     const underlyingObject = $walletBalance.tokens.find((token) => token.address === underlyingToken);
     underlyingSymbol = underlyingObject.symbol;
     underlyingBalance = underlyingObject.balance;
+    startingDebtLimit = utils.formatUnits(
+      BigNumber.from(borrowLimit).div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
+      underlyingDecimals,
+    );
   });
 </script>
 
@@ -193,9 +204,9 @@
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {utils.formatEther(userDeposit)} -> {totalDeposit || utils.formatEther(userDeposit)}<br
-      />
-      Borrow Limit: {utils.formatEther(borrowLimit)} -> {projectedDebtLimit || utils.formatEther(borrowLimit)}
+      Deposit Balance: {utils.formatUnits(userDeposit, underlyingDecimals)}
+      -> {totalDeposit}<br />
+      Borrow Limit: {startingDebtLimit} -> {projectedDebtLimit}
     </div>
 
     <Button

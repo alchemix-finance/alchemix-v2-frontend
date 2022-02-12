@@ -1,20 +1,9 @@
 {
     "abi": [
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "weth",
-                    "type": "address"
-                }
-            ],
+            "inputs": [],
             "stateMutability": "nonpayable",
             "type": "constructor"
-        },
-        {
-            "inputs": [],
-            "name": "IllegalArgument",
-            "type": "error"
         },
         {
             "inputs": [],
@@ -25,6 +14,32 @@
             "inputs": [],
             "name": "Unauthorized",
             "type": "error"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "AccountAdded",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "AccountRemoved",
+            "type": "event"
         },
         {
             "anonymous": false,
@@ -46,13 +61,52 @@
             "type": "event"
         },
         {
+            "anonymous": false,
             "inputs": [],
-            "name": "WETH",
+            "name": "WhitelistDisabled",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "caller",
+                    "type": "address"
+                }
+            ],
+            "name": "add",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "disable",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "disabled",
             "outputs": [
                 {
-                    "internalType": "contract IWETH9",
+                    "internalType": "bool",
                     "name": "",
-                    "type": "address"
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getAddresses",
+            "outputs": [
+                {
+                    "internalType": "address[]",
+                    "name": "",
+                    "type": "address[]"
                 }
             ],
             "stateMutability": "view",
@@ -62,33 +116,19 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "alchemist",
+                    "name": "account",
                     "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "yieldToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "address",
-                    "name": "recipient",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "maximumLoss",
-                    "type": "uint256"
                 }
             ],
-            "name": "depositUnderlying",
-            "outputs": [],
-            "stateMutability": "payable",
+            "name": "isWhitelisted",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -108,11 +148,11 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "alchemist",
+                    "name": "caller",
                     "type": "address"
                 }
             ],
-            "name": "refreshAllowance",
+            "name": "remove",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -136,44 +176,7 @@
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "alchemist",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "yieldToken",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "shares",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "address",
-                    "name": "recipient",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "maximumLoss",
-                    "type": "uint256"
-                }
-            ],
-            "name": "withdrawUnderlying",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "stateMutability": "payable",
-            "type": "receive"
         }
     ],
-    "address": "0xB6BE5aDF26ff31ab6326A7998Ba60601A954B25C"
+    "address": "0x33ED79Ad31E5ff08237C32F0D3d757ce23CAd230"
 }

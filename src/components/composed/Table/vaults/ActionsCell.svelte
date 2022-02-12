@@ -22,7 +22,9 @@
   const openDeposit = () =>
     showModal(Deposit, {
       yieldToken,
+      yieldDecimals,
       underlyingToken,
+      underlyingDecimals,
       loanRatio,
       userDeposit,
       borrowLimit,
