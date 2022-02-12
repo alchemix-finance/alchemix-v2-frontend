@@ -1,4 +1,5 @@
 <script>
+  import { utils, BigNumber } from 'ethers';
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -14,10 +15,14 @@
   import ExternalFarms from '../components/composed/Table/farms/ExternalFarms.svelte';
   import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
   import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
+  import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
+  import ExpandedCrvFarm from '@components/composed/Table/farms/ExpandedCrvFarm.svelte';
+  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
   import account from '../stores/account';
   import walletBalance from '../stores/walletBalance';
+  import global from '../stores/global';
 
   const colsActive = [
     {
@@ -112,6 +117,13 @@
     const selector = ['farmSelect', 'modeSelect', 'stratSelect'];
     buttonToggler(selector[filter.id], filter.filter);
   };
+  /*
+   * @param token the address of the token
+   * @returns the token price from zapper's price api
+   * */
+  const getPrice = (token) => {
+    return $global.tokenPrices.find((entry) => entry.address.toUpperCase() === token.toUpperCase())?.price;
+  };
 
   let loading = true;
   const renderFarms = async () => {
@@ -119,18 +131,95 @@
       $stakingPools.allPools.forEach((pool) => {
         const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
         if (pool.poolConfig && pool.reward !== '0.0') {
-          const expandedProps = {
-            poolId: pool.poolId,
-            token: userToken,
-            stakedBalance: pool.userDeposit,
-            unclaimedRewards: pool.userUnclaimed,
-            reward: pool.rewardToken,
-          };
+          let expandedProps;
+          let rewards;
+          let component;
+          let tvl;
+          switch (pool.type) {
+            case 'sushi':
+              expandedProps = {
+                token: {
+                  balance: pool.slpBalance,
+                  symbol: 'SLP',
+                },
+                stakedBalance: pool.userDeposit,
+                unclaimedAlcx: pool.rewardsAlcx,
+                unclaimedSushi: pool.rewardsSushi,
+                slpBalance: pool.slpBalance,
+              };
+              rewards = [
+                {
+                  iconName: 'alchemix',
+                  tokenName: 'ALCX',
+                },
+                {
+                  iconName: 'sushi',
+                  tokenName: 'SUSHI',
+                },
+              ];
+              component = ExpandedSushiFarm;
+              const price0 = getPrice(pool.underlying0);
+              const price1 = getPrice(pool.underlying1);
+              const value0 = parseFloat(utils.formatEther(pool.reserve._reserve0)) * price0;
+              const value1 = parseFloat(utils.formatEther(pool.reserve._reserve1)) * price1;
+              tvl = value0 + value1;
+              break;
+            case 'crv':
+              expandedProps = {
+                token: {
+                  balance: pool.slpBalance,
+                  symbol: pool.poolConfig.title,
+                },
+                stakedBalance: pool.userDeposit,
+                unclaimedAlcx: pool.rewardsAlcx,
+                unclaimedCrv: pool.rewardsCrv,
+                slpBalance: pool.slpSupply,
+              };
+              rewards = [
+                {
+                  iconName: 'alchemix',
+                  tokenName: 'ALCX',
+                },
+                {
+                  iconName: 'crv',
+                  tokenName: 'CRV',
+                },
+              ];
+              component = ExpandedCrvFarm;
+              tvl = utils.formatEther(
+                pool.totalSupply.mul(pool.virtualPrice).div(BigNumber.from(10).pow(18)),
+              );
+              break;
+            case 'internal':
+            default:
+              expandedProps = {
+                poolId: pool.poolId,
+                token: userToken,
+                stakedBalance: pool.userDeposit,
+                unclaimedRewards: pool.userUnclaimed,
+                reward: pool.rewardToken,
+              };
+              rewards = [
+                {
+                  iconName: 'alchemix',
+                  tokenName: 'ALCX',
+                },
+              ];
+              component = ExpandedFarm;
+              // @lord forgive me for I'm about to sin
+              const price = getPrice(
+                pool.poolConfig.tokenIcon === 'saddle'
+                  ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+                  : pool.token,
+              );
+              tvl = parseFloat(utils.formatEther(pool.tvl)) * price;
+              break;
+          }
           const payload = {
             col0: {
               CellComponent: ExpandRowCell,
               expandedRow: {
-                ExpandedRowComponent: ExpandedFarm,
+                ExpandedRowComponent: component,
               },
               ...expandedProps,
               colSize: 1,
@@ -145,18 +234,13 @@
               alignment: 'justify-self-start',
             },
             col2: {
-              // TODO calculate fiat values
-              value: pool.tvl,
+              CellComponent: CurrencyCell,
+              value: tvl,
               colSize: 2,
             },
             col3: {
               CellComponent: RewardCell,
-              rewards: [
-                {
-                  iconName: 'alchemix',
-                  tokenName: 'ALCX',
-                },
-              ],
+              rewards: rewards,
               colSize: 3,
             },
             col4: {
@@ -167,7 +251,7 @@
               CellComponent: ActionsCell,
               label: 'Manage',
               expandedRow: {
-                ExpandedRowComponent: ExpandedFarm,
+                ExpandedRowComponent: component,
               },
               ...expandedProps,
               colSize: 3,

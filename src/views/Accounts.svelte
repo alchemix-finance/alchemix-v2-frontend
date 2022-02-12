@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
   import PageHeader from '../components/elements/PageHeader.svelte';
   import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -62,9 +62,12 @@
             },
             deposited: {
               CellComponent: CurrencyCell,
-              value:
-                ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
-                10 ** $alusd.rows[index].underlyingDecimals,
+              value: utils.formatUnits(
+                $alusd.rows[index].balance
+                  .mul($alusd.rows[index].underlyingPerShare)
+                  .div(BigNumber.from(10).pow($alusd.rows[index].underlyingDecimals)),
+                $alusd.rows[index].underlyingDecimals,
+              ),
               colSize: 2,
             },
             col3: {
@@ -121,10 +124,10 @@
         <p slot="header" class="inline-block self-center">Aggregate</p>
         <div slot="body" class="px-4 pb-4 bg-grey15">
           <AccountsPageBarCharts
-            totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"
-            totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"
+            totalDeposit="{$aggregate.balance}"
+            totalDebtLimit="{$aggregate.balance.div(BigNumber.from(2))}"
             aggregatedApy="0"
-            totalDebt="{$aggregate.totalDebt.toFixed(2)}"
+            totalDebt="{$aggregate.totalDebt}"
             totalInterest="0"
           />
         </div>

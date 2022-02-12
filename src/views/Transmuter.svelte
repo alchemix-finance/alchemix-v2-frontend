@@ -10,15 +10,17 @@
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
   import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
+  import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
+  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import getContract from '../helpers/getContract';
   import getUserGas from '../helpers/getUserGas';
   import transmuters from '../stores/transmuters';
   import account from '../stores/account';
   import tempTx, { tempTxReset } from '../stores/tempTx';
-  import setTokenAllowance from '../helpers/setTokenAllowance';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../helpers/setToast';
-  import { getTokenDecimals } from '../helpers/getTokenData';
-  import { getProvider } from '../helpers/walletManager';
+  import setTokenAllowance from '@helpers/setTokenAllowance';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import { getTokenDecimals } from '@helpers/getTokenData';
+  import { getProvider } from '@helpers/walletManager';
 
   const toggleButtons = {
     transmuterSelect: {
@@ -197,19 +199,25 @@
           colSize: 1,
         },
         col2: {
-          value: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
+          CellComponent: FarmNameCell,
+          farmIcon: prop.alTokenSymbol.toLowerCase() + '_med.svg',
+          tokenIcon: prop.underlyingTokenSymbol.toLowerCase(),
+          farmName: prop.transmuterName,
+          farmSubtitle: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
           colSize: 2,
-          alignment: 'justify-self-start',
         },
         col3: {
+          CellComponent: CurrencyCell,
           value: prop.totalDeposited,
           colSize: 2,
         },
         col4: {
+          CellComponent: CurrencyCell,
           value: prop.unexchangedBalance,
           colSize: 2,
         },
         col6: {
+          CellComponent: CurrencyCell,
           value: prop.exchangedBalance,
           colSize: 2,
         },
