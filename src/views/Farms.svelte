@@ -1,5 +1,5 @@
 <script>
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -16,6 +16,7 @@
   import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
   import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
   import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
+  import ExpandedCrvFarm from '@components/composed/Table/farms/ExpandedCrvFarm.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
@@ -162,7 +163,32 @@
               const value0 = parseFloat(utils.formatEther(pool.reserve._reserve0)) * price0;
               const value1 = parseFloat(utils.formatEther(pool.reserve._reserve1)) * price1;
               tvl = value0 + value1;
-              console.log(pool.reserve._reserve0.toString(), pool.reserve._reserve1.toString());
+              break;
+            case 'crv':
+              expandedProps = {
+                token: {
+                  balance: pool.slpBalance,
+                  symbol: pool.poolConfig.title,
+                },
+                stakedBalance: pool.userDeposit,
+                unclaimedAlcx: pool.rewardsAlcx,
+                unclaimedCrv: pool.rewardsCrv,
+                slpBalance: pool.slpSupply,
+              };
+              rewards = [
+                {
+                  iconName: 'alchemix',
+                  tokenName: 'ALCX',
+                },
+                {
+                  iconName: 'crv',
+                  tokenName: 'CRV',
+                },
+              ];
+              component = ExpandedCrvFarm;
+              tvl = utils.formatEther(
+                pool.totalSupply.mul(pool.virtualPrice).div(BigNumber.from(10).pow(18)),
+              );
               break;
             case 'internal':
             default:

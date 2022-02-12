@@ -250,7 +250,6 @@ function vaultAlusdRowBuilder(tokens) {
         .div(utils.parseUnits(_alusd.ratio, underlyingDecimals))
         .mul(underlyingPerShare)
         .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
-      console.log(vaultDebt.toString());
       const stratIsUsed =
         parseFloat(utils.formatUnits(position.shares, underlyingDecimals)).toFixed(4) !== '0.0000';
       const depositPayload = {
@@ -292,7 +291,6 @@ function vaultAlusdRowBuilder(tokens) {
       } else {
         _aggregate.debtLimit = vaultDebt;
       }
-      console.log(_aggregate.debtLimit.toString());
       const balanceValue = utils
         .parseUnits(utils.formatUnits(balance, underlyingDecimals), 18)
         .mul(underlyingPerShare)
@@ -328,7 +326,6 @@ const vaultAlusdRowBuilderQueue = (tokens) => {
 async function initAlusdVault() {
   const contract = getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
-  console.log(rawDebt.toString());
   const rawRatio = await contract.minimumCollateralization();
   _alusd.userDebt = utils.formatEther(rawDebt.debt.toString());
   _alusd.ratio = utils.formatEther(rawRatio.toString());
@@ -429,6 +426,7 @@ async function initFarms() {
   if (_stakingPools.allPools.length === 0) {
     // @dev init external farms first
     await initSushiFarm();
+    await initCurveFarm();
     // @dev continue routine for internal farms
     const contract = getContract('StakingPools');
     const poolCounter = parseInt(_stakingPools.pools, 10);
@@ -456,7 +454,6 @@ async function initFarms() {
         poolId: i,
         type: 'internal',
       };
-      console.log('pool payload', payload);
       _stakingPools.allPools.push(payload);
       stakingPools.set({ ..._stakingPools });
       if (i + 1 === poolCounter) {
@@ -506,6 +503,45 @@ async function initSushiFarm() {
     sushiPerBlock,
     underlying0,
     underlying1,
+    poolConfig,
+  };
+  _stakingPools.allPools.push(payload);
+  stakingPools.set({ ..._stakingPools });
+  return true;
+}
+
+// @dev sets up external curve farm
+async function initCurveFarm() {
+  // @dev set up contract instances
+  const crvMetapool = getExternalContract('CurveGaugeMetapool');
+  const crvGauge = getExternalContract('CurveGaugeDeposit');
+  const crvRewarder = getExternalContract('CurveGaugeRewards');
+  // @dev grab data from contracts
+  const rewardToken = await crvRewarder.rewardsToken();
+  const lpToken = await crvGauge.lp_token();
+  const crvToken = await crvGauge.crv_token();
+  const slpBalance = await getTokenBalance(lpToken);
+  const slpSupply = await crvMetapool.totalSupply();
+  const userDeposit = await crvGauge.balanceOf(_account.address);
+  const rewardsCrv = await crvGauge.claimable_reward(_account.address, crvToken);
+  const rewardsAlcx = await crvGauge.claimable_reward(_account.address, rewardToken);
+  const totalSupply = await crvGauge.totalSupply();
+  const rewardRateAlcx = await crvRewarder.rewardRate();
+  const virtualPrice = await crvMetapool.get_virtual_price();
+  const poolConfig = externalLookup.find((pool) => pool.address.toLowerCase() === lpToken.toLowerCase());
+  const payload = {
+    type: 'crv',
+    reward: 'yes',
+    token: lpToken,
+    lpToken,
+    rewardsCrv,
+    rewardsAlcx,
+    slpBalance,
+    slpSupply,
+    userDeposit,
+    totalSupply,
+    rewardRateAlcx,
+    virtualPrice,
     poolConfig,
   };
   _stakingPools.allPools.push(payload);

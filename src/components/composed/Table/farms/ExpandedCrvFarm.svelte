@@ -12,17 +12,17 @@
   export let token;
   export let stakedBalance;
   export let unclaimedAlcx;
-  export let unclaimedSushi;
+  export let unclaimedCrv;
   export let slpBalance;
 
   let depositAmount;
   let withdrawAmount;
 
-  const mcv2contract = getExternalContract('SushiMasterchefV2');
+  const crvGauge = getExternalContract('CurveGaugeDeposit');
   const provider = getProvider();
 
   const setMaxDeposit = () => {
-    depositAmount = utils.formatEther(slpBalance);
+    depositAmount = utils.formatEther(token.balance);
   };
   const clearDeposit = () => {
     depositAmount = '';
@@ -30,12 +30,12 @@
   const deposit = async () => {
     const depositToWei = utils.parseEther(depositAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    if (depositToWei.gt(slpBalance)) {
+    if (depositToWei.gt(token.balance)) {
       setError('Trying to deposit more than available');
     } else {
       try {
         setPendingWallet();
-        const tx = await mcv2contract.deposit(0, depositToWei, $account.address, {
+        const tx = await crvGauge.deposit(depositToWei, {
           gasPrice: gas,
         });
         setPendingTx();
@@ -51,7 +51,7 @@
   };
 
   const setMaxWithdraw = () => {
-    withdrawAmount = utils.formatEther(stakedBalance.amount);
+    withdrawAmount = utils.formatEther(stakedBalance);
   };
   const clearWithdraw = () => {
     withdrawAmount = '';
@@ -59,12 +59,12 @@
   const withdraw = async () => {
     const withdrawToWei = utils.parseEther(withdrawAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    if (withdrawToWei.gt(stakedBalance.amount)) {
+    if (withdrawToWei.gt(stakedBalance)) {
       setError('Trying to withdraw more than available');
     } else {
       try {
         setPendingWallet();
-        const tx = await mcv2contract.withdrawAndHarvest(0, withdrawToWei, $account.address, {
+        const tx = await crvGauge.withdraw(withdrawToWei, {
           gasPrice: gas,
         });
         setPendingTx();
@@ -83,7 +83,7 @@
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     try {
       setPendingWallet();
-      const tx = await mcv2contract.harvest(0, $account.address, {
+      const tx = await crvGauge.claim_rewards($account.address, $account.address, {
         gasPrice: gas,
       });
       setPendingTx();
@@ -97,12 +97,12 @@
   };
 
   $: canClaim =
-    parseFloat(utils.formatEther(unclaimedAlcx)) + parseFloat(utils.formatEther(unclaimedSushi)) > 0;
+    parseFloat(utils.formatEther(unclaimedAlcx)) + parseFloat(utils.formatEther(unclaimedCrv)) > 0;
   $: canWithdraw =
-    !!withdrawAmount && parseFloat(withdrawAmount) !== 0 && stakedBalance.amount.gt(BigNumber.from(0));
+    !!withdrawAmount && parseFloat(withdrawAmount) !== 0 && stakedBalance.gt(BigNumber.from(0));
   $: canDeposit = !!depositAmount && parseFloat(depositAmount) !== 0 && token.balance > 0;
   $: unclaimedAlcxFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedAlcx))).toFixed(4);
-  $: unclaimedSushiFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedSushi))).toFixed(4);
+  $: unclaimedCrvFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedCrv))).toFixed(4);
 </script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
@@ -158,7 +158,7 @@
 
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      Available: {stakedBalance.amount.toString()}
+      Available: {stakedBalance.toString()}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -215,8 +215,8 @@
             ALCX
           </p>
           <p class="mb-0">
-            {unclaimedSushiFormatted}
-            SUSHI
+            {unclaimedCrvFormatted}
+            CRV
           </p>
         </div>
       </div>

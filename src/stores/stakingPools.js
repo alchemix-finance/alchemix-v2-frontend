@@ -26,6 +26,14 @@ export const externalLookup = [
     farmIcon: undefined,
     tokenIcon: 'sushi',
   },
+  {
+    // Curve alUSD3CRV
+    address: '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c',
+    title: 'alUSD3CRV',
+    subtitle: 'Curve alUSD Metapool',
+    farmIcon: 'alusd_med.svg',
+    tokenIcon: 'crv',
+  },
 ];
 
 export const poolLookup = [
@@ -53,7 +61,7 @@ export const poolLookup = [
   {
     address: '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c',
     title: 'alUSD3CRV',
-    subtitle: 'Convex',
+    subtitle: 'Curve alUSD Metapool',
     farmIcon: 'alusd_med.svg',
     tokenIcon: 'crv',
   },
@@ -67,7 +75,7 @@ export const poolLookup = [
   {
     address: '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e',
     title: 'alETH Curve',
-    subtitle: 'Convex',
+    subtitle: 'Curve alETH Metapool',
     farmIcon: undefined,
     tokenIcon: 'crv',
   },
