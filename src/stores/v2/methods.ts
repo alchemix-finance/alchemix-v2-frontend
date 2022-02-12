@@ -79,24 +79,18 @@ export const updateAllVaultBody = (vault: VaultTypes, vaultsBodies: BodyVaultTyp
   });
 
 export const updateVaultByIndex = (vault: VaultTypes, vaultIndex: number, vaultBody: BodyVaultType) =>
-  vaultsStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      _draftState[vault].vaultBody[vaultIndex] = {
-        ..._draftState[vault].vaultBody[vaultIndex],
-        ...vaultBody,
-      };
-    }),
-  );
+  vaultsStore.update((_store) => {
+    _store[vault].vaultBody[vaultIndex] = vaultBody;
+
+    return _store;
+  });
 
 export const updateVaultByAddress = (vault: VaultTypes, vaultAddress: string, vaultBody: BodyVaultType) =>
-  vaultsStore.update((_store) =>
-    produce(_store, (_draftState) => {
-      const index = _draftState[vault].vaultBody.findIndex((vault) => vault.address === vaultAddress);
-      if (index !== -1) {
-        _draftState[vault].vaultBody[index] = {
-          ..._draftState[vault].vaultBody[index],
-          ...vaultBody,
-        };
-      }
-    }),
-  );
+  vaultsStore.update((_store) => {
+    const index = _store[vault].vaultBody.findIndex((vault) => vault.address === vaultAddress);
+    if (index !== -1) {
+      _store[vault].vaultBody[index] = vaultBody;
+    }
+
+    return _store;
+  });

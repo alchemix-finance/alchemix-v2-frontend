@@ -123,27 +123,35 @@ export async function fetchAllVaultsBodies(
   });
 }
 
-// export async function fetchVaultBodyByAddress(store: AlcxStore, vaultId: VaultTypes, vaultAddress: string) {
-//   if (!store.provider) {
-//     console.error(`[fetchVaultDebt]: store.provider is undefined`);
-//     return Promise.reject(`[fetchVaultDebt]: store.provider is undefined`);
-//   }
+export async function fetchUpdateVaultByAddress(
+  vaultId: VaultTypes,
+  vaultAddress: string,
+  [signer, tokens, accountAddress, balances, vaults]: [
+    ethers.Signer,
+    TokensType,
+    string,
+    BalanceType[],
+    VaultsType,
+  ],
+) {
+  if (!signer) {
+    console.error(`[fetchBalanceByAddress]: signer is undefined`);
+    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+  }
 
-//   const { instance } = contractWrapper(
-//     VaultConstants[vaultId].alchemistContractSelector,
-//     store.provider.getSigner(),
-//   );
+  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
-//   const fetchDataPromise = fetchDataForVault(
-//     store.provider.getSigner(),
-//     instance,
-//     vaultAddress,
-//     store.address,
-//     store.balances,
-//     store.vaults[vaultId].ratio,
-//   );
+  const vaultData = fetchDataForVault(
+    vaultId,
+    signer,
+    instance,
+    vaultAddress,
+    accountAddress,
+    balances,
+    vaults[vaultId].ratio,
+  );
 
-//   return fetchDataPromise.then((vault) => {
-//     updateVaultByAddress(vaultId, vaultAddress, vault);
-//   });
-// }
+  return vaultData.then((_vaultData) => {
+    updateVaultByAddress(vaultId, vaultAddress, _vaultData);
+  });
+}

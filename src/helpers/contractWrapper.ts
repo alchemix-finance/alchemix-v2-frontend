@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, constants, ethers } from 'ethers';
 import { genericAbi } from '@stores/externalContracts';
 
 export const contractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
@@ -12,6 +12,17 @@ export const contractWrapper = (selector: string, signer: ethers.Signer, address
   };
 };
 
+/** 
+ * const setTokenAllowance = async (token, spender, amount) => {
+  console.log('setting allowance', token, spender);
+  const amountInfinite = ethers.constants.MaxUint256;
+  const contract = new ethers.Contract(token, genericAbi, _account.signer);
+  await contract.approve(spender, amount || amountInfinite);
+};
+
+ * 
+*/
+
 export const erc20Contract = (address: string, signer: ethers.Signer) => {
   const _contract = new ethers.Contract(address, genericAbi, signer);
 
@@ -21,5 +32,7 @@ export const erc20Contract = (address: string, signer: ethers.Signer) => {
     decimals: async () => _contract.decimals(),
     balanceOf: async (walletAddress: string) => _contract.balanceOf(walletAddress),
     allowanceOf: async (owner: string, spender: string) => _contract.allowance(owner, spender),
+    approve: async (spender: string, amount: BigNumber = constants.MaxUint256) =>
+      _contract.approve(spender, amount),
   };
 };
