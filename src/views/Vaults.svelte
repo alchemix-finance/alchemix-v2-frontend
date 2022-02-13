@@ -28,10 +28,11 @@
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
 
-  import { vaultsStore, VaultsType } from '@stores/v2/alcxStore';
+  import { balancesStore, vaultsStore, VaultsType } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
+  import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD]);
 
@@ -529,16 +530,26 @@
     currentVaultsBasedOnType.filter(strategyFilterFunc[currentStrategy]) ?? [];
 
   $: currentRowsOnCurrentStrategyType = currentVaultsBasedOnStrategyType.map((vault, index) => {
+    const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
+    const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
+
+    const vaultDebt = calculateVaultDebt(
+      vault.balance,
+      vault.underlyingPerShare,
+      underlyingTokenData.decimals,
+      $vaultsStore[vault.type].ratio,
+    );
+
     return {
-      type: vault.isUsed ? 'used' : 'unused',
+      type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       alchemist: 'alusd',
       row: {
         col2: {
           CellComponent: FarmNameCell,
-          farmName: vault.symbol,
-          farmSubtitle: 'Yearn ' + vault.underlyingSymbol,
+          farmName: vaultTokenData.symbol,
+          farmSubtitle: 'Yearn ' + underlyingTokenData.symbol,
           farmIcon: 'alusd_med.svg',
-          tokenIcon: `${vault.underlyingSymbol}`.toLowerCase(),
+          tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
           colSize: 3,
           alignment: 'justify-self-start',
         },
@@ -551,20 +562,20 @@
             utils.formatUnits(
               vault.balance
                 .mul(vault.underlyingPerShare)
-                .div(BigNumber.from(10).pow(vault.underlyingDecimals)),
-              vault.underlyingDecimals,
+                .div(BigNumber.from(10).pow(underlyingTokenData.decimals)),
+              underlyingTokenData.decimals,
             ) ?? 0,
           colSize: 2,
         },
         limit: {
           CellComponent: CurrencyCell,
-          value: utils.formatUnits(vault.debt, vault.underlyingDecimals),
+          value: utils.formatUnits(vaultDebt, underlyingTokenData.decimals),
           prefix: '+',
           colSize: 2,
         },
         col3: {
           CellComponent: CurrencyCell,
-          value: utils.formatUnits(vault.tvl, vault.underlyingDecimals),
+          value: utils.formatUnits(vault.tvl, underlyingTokenData.decimals),
           colSize: 2,
         },
         col4: {
@@ -578,13 +589,13 @@
           underlyingToken: vault.underlyingAddress,
           userDeposit: vault.balance,
           loanRatio: utils.parseUnits($alusd.ratio, 18),
-          borrowLimit: vault.debt,
+          borrowLimit: vaultDebt,
           openDebtAmount: utils.parseUnits('0', 18), // Fix
           openDebtSymbol: 'alUSD',
           underlyingPricePerShare: vault.underlyingPerShare,
           yieldPricePerShare: vault.yieldPerShare,
-          yieldDecimals: vault.decimals,
-          underlyingDecimals: vault.underlyingDecimals,
+          yieldDecimals: vaultTokenData.decimals,
+          underlyingDecimals: underlyingTokenData.decimals,
           vaultIndex: index,
           aggregateBalance: $aggregate.balance,
         },
@@ -866,29 +877,6 @@
               <p>{noVaultsForStrategyText[currentStrategy]}</p>
             </div>
           {/if}
-          <!-- {#if toggleButtons.stratSelect.used}
-            {#if rowsUser.length > 0}
-              <Table rows="{rowsUser}" columns="{colsStrats}" key="{foo}" />
-            {:else}
-              <div class="flex justify-center my-4">
-                <p>You don't have any active strategies.</p>
-              </div>
-            {/if}
-          {:else if toggleButtons.stratSelect.all}
-            <Table
-              rows="{[...currentRowsOnCurrentStrategyType.map((obj) => obj.row)]}"
-              columns="{colsStrats}"
-              key="{foo}"
-            />
-          {:else if toggleButtons.stratSelect.unused}
-            {#if rowsUnused.length > 0}
-              <Table rows="{rowsUnused}" columns="{colsStrats}" key="{foo}" />
-            {:else}
-              <div class="flex justify-center my-4">
-                <p>You are using all available strategies.</p>
-              </div>
-            {/if}
-          {/if} -->
         </div>
       </ContainerWithHeader>
     </div>

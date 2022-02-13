@@ -1,6 +1,7 @@
 <script lang="ts">
   import { addressStore, balancesStore, tokensStore, vaultsStore } from '@stores/v2/alcxStore';
   import { fullTokenList, signer } from '@stores/v2/derived';
+  import { BigNumber } from 'ethers';
   import {
     fetchAllBalances,
     fetchAllVaultsBodies,
@@ -9,6 +10,7 @@
     fetchVaultRatio,
     fetchVaultTokens,
   } from 'src/stores/v2/asyncMethods';
+  import { updateAllVaultBody } from 'src/stores/v2/methods';
   import { VaultTypes } from 'src/stores/v2/types';
 
   $: console.log($balancesStore);
@@ -26,13 +28,7 @@
 
     console.log($vaultsStore[VaultTypes.alUSD]);
 
-    await fetchAllVaultsBodies(VaultTypes.alUSD, [
-      $signer,
-      $tokensStore,
-      $addressStore,
-      $balancesStore,
-      $vaultsStore,
-    ]);
+    await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
 
     console.log($vaultsStore);
   }

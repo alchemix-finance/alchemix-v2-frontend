@@ -91,13 +91,7 @@ export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Sig
 
 export async function fetchAllVaultsBodies(
   vaultId: VaultTypes,
-  [signer, tokens, accountAddress, balances, vaults]: [
-    ethers.Signer,
-    TokensType,
-    string,
-    BalanceType[],
-    VaultsType,
-  ],
+  [signer, tokens, accountAddress]: [ethers.Signer, TokensType, string],
 ) {
   if (!signer) {
     console.error(`[fetchBalanceByAddress]: signer is undefined`);
@@ -107,15 +101,7 @@ export async function fetchAllVaultsBodies(
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
   const fetchVaultPromises = tokens[vaultId].yieldTokens.map((tokenAddress) => {
-    return fetchDataForVault(
-      vaultId,
-      signer,
-      instance,
-      tokenAddress,
-      accountAddress,
-      balances,
-      vaults[vaultId].ratio,
-    );
+    return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress);
   });
 
   return Promise.all([...fetchVaultPromises]).then((vaults) => {
@@ -126,13 +112,7 @@ export async function fetchAllVaultsBodies(
 export async function fetchUpdateVaultByAddress(
   vaultId: VaultTypes,
   vaultAddress: string,
-  [signer, tokens, accountAddress, balances, vaults]: [
-    ethers.Signer,
-    TokensType,
-    string,
-    BalanceType[],
-    VaultsType,
-  ],
+  [signer, accountAddress]: [ethers.Signer, string],
 ) {
   if (!signer) {
     console.error(`[fetchBalanceByAddress]: signer is undefined`);
@@ -141,15 +121,7 @@ export async function fetchUpdateVaultByAddress(
 
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
-  const vaultData = fetchDataForVault(
-    vaultId,
-    signer,
-    instance,
-    vaultAddress,
-    accountAddress,
-    balances,
-    vaults[vaultId].ratio,
-  );
+  const vaultData = fetchDataForVault(vaultId, instance, vaultAddress, accountAddress);
 
   return vaultData.then((_vaultData) => {
     updateVaultByAddress(vaultId, vaultAddress, _vaultData);

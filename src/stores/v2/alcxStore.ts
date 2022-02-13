@@ -12,19 +12,12 @@ export type BalanceType = {
 
 export type BodyVaultType = {
   type: VaultTypes;
-  symbol: string;
   address: string;
   balance: ethers.BigNumber;
-  decimals: number;
   yieldPerShare: ethers.BigNumber;
   underlyingAddress: string;
   underlyingPerShare: ethers.BigNumber;
-  underlyingSymbol: string;
-  underlyingBalance: ethers.BigNumber;
-  underlyingDecimals: number;
-  isUsed: boolean;
   tvl: ethers.BigNumber;
-  debt: any;
 };
 
 export interface TokensType {

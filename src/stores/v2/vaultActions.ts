@@ -30,16 +30,17 @@ import { erc20Contract, contractWrapper } from '../../helpers/contractWrapper';
 import { Signer, BigNumber, utils } from 'ethers';
 import { VaultConstants } from './constants';
 import { getUserGas } from '@helpers/getUserGas';
-import { setPendingWallet } from '@helpers/setToast';
+import { setPendingWallet, setPendingTx, setSuccessTx } from '@helpers/setToast';
+import { fetchUpdateVaultByAddress } from './asyncMethods';
 
 export async function deposit(
   tokenAddress: string,
   typeOfVault: VaultTypes,
   amountYield: BigNumber,
-  [userAddressStore, signerStore, vaultsStore]: [string, Signer, VaultsType],
+  [userAddressStore, signerStore]: [string, Signer],
 ) {
   const erc20Instance = erc20Contract(tokenAddress, signerStore);
-  const alchemistContract = contractWrapper(
+  const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
     VaultConstants[typeOfVault].alchemistContractSelector,
     signerStore,
   );
@@ -47,15 +48,27 @@ export async function deposit(
   // The way you get the gas needs to be moved in a dependency property
   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 
-  const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistContract.address);
+  const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
 
   if (BigNumber.from(allowance).lt(amountYield)) {
     // TODO: Add a toast when approving
 
-    await erc20Instance.approve(alchemistContract.address);
+    await erc20Instance.approve(alchemistAddress);
   }
 
   setPendingWallet();
+
+  const tx = await alchemistInstance.deposit(tokenAddress, amountYield, userAddressStore, {
+    gasPrice: gas,
+  });
+
+  setPendingTx();
+
+  await signerStore.provider.once(tx.hash, async (transaction) => {
+    setSuccessTx(transaction.transactionHash);
+    // TODO: Rethink what parameters you pass
+    await fetchUpdateVaultByAddress(typeOfVault, tokenAddress, [signerStore, userAddressStore]);
+  });
 }
 
 export async function depositUnderlying() {}

@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
-import { BalanceType, BodyVaultType, TokensType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType, TokensType, VaultsType } from '@stores/v2/alcxStore';
 import { VaultTypes } from './types';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
@@ -41,31 +41,16 @@ export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer) 
 // Remove the debt
 export async function fetchDataForVault(
   vaultType: VaultTypes,
-  signer: ethers.Signer,
   contractInstance: ethers.Contract,
   tokenAddress: string,
   accountAddress: string,
-  balancesArr: BalanceType[],
-  debtRatio: ethers.BigNumber,
 ): Promise<BodyVaultType> {
   // const position = await contract.positions(_account.address, token);
-  const _yToken = balancesArr.find((elm) => elm.address === tokenAddress);
-
   const position = await contractInstance.positions(accountAddress, tokenAddress);
   const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
   const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
-
-  const _uyToken = balancesArr.find((elm) => elm.address === tokenParams.underlyingToken);
-
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
-
-  const uyInstance = erc20Contract(_uyToken.address, signer);
-
-  const uyBalance = await uyInstance.balanceOf(accountAddress);
-
   // Check if debtRatio is null
-  const _debtRatio = debtRatio ?? BigNumber.from(0);
-
   /**
    *  const vaultDebt = balance
         .div(utils.parseUnits(_alusd.ratio, 18))
@@ -73,28 +58,36 @@ export async function fetchDataForVault(
         .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
    * 
    */
-
-  const debt = position.shares
-    .mul(underlyingPerShare.div(BigNumber.from(10).pow(_uyToken.decimals)))
-    .div(_debtRatio.div(BigNumber.from(10).pow(18)));
+  // const debt = position.shares
+  //   .mul(underlyingPerShare.div(BigNumber.from(10).pow(_uyToken.decimals)))
+  //   .div(_debtRatio.div(BigNumber.from(10).pow(18)));
   // .pow(_uyToken.decimals)
-
-  const isUsed = BigNumber.from(position.shares).gt(BigNumber.from(0));
+  // const isUsed = BigNumber.from(position.shares).gt(BigNumber.from(0));
 
   return {
     type: vaultType,
-    symbol: _yToken.symbol,
     address: tokenAddress,
     balance: position.shares,
     tvl: tokenParams.activeBalance,
     yieldPerShare: yieldPerShare,
     underlyingAddress: tokenParams.underlyingToken,
-    underlyingBalance: uyBalance,
-    underlyingDecimals: _uyToken.decimals,
-    underlyingSymbol: _uyToken.symbol,
     underlyingPerShare: underlyingPerShare,
-    decimals: _yToken.decimals,
-    debt: debt,
-    isUsed: isUsed,
   };
+}
+
+export function calculateVaultDebt(
+  _vaultBalance: BigNumber,
+  _underlyingPerShare: BigNumber,
+  _underlyingDecimals: number,
+  _debtRatio: BigNumber,
+) {
+  return (
+    _vaultBalance
+      .mul(_underlyingPerShare.div(BigNumber.from(10).pow(BigNumber.from(_underlyingDecimals))))
+      .div(BigNumber.from(_debtRatio).div(BigNumber.from(10).pow(18))) ?? BigNumber.from(0)
+  );
+}
+
+export function getTokenDataFromBalances(address: string, [balancesStore]: [BalanceType[]]) {
+  return balancesStore.find((val) => val.address === address);
 }
