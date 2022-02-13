@@ -11,7 +11,6 @@ import {
   setPendingApproval,
   setError,
 } from '@helpers/setToast';
-import { fetchUpdateVaultByAddress } from './asyncMethods';
 
 export async function deposit(
   tokenAddress: string,
@@ -102,11 +101,84 @@ export async function depositUnderlying(
       return {
         typeOfVault,
         tokenAddress,
+        underlyingAddress,
       };
     });
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
-    console.log(error);
+    console.error(`[vaultActions/depositUnderlying]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function multicallDeposit(
+  typeOfVault: VaultTypes,
+  yieldTokenAddress: string,
+  underlyingTokenAddress: string,
+  amountUnderlying: BigNumber,
+  amountYield: BigNumber,
+  [userAddressStore, signerStore]: [string, Signer],
+) {
+  try {
+    const yieldTokenInstance = erc20Contract(yieldTokenAddress, signerStore);
+    const underlyingTokenInstance = erc20Contract(underlyingTokenAddress, signerStore);
+
+    const {
+      address: alchemistAddress,
+      instance: alchemistInstance,
+      fragment: alchemistInterface,
+    } = contractWrapper(VaultConstants[typeOfVault].alchemistContractSelector, signerStore);
+
+    const yieldTokenAllowance = await yieldTokenInstance.allowanceOf(userAddressStore, alchemistAddress);
+    const underlyingTokenAllowance = await underlyingTokenInstance.allowanceOf(
+      userAddressStore,
+      alchemistAddress,
+    );
+
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+
+    if (BigNumber.from(yieldTokenAllowance).lt(amountYield)) {
+      setPendingApproval();
+      await yieldTokenInstance.approve(alchemistAddress);
+    }
+
+    if (BigNumber.from(underlyingTokenAllowance).lt(amountUnderlying)) {
+      setPendingApproval();
+      await underlyingTokenInstance.approve(alchemistAddress);
+    }
+
+    const deposit = alchemistInterface.encodeFunctionData('deposit', [
+      yieldTokenAddress,
+      amountYield,
+      userAddressStore,
+    ]);
+    const underlyingData = utils.defaultAbiCoder.encode(['bytes[]'], [[]]);
+
+    const depositUnderlying = alchemistInterface.encodeFunctionData('depositUnderlying', [
+      yieldTokenAddress,
+      amountUnderlying,
+      userAddressStore,
+      underlyingData,
+    ]);
+    const dataPackage = [deposit, depositUnderlying];
+
+    setPendingWallet();
+
+    const tx = (await alchemistInstance.multicall(dataPackage, {
+      gasPrice: gas,
+    })) as ethers.ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return { yieldTokenAddress, underlyingTokenAddress, typeOfVault };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/multicallDeposit]: ${error}`);
+    throw Error(error);
   }
 }
 
@@ -116,34 +188,8 @@ export async function burn() {}
 
 export async function repay() {}
 
-/**  const withdraw = async () => {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const refreshPayload = {
-      token: $tempTx.yieldToken,
-      vaultIndex: $tempTx.vaultIndex,
-    };
-    try {
-      setPendingWallet();
-      const tx = await contract.withdraw(
-        $tempTx.yieldToken,
-        $tempTx.amountYield,
-        $tempTx.targetAddress || $account.address,
-        {
-          gasPrice: gas,
-        },
-      );
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        refreshData(refreshPayload);
-      });
-    } catch (e) {
-      console.error(e);
-      setError(e.data ? await e.data.message : e.message);
-    }
-    tempClear();
-  };*/
-
 export async function withdraw() {}
 
 export async function withdrawUnderlying() {}
+
+export async function multicallWithdraw() {}
