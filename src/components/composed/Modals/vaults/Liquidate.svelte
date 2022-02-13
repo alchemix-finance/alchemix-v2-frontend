@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
@@ -93,7 +94,7 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
-    <p class="inline-block">Liquidate Your Debt</p>
+    <p class="inline-block">{$_('modals.liquidate_debt')}</p>
     <select
       name="selectToken"
       id="selectToken"
@@ -107,7 +108,7 @@
   </div>
   <div slot="body" class="flex flex-col space-y-4 p-4">
     <label for="liquidateInput" class="text-sm text-lightgrey10">
-      Available: ~{parseFloat(tokenAmountFormatted).toFixed(4)}
+      {$_('available')}: ~{parseFloat(tokenAmountFormatted).toFixed(4)}
       {tokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -143,17 +144,14 @@
       </div>
     </div>
     <div class="w-full text-sm text-lightgrey10">
-      Outstanding Debt: {outstandingDebt} -> {remainingDebtFormatted} <br />
-      Remaining Deposit: {tokenAmountFormatted}
+      {$_('modals.outstanding_debt')}: {outstandingDebt} -> {remainingDebtFormatted} <br />
+      {$_('modals.remaining_deposit')}: {tokenAmountFormatted}
       {tokenSymbol} -> {remainingDepositFormatted}
       {tokenSymbol}
     </div>
-    <ToggleSwitch
-      label="I understand that liquidating will use my deposited collateral to repay the outstanding debt"
-      on:toggleChange="{setUserVerified}"
-    />
+    <ToggleSwitch label="{$_('modals.liq_disclaimer')}" on:toggleChange="{setUserVerified}" />
     <Button
-      label="Liquidate"
+      label="{$_('actions.liquidate')}"
       borderColor="green4"
       backgroundColor="black1"
       hoverColor="green4"

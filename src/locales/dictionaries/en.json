@@ -39,6 +39,10 @@
   "depositing": "Depositing",
   "to": "To",
   "proudly_using": "Proudly Using",
+  "refresh": "Refresh",
+  "wrong_network": "Wrong Network",
+  "connect_wallet": "Connect Wallet",
+  "available": "Available",
   "landing": {
     "intro_title": "Take Out A Self-Repaying Loan",
     "intro_subtitle": "Increase capital efficiency by borrowing the future yield of your deposit today.",
@@ -66,21 +70,131 @@
     "castVote": "Cast Vote",
     "closedVote": "Voting Closed",
     "choose": "Your Vote",
-    "alreadyVoted": "You Already Voted"
+    "alreadyVoted": "You Already Voted",
+    "proposals": "Proposals"
   },
   "farm_page": {
     "title": "Farms",
-    "subtitle": "Earn yield on your deposits"
+    "subtitle": "Earn yield on your deposits",
+    "saddle_text": "Deposit alUSD, FEI, FRAX, and/or LUSD to earn ALCX, TRIBE, FXS and LQTY",
+    "sushi_text": "Deposit alUSD and ETH on Sushiswap to earn SUSHI",
+    "mstable_text": "Deposit alUSD to earn MTA"
   },
   "transmuter_page": {
     "title": "Transmuter",
-    "subtitle": "Convert your synthetic tokens to their counterpart at a 1:1 ratio"
+    "subtitle": "Convert your synthetic tokens to their counterpart at a 1:1 ratio",
+    "external_swaps": "External Swap Providers",
+    "all_transmuter": "All Transmuter"
   },
   "vaults_page": {
     "title": "Vaults",
-    "subtitle": "Deposit collateral and borrow your future yield right away"
+    "subtitle": "Deposit collateral and borrow your future yield right away",
+    "borrow": "Borrow",
+    "repay": "Repay",
+    "liquidate": "Liquidate"
   },
   "accounts_page": {
+    "title": "My Accounts",
+    "subtitle": "Your personal dashboard",
     "select_strategies": "View all strategies"
+  },
+  "small_screen": {
+    "title": "What is this? DeFi 2.0 for ants?",
+    "message": "Alchemix v2 does not yet support small screens. Please get a larger screen or resize your browser window."
+  },
+  "chart": {
+    "aggregate": "Aggregate",
+    "debt": "Debt",
+    "interest": "Interest",
+    "total_deposit": "Total Deposit",
+    "aggregate_apy": "Aggregate APY"
+  },
+  "table": {
+    "strategy": "Strategy",
+    "deposited": "Deposited",
+    "withdrawable": "Withdrawable",
+    "claimable": "Claimable",
+    "maturation_rate": "Maturation Rate",
+    "tvl": "TVL",
+    "apy": "APY",
+    "debt_limit": "Debt Limit",
+    "actions": "Actions",
+    "action": "Action",
+    "pool": "Pool",
+    "rewards": "Rewards",
+    "apr": "APR",
+    "staked_token": "Staked Token",
+    "claimable_rewards": "Claimable Rewards",
+    "manage": "Manage",
+    "title": "Title",
+    "status": "Status",
+    "start": "Start",
+    "end": "End",
+    "snapshot": "Snapshot",
+    "ipfs": "IPFS",
+    "no_strategies": "You don't have any active strategies.",
+    "all_strategies": "You are using all available strategies.",
+    "your_strategies_select": "Your Strategies",
+    "all_strategies_select": "All Strategies",
+    "unused_strategies_select": "Unused Strategies",
+    "collateral": "Collateral",
+    "active_select": "Active",
+    "retired_select": "Retired",
+    "external_select": "External"
+  },
+  "expanded": {
+    "credit_limit": "Credit Limit",
+    "loan_amount": "Loan Amount",
+    "transmuted": "Transmuted"
+  },
+  "actions": {
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "claim": "Claim",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "repay": "Repay",
+    "liquidate": "Liquidate",
+    "borrow": "Borrow",
+    "borrow_and_transfer": "Borrow and Transfer",
+    "swap": "Swap"
+  },
+  "toast": {
+    "welcome_back": "Welcome back",
+    "pending": "Pending",
+    "pending_sign": "Sign transaction in wallet",
+    "pending_confirm": "Confirming transaction",
+    "success": "Success",
+    "tx_confirmed": "Transaction was confirmed",
+    "error": "Something went wrong",
+    "init_data": "Initializing Data",
+    "registering_vote": "Registering Vote on Snapshot",
+    "vote_registered": "Vote was registered",
+    "currency_updated": "Currency updated",
+    "using": "Using",
+    "as_default": "as default",
+    "language_updated": "Language updated",
+    "gas_updated": "Gas updated",
+    "error_deposit_amount": "Trying to deposit more than available",
+    "error_withdraw_amount": "Trying to withdraw more than available",
+    "error_claim_amount": "Trying to claim more than available"
+  },
+  "modals": {
+    "withdraw_collateral": "Withdraw Collateral",
+    "loan_ratio": "Loan Ratio",
+    "deposit_balance": "Deposit Balance",
+    "borrow_limit": "Borrow Limit",
+    "repay_loans": "Repay Outstanding Loans",
+    "outstanding_debt": "Outstanding Debt",
+    "liquidate_debt": "Liquidate Your Debt",
+    "remaining_deposit": "Remaining Deposit",
+    "liq_disclaimer": "I understand that liquidating will use my deposited collateral to repay the outstanding debt",
+    "deposit_collateral": "Deposit Collateral",
+    "no_loan_available": "You can't get more loans",
+    "no_debt_limit": "You have no deposits",
+    "transfer_loan": "Transfer loan to a different wallet",
+    "target_wallet": "Target Wallet",
+    "transfer_error": "The provided address is not valid. Please check the input.",
+    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan"
   }
 }

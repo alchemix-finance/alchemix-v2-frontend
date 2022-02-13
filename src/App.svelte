@@ -2,6 +2,7 @@
   // libraries
   import { onMount } from 'svelte';
   import { Router, Route } from 'svelte-routing';
+  import { _ } from 'svelte-i18n';
   import Modal from '@components/elements/Modal.svelte';
 
   // middleware
@@ -81,10 +82,9 @@
         </div>
       </div>
       <div class="sm:block xl:hidden col-span-12">
-        <p class="text-center text-lg my-12">What is this? DeFi 2.0 for ants?</p>
+        <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
         <p class="text-center mb-12">
-          Alchemix v2 does not yet support smol screens. Please get a larger screen or resize your browser
-          window.
+          {$_('small_screen.message')}
         </p>
       </div>
       <div class="col-span-12 pl-8 py-12 border-t border-grey5">

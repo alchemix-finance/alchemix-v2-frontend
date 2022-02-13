@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { utils, FixedNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
@@ -65,7 +66,7 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
-    <p class="inline-block">Repay Outstanding Loans</p>
+    <p class="inline-block">{$_('modals.repay_loans')}</p>
     <select
       id="selectUnderlying"
       class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
@@ -78,7 +79,7 @@
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     <label for="repayInput" class="text-sm text-lightgrey10">
-      Available: {underlyingAmount}
+      {$_('available')}: {underlyingAmount}
       {underlyingSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -114,10 +115,10 @@
       </div>
     </div>
     <div class="w-full text-sm text-lightgrey10">
-      Outstanding Debt: {outstandingDebt} -> {remainingDebt}
+      {$_('modals.outstanding_debt')}: {outstandingDebt} -> {remainingDebt}
     </div>
     <Button
-      label="Repay"
+      label="{$_('actions.repay')}"
       borderColor="green4"
       backgroundColor="black1"
       hoverColor="green4"

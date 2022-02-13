@@ -1,6 +1,6 @@
 <script>
   import { slide } from 'svelte/transition';
-
+  import { _ } from 'svelte-i18n';
   import { connect } from '@helpers/walletManager';
   import Button from '../elements/Button.svelte';
   import BorderContainer from '../elements/BorderContainer.svelte';
@@ -136,7 +136,7 @@
           </svg>
         </div>
 
-        <p>Wrong Network!</p>
+        <p>{$_('wrong_network')}!</p>
       </div>
     {/if}
     {#if !balanceCollapsed}
@@ -145,7 +145,13 @@
       </div>
     {/if}
   {:else}
-    <Button borderSize="1" label="Connect Wallet" uppercase="{true}" height="h-10" on:clicked="{connect}">
+    <Button
+      borderSize="1"
+      label="{$_('connect_wallet')}"
+      uppercase="{true}"
+      height="h-10"
+      on:clicked="{connect}"
+    >
       <div slot="leftSlot">
         <AvatarWithIndicator />
       </div>

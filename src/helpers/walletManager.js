@@ -6,6 +6,7 @@ import toastConfig from '../stores/toast';
 import network from '../stores/network';
 import initData from './initData';
 import { uninitData } from './uninitData';
+import getItl from './getItl';
 
 let _toastConfig;
 let _network;
@@ -129,7 +130,7 @@ async function connect(preselect) {
       _toastConfig.showCloseButton = false;
       _toastConfig.closeOnMount = true;
       _toastConfig.closeTimeout = 2500;
-      _toastConfig.title = `Welcome back${toastGreeting}`;
+      _toastConfig.title = `${getItl('toast.welcome_back')}${toastGreeting}`;
       _toastConfig.visible = true;
       _account.address = address;
       _account.ens = ens;

@@ -23,25 +23,25 @@
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'Strategy',
+      value: $_('table.strategy'),
       colSize: 3,
     },
     {
       columnId: 'deposit',
       CellComponent: HeaderCell,
-      value: 'Deposited',
+      value: $_('table.deposited'),
       colSize: 2,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'TVL',
+      value: $_('table.tvl'),
       colSize: 2,
     },
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: 'APY',
+      value: $_('table.apy'),
       colSize: 2,
     },
   ];
@@ -103,7 +103,11 @@
 
 <ViewContainer>
   <div slot="head" class="flex justify-between">
-    <PageHeader pageIcon="vault_thin.svg" pageTitle="My Accounts" pageSubtitle="Your personal dashboard" />
+    <PageHeader
+      pageIcon="vault_thin.svg"
+      pageTitle="{$_('accounts_page.title')}"
+      pageSubtitle="{$_('accounts_page.subtitle')}"
+    />
   </div>
   {#if loading}
     <ContainerWithHeader>
@@ -127,7 +131,7 @@
 
     <div class="w-full mb-8">
       <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}">
-        <p slot="header" class="inline-block self-center">Aggregate</p>
+        <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>
         <div slot="body" class="px-4 pb-4 bg-grey15">
           <AccountsPageBarCharts
             totalDeposit="{$aggregate.balance}"
@@ -142,13 +146,13 @@
 
     <div class="w-full mb-8">
       <ContainerWithHeader>
-        <div slot="header" class="py-4 px-6 text-sm">Vaults</div>
+        <div slot="header" class="py-4 px-6 text-sm">{$_('vaults_page.title')}</div>
         <div slot="body">
           {#if rowsUser.length > 0}
             <Table rows="{rowsUser}" columns="{colsUser}" />
           {:else}
             <div class="flex flex-col my-4">
-              <p class="text-center w-full mt-8">You don't have any active strategies.</p>
+              <p class="text-center w-full mt-8">{$_('table.no_strategies')}</p>
               <div class="flex justify-center mt-8 mb-4">
                 <BorderContainer width="w-80">
                   <Button

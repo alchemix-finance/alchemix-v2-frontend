@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import { utils } from 'ethers';
   import Button from '../../../elements/Button.svelte';
@@ -24,7 +25,7 @@
     const amountToWei = utils.parseEther(depositAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     if (depositAmount > token.balance) {
-      setError('Trying to deposit more than available');
+      setError($_('toast.error_deposit_amount'));
     } else {
       try {
         let tx;
@@ -47,7 +48,7 @@
     const amountToWei = utils.parseEther(withdrawAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     if (withdrawAmount > stakedBalance) {
-      setError('Trying to withdraw more than available');
+      setError($_('toast.error_withdraw_amount'));
     } else {
       try {
         let tx;
@@ -115,7 +116,7 @@
       <p>{token.balance} {token.symbol}</p>
     </div> -->
     <label for="borrowInput" class="text-sm text-lightgrey10">
-      Available: {token.balance}
+      {$_('available')}: {token.balance}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -151,7 +152,7 @@
       </div>
     </div>
     <Button
-      label="Deposit"
+      label="{$_('actions.deposit')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -163,7 +164,7 @@
   </div>
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      Available: {stakedBalance}
+      {$_('available')}: {stakedBalance}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -199,7 +200,7 @@
       </div>
     </div>
     <Button
-      label="Withdraw"
+      label="{$_('actions.withdraw')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -211,7 +212,7 @@
   </div>
 
   <div class="p-4 flex flex-col space-y-4">
-    <label for="borrowInput" class="text-sm text-lightgrey10"> Rewards: </label>
+    <label for="borrowInput" class="text-sm text-lightgrey10"> {$_('table.rewards')}: </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <div class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 bg-grey3">
@@ -221,7 +222,7 @@
       </div>
     </div>
     <Button
-      label="Claim"
+      label="{$_('actions.claim')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"

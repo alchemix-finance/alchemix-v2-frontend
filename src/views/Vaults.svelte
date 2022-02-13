@@ -1,5 +1,4 @@
 <script>
-  import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -9,9 +8,9 @@
   import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
   import { BarLoader } from 'svelte-loading-spinners';
   import account from '../stores/account';
-  import { aggregate, alusd } from '../stores/vaults';
+  import { aggregate, alusd } from '@stores/vaults';
   import getContract, { getFragment } from '../helpers/getContract';
-  import { getTokenAllowance, getTokenDecimals } from '../helpers/getTokenData';
+  import { getTokenAllowance, getTokenDecimals } from '@helpers/getTokenData';
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
   import Table from '../components/composed/Table/Table.svelte';
   import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
@@ -20,12 +19,12 @@
   import Repay from '../components/composed/Modals/vaults/Repay.svelte';
   import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
   import tempTx, { defaults } from '../stores/tempTx';
-  import { getProvider } from '../helpers/walletManager';
+  import { getProvider } from '@helpers/walletManager';
   import getUserGas from '../helpers/getUserGas';
-  import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
+  import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '@helpers/setToast';
   import setTokenAllowance from '../helpers/setTokenAllowance';
   import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
-  import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
+  import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '@helpers/updateData';
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
 
@@ -43,37 +42,37 @@
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'Strategy',
+      value: $_('table.strategy'),
       colSize: 3,
     },
     {
       columnId: 'deposit',
       CellComponent: HeaderCell,
-      value: 'Deposited',
+      value: $_('table.deposited'),
       colSize: 2,
     },
     {
       columnId: 'limit',
       CellComponent: HeaderCell,
-      value: 'Debt Limit',
+      value: $_('table.debt_limit'),
       colSize: 2,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'TVL',
+      value: $_('table.tvl'),
       colSize: 2,
     },
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: 'APY',
+      value: $_('table.apy'),
       colSize: 2,
     },
     {
       columnId: 'col5',
       CellComponent: HeaderCell,
-      value: 'Actions',
+      value: $_('table.actions'),
       colSize: 3,
     },
   ];
@@ -706,9 +705,9 @@
         </ContainerWithHeader>
       </div>
       <div class="col-span-1 flex space-x-4">
-        <Button label="Borrow" width="w-full" on:clicked="{openBorrowModal}" />
-        <Button label="Repay" width="w-full" on:clicked="{openRepayModal}" />
-        <Button label="Liquidate" width="w-full" on:clicked="{openLiquidateModal}" />
+        <Button label="{$_('vaults_page.borrow')}" width="w-full" on:clicked="{openBorrowModal}" />
+        <Button label="{$_('vaults_page.repay')}" width="w-full" on:clicked="{openRepayModal}" />
+        <Button label="{$_('vaults_page.liquidate')}" width="w-full" on:clicked="{openLiquidateModal}" />
       </div>
     </div>
 
@@ -721,7 +720,7 @@
         </ContainerWithHeader>
       {:else}
         <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
-          <p slot="header" class="inline-block self-center">Aggregate</p>
+          <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>
           <div slot="body" class="bg-grey15">
             <AccountsPageBarCharts
               totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"
@@ -740,7 +739,7 @@
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 flex space-x-4">
           <Button
-            label="Your Strategies ({counterUserStrategies})"
+            label="{$_('table.your_strategies_select')} ({counterUserStrategies})"
             width="w-max"
             canToggle="{true}"
             selected="{toggleButtons.stratSelect.used}"
@@ -750,7 +749,7 @@
           />
 
           <Button
-            label="All Strategies ({counterAllStrategies})"
+            label="{$_('table.all_strategies_select')} ({counterAllStrategies})"
             width="w-max"
             canToggle="{true}"
             selected="{toggleButtons.stratSelect.all}"
@@ -760,7 +759,7 @@
           />
 
           <Button
-            label="Unused Strategies ({counterUnusedStrategies})"
+            label="{$_('table.unused_strategies_select')} ({counterUnusedStrategies})"
             width="w-max"
             canToggle="{true}"
             selected="{toggleButtons.stratSelect.unused}"
@@ -775,7 +774,7 @@
               <Table rows="{rowsUser}" columns="{colsStrats}" key="{foo}" />
             {:else}
               <div class="flex justify-center my-4">
-                <p>You don't have any active strategies.</p>
+                <p>{$_('table.no_strategies')}</p>
               </div>
             {/if}
           {:else if toggleButtons.stratSelect.all}
@@ -785,7 +784,7 @@
               <Table rows="{rowsUnused}" columns="{colsStrats}" key="{foo}" />
             {:else}
               <div class="flex justify-center my-4">
-                <p>You are using all available strategies.</p>
+                <p>{$_('table.all_strategies')}</p>
               </div>
             {/if}
           {/if}

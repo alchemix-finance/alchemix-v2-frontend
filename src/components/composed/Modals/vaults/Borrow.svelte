@@ -1,6 +1,6 @@
 <script>
   // TODO if users have not deposited anything or maxDebt is 0, include a deposit input, craft a multitx
-
+  import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import { utils } from 'ethers';
@@ -87,16 +87,16 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="inline-block">Borrow {debtToken.symbol}</p>
+    <p class="inline-block">{$_('actions.borrow')} {debtToken.symbol}</p>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     {#if availableAmount === 0 && maxDebt > 0}
-      <p>All loans already taken :(</p>
+      <p>{$_('modals.no_loan_available')}</p>
     {:else if maxDebt === 0}
-      <p>You a broke ass hoe, bitch :(</p>
+      <p>{$_('modals.no_debt_limit')}</p>
     {:else}
       <label for="borrowInput" class="text-sm text-lightgrey10">
-        Available: {availableAmount}
+        {$_('available')}: {availableAmount}
         {debtToken.symbol}
       </label>
       <div class="flex bg-grey3 rounded border border-grey3">
@@ -132,13 +132,10 @@
         </div>
       </div>
 
-      <ToggleSwitch
-        label="Transfer {debtToken.symbol} loan to different wallet"
-        on:toggleChange="{setExportAndTransfer}"
-      />
+      <ToggleSwitch label="{$_('modals.transfer_loan')}" on:toggleChange="{setExportAndTransfer}" />
       {#if exportAndTransfer}
         <div class="w-full" transition:slide>
-          <label class="text-lightgrey10 text-sm sr-only"> Target Wallet </label>
+          <label class="text-lightgrey10 text-sm sr-only">{$_('modals.target_wallet')}</label>
           <div class="flex bg-grey3 rounded border {showError ? 'border-red3' : 'border-grey3'} mb-4">
             <div class="w-full">
               <input
@@ -161,18 +158,18 @@
           </div>
           {#if showError}
             <p transition:slide class="text-red3 text-center text-sm mb-4">
-              The provided address is not correct. Please check the input.
+              {$_('modals.transfer_error')}
             </p>
           {/if}
           <ToggleSwitch
-            label="I have verified the above address to be the correct recipient of my {debtToken.symbol} loan"
+            label="{$_('modals.transfer_disclaimer')}"
             on:toggleChange="{verifyAddress}"
             forceState="{rng}"
           />
         </div>
       {/if}
       <Button
-        label="{exportAndTransfer ? 'Borrow and Transfer' : 'Borrow'}"
+        label="{exportAndTransfer ? $_('actions.borrow_and_transfer') : $_('actions.borrow')}"
         borderSize="1"
         borderColor="green4"
         backgroundColor="black1"

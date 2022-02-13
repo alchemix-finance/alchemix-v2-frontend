@@ -2,6 +2,7 @@ import { init, getLocaleFromNavigator } from 'svelte-i18n';
 import global from '../stores/global';
 import settings from '../stores/settings';
 import toastConfig from '../stores/toast';
+import getItl from './getItl';
 
 let _settings;
 let _global;
@@ -38,8 +39,8 @@ export function setCurrency(currency) {
   _toastConfig.spinner = false;
   _toastConfig.showCloseButton = false;
   _toastConfig.kind = 'success';
-  _toastConfig.title = 'Currency updated';
-  _toastConfig.subtitle = `Using ${currency.symbol} as default`;
+  _toastConfig.title = getItl('toast.currency_updated');
+  _toastConfig.subtitle = `${getItl('toast.using')} ${currency.symbol} ${getItl('toast.as_default')}`;
   _toastConfig.closeTimeout = 2500;
   _toastConfig.visible = true;
   settings.set({ ..._settings });
@@ -56,8 +57,8 @@ export function setLanguage(lang) {
   _toastConfig.spinner = false;
   _toastConfig.showCloseButton = false;
   _toastConfig.kind = 'success';
-  _toastConfig.title = 'Language updated';
-  _toastConfig.subtitle = `Using ${lang.name} as default`;
+  _toastConfig.title = getItl('toast.language_updated');
+  _toastConfig.subtitle = `${getItl('toast.using')} ${lang.name} ${getItl('toast.as_default')}`;
   _toastConfig.closeTimeout = 2500;
   _toastConfig.visible = true;
   settings.set({ ..._settings });
@@ -77,8 +78,8 @@ export function setGas(gas) {
   _toastConfig.spinner = false;
   _toastConfig.showCloseButton = false;
   _toastConfig.kind = 'success';
-  _toastConfig.title = 'Gas updated';
-  _toastConfig.subtitle = `Using ${gas} as default`;
+  _toastConfig.title = getItl('toast.gas_updated');
+  _toastConfig.subtitle = `${getItl('toast.using')} ${gas} ${getItl('toast.as_default')}`;
   _toastConfig.closeTimeout = 2500;
   _toastConfig.visible = true;
   settings.set({ ..._settings });
