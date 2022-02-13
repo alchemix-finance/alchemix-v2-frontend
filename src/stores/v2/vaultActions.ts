@@ -223,6 +223,49 @@ export async function withdraw(
   }
 }
 
-export async function withdrawUnderlying() {}
+export async function withdrawUnderlying(
+  typeOfVault: VaultTypes,
+  yieldTokenAddress: string,
+  amountUnderlying: BigNumber,
+  accountAddress: string,
+  [signerStore]: [Signer],
+) {
+  try {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const dataPackage = utils.parseEther('0');
+
+    const { instance: alchemistInstance } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
+
+    setPendingWallet();
+
+    const tx = (await alchemistInstance.withdrawUnderlying(
+      yieldTokenAddress,
+      amountUnderlying,
+      accountAddress,
+      dataPackage,
+      {
+        gasPrice: gas,
+      },
+    )) as ethers.ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return {
+        typeOfVault,
+        yieldTokenAddress,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/withdraw]: ${error}`);
+    throw Error(error);
+  }
+}
 
 export async function multicallWithdraw() {}
