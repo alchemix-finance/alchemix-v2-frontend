@@ -34,6 +34,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
   },
   env: {
     browser: true,
