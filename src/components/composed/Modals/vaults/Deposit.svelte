@@ -5,7 +5,7 @@
   import Button from '../../../elements/Button.svelte';
   import tempTx from '../../../../stores/tempTx';
   import walletBalance from '../../../../stores/walletBalance';
-  import { deposit, depositUnderlying } from '@stores/v2/vaultActions';
+  import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { addressStore } from 'src/stores/v2/alcxStore';
   import { signer } from 'src/stores/v2/derived';
@@ -45,23 +45,38 @@
     }
     if (underlyingDeposit) {
       udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
-      $tempTx.amountUnderlying = udrlyAmnt;
     }
-    $tempTx.yieldToken = yieldToken;
-    $tempTx.underlyingToken = underlyingToken;
-    $tempTx.targetAddress = null;
-    $tempTx.vaultIndex = vaultIndex;
     if (yieldAmnt && udrlyAmnt) {
-      $tempTx.method = 'multicall';
-    } else if (yieldAmnt && !udrlyAmnt) {
-      await deposit(vault.address, vault.type, yieldAmnt, [$addressStore, $signer])
+      await multicallDeposit(vault.type, vault.address, vault.underlyingAddress, udrlyAmnt, yieldAmnt, [
+        $addressStore,
+        $signer,
+      ])
         .then(() => {
-          console.log('Deposited');
+          Promise.all([
+            fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+            fetchBalanceByAddress(vault.address, [$signer]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          ]).then(() => {
+            console.log('[multicallDeposit/finished]: Balances and vault data updated!');
+          });
         })
         .catch((e) => {
           console.error(e);
         });
-      // $tempTx.method = 'deposit';
+    } else if (yieldAmnt && !udrlyAmnt) {
+      await deposit(vault.address, vault.type, yieldAmnt, [$addressStore, $signer])
+        .then(() => {
+          Promise.all([
+            fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+            fetchBalanceByAddress(vault.address, [$signer]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          ]).then(() => {
+            console.log('[deposit/finished]: Balances and vault data updated!');
+          });
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     } else {
       await depositUnderlying(vault.underlyingAddress, vault.address, vault.type, udrlyAmnt, [
         $addressStore,
@@ -73,7 +88,7 @@
             fetchBalanceByAddress(vault.address, [$signer]),
             fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
           ]).then(() => {
-            console.log('Balances and vault data updated!');
+            console.log('[depositUnderlying/finished]: Balances and vault data updated!');
           });
         })
         .catch((e) => {
