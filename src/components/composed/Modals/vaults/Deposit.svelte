@@ -7,7 +7,11 @@
   import tempTx from '../../../../stores/tempTx';
   import walletBalance from '../../../../stores/walletBalance';
   import MaxLossController from '@components/composed/MaxLossController';
+  import { deposit, depositUnderlying } from '@stores/v2/vaultActions';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { addressStore } from 'src/stores/v2/alcxStore';
+  import { signer } from 'src/stores/v2/derived';
+  import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
 
   export let vaultIndex;
 
@@ -18,6 +22,8 @@
   export let borrowLimit;
   export let underlyingDecimals;
   export let yieldDecimals;
+
+  export let vault;
 
   let yieldBalance;
   let yieldSymbol;
@@ -34,12 +40,11 @@
   let depositDisabled = true;
   let maximumLoss;
 
-  const deposit = () => {
+  const onButtonDeposit = async () => {
     let yieldAmnt;
     let udrlyAmnt;
     if (yieldDeposit) {
       yieldAmnt = utils.parseUnits(yieldDeposit.toString(), yieldDecimals);
-      $tempTx.amountYield = yieldAmnt;
     }
     if (underlyingDeposit) {
       udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
@@ -53,9 +58,31 @@
     if (yieldAmnt && udrlyAmnt) {
       $tempTx.method = 'multicall';
     } else if (yieldAmnt && !udrlyAmnt) {
-      $tempTx.method = 'deposit';
+      await deposit(vault.address, vault.type, yieldAmnt, [$addressStore, $signer])
+        .then(() => {
+          console.log('Deposited');
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+      // $tempTx.method = 'deposit';
     } else {
-      $tempTx.method = 'depositUnderlying';
+      await depositUnderlying(vault.underlyingAddress, vault.address, vault.type, udrlyAmnt, [
+        $addressStore,
+        $signer,
+      ])
+        .then(() => {
+          Promise.all([
+            fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+            fetchBalanceByAddress(vault.address, [$signer]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          ]).then(() => {
+            console.log('Balances and vault data updated!');
+          });
+        })
+        .catch((e) => {
+          console.error(`[onButtonDeposit/depositUnderlying]`, e);
+        });
     }
   };
 
@@ -228,7 +255,7 @@
       height="h-12"
       borderSize="1"
       fontSize="text-md"
-      on:clicked="{() => deposit()}"
+      on:clicked="{onButtonDeposit}"
       disabled="{depositDisabled}"
     />
   </div>

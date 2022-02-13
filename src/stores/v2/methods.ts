@@ -16,15 +16,10 @@ export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
   balancesStore.update((_prevStore) => {
+    console.log(_prevStore);
     const index = _prevStore.findIndex((bal) => bal.address === balanceAddress);
     if (index !== -1) {
-      _prevStore = {
-        ..._prevStore,
-        [index]: {
-          ..._prevStore[index],
-          balance: balanceAmount,
-        },
-      };
+      _prevStore[index].balance = balanceAmount;
     }
 
     return _prevStore;

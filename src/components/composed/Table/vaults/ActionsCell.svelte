@@ -20,8 +20,11 @@
   export let vaultIndex;
   export let aggregateBalance;
 
+  export let vault;
+
   const openDeposit = () =>
     showModal(Deposit, {
+      vault,
       yieldToken,
       yieldDecimals,
       underlyingToken,

@@ -590,6 +590,7 @@
         },
         col5: {
           CellComponent: ActionsCell,
+          vault: vault,
           colSize: 3,
           yieldToken: vault.address,
           underlyingToken: vault.underlyingAddress,
