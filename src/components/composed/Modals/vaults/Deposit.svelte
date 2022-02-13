@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
   import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
@@ -94,15 +95,15 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="inline-block">Deposit Collateral</p>
-    <p class="inline-block">Loan Ratio: {100 / parseFloat(utils.formatEther(loanRatio))}%</p>
+    <p class="inline-block">{$_('modals.deposit_collateral')}</p>
+    <p class="inline-block">{$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther(loanRatio))}%</p>
   </div>
   <div slot="body" class="p-4">
     <div class="flex space-x-4">
       {#if yieldBalance > 0}
         <div class="w-full">
           <label for="yieldInput" class="text-sm text-lightgrey10">
-            Available: {yieldBalance}
+            {$_('available')}: {yieldBalance}
             {yieldSymbol}
           </label>
           <div
@@ -153,7 +154,7 @@
       {#if underlyingBalance > 0}
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
-            Available: {underlyingBalance}
+            {$_('available')}: {underlyingBalance}
             {underlyingSymbol}
           </label>
           <div
@@ -204,13 +205,13 @@
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {utils.formatUnits(userDeposit, underlyingDecimals)}
+      {$_('modals.deposit_balance')}: {utils.formatUnits(userDeposit, underlyingDecimals)}
       -> {totalDeposit}<br />
-      Borrow Limit: {startingDebtLimit} -> {projectedDebtLimit}
+      {$_('modals.borrow_limit')}: {startingDebtLimit} -> {projectedDebtLimit}
     </div>
 
     <Button
-      label="Deposit"
+      label="{$_('actions.deposit')}"
       borderColor="green4"
       backgroundColor="black1"
       hoverColor="green4"

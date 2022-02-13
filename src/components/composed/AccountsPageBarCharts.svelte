@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import { onMount } from 'svelte';
   import global from '../../stores/global';
@@ -61,7 +62,7 @@
   });
 
   $: data = {
-    labels: [['Withdrawable'], ['Debt'], ['Interest']],
+    labels: [[$_('table.withdrawable')], [$_('chart.debt')], [$_('chart.interest')]],
     datasets: [
       {
         data: [withdrawable || 0, totalDebtFormatted || 0, totalInterest || 0],
@@ -72,7 +73,6 @@
   };
 
   function between(x, min, max) {
-    console.log('between', x, min, max);
     return x >= min && x <= max;
   }
 
@@ -107,17 +107,17 @@
           callback: function (val, index, c) {
             console.log(this.getLabelForValue(val));
 
-            if (this.getLabelForValue(val)[0].toUpperCase() === 'WITHDRAWABLE') {
+            if (this.getLabelForValue(val)[0].toUpperCase() === $_('table.withdrawable').toUpperCase()) {
               return [
                 ...this.getLabelForValue(val),
                 `${withdrawable} ${$settings.baseCurrency?.symbol || '$'}`,
               ];
-            } else if (this.getLabelForValue(val)[0].toUpperCase() === 'DEBT') {
+            } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.debt').toUpperCase()) {
               return [
                 ...this.getLabelForValue(val),
                 `${totalDebtFormatted} ${$settings.baseCurrency?.symbol || '$'}`,
               ];
-            } else if (this.getLabelForValue(val)[0].toUpperCase() === 'INTEREST') {
+            } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.interest').toUpperCase()) {
               return [...this.getLabelForValue(val), `${totalInterest} %`];
             }
 
@@ -197,7 +197,7 @@
             <span class="mx">-</span>
             <span>-</span>
           </span>
-          <span class="mx-2 text-grey2">Total Deposit</span>
+          <span class="mx-2 text-grey2">{$_('chart.total_deposit')}</span>
           <span class="text-lg">{normalizedDeposit} {$settings.baseCurrency?.symbol || '$'}</span>
         </div>
         <div class="mr-8 flex items-center">
@@ -206,11 +206,11 @@
             <span class="mx">-</span>
             <span>-</span>
           </span>
-          <span class="mx-2 text-grey2">Debt Limit</span>
+          <span class="mx-2 text-grey2">{$_('table.debt_limit')}</span>
           <span class="text-lg">{normalizedDebt} {$settings.baseCurrency?.symbol || '$'}</span>
         </div>
         <div class="flex items-center">
-          <span class="text-grey2 mr-2">Aggregate APY</span>
+          <span class="text-grey2 mr-2">{$_('chart.aggregate_apy')}</span>
           <span class="text-lg">{aggregatedApy}%</span>
         </div>
       </div>
