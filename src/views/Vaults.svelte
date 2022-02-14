@@ -33,19 +33,13 @@
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
+  import { vaultsLoading } from 'src/stores/v2/loadingStores';
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD]);
 
-  let counterAllStrategies = 0;
-  let counterUserStrategies = 0;
-  let counterUnusedStrategies = 0;
-
-  let loading = true;
   const showMetrics = true;
 
   let rowsAll = [];
-  let rowsUser = [];
-  let rowsUnused = [];
   let colsStrats = [
     {
       columnId: 'col2',
@@ -94,6 +88,7 @@
         symbol: 'alUSD',
         address: '',
       },
+      vaultType: VaultTypes.alETH,
       maxDebt: $alusd.maxDebt,
       currentDebt: $alusd.userDebt,
     });
@@ -112,33 +107,7 @@
 
   const closeModal = () => modalReset();
 
-  const toggleButtons = {
-    vaultSelect: {
-      all: true,
-      aleth: false,
-      alusd: false,
-    },
-    stratSelect: {
-      used: false,
-      all: true,
-      unused: false,
-    },
-  };
-
-  const buttonToggler = (selector, key) => {
-    Object.keys(toggleButtons[selector]).forEach((entry) => {
-      if (toggleButtons[selector][entry] !== key) {
-        toggleButtons[selector][entry] = false;
-      }
-    });
-    toggleButtons[selector][key] = true;
-  };
-
   // @dev logic for controlling the filtered views
-  const vaultFilter = (filter) => {
-    const selector = ['vaultSelect', 'modeSelect', 'stratSelect'];
-    buttonToggler(selector[filter.id], filter.filter);
-  };
 
   const tempClear = () => {
     tempTx.set({ ...defaults });
@@ -604,110 +573,6 @@
     };
   });
 
-  const renderVaults = async () => {
-    // alUSD Alchemist only atm
-    console.log($alusd.debtToken);
-    underlyingTokenAlusd.push({
-      ...$alusd.debtToken,
-      balance: utils.parseUnits($alusd.debtToken.balance, $alusd.debtToken.decimals),
-      method: 'burn',
-    });
-    for (const token of $alusd.yieldTokens) {
-      const index = $alusd.rows.findIndex((row) => row.token === token);
-      yieldTokenAlusd.push({
-        symbol: $alusd.rows[index].yieldSymbol,
-        address: token,
-        balance: $alusd.rows[index].balance,
-        decimals: $alusd.rows[index].yieldDecimals,
-        yieldPerShare: $alusd.rows[index].yieldPerShareFormatted,
-        underlyingPerShare: $alusd.rows[index].underlyingPerShareFormatted,
-      });
-      underlyingTokenAlusd.push({
-        symbol: $alusd.rows[index].underlyingSymbol,
-        address: $alusd.rows[index].underlyingToken,
-        balance: $alusd.rows[index].underlyingBalance,
-        decimals: $alusd.rows[index].underlyingDecimals,
-        method: 'repay',
-      });
-      const payload = {
-        type: $alusd.rows[index].stratIsUsed ? 'used' : 'unused',
-        alchemist: 'alusd',
-        row: {
-          col2: {
-            CellComponent: FarmNameCell,
-            farmName: $alusd.rows[index].yieldSymbol,
-            farmSubtitle: 'Yearn ' + $alusd.rows[index].underlyingSymbol,
-            farmIcon: 'alusd_med.svg',
-            tokenIcon: $alusd.rows[index].underlyingSymbol.toLowerCase(),
-            colSize: 3,
-            alignment: 'justify-self-start',
-          },
-          deposited: {
-            CellComponent: CurrencyCell,
-            // value:
-            //   ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
-            //   10 ** $alusd.rows[index].underlyingDecimals,
-            value: utils.formatUnits(
-              $alusd.rows[index].balance
-                .mul($alusd.rows[index].underlyingPerShare)
-                .div(BigNumber.from(10).pow($alusd.rows[index].underlyingDecimals)),
-              $alusd.rows[index].underlyingDecimals,
-            ),
-            colSize: 2,
-          },
-          limit: {
-            CellComponent: CurrencyCell,
-            value: $alusd.rows[index].vaultDebt.toString(),
-            prefix: '+',
-            colSize: 2,
-          },
-          col3: {
-            CellComponent: CurrencyCell,
-            value: utils.formatUnits(
-              utils.parseUnits($alusd.rows[index].tvl, $alusd.rows[index].underlyingDecimals).toString(),
-              $alusd.rows[index].underlyingDecimals,
-            ),
-            colSize: 2,
-          },
-          col4: {
-            value: 'N/A',
-            colSize: 2,
-          },
-          col5: {
-            CellComponent: ActionsCell,
-            colSize: 3,
-            yieldToken: token,
-            underlyingToken: $alusd.rows[index].underlyingToken,
-            userDeposit: $alusd.rows[index].balance,
-            loanRatio: utils.parseUnits($alusd.ratio, 18),
-            borrowLimit: $alusd.rows[index].vaultDebt,
-            openDebtAmount: utils.parseUnits($alusd.userDebt, 18),
-            openDebtSymbol: 'alUSD',
-            underlyingPricePerShare: $alusd.rows[index].underlyingPerShare,
-            yieldPricePerShare: $alusd.rows[index].yieldPerShare,
-            yieldDecimals: $alusd.rows[index].yieldDecimals,
-            underlyingDecimals: $alusd.rows[index].underlyingDecimals,
-            vaultIndex: index,
-            aggregateBalance: $aggregate.balance,
-          },
-        },
-      };
-      if (payload.type === 'used') {
-        rowsUser.push(payload.row);
-        // rowsUser = rowsUser;
-        counterUserStrategies += 1;
-      } else {
-        rowsUnused.push(payload.row);
-        // rowsUnused = rowsUnused;
-        counterUnusedStrategies += 1;
-      }
-      rowsAll.push(payload.row);
-      // rowsAll = rowsAll;
-      counterAllStrategies += 1;
-    }
-    loading = false;
-  };
-
   $: noVaultsForStrategyText = {
     [TypeOfStrategies.USED]: `You don't have any active strategies.`,
     [TypeOfStrategies.UNUSED]: `You are using all available strategies.`,
@@ -718,10 +583,6 @@
   const getRandomData = () => {
     foo = Math.floor(Math.random() * 100000);
   };
-
-  $: if (!$alusd.loadingRowData && loading) {
-    renderVaults();
-  }
 </script>
 
 <ViewContainer>
@@ -732,7 +593,7 @@
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
   </div>
-  {#if loading}
+  {#if $vaultsLoading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
         <p class="inline-block self-center">{$_('fetching_data')}</p>
