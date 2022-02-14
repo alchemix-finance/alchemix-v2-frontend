@@ -448,6 +448,94 @@
     getRandomData();
   };
 
+  const renderVaults = async () => {
+    // alUSD Alchemist only atm
+    underlyingTokenAlusd.push({
+      ...$alusd.debtToken,
+      balance: utils.parseUnits($alusd.debtToken.balance, $alusd.debtToken.decimals),
+      method: 'burn',
+    });
+    for (const token of $alusd.yieldTokens) {
+      const index = $alusd.rows.findIndex((row) => row.token === token);
+      yieldTokenAlusd.push({
+        symbol: $alusd.rows[index].yieldSymbol,
+        address: token,
+        balance: $alusd.rows[index].balance,
+        decimals: $alusd.rows[index].yieldDecimals,
+        yieldPerShare: $alusd.rows[index].yieldPerShareFormatted,
+        underlyingPerShare: $alusd.rows[index].underlyingPerShareFormatted,
+      });
+      underlyingTokenAlusd.push({
+        symbol: $alusd.rows[index].underlyingSymbol,
+        address: $alusd.rows[index].underlyingToken,
+        balance: $alusd.rows[index].underlyingBalance,
+        decimals: $alusd.rows[index].underlyingDecimals,
+        method: 'repay',
+      });
+      const payload = {
+        type: $alusd.rows[index].stratIsUsed ? 'used' : 'unused',
+        alchemist: 'alusd',
+        row: {
+          col2: {
+            CellComponent: FarmNameCell,
+            farmName: $alusd.rows[index].yieldSymbol,
+            farmSubtitle: 'Yearn ' + $alusd.rows[index].underlyingSymbol,
+            farmIcon: 'alusd_med.svg',
+            tokenIcon: $alusd.rows[index].underlyingSymbol.toLowerCase(),
+            colSize: 3,
+            alignment: 'justify-self-start',
+          },
+          deposited: {
+            CellComponent: CurrencyCell,
+            value: utils.formatUnits(
+              $alusd.rows[index].balance
+                .mul($alusd.rows[index].underlyingPerShare)
+                .div(BigNumber.from(10).pow($alusd.rows[index].underlyingDecimals)),
+              $alusd.rows[index].underlyingDecimals,
+            ),
+            colSize: 2,
+          },
+          limit: {
+            CellComponent: CurrencyCell,
+            value: $alusd.rows[index].vaultDebt.toString(),
+            prefix: '+',
+            colSize: 2,
+          },
+          col3: {
+            CellComponent: CurrencyCell,
+            value: utils.formatUnits(
+              utils.parseUnits($alusd.rows[index].tvl, $alusd.rows[index].underlyingDecimals).toString(),
+              $alusd.rows[index].underlyingDecimals,
+            ),
+            colSize: 2,
+          },
+          col4: {
+            value: 'N/A',
+            colSize: 2,
+          },
+          col5: {
+            CellComponent: ActionsCell,
+            colSize: 3,
+            yieldToken: token,
+            underlyingToken: $alusd.rows[index].underlyingToken,
+            userDeposit: $alusd.rows[index].balance,
+            loanRatio: utils.parseUnits($alusd.ratio, 18),
+            borrowLimit: $alusd.rows[index].vaultDebt,
+            openDebtAmount: utils.parseUnits($alusd.userDebt, 18),
+            openDebtSymbol: 'alUSD',
+            underlyingPricePerShare: $alusd.rows[index].underlyingPerShare,
+            yieldPricePerShare: $alusd.rows[index].yieldPerShare,
+            yieldDecimals: $alusd.rows[index].yieldDecimals,
+            underlyingDecimals: $alusd.rows[index].underlyingDecimals,
+            vaultIndex: index,
+            aggregateBalance: $aggregate.balance,
+          },
+        },
+      };
+    }
+    getRandomData();
+  };
+
   const TypeOfStrategies = Object.freeze({
     USED: 0,
     UNUSED: 1,
@@ -741,6 +829,10 @@
   const getRandomData = () => {
     foo = Math.floor(Math.random() * 100000);
   };
+
+  $: if (!$alusd.loadingRowData) {
+    renderVaults();
+  }
 </script>
 
 <ViewContainer>
