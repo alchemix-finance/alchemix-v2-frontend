@@ -82,31 +82,6 @@
   let underlyingTokenAlusd = [];
   let yieldTokenAlusd = [];
 
-  const openBorrowModal = () =>
-    showModal(Borrow, {
-      debtToken: {
-        symbol: 'alUSD',
-        address: '',
-      },
-      vaultType: VaultTypes.alETH,
-      maxDebt: $alusd.maxDebt,
-      currentDebt: $alusd.userDebt,
-    });
-
-  const openRepayModal = () =>
-    showModal(Repay, {
-      underlyingTokens: underlyingTokenAlusd,
-      outstandingDebt: $alusd.userDebt,
-    });
-
-  const openLiquidateModal = () =>
-    showModal(Liquidate, {
-      outstandingDebt: $alusd.userDebt,
-      yieldTokens: yieldTokenAlusd,
-    });
-
-  const closeModal = () => modalReset();
-
   // @dev logic for controlling the filtered views
 
   const tempClear = () => {
@@ -736,6 +711,31 @@
     [TypeOfStrategies.UNUSED]: `You are using all available strategies.`,
     [TypeOfStrategies.ALL]: `No available strategies available at this moment.`,
   };
+
+  const openBorrowModal = () =>
+    showModal(Borrow, {
+      debtToken: {
+        symbol: 'alUSD',
+        address: '',
+      },
+      vaultType: VaultTypes.alETH,
+      maxDebt: $alusd.maxDebt,
+      currentDebt: $alusd.userDebt,
+    });
+
+  const openRepayModal = () =>
+    showModal(Repay, {
+      underlyingTokens: underlyingTokenAlusd,
+      outstandingDebt: $alusd.userDebt,
+    });
+
+  const openLiquidateModal = () =>
+    showModal(Liquidate, {
+      outstandingDebt: $alusd.userDebt,
+      yieldTokens: yieldTokenAlusd,
+    });
+
+  const closeModal = () => modalReset();
 
   let foo;
   const getRandomData = () => {
