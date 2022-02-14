@@ -13,12 +13,12 @@
   import { updateAllVaultBody } from 'src/stores/v2/methods';
   import { VaultTypes } from 'src/stores/v2/types';
 
-  $: console.log($balancesStore);
+  import { vaultsLoading } from '@stores/v2/loadingStores';
 
   async function initialize() {
     await fetchVaultTokens(VaultTypes.alUSD, [$signer]);
 
-    console.log($tokensStore);
+    vaultsLoading.set(true);
 
     await fetchAllBalances([$signer, $fullTokenList]);
 
@@ -26,11 +26,9 @@
 
     await fetchVaultRatio(VaultTypes.alUSD, [$signer]);
 
-    console.log($vaultsStore[VaultTypes.alUSD]);
-
     await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
 
-    console.log($vaultsStore);
+    vaultsLoading.set(false);
   }
 
   $: if ($addressStore !== undefined) {

@@ -33,19 +33,13 @@
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
+  import { vaultsLoading } from 'src/stores/v2/loadingStores';
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD]);
 
-  let counterAllStrategies = 0;
-  let counterUserStrategies = 0;
-  let counterUnusedStrategies = 0;
-
-  let loading = true;
   const showMetrics = true;
 
   let rowsAll = [];
-  let rowsUser = [];
-  let rowsUnused = [];
   let colsStrats = [
     {
       columnId: 'col2',
@@ -94,6 +88,7 @@
         symbol: 'alUSD',
         address: '',
       },
+      vaultType: VaultTypes.alETH,
       maxDebt: $alusd.maxDebt,
       currentDebt: $alusd.userDebt,
     });
@@ -112,33 +107,7 @@
 
   const closeModal = () => modalReset();
 
-  const toggleButtons = {
-    vaultSelect: {
-      all: true,
-      aleth: false,
-      alusd: false,
-    },
-    stratSelect: {
-      used: false,
-      all: true,
-      unused: false,
-    },
-  };
-
-  const buttonToggler = (selector, key) => {
-    Object.keys(toggleButtons[selector]).forEach((entry) => {
-      if (toggleButtons[selector][entry] !== key) {
-        toggleButtons[selector][entry] = false;
-      }
-    });
-    toggleButtons[selector][key] = true;
-  };
-
   // @dev logic for controlling the filtered views
-  const vaultFilter = (filter) => {
-    const selector = ['vaultSelect', 'modeSelect', 'stratSelect'];
-    buttonToggler(selector[filter.id], filter.filter);
-  };
 
   const tempClear = () => {
     tempTx.set({ ...defaults });
@@ -772,10 +741,6 @@
   const getRandomData = () => {
     foo = Math.floor(Math.random() * 100000);
   };
-
-  $: if (!$alusd.loadingRowData && loading) {
-    renderVaults();
-  }
 </script>
 
 <ViewContainer>
@@ -786,7 +751,7 @@
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
   </div>
-  {#if loading}
+  {#if $vaultsLoading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
         <p class="inline-block self-center">{$_('fetching_data')}</p>
