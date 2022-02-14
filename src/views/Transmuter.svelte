@@ -55,25 +55,25 @@
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'Transmuter',
+      value: $_('transmuter_page.title'),
       colSize: 2,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'Deposited',
+      value: $_('table.deposited'),
       colSize: 2,
     },
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: 'Withdrawable',
+      value: $_('table.withdrawable'),
       colSize: 2,
     },
     {
       columnId: 'col6',
       CellComponent: HeaderCell,
-      value: 'Claimable',
+      value: $_('table.claimable'),
       colSize: 2,
     },
     {
@@ -81,7 +81,7 @@
       CellComponent: HeaderCell,
       //Don't like this but better than APY for now.
       //I think this needs a tool tip
-      value: 'Maturation Rate',
+      value: $_('table.maturation_rate'),
       colSize: 2,
     },
   ];
@@ -248,7 +248,7 @@
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
-        <p class="inline-block self-center">External Swap Providers</p>
+        <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
         <div>
           <Button width="w-max" label="">
             <svg
@@ -287,7 +287,7 @@
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm">
         <Button
-          label="All Transmuter"
+          label="{$_('transmuter_page.all_transmuter')}"
           width="w-max"
           canToggle="{true}"
           selected="{toggleButtons.transmuterSelect.all}"

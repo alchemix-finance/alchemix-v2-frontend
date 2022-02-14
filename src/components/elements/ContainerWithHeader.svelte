@@ -58,7 +58,7 @@
   {/if}
   {#if $$slots.body}
     {#if canToggle && contentVisible}
-      <div class="w-full" transition:slide>
+      <div class="w-full" transition:slide|local>
         <slot name="body" />
       </div>
     {:else if contentVisible}

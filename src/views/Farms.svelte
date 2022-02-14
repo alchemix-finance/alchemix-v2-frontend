@@ -33,31 +33,31 @@
     {
       columnId: 'col1',
       CellComponent: HeaderCell,
-      value: 'Pool',
+      value: $_('table.pool'),
       colSize: '3',
     },
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'TVL',
+      value: $_('table.tvl'),
       colSize: 2,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'Rewards',
+      value: $_('table.rewards'),
       colSize: 3,
     },
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: 'APR',
+      value: $_('table.apr'),
       colSize: 1,
     },
     {
       columnId: 'col5',
       CellComponent: HeaderCell,
-      value: 'Action',
+      value: $_('table.action'),
       colSize: 3,
     },
   ];
@@ -67,25 +67,25 @@
     {
       columnId: 'col1',
       CellComponent: HeaderCell,
-      value: 'Pool',
+      value: $_('table.pool'),
       colSize: 7,
     },
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'Staked Token',
+      value: $_('table.staked_token'),
       colSize: 4,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'Claimable Rewards',
+      value: $_('table.claimable_rewards'),
       colSize: 4,
     },
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: 'Action',
+      value: $_('table.action'),
       colSize: 5,
     },
   ];
@@ -249,7 +249,7 @@
             },
             col5: {
               CellComponent: ActionsCell,
-              label: 'Manage',
+              label: $_('table.manage'),
               expandedRow: {
                 ExpandedRowComponent: component,
               },
@@ -312,7 +312,7 @@
           <p class="inline-block self-center">{$_('fetching_data')}</p>
         {:else}
           <Button
-            label="Active"
+            label="{$_('table.active_select')}"
             width="w-max"
             canToggle="{true}"
             selected="{toggleButtons.farmSelect.active}"
@@ -323,7 +323,7 @@
 
           {#if rowsRetired.length > 0}
             <Button
-              label="Retired"
+              label="{$_('table.retired_select')}"
               width="w-max"
               canToggle="{true}"
               selected="{toggleButtons.farmSelect.retired}"
@@ -334,7 +334,7 @@
           {/if}
 
           <Button
-            label="External"
+            label="{$_('table.external_select')}"
             width="w-max"
             canToggle="{true}"
             selected="{toggleButtons.farmSelect.external}"

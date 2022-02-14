@@ -54,7 +54,7 @@
   $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === proposal.id));
 </script>
 
-<div class="p-4 border-b border-grey10" transition:slide>
+<div class="p-4 border-b border-grey10" transition:slide|local>
   <div class="flex flex-row space-x-4">
     <div class="w-full bg-grey10 rounded p-4">
       <p class="mb-3 opacity-50">{$_('governance_page.description')}</p>

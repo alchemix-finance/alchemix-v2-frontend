@@ -1,11 +1,12 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
   import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
   import tempTx from '../../../../stores/tempTx';
   import walletBalance from '../../../../stores/walletBalance';
-
+  import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
@@ -48,6 +49,7 @@
   let borrowLimitFormatted;
 
   let sharesWithdrawAmount;
+  let maximumLoss;
 
   /*
    * @param amount the String amount to transform into shares
@@ -179,6 +181,7 @@
       transmuterAddress: null,
       alTokenAllowance: null,
       unexchangedBalance: null,
+      maximumLoss: BigNumber.from(maximumLoss),
     };
     tempTx.set({ ...payload });
   };
@@ -203,13 +206,13 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="inline-block">Withdraw Collateral</p>
+    <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
     <div>
       {#if openDebtAmountFormatted !== '0.0'}
-        <p class="inline-block">Debt: {openDebtAmountFormatted} {openDebtSymbol} |</p>
+        <p class="inline-block">{$_('chart.debt')}: {openDebtAmountFormatted} {openDebtSymbol} |</p>
       {/if}
       <p class="inline-block">
-        Loan Ratio: {100 / parseFloat(utils.formatEther(loanRatio))}%
+        {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther(loanRatio))}%
       </p>
     </div>
   </div>
@@ -217,7 +220,7 @@
     <div class="flex space-x-4">
       <div class="w-full">
         <label for="yieldInput" class="text-sm text-lightgrey10">
-          Available: ~{Math.round(parseFloat(maxYieldWithdrawAmount))}
+          {$_('availabl')}: ~{Math.round(parseFloat(maxYieldWithdrawAmount))}
           {yieldSymbol}
         </label>
         <div class="flex bg-grey3 rounded border {yieldExceeded ? 'border-red3' : 'border-grey3'}">
@@ -257,7 +260,7 @@
       </div>
       <div class="w-full">
         <label for="underlyingInput" class="text-sm text-lightgrey10">
-          Available: ~{Math.round(parseFloat(maxUnderlyingWithdrawAmount))}
+          {$_('available')}: ~{Math.round(parseFloat(maxUnderlyingWithdrawAmount))}
           {underlyingSymbol}
         </label>
         <div class="flex bg-grey3 rounded border {underlyingExceeded ? 'border-red3' : 'border-grey3'}">
@@ -298,14 +301,22 @@
     </div>
 
     <div class="my-4 text-sm text-lightgrey10">
-      Deposit Balance: {startingBalance}
+      {$_('modals.deposit_balance')}: {startingBalance}
       -> {remainingBalance}
       <br />
-      Borrow Limit: {borrowLimitFormatted} -> {projectedDebtLimit}
+      {$_('modals.borrow_limit')}: {borrowLimitFormatted} -> {projectedDebtLimit}
+    </div>
+
+    <div class="my-4">
+      <MaxLossController
+        on:valueChanged="{(event) => {
+          maximumLoss = event.detail.value;
+        }}"
+      />
     </div>
 
     <Button
-      label="Withdraw"
+      label="{$_('actions.withdraw')}"
       borderColor="red4"
       backgroundColor="red2"
       hoverColor="red4"

@@ -8,7 +8,6 @@
   let normalizedValue;
 
   const normalize = () => {
-    console.log('settings', $settings);
     normalizedValue = new Intl.NumberFormat($settings.userLanguage.locale, {
       style: 'currency',
       currency: $settings.baseCurrency.symbol,

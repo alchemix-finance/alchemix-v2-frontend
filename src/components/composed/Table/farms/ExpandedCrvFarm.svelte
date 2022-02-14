@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
   import { getExternalContract } from '@helpers/getContract';
@@ -31,7 +32,7 @@
     const depositToWei = utils.parseEther(depositAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     if (depositToWei.gt(token.balance)) {
-      setError('Trying to deposit more than available');
+      setError($_('toast.error_deposit_amount'));
     } else {
       try {
         setPendingWallet();
@@ -60,7 +61,7 @@
     const withdrawToWei = utils.parseEther(withdrawAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     if (withdrawToWei.gt(stakedBalance)) {
-      setError('Trying to withdraw more than available');
+      setError($_('toast.error_withdraw_amount'));
     } else {
       try {
         setPendingWallet();
@@ -105,10 +106,10 @@
   $: unclaimedCrvFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedCrv))).toFixed(4);
 </script>
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
   <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10">
-      Available: {token.balance}
+      {$_('available')}: {token.balance}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -144,7 +145,7 @@
       </div>
     </div>
     <Button
-      label="Deposit"
+      label="{$_('actions.deposit')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -158,7 +159,7 @@
 
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      Available: {stakedBalance.toString()}
+      {$_('available')}: {stakedBalance.toString()}
       {token.symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -194,7 +195,7 @@
       </div>
     </div>
     <Button
-      label="Withdraw"
+      label="{$_('actions.withdraw')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -206,7 +207,7 @@
     />
   </div>
   <div class="p-4 flex flex-col space-y-4">
-    <label for="borrowInput" class="text-sm text-lightgrey10"> Rewards: </label>
+    <label for="borrowInput" class="text-sm text-lightgrey10"> {$_('table.rewards')}: </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full flex flex-row">
         <div class="w-full rounded appearance-none text-xl text-right h-full py-3 px-14 bg-grey3">
@@ -222,7 +223,7 @@
       </div>
     </div>
     <Button
-      label="Claim"
+      label="{$_('actions.claim')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"

@@ -2,8 +2,8 @@
   // libraries
   import { onMount } from 'svelte';
   import { Router, Route } from 'svelte-routing';
+  import { _ } from 'svelte-i18n';
   import Modal from '@components/elements/Modal.svelte';
-  import StateManager from '@components/composed/StateManager.svelte';
 
   // middleware
   import { getFiatRates, getGasPrices, getTokenPrices } from '@middleware/zapper';
@@ -58,41 +58,38 @@
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 
-<StateManager>
-  <Modal>
-    <Router url="{url}">
-      <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
-        <div class="col-span-12 bg-grey30 pl-8 pt-5 pb-5 border-grey5 border-b">
-          <HeaderBar />
+<Modal>
+  <Router url="{url}">
+    <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
+      <div class="col-span-12 bg-grey30 pl-8 pt-5 pb-5 border-grey5 border-b">
+        <HeaderBar />
+      </div>
+      <div class="col-span-12 flex">
+        <div class="pl-8 pr-9 pt-8 w-96 sm:hidden xl:block">
+          <SideBar />
         </div>
-        <div class="col-span-12 flex">
-          <div class="pl-8 pr-9 pt-8 w-96 sm:hidden xl:block">
-            <SideBar />
-          </div>
-          <div class="border-l border-grey5 w-full sm:hidden xl:block">
-            {#if walletChecked}
-              <Route path="/accounts" component="{Accounts}" />
-              <Route path="/vaults" component="{Vaults}" />
-              <Route path="/transmuter" component="{Transmuter}" />
-              <Route path="/farms" component="{Farms}" />
-              <Route path="/governance" component="{Governance}" />
-              <Route path="/settings" component="{Settings}" />
-              <Route path="/" component="{Landing}" />
-              <Route path="/*" component="{Error}" />
-            {/if}
-          </div>
-        </div>
-        <div class="sm:block xl:hidden col-span-12">
-          <p class="text-center text-lg my-12">What is this? DeFi 2.0 for ants?</p>
-          <p class="text-center mb-12">
-            Alchemix v2 does not yet support smol screens. Please get a larger screen or resize your browser
-            window.
-          </p>
-        </div>
-        <div class="col-span-12 pl-8 py-12 border-t border-grey5">
-          <Footer />
+        <div class="border-l border-grey5 w-full sm:hidden xl:block">
+          {#if walletChecked}
+            <Route path="/accounts" component="{Accounts}" />
+            <Route path="/vaults" component="{Vaults}" />
+            <Route path="/transmuter" component="{Transmuter}" />
+            <Route path="/farms" component="{Farms}" />
+            <Route path="/governance" component="{Governance}" />
+            <Route path="/settings" component="{Settings}" />
+            <Route path="/" component="{Landing}" />
+            <Route path="/*" component="{Error}" />
+          {/if}
         </div>
       </div>
-    </Router>
-  </Modal>
-</StateManager>
+      <div class="sm:block xl:hidden col-span-12">
+        <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
+        <p class="text-center mb-12">
+          {$_('small_screen.message')}
+        </p>
+      </div>
+      <div class="col-span-12 pl-8 py-12 border-t border-grey5">
+        <Footer />
+      </div>
+    </div>
+  </Router>
+</Modal>

@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import Button from '../../../elements/Button.svelte';
   import walletBalance from '../../../../stores/walletBalance';
@@ -37,7 +38,7 @@
 
   const deposit = () => {
     if (depositAmount > alTokenBalance) {
-      setError('Trying to deposit more than available');
+      setError($_('toast.error_deposit_amount'));
     } else {
       $tempTx.transmuter = transmuter;
       $tempTx.transmuterAddress = address;
@@ -50,7 +51,7 @@
 
   const withdraw = async () => {
     if (withdrawAmount > unexchangedBalance) {
-      setError('Trying to withdraw more than available');
+      setError($_('toast.error_withdraw_amount'));
     } else {
       $tempTx.transmuter = transmuter;
       $tempTx.underlyingToken = underlyingToken;
@@ -61,7 +62,7 @@
 
   const claim = async () => {
     if (claimAmount > exchangedBalance) {
-      setError('Trying to claim more than available');
+      setError($_('toast.error_claim_amount'));
     } else {
       $tempTx.transmuter = transmuter;
       $tempTx.underlyingToken = underlyingToken;
@@ -100,15 +101,12 @@
   const clearClaim = () => {
     claimAmount = '';
   };
-  const startTransaction = async () => {
-    await alert('metamask tx started');
-  };
 </script>
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
   <div class="p-4 flex flex-col space-y-4">
     <label for="depositInput" class="text-sm text-lightgrey10">
-      Available: {alTokenBalance}
+      {$_('available')}: {alTokenBalance}
       {alTokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -144,7 +142,7 @@
       </div>
     </div>
     <Button
-      label="Deposit"
+      label="{$_('actions.deposit')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -156,7 +154,7 @@
   </div>
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      Withdrawable: {unexchangedBalance}
+      {$_('table.withdrawable')}: {unexchangedBalance}
       {alTokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -192,7 +190,7 @@
       </div>
     </div>
     <Button
-      label="Withdraw"
+      label="{$_('actions.withdraw')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -204,7 +202,7 @@
   </div>
   <div class="p-4 flex flex-col space-y-4">
     <label for="claimInput" class="text-sm text-lightgrey10">
-      Transmuted: {exchangedBalance}
+      {$_('expanded.transmuted')}: {exchangedBalance}
       {underlyingTokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
@@ -240,7 +238,7 @@
       </div>
     </div>
     <Button
-      label="Claim"
+      label="{$_('actions.claim')}"
       borderSize="1"
       borderColor="green4"
       backgroundColor="black1"
@@ -250,32 +248,4 @@
       on:clicked="{() => claim()}"
     />
   </div>
-  <!-- <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
-    <p class="text-sm text-lightgrey10 self-start">Available</p>
-    <p></p>
-    <div class="w-full self-center">
-      <p>{alTokenBalance} {alTokenSymbol}</p>
-    </div>
-    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{depositAmount}" />
-    <div class="w-full self-end">
-      <BalanceQuickSelect on:setInputValue="{() => setDepositValue()}" />
-      <Button label="Deposit" on:clicked="{() => deposit()}" />
-    </div>
-  </div>
-
-  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
-    <p class="text-sm text-lightgrey10">Withdrawable</p>
-    <p>{unexchangedBalance} {alTokenSymbol}</p>
-    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{withdrawAmount}" />
-    <BalanceQuickSelect on:setInputValue="{() => setWithdrawValue()}" />
-    <Button label="Withdraw" on:clicked="{() => withdraw()}" />
-  </div>
-
-  <div class="col-span-1 rounded bg-grey10 w-full flex flex-col justify-between">
-    <p class="text-sm text-lightgrey10">Transmuted</p>
-    <p>{exchangedBalance} {underlyingTokenSymbol}</p>
-    <input class="my-2 p-2 text-md bg-grey3" type="number" bind:value="{claimAmount}" />
-    <BalanceQuickSelect on:setInputValue="{() => setClaimValue()}" />
-    <Button label="Claim" on:clicked="{() => claim()}" />
-  </div> -->
 </div>

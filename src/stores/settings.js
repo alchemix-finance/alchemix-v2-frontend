@@ -10,7 +10,7 @@ const settings = writable(
     },
     userLanguage: {
       name: 'English',
-      locale: 'en-US',
+      locale: 'en',
     },
     defaultGas: 'standard',
     verboseConsole: false,

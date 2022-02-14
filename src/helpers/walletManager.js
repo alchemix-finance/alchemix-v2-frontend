@@ -1,12 +1,12 @@
 import { ethers } from 'ethers';
 import { navigate } from 'svelte-routing';
 import Onboard from 'bnc-onboard';
-import account from '@stores/account';
+import account from '../stores/account';
 import toastConfig from '../stores/toast';
 import network from '../stores/network';
 import initData from './initData';
 import { uninitData } from './uninitData';
-import { updateAddress, updateProvider } from '@stores/v2/methods';
+import getItl from './getItl';
 
 let _toastConfig;
 let _network;
@@ -96,13 +96,9 @@ const onboard = Onboard({
     wallet: async (result) => {
       const { provider } = result;
       ethersProvider = new ethers.providers.Web3Provider(provider);
-      updateProvider(ethersProvider);
       _account.provider = ethersProvider;
       account.set({ ..._account });
       window.localStorage.setItem('userWallet', result.name);
-    },
-    address: (address) => {
-      updateAddress(address);
     },
     // @dev react to changes in the wallet's network
     network: async (result) => {
@@ -134,7 +130,7 @@ async function connect(preselect) {
       _toastConfig.showCloseButton = false;
       _toastConfig.closeOnMount = true;
       _toastConfig.closeTimeout = 2500;
-      _toastConfig.title = `Welcome back${toastGreeting}`;
+      _toastConfig.title = `${getItl('toast.welcome_back')}${toastGreeting}`;
       _toastConfig.visible = true;
       _account.address = address;
       _account.ens = ens;

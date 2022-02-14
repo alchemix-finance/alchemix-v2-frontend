@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import Button from '@components/elements/Button.svelte';
   import Deposit from '@components/composed/Modals/vaults/Deposit.svelte';
   import Withdraw from '@components/composed/Modals/vaults/Withdraw.svelte';
@@ -54,7 +55,7 @@
 
 <div class="flex justify-between space-x-2">
   <Button
-    label="Deposit"
+    label="{$_('actions.deposit')}"
     borderColor="green4"
     backgroundColor="black1"
     hoverColor="green4"
@@ -62,7 +63,7 @@
   />
 
   <Button
-    label="Withdraw"
+    label="{$_('actions.withdraw')}"
     borderColor="red4"
     backgroundColor="red2"
     hoverColor="red4"

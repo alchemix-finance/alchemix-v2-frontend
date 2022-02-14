@@ -1,4 +1,5 @@
 import toastConfig from '../stores/toast';
+import getItl from './getItl';
 
 let _toastConfig;
 
@@ -13,8 +14,8 @@ export function closeToast() {
 
 export function setPendingWallet() {
   _toastConfig.kind = 'pending';
-  _toastConfig.title = 'Pending';
-  _toastConfig.subtitle = 'Sign transaction in wallet';
+  _toastConfig.title = getItl('toast.pending');
+  _toastConfig.subtitle = getItl('toast.pending_sign');
   _toastConfig.closeOnMount = false;
   _toastConfig.visible = true;
   toastConfig.set({ ..._toastConfig });
@@ -34,8 +35,8 @@ export function setPendingApproval() {
 
 export function setPendingTx() {
   _toastConfig.kind = 'pending';
-  _toastConfig.title = 'Pending';
-  _toastConfig.subtitle = 'Confirming transaction';
+  _toastConfig.title = getItl('toast.pending');
+  _toastConfig.subtitle = getItl('toast.pending_confirm');
   _toastConfig.closeOnMount = false;
   _toastConfig.visible = true;
   toastConfig.set({ ..._toastConfig });
@@ -43,8 +44,8 @@ export function setPendingTx() {
 
 export function setSuccessTx(hash) {
   _toastConfig.kind = 'success';
-  _toastConfig.title = 'Success';
-  _toastConfig.subtitle = 'Transaction was confirmed';
+  _toastConfig.title = getItl('toast.success');
+  _toastConfig.subtitle = getItl('toast.tx_confirmed');
   _toastConfig.closeOnMount = true;
   _toastConfig.etherscanUrl = hash;
   _toastConfig.spinner = false;
@@ -55,7 +56,7 @@ export function setSuccessTx(hash) {
 
 export function setError(message) {
   _toastConfig.kind = 'error';
-  _toastConfig.title = 'Something went wrong';
+  _toastConfig.title = getItl('toast.error');
   _toastConfig.subtitle = message;
   _toastConfig.closeOnMount = true;
   _toastConfig.spinner = false;
@@ -67,9 +68,9 @@ export function setError(message) {
 export function setLoadingData(message, step, totalSteps) {
   _toastConfig.kind = 'pending';
   if (step && totalSteps) {
-    _toastConfig.title = `Initializing Data (${step}/${totalSteps})`;
+    _toastConfig.title = `${getItl('toast.init_data')} (${step}/${totalSteps})`;
   } else {
-    _toastConfig.title = 'Initializing Data';
+    _toastConfig.title = getItl('toast.init_data');
   }
   _toastConfig.subtitle = message;
   _toastConfig.closeOnMount = false;
@@ -81,8 +82,8 @@ export function setLoadingData(message, step, totalSteps) {
 export function setPendingVote() {
   _toastConfig.visible = true;
   _toastConfig.kind = 'pending';
-  _toastConfig.title = 'Pending';
-  _toastConfig.subtitle = 'Registering Vote on Snapshot';
+  _toastConfig.title = getItl('toast.pending');
+  _toastConfig.subtitle = getItl('toast.registering_vote');
   _toastConfig.closeOnMount = false;
   _toastConfig.spinner = true;
   toastConfig.set({ ..._toastConfig });
@@ -90,8 +91,8 @@ export function setPendingVote() {
 
 export function setSuccessVote() {
   _toastConfig.kind = 'success';
-  _toastConfig.title = 'Success';
-  _toastConfig.subtitle = 'Vote was registered';
+  _toastConfig.title = getItl('toast.success');
+  _toastConfig.subtitle = getItl('toast.vote_registered');
   _toastConfig.closeOnMount = true;
   _toastConfig.spinner = false;
   _toastConfig.visible = true;

@@ -38,37 +38,37 @@
     {
       columnId: 'col1',
       CellComponent: HeaderCell,
-      value: 'Title',
+      value: $_('table.title'),
       colSize: 8,
     },
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'Status',
+      value: $_('table.status'),
       colSize: 2,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'Start',
+      value: $_('table.start'),
       colSize: 2,
     },
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: 'End',
+      value: $_('table.end'),
       colSize: 2,
     },
     {
       columnId: 'col5',
       CellComponent: HeaderCell,
-      value: 'Snapshot',
+      value: $_('table.snapshot'),
       colSize: 3,
     },
     {
       columnId: 'col6',
       CellComponent: HeaderCell,
-      value: 'IPFS',
+      value: $_('table.ipfs'),
       colSize: 3,
     },
   ];
@@ -142,7 +142,7 @@
     </p>
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
-        <p class="inline-block self-center">Proposals</p>
+        <p class="inline-block self-center">{$_('governance_page.proposals')}</p>
 
         <Button
           label="{$_('governance_page.openAllOnSnapshot')}"
@@ -156,7 +156,6 @@
 
       <div slot="body">
         {#if $governance.fetching}
-          <!--          <p class="text-center mt-4">{$_('governance_page.loading')}</p>-->
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>

@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import Table from './Table.svelte';
   import ExpandRowCell from './ExpandRowCell.svelte';
   import ExpandedRowCard from './SelectStrategyExpandedRow.svelte';
@@ -17,21 +18,21 @@
     {
       columnId: 'col1',
       CellComponent: HeaderCell,
-      value: 'Strategy',
+      value: $_('table.strategy'),
       colSize: 2,
       // isSortable: true,
     },
     {
       columnId: 'col2',
       CellComponent: HeaderCell,
-      value: 'Collateral',
+      value: $_('table.collateral'),
       colSize: 2,
       // isSortable: true,
     },
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
-      value: 'APY',
+      value: $_('table.apy'),
       colSize: 2,
       // isSortable: true,
     },
