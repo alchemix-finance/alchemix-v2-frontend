@@ -319,32 +319,6 @@ export async function multicallWithdraw(
   }
 }
 
-/**
- *   const mint = async () => {
-    const amount = $tempTx.amountBorrow;
-    const target = $tempTx.targetAddress;
-    const normalizedAmount = utils.parseEther(amount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    try {
-      setPendingWallet();
-      const tx = await contract.mint(normalizedAmount, target || $account.address, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, async (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        await updateAlusdAggregate();
-        getRandomData();
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.error(e);
-    }
-    tempClear();
-  };
- * 
- */
-
 export async function mint(
   amountToBorrow: BigNumber,
   userAddress: string,
@@ -377,8 +351,119 @@ export async function mint(
   }
 }
 
-export async function burn() {}
+export async function burn(
+  debtToken: string,
+  amountToBurn: BigNumber,
+  typeOfVault: VaultTypes,
+  [signerStore, addressStore]: [Signer, string],
+) {
+  try {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
 
-export async function repay() {}
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
 
-export async function liquidate() {}
+    const burnAllowanceAmount = await underlyingTokenInstance.allowanceOf(addressStore, alchemistAddress);
+    setPendingWallet();
+    if (amountToBurn.gt(burnAllowanceAmount)) {
+      await underlyingTokenInstance.approve(alchemistAddress);
+    }
+
+    const tx = (await alchemistInstance.burn(amountToBurn, addressStore, {
+      gasPrice: gas,
+    })) as ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return {
+        debtToken,
+        typeOfVault,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/burn]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function repay(
+  debtToken: string,
+  amountToRepay: BigNumber,
+  typeOfVault: VaultTypes,
+  [signerStore, addressStore]: [Signer, string],
+) {
+  try {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
+
+    setPendingWallet();
+
+    const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore, {
+      gasPrice: gas,
+    })) as ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return {
+        debtToken,
+        typeOfVault,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/repay]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function liquidate(
+  yieldToken: string,
+  amountToRepay: BigNumber,
+  typeOfVault: VaultTypes,
+  [signerStore, addressStore]: [Signer, string],
+) {
+  try {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const dataPackage = utils.parseEther('0');
+
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
+
+    setPendingWallet();
+
+    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, dataPackage, {
+      gasPrice: gas,
+    })) as ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return {
+        yieldToken,
+        typeOfVault,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/liquidate]: ${error}`);
+    throw Error(error);
+  }
+}
