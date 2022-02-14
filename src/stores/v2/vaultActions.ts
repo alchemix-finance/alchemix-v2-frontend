@@ -1,7 +1,7 @@
 import { VaultsType } from './alcxStore';
 import { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '../../helpers/contractWrapper';
-import { Signer, BigNumber, utils, ethers, ContractTransaction } from 'ethers';
+import { Signer, BigNumber, utils, ethers, ContractTransaction, ContractFunction } from 'ethers';
 import { VaultConstants } from './constants';
 import getUserGas from '@helpers/getUserGas';
 import {
@@ -182,12 +182,6 @@ export async function multicallDeposit(
   }
 }
 
-export async function mint() {}
-
-export async function burn() {}
-
-export async function repay() {}
-
 export async function withdraw(
   typeOfVault: VaultTypes,
   yieldTokenAddress: string,
@@ -324,3 +318,67 @@ export async function multicallWithdraw(
     throw Error(error);
   }
 }
+
+/**
+ *   const mint = async () => {
+    const amount = $tempTx.amountBorrow;
+    const target = $tempTx.targetAddress;
+    const normalizedAmount = utils.parseEther(amount.toString());
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    try {
+      setPendingWallet();
+      const tx = await contract.mint(normalizedAmount, target || $account.address, {
+        gasPrice: gas,
+      });
+      setPendingTx();
+      await provider.once(tx.hash, async (transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        await updateAlusdAggregate();
+        getRandomData();
+      });
+    } catch (e) {
+      setError(e.data ? await e.data.message : e.message);
+      console.error(e);
+    }
+    tempClear();
+  };
+ * 
+ */
+
+export async function mint(
+  amountToBorrow: BigNumber,
+  userAddress: string,
+  typeOfVault: VaultTypes,
+  [signerStore]: [Signer],
+) {
+  try {
+    const { instance: alchemistInstance } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
+
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+
+    const tx = (await alchemistInstance.mint(amountToBorrow, userAddress, {
+      gasPrice: gas,
+    })) as ContractTransaction;
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return {
+        typeOfVault,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/mint]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function burn() {}
+
+export async function repay() {}
+
+export async function liquidate() {}
