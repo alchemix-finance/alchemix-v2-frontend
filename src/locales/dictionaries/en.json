@@ -43,6 +43,8 @@
   "wrong_network": "Wrong Network",
   "connect_wallet": "Connect Wallet",
   "available": "Available",
+  "custom_amount": "Custom Amount",
+  "max_slippage": "Maximum Slippage",
   "landing": {
     "intro_title": "Take Out A Self-Repaying Loan",
     "intro_subtitle": "Increase capital efficiency by borrowing the future yield of your deposit today.",

@@ -5,7 +5,7 @@
   import Button from '../../../elements/Button.svelte';
   import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
   import tempTx from '../../../../stores/tempTx';
-
+  import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
   export let outstandingDebt;
@@ -32,6 +32,7 @@
 
   let userVerified = false;
   let canLiquidate = false;
+  let maximumLoss;
 
   const setUserVerified = (event) => {
     userVerified = event.detail.value;
@@ -85,6 +86,7 @@
   const liquidate = () => {
     $tempTx.amountRepay = liquidateAmountToWei.gt(debtToWei) ? debtToWei : liquidateAmountToWei;
     $tempTx.yieldToken = tokenAddress;
+    $tempTx.maximumLoss = BigNumber.from(maximumLoss);
     $tempTx.method = 'liquidate';
   };
 
@@ -148,6 +150,13 @@
       {$_('modals.remaining_deposit')}: {tokenAmountFormatted}
       {tokenSymbol} -> {remainingDepositFormatted}
       {tokenSymbol}
+    </div>
+    <div class="w-full">
+      <MaxLossController
+        on:valueChanged="{(event) => {
+          maximumLoss = event.detail.value;
+        }}"
+      />
     </div>
     <ToggleSwitch label="{$_('modals.liq_disclaimer')}" on:toggleChange="{setUserVerified}" />
     <Button

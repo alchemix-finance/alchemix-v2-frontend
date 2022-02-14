@@ -142,7 +142,7 @@
                 type="text"
                 id="targetWallet"
                 placeholder="0xdeadbeef"
-                class="w-full rounded appearance-none text-xl text-right h-20 p-4 bg-grey3"
+                class="w-full rounded appearance-none text-l text-right h-20 p-4 bg-grey3"
                 bind:value="{targetWallet}"
               />
             </div>

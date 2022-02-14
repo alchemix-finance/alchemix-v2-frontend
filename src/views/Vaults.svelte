@@ -186,12 +186,12 @@
         await setTokenAllowance($tempTx.underlyingToken, contract.address);
       }
       setPendingWallet();
-      const dataPackage = utils.parseEther('0');
+      const maximumLoss = $tempTx.maximumLoss;
       const tx = await contract.depositUnderlying(
         $tempTx.yieldToken,
         amountToWei,
         $account.address,
-        dataPackage,
+        maximumLoss,
         {
           gasPrice: gas,
         },
@@ -230,12 +230,12 @@
         yieldToWei,
         $account.address,
       ]);
-      const underlyingData = abiCoder.encode(['bytes[]'], [[]]);
+      const maximumLoss = $tempTx.maximumLoss;
       const depositUnderlying = contractIface.encodeFunctionData('depositUnderlying', [
         $tempTx.yieldToken,
         underlyingToWei,
         $account.address,
-        underlyingData,
+        maximumLoss,
       ]);
       const dataPackage = [deposit, depositUnderlying];
       tx = await contract.multicall(dataPackage, {
@@ -336,10 +336,10 @@
 
   const liquidate = async () => {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
+    const maximumLoss = $tempTx.maximumLoss;
     try {
       setPendingWallet();
-      const tx = await contract.liquidate($tempTx.yieldToken, $tempTx.amountRepay, dataPackage, {
+      const tx = await contract.liquidate($tempTx.yieldToken, $tempTx.amountRepay, maximumLoss, {
         gasPrice: gas,
       });
       setPendingTx();
@@ -385,9 +385,8 @@
   };
 
   const withdrawUnderlying = async () => {
-    console.log($tempTx);
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
+    const maximumLoss = $tempTx.maximumLoss;
     const refreshPayload = {
       token: $tempTx.underlyingToken,
       vaultIndex: $tempTx.vaultIndex,
@@ -398,7 +397,7 @@
         $tempTx.yieldToken,
         $tempTx.amountUnderlying,
         $tempTx.targetAddress || $account.address,
-        dataPackage,
+        maximumLoss,
         {
           gasPrice: gas,
         },
@@ -417,13 +416,13 @@
 
   const withdrawMulticall = async () => {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
+    const maximumLoss = $tempTx.maximumLoss;
     try {
       const withdrawUnderlyingEncoded = contractIface.encodeFunctionData('withdrawUnderlying', [
         $tempTx.yieldToken,
         $tempTx.amountUnderlying,
         $account.address,
-        dataPackage,
+        maximumLoss,
       ]);
       const withdrawYieldEncoded = contractIface.encodeFunctionData('withdraw', [
         $tempTx.yieldToken,
