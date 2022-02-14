@@ -10,6 +10,7 @@
   import { addressStore } from 'src/stores/v2/alcxStore';
   import { signer } from 'src/stores/v2/derived';
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
+  import MaxLossController from '@components/composed/MaxLossController';
 
   export let vaultIndex;
 
@@ -22,6 +23,13 @@
   export let yieldDecimals;
 
   export let vault;
+
+  let maximumLoss;
+
+  $: console.log(maximumLoss);
+  // $: maximumLossBigNumber = BigNumber.from(maximumLoss) ?? BigNumber.from(0);
+
+  // $: console.log(maximumLossBigNumber.toString());
 
   let yieldBalance;
   let yieldSymbol;
@@ -248,6 +256,10 @@
       Deposit Balance: {utils.formatUnits(userDeposit, underlyingDecimals)}
       -> {totalDeposit}<br />
       Borrow Limit: {startingDebtLimit} -> {projectedDebtLimit}
+    </div>
+
+    <div class="my-4">
+      <MaxLossController bind:maxLoss="{maximumLoss}" />
     </div>
 
     <Button
