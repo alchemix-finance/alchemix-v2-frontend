@@ -16,6 +16,7 @@ const defaults = {
   transmuterAddress: null,
   alTokenAllowance: null,
   unexchangedBalance: null,
+  maximumLoss: null,
 };
 
 Object.freeze(defaults);

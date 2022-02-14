@@ -6,7 +6,7 @@
   import Button from '../../../elements/Button.svelte';
   import tempTx from '../../../../stores/tempTx';
   import walletBalance from '../../../../stores/walletBalance';
-
+  import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
@@ -49,6 +49,7 @@
   let borrowLimitFormatted;
 
   let sharesWithdrawAmount;
+  let maximumLoss;
 
   /*
    * @param amount the String amount to transform into shares
@@ -180,6 +181,7 @@
       transmuterAddress: null,
       alTokenAllowance: null,
       unexchangedBalance: null,
+      maximumLoss: BigNumber.from(maximumLoss),
     };
     tempTx.set({ ...payload });
   };
@@ -303,6 +305,14 @@
       -> {remainingBalance}
       <br />
       {$_('modals.borrow_limit')}: {borrowLimitFormatted} -> {projectedDebtLimit}
+    </div>
+
+    <div class="my-4">
+      <MaxLossController
+        on:valueChanged="{(event) => {
+          maximumLoss = event.detail.value;
+        }}"
+      />
     </div>
 
     <Button

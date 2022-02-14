@@ -6,7 +6,7 @@
   import Button from '../../../elements/Button.svelte';
   import tempTx from '../../../../stores/tempTx';
   import walletBalance from '../../../../stores/walletBalance';
-
+  import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
   export let vaultIndex;
@@ -32,6 +32,7 @@
   let projectedDebtLimit;
 
   let depositDisabled = true;
+  let maximumLoss;
 
   const deposit = () => {
     let yieldAmnt;
@@ -48,6 +49,7 @@
     $tempTx.underlyingToken = underlyingToken;
     $tempTx.targetAddress = null;
     $tempTx.vaultIndex = vaultIndex;
+    $tempTx.maximumLoss = BigNumber.from(maximumLoss);
     if (yieldAmnt && udrlyAmnt) {
       $tempTx.method = 'multicall';
     } else if (yieldAmnt && !udrlyAmnt) {
@@ -208,6 +210,14 @@
       {$_('modals.deposit_balance')}: {utils.formatUnits(userDeposit, underlyingDecimals)}
       -> {totalDeposit}<br />
       {$_('modals.borrow_limit')}: {startingDebtLimit} -> {projectedDebtLimit}
+    </div>
+
+    <div class="my-4">
+      <MaxLossController
+        on:valueChanged="{(event) => {
+          maximumLoss = event.detail.value;
+        }}"
+      />
     </div>
 
     <Button
