@@ -1,7 +1,7 @@
 import { VaultsType } from './alcxStore';
 import { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '../../helpers/contractWrapper';
-import { Signer, BigNumber, utils, ethers } from 'ethers';
+import { Signer, BigNumber, utils, ethers, ContractTransaction } from 'ethers';
 import { VaultConstants } from './constants';
 import getUserGas from '@helpers/getUserGas';
 import {
@@ -226,6 +226,7 @@ export async function withdraw(
 export async function withdrawUnderlying(
   typeOfVault: VaultTypes,
   yieldTokenAddress: string,
+  underlyingTokenAddress: string,
   amountUnderlying: BigNumber,
   accountAddress: string,
   [signerStore]: [Signer],
@@ -259,6 +260,7 @@ export async function withdrawUnderlying(
       return {
         typeOfVault,
         yieldTokenAddress,
+        underlyingTokenAddress,
       };
     });
   } catch (error) {
@@ -268,4 +270,57 @@ export async function withdrawUnderlying(
   }
 }
 
-export async function multicallWithdraw() {}
+export async function multicallWithdraw(
+  yieldTokenAddress: string,
+  underlyingTokenAddress: string,
+  yieldAmount: BigNumber,
+  underlyingAmount: BigNumber,
+  typeOfVault: VaultTypes,
+  accountAddress: string,
+  [signerStore]: [Signer],
+) {
+  try {
+    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const dataPackage = utils.parseEther('0');
+    const { instance: alchemistInstance, fragment: alchemistInterface } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
+
+    const encodedWithdrawUnderlyingFunc = alchemistInterface.encodeFunctionData('withdrawUnderlying', [
+      yieldTokenAddress,
+      underlyingAmount,
+      accountAddress,
+    ]);
+
+    const encodedWithdrawFunc = alchemistInterface.encodeFunctionData('withdraw', [
+      yieldTokenAddress,
+      yieldAmount,
+      accountAddress,
+    ]);
+
+    const txPackage = [encodedWithdrawUnderlyingFunc, encodedWithdrawFunc];
+
+    setPendingWallet();
+
+    const tx = (await alchemistInstance.multicall(txPackage, {
+      gasPrice: gas,
+    })) as ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+
+      return {
+        yieldTokenAddress,
+        underlyingTokenAddress,
+        typeOfVault,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/multicallWithdraw]: ${error}`);
+    throw Error(error);
+  }
+}
