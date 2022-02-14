@@ -37,6 +37,7 @@
 
   const openWithdraw = () =>
     showModal(Withdraw, {
+      vault,
       yieldToken,
       underlyingToken,
       loanRatio,
