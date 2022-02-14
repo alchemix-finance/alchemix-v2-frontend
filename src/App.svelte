@@ -25,6 +25,7 @@
   import Settings from './views/Settings.svelte';
 
   import { connect } from '@helpers/walletManager';
+  import StateManager from './components/composed/StateManager.svelte';
 
   export let url = '';
 

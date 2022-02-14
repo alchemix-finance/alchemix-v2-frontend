@@ -1,46 +1,42 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { createEventDispatcher, onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import InputNumber from '@components/elements/inputs/InputNumber';
   import Button from '@components/elements/Button';
 
-  let maximumLossInput;
-  let useCustomAmount = false;
-  let selectedButton = 0;
+  export let maxLoss;
 
-  const dispatch = createEventDispatcher();
-  const lossPresets = [0.1, 0.5, 1];
-  const maximumLoss = {
+  const typeOfLoses = Object.freeze({
+    '0.1': 0,
+    '0.5': 1,
+    '1': 2,
+  });
+
+  const lossPresets = {
+    [typeOfLoses['0.1']]: 0.1,
+    [typeOfLoses['0.5']]: 0.5,
+    [typeOfLoses['1']]: 1,
+  };
+
+  const maximumLossInputPref = {
     min: 0,
     max: 100,
     multiplier: 1000,
   };
 
-  const broadcastValue = () => {
-    dispatch('valueChanged', {
-      value: maximumLossInput * maximumLoss.multiplier,
-    });
-  };
+  let currentPreset = typeOfLoses['0.1'];
 
-  const toggleInput = () => {
-    if (useCustomAmount) selectSlippage(selectedButton);
-    useCustomAmount = !useCustomAmount;
-    if (!useCustomAmount) maximumLossInput = lossPresets[selectedButton - 1];
-  };
+  let useCustomAmount = false;
+  let maximumLossInput = 0;
 
-  const selectSlippage = (num) => {
-    selectedButton = num;
-    maximumLossInput = lossPresets[num - 1];
-  };
+  maxLoss = lossPresets[typeOfLoses['0.1']] * maximumLossInputPref.multiplier;
 
-  onMount(() => {
-    // TODO add settings to get default from user, fallback to 1
-    selectSlippage(1);
-  });
-
-  $: maximumLossInput, broadcastValue();
+  $: maxLoss = useCustomAmount
+    ? maximumLossInput < 100
+      ? maximumLossInput * maximumLossInputPref.multiplier
+      : 100 * maximumLossInputPref.multiplier
+    : lossPresets[currentPreset] * maximumLossInputPref.multiplier;
 </script>
 
 <div class="flex flex-col space-y-2 w-full">
@@ -48,12 +44,15 @@
     <p class="flex-auto text-lightgrey10 text-sm">
       {$_('max_slippage')}:
     </p>
-    <ToggleSwitch label="{$_('custom_amount')}" on:toggleChange="{toggleInput}" />
+    <ToggleSwitch
+      label="{$_('custom_amount')}"
+      on:toggleChange="{() => (useCustomAmount = !useCustomAmount)}"
+    />
   </div>
 
   {#if useCustomAmount}
     <div
-      class="flex bg-grey3 rounded border {maximumLossInput > maximumLoss.max
+      class="flex bg-grey3 rounded border {maximumLossInput > maximumLossInputPref.max
         ? 'border-red3'
         : 'border-grey3'}"
       transition:slide|local
@@ -64,7 +63,7 @@
           bind:value="{maximumLossInput}"
           placeholder="0-100%"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {maximumLossInput >
-          maximumLoss.max
+          maximumLossInputPref.max
             ? 'text-red3'
             : 'text-lightgrey5'}"
         />
@@ -79,7 +78,7 @@
           borderSize="0"
           height="h-10"
           on:clicked="{() => {
-            maximumLossInput = maximumLoss.max;
+            maximumLossInput = maximumLossInputPref.max;
           }}"
         />
         <Button
@@ -99,11 +98,13 @@
   {:else}
     <div class="flex flex-row w-full text-lg" transition:slide|local>
       <button
-        class="border border-grey5 rounded-l w-full {selectedButton === 1 ? 'bg-grey3' : 'hover:bg-grey10'}"
-        on:click="{() => selectSlippage(1)}"
+        class="border border-grey5 rounded-l w-full {currentPreset === typeOfLoses['0.1']
+          ? 'bg-grey3'
+          : 'hover:bg-grey10'}"
+        on:click="{() => (currentPreset = typeOfLoses['0.1'])}"
       >
         <p
-          class="text-center h-full py-3 {selectedButton === 1
+          class="text-center h-full py-3 {currentPreset === typeOfLoses['0.1']
             ? 'opacity-100'
             : 'opacity-50 hover:opacity-100'}"
         >
@@ -111,11 +112,13 @@
         </p>
       </button>
       <button
-        class="border-t border-b border-grey5 w-full {selectedButton === 2 ? 'bg-grey3' : 'hover:bg-grey10'}"
-        on:click="{() => selectSlippage(2)}"
+        class="border-t border-b border-grey5 w-full {currentPreset === typeOfLoses['0.5']
+          ? 'bg-grey3'
+          : 'hover:bg-grey10'}"
+        on:click="{() => (currentPreset = typeOfLoses['0.5'])}"
       >
         <p
-          class="text-center h-full py-3 {selectedButton === 2
+          class="text-center h-full py-3 {currentPreset === typeOfLoses['0.5']
             ? 'opacity-100'
             : 'opacity-50 hover:opacity-100'}"
         >
@@ -123,11 +126,13 @@
         </p>
       </button>
       <button
-        class="border border-grey5 rounded-r w-full {selectedButton === 3 ? 'bg-grey3' : 'hover:bg-grey10'}"
-        on:click="{() => selectSlippage(3)}"
+        class="border border-grey5 rounded-r w-full {currentPreset === typeOfLoses['1']
+          ? 'bg-grey3'
+          : 'hover:bg-grey10'}"
+        on:click="{() => (currentPreset = typeOfLoses['1'])}"
       >
         <p
-          class="text-center h-full py-3 {selectedButton === 3
+          class="text-center h-full py-3 {currentPreset === typeOfLoses['1']
             ? 'opacity-100'
             : 'opacity-50 hover:opacity-100'}"
         >

@@ -62,6 +62,7 @@ export async function depositUnderlying(
   tokenAddress: string,
   typeOfVault: VaultTypes,
   amountYield: BigNumber,
+  maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
 ) {
   try {
@@ -72,7 +73,6 @@ export async function depositUnderlying(
     );
 
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
 
@@ -87,7 +87,7 @@ export async function depositUnderlying(
       tokenAddress,
       amountYield,
       userAddressStore,
-      dataPackage,
+      maximumLoss,
       {
         gasPrice: gas,
       },
@@ -117,6 +117,7 @@ export async function multicallDeposit(
   underlyingTokenAddress: string,
   amountUnderlying: BigNumber,
   amountYield: BigNumber,
+  maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
 ) {
   try {
@@ -152,13 +153,12 @@ export async function multicallDeposit(
       amountYield,
       userAddressStore,
     ]);
-    const underlyingData = utils.defaultAbiCoder.encode(['bytes[]'], [[]]);
 
     const depositUnderlying = alchemistInterface.encodeFunctionData('depositUnderlying', [
       yieldTokenAddress,
       amountUnderlying,
       userAddressStore,
-      underlyingData,
+      maximumLoss,
     ]);
     const dataPackage = [deposit, depositUnderlying];
 
@@ -223,11 +223,11 @@ export async function withdrawUnderlying(
   underlyingTokenAddress: string,
   amountUnderlying: BigNumber,
   accountAddress: string,
+  maximumLoss: BigNumber,
   [signerStore]: [Signer],
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
 
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
@@ -240,7 +240,7 @@ export async function withdrawUnderlying(
       yieldTokenAddress,
       amountUnderlying,
       accountAddress,
-      dataPackage,
+      maximumLoss,
       {
         gasPrice: gas,
       },
@@ -271,11 +271,11 @@ export async function multicallWithdraw(
   underlyingAmount: BigNumber,
   typeOfVault: VaultTypes,
   accountAddress: string,
+  maximumLoss: BigNumber,
   [signerStore]: [Signer],
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
     const { instance: alchemistInstance, fragment: alchemistInterface } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
@@ -285,6 +285,7 @@ export async function multicallWithdraw(
       yieldTokenAddress,
       underlyingAmount,
       accountAddress,
+      maximumLoss,
     ]);
 
     const encodedWithdrawFunc = alchemistInterface.encodeFunctionData('withdraw', [
