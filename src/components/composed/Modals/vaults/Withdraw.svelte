@@ -164,13 +164,15 @@
       yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
       (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
     ) {
-      withdraw(vault.type, vault.address, yieldWithdrawAmountShares, $addressStore, [$signer]).then(() => {
-        Promise.all([
-          fetchUpdateVaultByAddress(vault.address),
-          fetchBalanceByAddress(vault.address),
-          fetchBalanceByAddress(vault.underlyingAddress),
-        ]);
-      });
+      await withdraw(vault.type, vault.address, yieldWithdrawAmountShares, $addressStore, [$signer]).then(
+        () => {
+          Promise.all([
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+            fetchBalanceByAddress(vault.address, [$signer]),
+            fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+          ]);
+        },
+      );
     } else if (
       (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
       underlyingWithdrawAmountShares.gt(BigNumber.from(0))
@@ -185,9 +187,9 @@
         [$signer],
       ).then(() => {
         Promise.all([
-          fetchUpdateVaultByAddress(vault.address),
-          fetchBalanceByAddress(vault.address),
-          fetchBalanceByAddress(vault.underlyingAddress),
+          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          fetchBalanceByAddress(vault.address, [$signer]),
+          fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
         ]);
       });
     } else {
@@ -202,9 +204,9 @@
         [$signer],
       ).then(() => {
         Promise.all([
-          fetchUpdateVaultByAddress(vault.address),
-          fetchBalanceByAddress(vault.address),
-          fetchBalanceByAddress(vault.underlyingAddress),
+          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          fetchBalanceByAddress(vault.address, [$signer]),
+          fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
         ]);
       });
     }
