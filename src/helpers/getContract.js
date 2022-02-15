@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import account from '@stores/account.ts';
+import account from '@stores/account';
 
 let _account;
 

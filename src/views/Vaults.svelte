@@ -10,7 +10,7 @@
   import account from '@stores/account';
   import { aggregate, alusd } from '../stores/vaults';
   import getContract, { getFragment } from '../helpers/getContract';
-  import { getTokenAllowance, getTokenDecimals } from '@helpers/getTokenData';
+  import { getTokenAllowance, getTokenDecimals } from '../helpers/getTokenData';
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
   import Table from '../components/composed/Table/Table.svelte';
   import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
@@ -19,12 +19,12 @@
   import Repay from '../components/composed/Modals/vaults/Repay.svelte';
   import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
   import tempTx, { defaults } from '../stores/tempTx';
-  import { getProvider } from '@helpers/walletManager';
+  import { getProvider } from '../helpers/walletManager';
   import getUserGas from '../helpers/getUserGas';
-  import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '@helpers/setToast';
+  import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
   import setTokenAllowance from '../helpers/setTokenAllowance';
   import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
-  import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '@helpers/updateData';
+  import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
 
@@ -901,29 +901,6 @@
               <p>{noVaultsForStrategyText[currentStrategy]}</p>
             </div>
           {/if}
-          <!-- {#if toggleButtons.stratSelect.used}
-            {#if rowsUser.length > 0}
-              <Table rows="{rowsUser}" columns="{colsStrats}" key="{foo}" />
-            {:else}
-              <div class="flex justify-center my-4">
-                <p>{$_('table.no_strategies')}</p>
-              </div>
-            {/if}
-          {:else if toggleButtons.stratSelect.all}
-            <Table
-              rows="{[...currentRowsOnCurrentStrategyType.map((obj) => obj.row)]}"
-              columns="{colsStrats}"
-              key="{foo}"
-            />
-          {:else if toggleButtons.stratSelect.unused}
-            {#if rowsUnused.length > 0}
-              <Table rows="{rowsUnused}" columns="{colsStrats}" key="{foo}" />
-            {:else}
-              <div class="flex justify-center my-4">
-                <p>{$_('table.all_strategies')}</p>
-              </div>
-            {/if}
-          {/if} -->
         </div>
       </ContainerWithHeader>
     </div>
