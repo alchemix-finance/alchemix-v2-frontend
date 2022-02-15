@@ -12,7 +12,7 @@
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
   import MaxLossController from '@components/composed/MaxLossController';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { formatUnits } from 'ethers/lib/utils';
+  import { modalReset } from '@stores/modal';
 
   export let vaultIndex;
 
@@ -49,6 +49,7 @@
     if (underlyingDeposit) {
       udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
     }
+    modalReset();
     if (yieldAmnt && udrlyAmnt) {
       await multicallDeposit(
         vault.type,
