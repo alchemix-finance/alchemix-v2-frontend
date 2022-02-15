@@ -1,5 +1,4 @@
-import { derived, writable } from 'svelte/store';
-import { DefaultDerivedState, DerivedStatus } from '@helpers/storeHelpers';
+import { writable } from 'svelte/store';
 
 const defaults = {
   loadingSupportedTokens: true,
