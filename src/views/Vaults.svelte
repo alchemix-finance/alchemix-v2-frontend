@@ -565,6 +565,12 @@
     const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
 
+    console.log('TVL:', utils.formatUnits(vault.tvl, underlyingTokenData.decimals));
+    console.log(
+      'UnderlyingPerShare:',
+      utils.formatUnits(vault.underlyingPerShare, underlyingTokenData.decimals),
+    );
+
     const vaultDebt = calculateVaultDebt(
       vault.balance,
       vault.underlyingPerShare,
@@ -607,7 +613,7 @@
         },
         col3: {
           CellComponent: CurrencyCell,
-          value: utils.formatUnits(vault.tvl, underlyingTokenData.decimals),
+          value: utils.formatUnits(vault.tvl.mul(vault.underlyingPerShare), underlyingTokenData.decimals * 2),
           colSize: 2,
         },
         col4: {
