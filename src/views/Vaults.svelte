@@ -565,12 +565,6 @@
     const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
 
-    console.log('TVL:', utils.formatUnits(vault.tvl, underlyingTokenData.decimals));
-    console.log(
-      'UnderlyingPerShare:',
-      utils.formatUnits(vault.underlyingPerShare, underlyingTokenData.decimals),
-    );
-
     const vaultDebt = calculateVaultDebt(
       vault.balance,
       vault.underlyingPerShare,
