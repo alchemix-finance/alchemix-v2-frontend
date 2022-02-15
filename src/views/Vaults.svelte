@@ -613,7 +613,7 @@
         },
         limit: {
           CellComponent: CurrencyCell,
-          value: utils.formatUnits(vaultDebt, underlyingTokenData.decimals),
+          value: utils.formatUnits(vaultDebt.mul(vault.underlyingPerShare), underlyingTokenData.decimals * 2),
           prefix: '+',
           colSize: 2,
         },
