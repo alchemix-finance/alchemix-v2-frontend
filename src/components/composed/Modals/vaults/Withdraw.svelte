@@ -232,124 +232,126 @@
   });
 </script>
 
-<ContainerWithHeader>
-  <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
-    <div>
-      {#if openDebtAmountFormatted !== '0.0'}
-        <p class="inline-block">{$_('chart.debt')}: {openDebtAmountFormatted} {openDebtSymbol} |</p>
-      {/if}
-      <p class="inline-block">
-        {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther(loanRatio))}%
-      </p>
+{#if vault}
+  <ContainerWithHeader>
+    <div slot="header" class="p-4 text-sm flex justify-between">
+      <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
+      <div>
+        {#if openDebtAmountFormatted !== '0.0'}
+          <p class="inline-block">{$_('chart.debt')}: {openDebtAmountFormatted} {openDebtSymbol} |</p>
+        {/if}
+        <p class="inline-block">
+          {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther(loanRatio))}%
+        </p>
+      </div>
     </div>
-  </div>
-  <div slot="body" class="p-4">
-    <div class="flex space-x-4">
-      <div class="w-full">
-        <label for="yieldInput" class="text-sm text-lightgrey10">
-          {$_('availabl')}: ~{Math.round(parseFloat(maxYieldWithdrawAmount))}
-          {yieldSymbol}
-        </label>
-        <div class="flex bg-grey3 rounded border {yieldExceeded ? 'border-red3' : 'border-grey3'}">
-          <div class="w-full">
-            <InputNumber
-              id="yieldInput"
-              bind:value="{yieldWithdrawAmount}"
-              placeholder="~0.00 {yieldSymbol}"
-              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldExceeded
-                ? 'text-red3'
-                : 'text-lightgrey5'}"
-            />
+    <div slot="body" class="p-4">
+      <div class="flex space-x-4">
+        <div class="w-full">
+          <label for="yieldInput" class="text-sm text-lightgrey10">
+            {$_('availabl')}: ~{Math.round(parseFloat(maxYieldWithdrawAmount))}
+            {yieldSymbol}
+          </label>
+          <div class="flex bg-grey3 rounded border {yieldExceeded ? 'border-red3' : 'border-grey3'}">
+            <div class="w-full">
+              <InputNumber
+                id="yieldInput"
+                bind:value="{yieldWithdrawAmount}"
+                placeholder="~0.00 {yieldSymbol}"
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldExceeded
+                  ? 'text-red3'
+                  : 'text-lightgrey5'}"
+              />
+            </div>
+            <div class="flex flex-col">
+              <Button
+                label="MAX"
+                width="w-full"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => setMaxYield()}"
+              />
+              <Button
+                label="CLEAR"
+                width="w-max"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => clearYield()}"
+              />
+            </div>
           </div>
-          <div class="flex flex-col">
-            <Button
-              label="MAX"
-              width="w-full"
-              fontSize="text-xs"
-              textColor="lightgrey10"
-              backgroundColor="grey3"
-              borderSize="0"
-              height="h-10"
-              on:clicked="{() => setMaxYield()}"
-            />
-            <Button
-              label="CLEAR"
-              width="w-max"
-              fontSize="text-xs"
-              textColor="lightgrey10"
-              backgroundColor="grey3"
-              borderSize="0"
-              height="h-10"
-              on:clicked="{() => clearYield()}"
-            />
+        </div>
+        <div class="w-full">
+          <label for="underlyingInput" class="text-sm text-lightgrey10">
+            {$_('available')}: ~{Math.round(parseFloat(maxUnderlyingWithdrawAmount))}
+            {underlyingSymbol}
+          </label>
+          <div class="flex bg-grey3 rounded border {underlyingExceeded ? 'border-red3' : 'border-grey3'}">
+            <div class="w-full">
+              <InputNumber
+                id="underlyingInput"
+                bind:value="{underlyingWithdrawAmount}"
+                placeholder="~0.00 {underlyingSymbol}"
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingExceeded
+                  ? 'text-red3'
+                  : 'text-lightgrey5'}"
+              />
+            </div>
+            <div class="flex flex-col">
+              <Button
+                label="MAX"
+                width="w-full"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => setMaxUnderlying()}"
+              />
+              <Button
+                label="CLEAR"
+                width="w-max"
+                fontSize="text-xs"
+                textColor="lightgrey10"
+                backgroundColor="grey3"
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => clearUnderlying()}"
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div class="w-full">
-        <label for="underlyingInput" class="text-sm text-lightgrey10">
-          {$_('available')}: ~{Math.round(parseFloat(maxUnderlyingWithdrawAmount))}
-          {underlyingSymbol}
-        </label>
-        <div class="flex bg-grey3 rounded border {underlyingExceeded ? 'border-red3' : 'border-grey3'}">
-          <div class="w-full">
-            <InputNumber
-              id="underlyingInput"
-              bind:value="{underlyingWithdrawAmount}"
-              placeholder="~0.00 {underlyingSymbol}"
-              class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingExceeded
-                ? 'text-red3'
-                : 'text-lightgrey5'}"
-            />
-          </div>
-          <div class="flex flex-col">
-            <Button
-              label="MAX"
-              width="w-full"
-              fontSize="text-xs"
-              textColor="lightgrey10"
-              backgroundColor="grey3"
-              borderSize="0"
-              height="h-10"
-              on:clicked="{() => setMaxUnderlying()}"
-            />
-            <Button
-              label="CLEAR"
-              width="w-max"
-              fontSize="text-xs"
-              textColor="lightgrey10"
-              backgroundColor="grey3"
-              borderSize="0"
-              height="h-10"
-              on:clicked="{() => clearUnderlying()}"
-            />
-          </div>
-        </div>
+
+      <div class="my-4 text-sm text-lightgrey10">
+        {$_('modals.deposit_balance')}: {startingBalance}
+        -> {remainingBalance}
+        <br />
+        {$_('modals.borrow_limit')}: {borrowLimitFormatted} -> {projectedDebtLimit}
       </div>
-    </div>
 
-    <div class="my-4 text-sm text-lightgrey10">
-      {$_('modals.deposit_balance')}: {startingBalance}
-      -> {remainingBalance}
-      <br />
-      {$_('modals.borrow_limit')}: {borrowLimitFormatted} -> {projectedDebtLimit}
-    </div>
+      <div class="my-4">
+        <MaxLossController bind:maxLoss="{maximumLoss}" />
+      </div>
 
-    <div class="my-4">
-      <MaxLossController bind:maxLoss="{maximumLoss}" />
+      <Button
+        label="{$_('actions.withdraw')}"
+        borderColor="red4"
+        backgroundColor="red2"
+        hoverColor="red4"
+        height="h-12"
+        borderSize="1"
+        fontSize="text-md"
+        solid="{withdrawEnabled}"
+        on:clicked="{onWithdrawButton}"
+        disabled="{!withdrawEnabled}"
+      />
     </div>
-
-    <Button
-      label="{$_('actions.withdraw')}"
-      borderColor="red4"
-      backgroundColor="red2"
-      hoverColor="red4"
-      height="h-12"
-      borderSize="1"
-      fontSize="text-md"
-      solid="{withdrawEnabled}"
-      on:clicked="{onWithdrawButton}"
-      disabled="{!withdrawEnabled}"
-    />
-  </div>
-</ContainerWithHeader>
+  </ContainerWithHeader>
+{/if}
