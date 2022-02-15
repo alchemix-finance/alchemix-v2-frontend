@@ -95,7 +95,7 @@
 
   function formatDepositToBN(_deposit, _tokenData) {
     if (_deposit && _tokenData) {
-      return utils.parseUnits(`${_deposit}`, _tokenData.deciamls);
+      return utils.parseUnits(`${_deposit}`, _tokenData.decimals);
     }
 
     return BigNumber.from(0);
@@ -185,7 +185,7 @@
         {#if yieldTokenData.balance.gt(BigNumber.from(0))}
           <div class="w-full">
             <label for="yieldInput" class="text-sm text-lightgrey10">
-              {$_('available')}: {utils.formatUnits(yieldTokenData.balance, yieldTokenData.deciamls)}
+              {$_('available')}: {utils.formatUnits(yieldTokenData.balance, yieldTokenData.decimals)}
               {yieldTokenData.symbol}
             </label>
             <div
@@ -239,7 +239,7 @@
             <label for="underlyingInput" class="text-sm text-lightgrey10">
               {$_('available')}: {utils.formatUnits(
                 underlyingTokenData.balance,
-                underlyingTokenData.deciamls,
+                underlyingTokenData.decimals,
               )}
               {underlyingTokenData.symbol}
             </label>
