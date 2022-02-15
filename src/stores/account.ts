@@ -8,8 +8,8 @@ const defaults = {
   loadingFarmsConfigurations: true,
   address: undefined,
   signer: undefined,
-  ens: undefined,
   provider: undefined,
+  ens: undefined,
 };
 
 const account = writable({

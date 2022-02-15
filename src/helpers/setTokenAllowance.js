@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { genericAbi } from '../stores/externalContracts';
-import account from '../stores/account';
+import account from '@stores/account';
 
 let _account;
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 import snapshot from '@snapshot-labs/snapshot.js';
 // import global from '../stores/global';
 import governance from '../stores/governance';
-import account from '../stores/account';
+import account from '@stores/account';
 
 const snapshotHubUrl = 'https://hub.snapshot.org';
 const space = 'alchemixstakers.eth';

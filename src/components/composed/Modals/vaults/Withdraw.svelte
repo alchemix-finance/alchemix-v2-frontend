@@ -9,6 +9,14 @@
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
+  import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
+  import { addressStore } from 'src/stores/v2/alcxStore';
+  import { signer } from 'src/stores/v2/derived';
+  import { sign } from 'crypto';
+  import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
+
+  import { modalReset } from '@stores/modal';
+
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
   export let vaultIndex;
   export let yieldToken;
@@ -23,6 +31,8 @@
   export let yieldDecimals;
   export let underlyingDecimals;
   export let aggregateBalance;
+
+  export let vault;
 
   let withdrawEnabled = false;
 
@@ -150,40 +160,58 @@
       sharesWithdrawAmount.lt(freeCover);
   };
 
-  const withdraw = () => {
-    let method;
+  const onWithdrawButton = async () => {
+    modalReset();
     if (
       yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
       (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
     ) {
-      method = 'withdraw';
+      await withdraw(vault.type, vault.address, yieldWithdrawAmountShares, $addressStore, [$signer]).then(
+        () => {
+          Promise.all([
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+            fetchBalanceByAddress(vault.address, [$signer]),
+            fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+          ]);
+        },
+      );
     } else if (
       (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
       underlyingWithdrawAmountShares.gt(BigNumber.from(0))
     ) {
-      method = 'withdrawUnderlying';
+      withdrawUnderlying(
+        vault.type,
+        vault.address,
+        vault.underlyingAddress,
+        underlyingWithdrawAmountShares,
+        $addressStore,
+        BigNumber.from(maximumLoss),
+        [$signer],
+      ).then(() => {
+        Promise.all([
+          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          fetchBalanceByAddress(vault.address, [$signer]),
+          fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+        ]);
+      });
     } else {
-      method = 'withdrawMulticall';
+      multicallWithdraw(
+        vault.address,
+        vault.underlyingAddress,
+        yieldWithdrawAmountShares,
+        underlyingWithdrawAmountShares,
+        vault.type,
+        $addressStore,
+        maximumLoss,
+        [$signer],
+      ).then(() => {
+        Promise.all([
+          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          fetchBalanceByAddress(vault.address, [$signer]),
+          fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+        ]);
+      });
     }
-    const payload = {
-      amountYield: yieldWithdrawAmountShares,
-      amountUnderlying: underlyingWithdrawAmountShares,
-      amountBorrow: null,
-      amountRepay: null,
-      amountAlToken: null,
-      method,
-      yieldToken,
-      underlyingToken,
-      alToken: null,
-      targetAddress: null,
-      vaultIndex,
-      transmuter: null,
-      transmuterAddress: null,
-      alTokenAllowance: null,
-      unexchangedBalance: null,
-      maximumLoss: BigNumber.from(maximumLoss),
-    };
-    tempTx.set({ ...payload });
   };
 
   $: if (yieldWithdrawAmount) updateBalances();
@@ -308,11 +336,7 @@
     </div>
 
     <div class="my-4">
-      <MaxLossController
-        on:valueChanged="{(event) => {
-          maximumLoss = event.detail.value;
-        }}"
-      />
+      <MaxLossController bind:maxLoss="{maximumLoss}" />
     </div>
 
     <Button
@@ -324,7 +348,7 @@
       borderSize="1"
       fontSize="text-md"
       solid="{withdrawEnabled}"
-      on:clicked="{() => withdraw()}"
+      on:clicked="{onWithdrawButton}"
       disabled="{!withdrawEnabled}"
     />
   </div>

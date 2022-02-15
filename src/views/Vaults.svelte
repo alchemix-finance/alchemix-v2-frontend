@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -7,10 +7,10 @@
   import Button from '../components/elements/Button.svelte';
   import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
   import { BarLoader } from 'svelte-loading-spinners';
-  import account from '../stores/account';
-  import { aggregate, alusd } from '@stores/vaults';
+  import account from '@stores/account';
+  import { aggregate, alusd } from '../stores/vaults';
   import getContract, { getFragment } from '../helpers/getContract';
-  import { getTokenAllowance, getTokenDecimals } from '@helpers/getTokenData';
+  import { getTokenAllowance, getTokenDecimals } from '../helpers/getTokenData';
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
   import Table from '../components/composed/Table/Table.svelte';
   import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
@@ -19,25 +19,27 @@
   import Repay from '../components/composed/Modals/vaults/Repay.svelte';
   import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
   import tempTx, { defaults } from '../stores/tempTx';
-  import { getProvider } from '@helpers/walletManager';
+  import { getProvider } from '../helpers/walletManager';
   import getUserGas from '../helpers/getUserGas';
-  import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '@helpers/setToast';
+  import { setPendingTx, setPendingWallet, setSuccessTx, setError } from '../helpers/setToast';
   import setTokenAllowance from '../helpers/setTokenAllowance';
   import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
-  import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '@helpers/updateData';
+  import { updateWalletBalance, updateAlusdVault, updateAlusdAggregate } from '../helpers/updateData';
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
 
-  let counterAllStrategies = 0;
-  let counterUserStrategies = 0;
-  let counterUnusedStrategies = 0;
+  import { balancesStore, vaultsStore, VaultsType } from '@stores/v2/alcxStore';
+  import { VaultTypes } from 'src/stores/v2/types';
+  import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
+  import makeSelectorStore from 'src/stores/v2/selectorStore';
+  import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
+  import { vaultsLoading } from 'src/stores/v2/loadingStores';
 
-  let loading = true;
+  const vaultsSelector = makeSelectorStore([VaultTypes.alUSD]);
+
   const showMetrics = true;
 
   let rowsAll = [];
-  let rowsUser = [];
-  let rowsUnused = [];
   let colsStrats = [
     {
       columnId: 'col2',
@@ -80,57 +82,7 @@
   let underlyingTokenAlusd = [];
   let yieldTokenAlusd = [];
 
-  const openBorrowModal = () =>
-    showModal(Borrow, {
-      debtToken: {
-        symbol: 'alUSD',
-        address: '',
-      },
-      maxDebt: $alusd.maxDebt,
-      currentDebt: $alusd.userDebt,
-    });
-
-  const openRepayModal = () =>
-    showModal(Repay, {
-      underlyingTokens: underlyingTokenAlusd,
-      outstandingDebt: $alusd.userDebt,
-    });
-
-  const openLiquidateModal = () =>
-    showModal(Liquidate, {
-      outstandingDebt: $alusd.userDebt,
-      yieldTokens: yieldTokenAlusd,
-    });
-
-  const closeModal = () => modalReset();
-
-  const toggleButtons = {
-    vaultSelect: {
-      all: true,
-      aleth: false,
-      alusd: false,
-    },
-    stratSelect: {
-      used: false,
-      all: true,
-      unused: false,
-    },
-  };
-
-  const buttonToggler = (selector, key) => {
-    Object.keys(toggleButtons[selector]).forEach((entry) => {
-      if (toggleButtons[selector][entry] !== key) {
-        toggleButtons[selector][entry] = false;
-      }
-    });
-    toggleButtons[selector][key] = true;
-  };
-
   // @dev logic for controlling the filtered views
-  const vaultFilter = (filter) => {
-    const selector = ['vaultSelect', 'modeSelect', 'stratSelect'];
-    buttonToggler(selector[filter.id], filter.filter);
-  };
 
   const tempClear = () => {
     tempTx.set({ ...defaults });
@@ -496,6 +448,135 @@
     getRandomData();
   };
 
+  const TypeOfStrategies = Object.freeze({
+    USED: 0,
+    UNUSED: 1,
+    ALL: 2,
+  });
+
+  const strategyFilterFunc = {
+    [TypeOfStrategies.USED]: (_vault) => _vault.balance.gt(BigNumber.from(0)),
+    [TypeOfStrategies.UNUSED]: (_vault) => _vault.balance.lte(BigNumber.from(0)),
+    [TypeOfStrategies.ALL]: (_vault) => true,
+  };
+
+  let currentStrategy = TypeOfStrategies.ALL;
+
+  function countStrategiesForTypeOfStrategy(streategyFuncFilter, vaults) {
+    return vaults.filter(streategyFuncFilter).length ?? 0;
+  }
+
+  $: currentVaultsBasedOnType =
+    Object.keys($vaultsStore)
+      .map((vTypeId) => {
+        if ($vaultsSelector.includes(parseInt(vTypeId))) {
+          return $vaultsStore[parseInt(vTypeId)].vaultBody;
+        }
+      })
+      .filter((elm) => elm !== undefined)
+      .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
+
+  $: currentVaultsBasedOnStrategyType =
+    currentVaultsBasedOnType.filter(strategyFilterFunc[currentStrategy]) ?? [];
+
+  $: currentRowsOnCurrentStrategyType = currentVaultsBasedOnStrategyType.map((vault, index) => {
+    const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
+    const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
+
+    const vaultDebt = calculateVaultDebt(
+      vault.balance,
+      vault.underlyingPerShare,
+      underlyingTokenData.decimals,
+      $vaultsStore[vault.type].ratio,
+    );
+
+    return {
+      type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
+      alchemist: 'alusd',
+      row: {
+        col2: {
+          CellComponent: FarmNameCell,
+          farmName: vaultTokenData.symbol,
+          farmSubtitle: 'Yearn ' + underlyingTokenData.symbol,
+          farmIcon: 'alusd_med.svg',
+          tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
+          colSize: 3,
+          alignment: 'justify-self-start',
+        },
+        deposited: {
+          CellComponent: CurrencyCell,
+          // value:
+          //   ($alusd.rows[index].balance * $alusd.rows[index].underlyingPerShare) /
+          //   10 ** $alusd.rows[index].underlyingDecimals,
+          value:
+            utils.formatUnits(
+              vault.balance
+                .mul(vault.underlyingPerShare)
+                .div(BigNumber.from(10).pow(underlyingTokenData.decimals)),
+              underlyingTokenData.decimals,
+            ) ?? 0,
+          colSize: 2,
+        },
+        limit: {
+          CellComponent: CurrencyCell,
+          value: utils.formatUnits(vaultDebt.mul(vault.underlyingPerShare), underlyingTokenData.decimals * 2),
+          prefix: '+',
+          colSize: 2,
+        },
+        col3: {
+          CellComponent: CurrencyCell,
+          value: utils.formatUnits(vault.tvl.mul(vault.underlyingPerShare), underlyingTokenData.decimals * 2),
+          colSize: 2,
+        },
+        col4: {
+          value: 'N/A',
+          colSize: 2,
+        },
+        col5: {
+          CellComponent: ActionsCell,
+          vault: vault,
+          colSize: 3,
+          yieldToken: vault.address,
+          underlyingToken: vault.underlyingAddress,
+          userDeposit: vault.balance,
+          loanRatio: utils.parseUnits($alusd.ratio, 18),
+          borrowLimit: vaultDebt,
+          openDebtAmount: utils.parseUnits('0', 18), // Fix
+          openDebtSymbol: 'alUSD',
+          underlyingPricePerShare: vault.underlyingPerShare,
+          yieldPricePerShare: vault.yieldPerShare,
+          yieldDecimals: vaultTokenData.decimals,
+          underlyingDecimals: underlyingTokenData.decimals,
+          vaultIndex: index,
+          aggregateBalance: $aggregate.balance,
+        },
+      },
+    };
+  });
+
+  $: console.log('old', rowsAll);
+
+  $: console.log('strategies', currentRowsOnCurrentStrategyType);
+
+  function reactiveVaultsRendering(_vaultsStore, _selectedVaultsStore) {
+    if (!_vaultsStore) {
+      console.error('[reactiveVaultsRendering]: vaultStore is empty!');
+      return [];
+    }
+
+    let bvaults = Object.keys(_vaultsStore)
+      .map((vTypeId) => {
+        if (_selectedVaultsStore.includes(parseInt(vTypeId))) {
+          return _vaultsStore[parseInt(vTypeId)].vaultBody;
+        }
+      })
+      .filter((elm) => elm !== undefined)
+      .reduce((accumulator, value) => accumulator.concat(value), []);
+    // .filter((v) => v.balance.lte(BigNumber.from(0)));
+
+    return bvaults;
+  }
+
   // @dev updates the arrays used to feed data to "borrow", "repay" and "liquidate" modals
   const refreshValueArrays = () => {
     underlyingTokenAlusd.length = 0;
@@ -609,29 +690,47 @@
           },
         },
       };
-      if (payload.type === 'used') {
-        rowsUser.push(payload.row);
-        // rowsUser = rowsUser;
-        counterUserStrategies += 1;
-      } else {
-        rowsUnused.push(payload.row);
-        // rowsUnused = rowsUnused;
-        counterUnusedStrategies += 1;
-      }
-      rowsAll.push(payload.row);
-      // rowsAll = rowsAll;
-      counterAllStrategies += 1;
     }
-    loading = false;
     getRandomData();
   };
+
+  $: noVaultsForStrategyText = {
+    [TypeOfStrategies.USED]: $_('table.no_strategies'),
+    [TypeOfStrategies.UNUSED]: $_('table.all_strategies'),
+    [TypeOfStrategies.ALL]: `No strategies available at this moment.`,
+  };
+
+  const openBorrowModal = () =>
+    showModal(Borrow, {
+      debtToken: {
+        symbol: 'alUSD',
+        address: '',
+      },
+      vaultType: VaultTypes.alETH,
+      maxDebt: $alusd.maxDebt,
+      currentDebt: $alusd.userDebt,
+    });
+
+  const openRepayModal = () =>
+    showModal(Repay, {
+      underlyingTokens: underlyingTokenAlusd,
+      outstandingDebt: $alusd.userDebt,
+    });
+
+  const openLiquidateModal = () =>
+    showModal(Liquidate, {
+      outstandingDebt: $alusd.userDebt,
+      yieldTokens: yieldTokenAlusd,
+    });
+
+  const closeModal = () => modalReset();
 
   let foo;
   const getRandomData = () => {
     foo = Math.floor(Math.random() * 100000);
   };
 
-  $: if (!$alusd.loadingRowData && loading) {
+  $: if (!$alusd.loadingRowData) {
     renderVaults();
   }
 </script>
@@ -644,7 +743,7 @@
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
   </div>
-  {#if loading}
+  {#if $vaultsLoading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
         <p class="inline-block self-center">{$_('fetching_data')}</p>
@@ -660,46 +759,42 @@
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
-            <Button
-              label="All Vaults"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.vaultSelect.all}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'all' })}"
-            >
-              <p slot="leftSlot">
-                <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
-              </p>
-            </Button>
-            <Button
-              disabled
-              label="alETH"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.vaultSelect.aleth}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'aleth' })}"
-            >
-              <p slot="leftSlot">
-                <img src="images/icons/aleth_med.svg" alt="aleth vaults" class="w-5 h-5" />
-              </p>
-            </Button>
-            <Button
-              label="alUSD"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.vaultSelect.alusd}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'alusd' })}"
-            >
-              <p slot="leftSlot">
-                <img src="images/icons/alusd_med.svg" alt="alusd vaults" class="w-5 h-5" />
-              </p>
-            </Button>
+            <div class=" items-center flex gap-1">
+              {#if AllowedVaultTypes.length > 1}
+                <Button
+                  label="All Vaults"
+                  width="w-max"
+                  canToggle="{true}"
+                  selected="{vaultsSelector.isSelectedAll($vaultsSelector, AllowedVaultTypes)}"
+                  solid="{false}"
+                  borderSize="0"
+                  on:clicked="{() => vaultsSelector.select(AllowedVaultTypes)}"
+                >
+                  <p slot="leftSlot">
+                    <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
+                  </p>
+                </Button>
+              {/if}
+              {#each AllowedVaultTypes as vaultType}
+                <Button
+                  label="{VaultTypesInfos[vaultType].name}"
+                  width="w-max"
+                  canToggle="{true}"
+                  selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
+                  solid="{false}"
+                  borderSize="0"
+                  on:clicked="{() => vaultsSelector.select([vaultType])}"
+                >
+                  <p slot="leftSlot">
+                    <img
+                      src="{VaultTypesInfos[vaultType].icon}"
+                      alt="{VaultTypesInfos[vaultType].name} vaults"
+                      class="w-5 h-5"
+                    />
+                  </p>
+                </Button>
+              {/each}
+            </div>
           </div>
         </ContainerWithHeader>
       </div>
@@ -738,54 +833,61 @@
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 flex space-x-4">
           <Button
-            label="{$_('table.your_strategies_select')} ({counterUserStrategies})"
+            label="{$_('table.your_strategies_select')} ({countStrategiesForTypeOfStrategy(
+              strategyFilterFunc[TypeOfStrategies.USED],
+              currentVaultsBasedOnType,
+            )})"
             width="w-max"
             canToggle="{true}"
-            selected="{toggleButtons.stratSelect.used}"
+            selected="{currentStrategy === TypeOfStrategies.USED}"
             solid="{false}"
             borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 2, filter: 'used' })}"
+            on:clicked="{() => {
+              currentStrategy = TypeOfStrategies.USED;
+            }}"
           />
 
           <Button
-            label="{$_('table.all_strategies_select')} ({counterAllStrategies})"
+            label="{$_('table.all_strategies_select')} ({countStrategiesForTypeOfStrategy(
+              strategyFilterFunc[TypeOfStrategies.ALL],
+              currentVaultsBasedOnType,
+            )})"
             width="w-max"
             canToggle="{true}"
-            selected="{toggleButtons.stratSelect.all}"
+            selected="{currentStrategy === TypeOfStrategies.ALL}"
             solid="{false}"
             borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 2, filter: 'all' })}"
+            on:clicked="{() => {
+              currentStrategy = TypeOfStrategies.ALL;
+            }}"
           />
 
           <Button
-            label="{$_('table.unused_strategies_select')} ({counterUnusedStrategies})"
+            label="{$_('table.unused_strategies_select')} ({countStrategiesForTypeOfStrategy(
+              strategyFilterFunc[TypeOfStrategies.UNUSED],
+              currentVaultsBasedOnType,
+            )})"
             width="w-max"
             canToggle="{true}"
-            selected="{toggleButtons.stratSelect.unused}"
+            selected="{currentStrategy === TypeOfStrategies.UNUSED}"
             solid="{false}"
             borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 2, filter: 'unused' })}"
+            on:clicked="{() => {
+              currentStrategy = TypeOfStrategies.UNUSED;
+            }}"
           />
         </div>
         <div slot="body">
-          {#if toggleButtons.stratSelect.used}
-            {#if rowsUser.length > 0}
-              <Table rows="{rowsUser}" columns="{colsStrats}" key="{foo}" />
-            {:else}
-              <div class="flex justify-center my-4">
-                <p>{$_('table.no_strategies')}</p>
-              </div>
-            {/if}
-          {:else if toggleButtons.stratSelect.all}
-            <Table rows="{rowsAll}" columns="{colsStrats}" key="{foo}" />
-          {:else if toggleButtons.stratSelect.unused}
-            {#if rowsUnused.length > 0}
-              <Table rows="{rowsUnused}" columns="{colsStrats}" key="{foo}" />
-            {:else}
-              <div class="flex justify-center my-4">
-                <p>{$_('table.all_strategies')}</p>
-              </div>
-            {/if}
+          {#if currentRowsOnCurrentStrategyType.length > 0}
+            <Table
+              rows="{[...currentRowsOnCurrentStrategyType.map((obj) => obj.row)]}"
+              columns="{colsStrats}"
+              key="{foo}"
+            />
+          {:else}
+            <div class="flex justify-center my-4">
+              <p>{noVaultsForStrategyText[currentStrategy]}</p>
+            </div>
           {/if}
         </div>
       </ContainerWithHeader>

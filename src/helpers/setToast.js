@@ -21,6 +21,18 @@ export function setPendingWallet() {
   toastConfig.set({ ..._toastConfig });
 }
 
+export function setPendingApproval() {
+  toastConfig.update((_toast) => {
+    _toast.kind = 'pending';
+    _toast.title = 'Pending token approval';
+    _toast.subtitle = 'Approve token allowance in wallet';
+    _toast.closeOnMount = false;
+    _toast.visible = true;
+
+    return _toast;
+  });
+}
+
 export function setPendingTx() {
   _toastConfig.kind = 'pending';
   _toastConfig.title = getItl('toast.pending');
