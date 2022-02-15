@@ -15,6 +15,8 @@
   import { sign } from 'crypto';
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
 
+  import { modalReset } from '@stores/modal';
+
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
   export let vaultIndex;
   export let yieldToken;
@@ -159,7 +161,7 @@
   };
 
   const onWithdrawButton = async () => {
-    let method;
+    modalReset();
     if (
       yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
       (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)

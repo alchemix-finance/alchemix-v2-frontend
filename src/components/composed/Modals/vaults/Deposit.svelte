@@ -13,7 +13,7 @@
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
   import MaxLossController from '@components/composed/MaxLossController';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { formatUnits } from 'ethers/lib/utils';
+  import { modalReset } from '@stores/modal';
 
   export let vaultIndex;
 
@@ -50,6 +50,7 @@
     if (underlyingDeposit) {
       udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
     }
+    modalReset();
     $tempTx.yieldToken = yieldToken;
     $tempTx.underlyingToken = underlyingToken;
     $tempTx.targetAddress = null;
@@ -364,13 +365,7 @@
         {$_('modals.borrow_limit')}: {utils.formatUnits(startDebtLimit, 18)} -> {projectedDebtLimit}
 
         {projDeptLimit}
-      </div><div class="my-4">
-      <MaxLossController
-        on:valueChanged="{(event) => {
-          maximumLoss = event.detail.value;
-        }}"
-      />
-    </div>
+      </div>
 
       <div class="my-4">
         <MaxLossController bind:maxLoss="{maximumLoss}" />
