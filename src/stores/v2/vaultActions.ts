@@ -1,7 +1,6 @@
-import { VaultsType } from './alcxStore';
 import { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '../../helpers/contractWrapper';
-import { Signer, BigNumber, utils, ethers, ContractTransaction, ContractFunction } from 'ethers';
+import { Signer, BigNumber, utils, ethers, ContractTransaction } from 'ethers';
 import { VaultConstants } from './constants';
 import getUserGas from '@helpers/getUserGas';
 import {
@@ -190,11 +189,10 @@ export async function withdraw(
   [signerStore]: [Signer],
 ) {
   try {
-    const {
-      address: alchemistAddress,
-      instance: alchemistInstance,
-      fragment: alchemistInterface,
-    } = contractWrapper(VaultConstants[typeOfVault].alchemistContractSelector, signerStore);
+    const { instance: alchemistInstance } = contractWrapper(
+      VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
 
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     setPendingWallet();
@@ -403,7 +401,7 @@ export async function repay(
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 
-    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+    const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
     );
@@ -435,13 +433,13 @@ export async function liquidate(
   yieldToken: string,
   amountToRepay: BigNumber,
   typeOfVault: VaultTypes,
-  [signerStore, addressStore]: [Signer, string],
+  [signerStore]: [Signer, string],
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     const dataPackage = utils.parseEther('0');
 
-    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+    const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
     );

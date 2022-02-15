@@ -16,9 +16,8 @@ import {
 import { contractWrapper } from '@helpers/contractWrapper';
 import { VaultConstants } from '@stores/v2/constants';
 import { VaultTypes } from '@stores/v2/types';
-import { VaultsType } from '@stores/v2/alcxStore';
-import { ethers, providers } from 'ethers';
-import { TokensType, BalanceType } from './alcxStore';
+import { ethers } from 'ethers';
+import { TokensType } from './alcxStore';
 
 export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Signer]) {
   if (!signer) {

@@ -1,5 +1,4 @@
 import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
-import { produce } from 'immer';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
 import { addressStore, providerStore, balancesStore, vaultsStore, tokensStore } from './alcxStore';

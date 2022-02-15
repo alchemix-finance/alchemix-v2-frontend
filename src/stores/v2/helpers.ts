@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
-import { BalanceType, BodyVaultType, TokensType, VaultsType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
 import { VaultTypes } from './types';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
@@ -53,10 +53,10 @@ export async function fetchDataForVault(
   // Check if debtRatio is null
   /**
    *  const vaultDebt = balance
-        .div(utils.parseUnits(_alusd.ratio, 18))
-        .mul(underlyingPerShare)
-        .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
-   * 
+   .div(utils.parseUnits(_alusd.ratio, 18))
+   .mul(underlyingPerShare)
+   .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
+   *
    */
   // const debt = position.shares
   //   .mul(underlyingPerShare.div(BigNumber.from(10).pow(_uyToken.decimals)))
