@@ -690,20 +690,8 @@
           },
         },
       };
-      if (payload.type === 'used') {
-        rowsUser.push(payload.row);
-        // rowsUser = rowsUser;
-        counterUserStrategies += 1;
-      } else {
-        rowsUnused.push(payload.row);
-        // rowsUnused = rowsUnused;
-        counterUnusedStrategies += 1;
-      }
-      rowsAll.push(payload.row);
-      // rowsAll = rowsAll;
-      counterAllStrategies += 1;
     }
-    loading = false;
+    getRandomData();
   };
 
   $: noVaultsForStrategyText = {
