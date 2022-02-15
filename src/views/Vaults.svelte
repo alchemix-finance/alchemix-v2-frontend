@@ -534,21 +534,9 @@
         },
         col5: {
           CellComponent: ActionsCell,
-          vault: vault,
           colSize: 3,
-          yieldToken: vault.address,
-          underlyingToken: vault.underlyingAddress,
-          userDeposit: vault.balance,
-          loanRatio: utils.parseUnits($alusd.ratio, 18),
+          vault: vault,
           borrowLimit: vaultDebt,
-          openDebtAmount: utils.parseUnits('0', 18), // Fix
-          openDebtSymbol: 'alUSD',
-          underlyingPricePerShare: vault.underlyingPerShare,
-          yieldPricePerShare: vault.yieldPerShare,
-          yieldDecimals: vaultTokenData.decimals,
-          underlyingDecimals: underlyingTokenData.decimals,
-          vaultIndex: index,
-          aggregateBalance: $aggregate.balance,
         },
       },
     };

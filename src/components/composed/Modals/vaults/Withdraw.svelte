@@ -1,66 +1,33 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { onMount } from 'svelte';
   import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
-  import tempTx from '../../../../stores/tempTx';
-  import walletBalance from '../../../../stores/walletBalance';
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
-  import { addressStore } from 'src/stores/v2/alcxStore';
-  import { signer } from 'src/stores/v2/derived';
-  import { sign } from 'crypto';
+  import { addressStore, vaultsStore } from 'src/stores/v2/alcxStore';
+  import { signer, vaultsAggregatedBalances } from 'src/stores/v2/derived';
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
 
   import { modalReset } from '@stores/modal';
 
-  // @dev any balance value submitted through props is of type BigNumber, denoted in wei
-  export let vaultIndex;
-  export let yieldToken;
-  export let underlyingToken;
-  export let loanRatio;
-  export let userShares;
-  export let borrowLimit;
-  export let openDebtAmount;
-  export let openDebtSymbol;
-  export let underlyingPricePerShare;
-  export let yieldPricePerShare;
-  export let yieldDecimals;
-  export let underlyingDecimals;
-  export let aggregateBalance;
+  import { balancesStore } from '@stores/v2/alcxStore';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
 
+  import { VaultTypesInfos } from '@stores/v2/constants';
+
+  // @dev any balance value submitted through props is of type BigNumber, denoted in wei
+
+  export let borrowLimit;
   export let vault;
 
-  let withdrawEnabled = false;
-
-  let yieldSymbol;
-  let yieldToShare;
-  let yieldWithdrawAmount = 0;
   let yieldWithdrawAmountShares;
-  let maxYieldWithdrawAmount;
-  let yieldExceeded = false;
-
-  let underlyingSymbol;
-  let underlyingToShare;
-  let underlyingWithdrawAmount = 0;
   let underlyingWithdrawAmountShares;
-  let maxUnderlyingWithdrawAmount;
-  let underlyingExceeded = false;
-
-  let startingBalance;
-  let availableShares;
-  let coveredDebt;
-  let remainingBalance;
-  let projectedDebtLimit;
-  let openDebtAmountFormatted;
-  let borrowLimitFormatted;
-
-  let sharesWithdrawAmount;
   let maximumLoss;
-
+  let yieldWithdrawAmount = 0;
+  let underlyingWithdrawAmount = 0;
   /*
    * @param amount the String amount to transform into shares
    * @param decimals the Number of decimal places to use for calculations
@@ -68,96 +35,30 @@
    * @returns a BigNumber that represents the amount of shares
    * */
   const toShares = (amount, decimals, sharePrice) => {
-    const scalar = BigNumber.from(10).pow(decimals);
-    return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
+    if (amount && decimals && sharePrice) {
+      const scalar = BigNumber.from(10).pow(decimals);
+      return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
+    } else {
+      return BigNumber.from(0);
+    }
   };
 
-  const initYield = () => {
-    yieldSymbol = $walletBalance.tokens.find((token) => token.address === yieldToken).symbol;
-    const scalar = BigNumber.from(10).pow(yieldDecimals);
-    yieldToShare = userShares.mul(yieldPricePerShare).div(scalar);
-    const maxAmountAvailable = coveredDebt
-      .sub(openDebtAmount)
-      .mul(loanRatio.div(scalar))
-      .gt(BigNumber.from(0));
-    maxYieldWithdrawAmount = maxAmountAvailable
-      ? utils.formatUnits(yieldToShare, yieldDecimals)
-      : utils.formatUnits(
-          yieldToShare.sub(openDebtAmount).gt(BigNumber.from(0))
-            ? yieldToShare.sub(openDebtAmount)
-            : BigNumber.from(0),
-          yieldDecimals,
-        );
-  };
-
-  const setMaxYield = () => {
-    yieldWithdrawAmount = maxYieldWithdrawAmount;
+  const setMaxYield = (max) => {
+    yieldWithdrawAmount = max;
     clearUnderlying();
   };
 
   const clearYield = () => {
-    yieldWithdrawAmount = '';
+    yieldWithdrawAmount = 0;
   };
 
-  const initUnderlying = () => {
-    underlyingSymbol = $walletBalance.tokens.find((token) => token.address === underlyingToken).symbol;
-    const scalar = BigNumber.from(10).pow(underlyingDecimals);
-    underlyingToShare = userShares.mul(underlyingPricePerShare).div(scalar);
-    const maxAmountAvailable = coveredDebt
-      .sub(openDebtAmount)
-      .mul(loanRatio.div(scalar))
-      .gt(BigNumber.from(0));
-    maxUnderlyingWithdrawAmount = maxAmountAvailable
-      ? utils.formatUnits(underlyingToShare, underlyingDecimals)
-      : utils.formatUnits(
-          underlyingToShare.sub(openDebtAmount).gt(BigNumber.from(0))
-            ? underlyingToShare.sub(openDebtAmount)
-            : BigNumber.from(0),
-          underlyingDecimals,
-        );
-  };
-
-  const setMaxUnderlying = () => {
-    underlyingWithdrawAmount = maxUnderlyingWithdrawAmount;
+  const setMaxUnderlying = (max) => {
+    underlyingWithdrawAmount = max;
     clearYield();
   };
 
   const clearUnderlying = () => {
-    underlyingWithdrawAmount = '';
-  };
-
-  const updateBalances = () => {
-    if (underlyingWithdrawAmount) {
-      underlyingWithdrawAmountShares = toShares(
-        (underlyingWithdrawAmount || 0).toString(),
-        underlyingDecimals,
-        underlyingPricePerShare,
-      );
-      underlyingExceeded = underlyingWithdrawAmountShares.gt(userShares);
-    } else {
-      underlyingWithdrawAmountShares = BigNumber.from(0);
-    }
-    if (yieldWithdrawAmount) {
-      yieldWithdrawAmountShares = toShares(
-        (yieldWithdrawAmount || 0).toString(),
-        yieldDecimals,
-        yieldPricePerShare,
-      );
-      yieldExceeded = yieldWithdrawAmountShares.gt(userShares);
-    } else {
-      yieldWithdrawAmountShares = BigNumber.from(0);
-    }
-    const remainingBalanceBN = userShares.sub(underlyingWithdrawAmountShares).sub(yieldWithdrawAmountShares);
-    sharesWithdrawAmount = underlyingWithdrawAmountShares.add(yieldWithdrawAmountShares);
-    remainingBalance = utils.formatUnits(remainingBalanceBN, underlyingDecimals);
-    const globalCover = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
-      .div(BigNumber.from(10).pow(18))
-      .div(loanRatio.div(BigNumber.from(10).pow(18)));
-    const freeCover = globalCover.sub(openDebtAmount).mul(loanRatio.div(BigNumber.from(10).pow(18)));
-    withdrawEnabled =
-      sharesWithdrawAmount.gt(BigNumber.from(0)) &&
-      sharesWithdrawAmount.lt(userShares) &&
-      sharesWithdrawAmount.lt(freeCover);
+    underlyingWithdrawAmount = 0;
   };
 
   const onWithdrawButton = async () => {
@@ -214,22 +115,104 @@
     }
   };
 
-  $: if (yieldWithdrawAmount) updateBalances();
-  $: if (underlyingWithdrawAmount) updateBalances();
+  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _openDebtAmount) {
+    const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
 
-  onMount(() => {
-    coveredDebt = toShares(aggregateBalance.toString(), 18, underlyingPricePerShare)
+    const globalCover = toShares(
+      $vaultsAggregatedBalances[vault.type].toString(),
+      18,
+      vault.underlyingPerShare,
+    )
       .div(BigNumber.from(10).pow(18))
-      .div(loanRatio.div(BigNumber.from(10).pow(18)));
-    startingBalance = utils.formatUnits(userShares, underlyingDecimals);
-    remainingBalance = startingBalance;
-    openDebtAmountFormatted = utils.formatUnits(openDebtAmount, underlyingDecimals);
-    borrowLimitFormatted = utils.formatUnits(borrowLimit, underlyingDecimals);
-    projectedDebtLimit = borrowLimitFormatted;
-    availableShares = userShares.sub(openDebtAmount);
-    initUnderlying();
-    initYield();
-  });
+      .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+
+    const freeCover = globalCover
+      .sub(_openDebtAmount)
+      .mul($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+
+    return (
+      sharesWithdrawAmount.gt(BigNumber.from(0)) &&
+      sharesWithdrawAmount.lt(vault.balance) &&
+      sharesWithdrawAmount.lt(freeCover)
+    );
+  }
+
+  function initializeTokenDataForAddress(address) {
+    if (vault) {
+      return getTokenDataFromBalances(address, [$balancesStore]);
+    }
+  }
+
+  function initializeCoveredDebt(_vault, _aggregatedBalances, _underlyingTokenData) {
+    if (_aggregatedBalances) {
+      return toShares(
+        utils.formatUnits(_aggregatedBalances, _underlyingTokenData.decimals),
+        18,
+        _vault.underlyingPerShare,
+      );
+    }
+  }
+
+  function calculateRemainingBalance(
+    _vault,
+    _underlyingWithdrawAmount,
+    _yieldWithdrawAmount,
+    _underlyingTokenData,
+  ) {
+    const _remainingBalanceBN = _vault.balance.sub(_underlyingWithdrawAmount).sub(_yieldWithdrawAmount);
+
+    return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
+  }
+
+  function calculateMaxWithdrawAmount(_coveredDebtAmount, _openDebtAmount, _tokenData, _vault) {
+    const scalar = BigNumber.from(10).pow(_tokenData.decimals);
+    const amountToShare = _vault.balance.mul(_vault.underlyingPerShare).div(scalar);
+    const maxAmountAvailable = _coveredDebtAmount
+      .sub(_openDebtAmount)
+      .mul($vaultsStore[vault.type].ratio.div(scalar))
+      .gt(BigNumber.from(0));
+
+    return maxAmountAvailable
+      ? utils.formatUnits(amountToShare, _tokenData.decimals)
+      : utils.formatUnits(
+          amountToShare.sub(_openDebtAmount).gt(BigNumber.from(0))
+            ? amountToShare.sub(_openDebtAmount)
+            : BigNumber.from(0),
+          _tokenData.decimals,
+        );
+  }
+
+  $: yieldTokenData = initializeTokenDataForAddress(vault.address);
+  $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
+
+  $: cDebt = initializeCoveredDebt(vault, $vaultsAggregatedBalances[vault.type], underlyingTokenData);
+
+  $: yieldWithdrawAmountShares = toShares(
+    `${yieldWithdrawAmount}`,
+    yieldTokenData.decimals,
+    vault.underlyingPerShare,
+  );
+
+  $: underlyingWithdrawAmountShares = toShares(
+    `${underlyingWithdrawAmount}`,
+    underlyingTokenData.decimals,
+    vault.underlyingPerShare,
+  );
+
+  $: ({ debt } = $vaultsStore[vault.type].debt);
+
+  $: projDebtLimit = vault.balance
+    .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
+    .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+
+  $: maxWithdrawAmountForYield = calculateMaxWithdrawAmount(cDebt, debt, yieldTokenData, vault);
+  $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(cDebt, debt, underlyingTokenData, vault);
+
+  $: withdrawButtonState = getWithdrawButtonState(
+    underlyingWithdrawAmountShares,
+    yieldWithdrawAmountShares,
+    debt,
+  );
 </script>
 
 {#if vault}
@@ -237,11 +220,14 @@
     <div slot="header" class="p-4 text-sm flex justify-between">
       <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
       <div>
-        {#if openDebtAmountFormatted !== '0.0'}
-          <p class="inline-block">{$_('chart.debt')}: {openDebtAmountFormatted} {openDebtSymbol} |</p>
+        {#if !debt.eq(BigNumber.from(0))}
+          <p class="inline-block">
+            {$_('chart.debt')}: {utils.formatUnits(debt, underlyingTokenData.decimals)}
+            {VaultTypesInfos[vault.type]} |
+          </p>
         {/if}
         <p class="inline-block">
-          {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther(loanRatio))}%
+          {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio))}%
         </p>
       </div>
     </div>
@@ -249,16 +235,21 @@
       <div class="flex space-x-4">
         <div class="w-full">
           <label for="yieldInput" class="text-sm text-lightgrey10">
-            {$_('availabl')}: ~{Math.round(parseFloat(maxYieldWithdrawAmount))}
-            {yieldSymbol}
+            {$_('available')}: ~{parseFloat(maxWithdrawAmountForYield)}
+            {yieldTokenData.symbol}
           </label>
-          <div class="flex bg-grey3 rounded border {yieldExceeded ? 'border-red3' : 'border-grey3'}">
+          <div
+            class="flex bg-grey3 rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
+              ? 'border-red3'
+              : 'border-grey3'}"
+          >
             <div class="w-full">
               <InputNumber
                 id="yieldInput"
                 bind:value="{yieldWithdrawAmount}"
-                placeholder="~0.00 {yieldSymbol}"
-                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldExceeded
+                placeholder="~0.00 {yieldTokenData.symbol}"
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
+                parseFloat(maxWithdrawAmountForYield)
                   ? 'text-red3'
                   : 'text-lightgrey5'}"
               />
@@ -272,7 +263,7 @@
                 backgroundColor="grey3"
                 borderSize="0"
                 height="h-10"
-                on:clicked="{() => setMaxYield()}"
+                on:clicked="{() => setMaxYield(parseFloat(maxWithdrawAmountForYield))}"
               />
               <Button
                 label="CLEAR"
@@ -289,16 +280,22 @@
         </div>
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
-            {$_('available')}: ~{Math.round(parseFloat(maxUnderlyingWithdrawAmount))}
-            {underlyingSymbol}
+            {$_('available')}: ~{parseFloat(maxWithdrawAmountForUnderlying)}
+            {underlyingTokenData.symbol}
           </label>
-          <div class="flex bg-grey3 rounded border {underlyingExceeded ? 'border-red3' : 'border-grey3'}">
+          <div
+            class="flex bg-grey3 rounded border {underlyingWithdrawAmount >
+            parseFloat(maxWithdrawAmountForUnderlying)
+              ? 'border-red3'
+              : 'border-grey3'}"
+          >
             <div class="w-full">
               <InputNumber
                 id="underlyingInput"
                 bind:value="{underlyingWithdrawAmount}"
-                placeholder="~0.00 {underlyingSymbol}"
-                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingExceeded
+                placeholder="~0.00 {underlyingTokenData.symbol}"
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdrawAmount >
+                parseFloat(maxWithdrawAmountForUnderlying)
                   ? 'text-red3'
                   : 'text-lightgrey5'}"
               />
@@ -312,7 +309,7 @@
                 backgroundColor="grey3"
                 borderSize="0"
                 height="h-10"
-                on:clicked="{() => setMaxUnderlying()}"
+                on:clicked="{() => setMaxUnderlying(parseFloat(maxWithdrawAmountForUnderlying))}"
               />
               <Button
                 label="CLEAR"
@@ -330,10 +327,20 @@
       </div>
 
       <div class="my-4 text-sm text-lightgrey10">
-        {$_('modals.deposit_balance')}: {startingBalance}
-        -> {remainingBalance}
+        {$_('modals.deposit_balance')}: {parseFloat(
+          utils.formatUnits(vault.balance, underlyingTokenData.decimals),
+        ).toPrecision(2)}
+        -> {calculateRemainingBalance(
+          vault,
+          underlyingWithdrawAmountShares,
+          yieldWithdrawAmountShares,
+          underlyingTokenData,
+        )}
         <br />
-        {$_('modals.borrow_limit')}: {borrowLimitFormatted} -> {projectedDebtLimit}
+        {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)} -> {utils.formatUnits(
+          projDebtLimit,
+          underlyingTokenData.decimals,
+        ) || utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
       </div>
 
       <div class="my-4">
@@ -348,9 +355,9 @@
         height="h-12"
         borderSize="1"
         fontSize="text-md"
-        solid="{withdrawEnabled}"
+        solid="{withdrawButtonState}"
         on:clicked="{onWithdrawButton}"
-        disabled="{!withdrawEnabled}"
+        disabled="{!withdrawButtonState}"
       />
     </div>
   </ContainerWithHeader>
