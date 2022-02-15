@@ -31,7 +31,6 @@ module.exports = {
     'no-restricted-syntax': 0,
     '@typescript-eslint/naming-convention': 0,
     '@typescript-eslint/no-use-before-define': 0,
-    '@typescript-eslint/no-unused-vars': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'off',
     '@typescript-eslint/no-empty-function': 'off',
