@@ -607,9 +607,9 @@
   };
 
   $: noVaultsForStrategyText = {
-    [TypeOfStrategies.USED]: `You don't have any active strategies.`,
-    [TypeOfStrategies.UNUSED]: `You are using all available strategies.`,
-    [TypeOfStrategies.ALL]: `No available strategies available at this moment.`,
+    [TypeOfStrategies.USED]: $_('table.no_strategies'),
+    [TypeOfStrategies.UNUSED]: $_('table.all_strategies'),
+    [TypeOfStrategies.ALL]: `No strategies available at this moment.`,
   };
 
   const openBorrowModal = () =>
