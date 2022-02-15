@@ -12,6 +12,7 @@
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
   import MaxLossController from '@components/composed/MaxLossController';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { formatUnits } from 'ethers/lib/utils';
 
   export let vaultIndex;
 
@@ -275,7 +276,7 @@
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => {
-                    yieldDeposit = yieldBalance;
+                    yieldDeposit = utils.formatUnits(yieldTokenData.balance, yieldTokenData.decimals);
                   }}"
                 />
                 <Button
@@ -327,7 +328,10 @@
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => {
-                    underlyingDeposit = underlyingBalance;
+                    underlyingDeposit = utils.formatUnits(
+                      underlyingTokenData.balance,
+                      underlyingTokenData.decimals,
+                    );
                   }}"
                 />
                 <Button
