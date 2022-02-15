@@ -1,11 +1,8 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { onMount } from 'svelte';
   import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
-  import tempTx from '../../../../stores/tempTx';
-  import walletBalance from '../../../../stores/walletBalance';
   import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { addressStore, balancesStore, vaultsStore } from 'src/stores/v2/alcxStore';
@@ -15,54 +12,25 @@
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { modalReset } from '@stores/modal';
 
-  export let vaultIndex;
-
-  export let yieldToken;
-  export let underlyingToken;
-  export let loanRatio;
-  export let userDeposit;
   export let borrowLimit;
-  export let underlyingDecimals;
-  export let yieldDecimals;
 
   export let vault;
 
   let maximumLoss;
 
-  let yieldBalance;
-  let underlyingBalance;
-
   let yieldDeposit = 0;
   let underlyingDeposit = 0;
-  let totalDeposit;
 
-  let startingDebtLimit;
-  let projectedDebtLimit;
-
-  let depositDisabled = true;
-
-  const onButtonDeposit = async () => {
-    let yieldAmnt;
-    let udrlyAmnt;
-    if (yieldDeposit) {
-      yieldAmnt = utils.parseUnits(yieldDeposit.toString(), yieldDecimals);
-    }
-    if (underlyingDeposit) {
-      udrlyAmnt = utils.parseUnits(underlyingDeposit.toString(), underlyingDecimals);
-    }
+  const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
     modalReset();
-    $tempTx.yieldToken = yieldToken;
-    $tempTx.underlyingToken = underlyingToken;
-    $tempTx.targetAddress = null;
-    $tempTx.vaultIndex = vaultIndex;
-    $tempTx.maximumLoss = BigNumber.from(maximumLoss);
-    if (yieldAmnt && udrlyAmnt) {
+
+    if (_yieldDeposit.gt(0) && _underlyingDeposit.gt(0)) {
       await multicallDeposit(
         vault.type,
         vault.address,
         vault.underlyingAddress,
-        udrlyAmnt,
-        yieldAmnt,
+        _underlyingDeposit,
+        _yieldDeposit,
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
       )
@@ -78,8 +46,8 @@
         .catch((e) => {
           console.error(e);
         });
-    } else if (yieldAmnt && !udrlyAmnt) {
-      await deposit(vault.address, vault.type, yieldAmnt, [$addressStore, $signer])
+    } else if (_yieldDeposit.gt(0) && _underlyingDeposit.lte(0)) {
+      await deposit(vault.address, vault.type, _yieldDeposit, [$addressStore, $signer])
         .then(() => {
           Promise.all([
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
@@ -97,7 +65,7 @@
         vault.underlyingAddress,
         vault.address,
         vault.type,
-        udrlyAmnt,
+        _underlyingDeposit,
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
       )
@@ -116,42 +84,14 @@
     }
   };
 
-  const updateBalances = () => {
-    const yieldDepositToWei = utils.parseUnits((yieldDeposit || 0).toString(), yieldDecimals);
-    const underlyingDepositToWei = utils.parseUnits((underlyingDeposit || 0).toString(), underlyingDecimals);
-    const totalToWei = yieldDepositToWei.add(underlyingDepositToWei);
-    totalDeposit = utils.formatUnits(userDeposit.add(totalToWei), underlyingDecimals);
-    if (totalToWei.gt(BigNumber.from(0))) {
-      projectedDebtLimit = utils.formatUnits(
-        BigNumber.from(borrowLimit).add(
-          totalToWei.div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
-        ),
-        underlyingDecimals,
-      );
-    } else {
-      projectedDebtLimit = startingDebtLimit;
-    }
-    depositDisabled =
-      totalToWei.toString() === '0' || yieldDeposit > yieldBalance || underlyingDeposit > underlyingBalance;
-  };
-
-  $: yieldDeposit, updateBalances();
-  $: underlyingDeposit, updateBalances();
-
-  function initializeYieldTokenData(vault) {
+  function initializeTokenDataForAddress(address) {
     if (vault) {
-      return getTokenDataFromBalances(vault.address, [$balancesStore]);
+      return getTokenDataFromBalances(address, [$balancesStore]);
     }
   }
 
-  function initializeUnderlyingTokenData(vault) {
-    if (vault) {
-      return getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
-    }
-  }
-
-  $: yieldTokenData = initializeYieldTokenData(vault);
-  $: underlyingTokenData = initializeUnderlyingTokenData(vault);
+  $: yieldTokenData = initializeTokenDataForAddress(vault.address);
+  $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
 
   function formatDepositToBN(_deposit, _tokenData) {
     if (_deposit && _tokenData) {
@@ -164,16 +104,20 @@
   $: yieldDepositBN = formatDepositToBN(yieldDeposit, yieldTokenData);
   $: underlyingDepositBN = formatDepositToBN(underlyingDeposit, underlyingTokenData);
 
-  function initializeStartDebtLimit(borrowLimit, vault) {
+  function initializeStartDebtLimit(borrowLimit, vault, _underlyingTokenData) {
     if (borrowLimit !== undefined && vault) {
-      return BigNumber.from(borrowLimit).div($vaultsStore[vault.type].ratio);
+      const _correctBorrowLimit = borrowLimit
+        .mul(vault.underlyingPerShare)
+        .div(BigNumber.from(10).pow(BigNumber.from(_underlyingTokenData.decimals).mul(2)));
+
+      const _fcorrectBorrowLimit = parseFloat(_correctBorrowLimit.toString());
+
+      return _fcorrectBorrowLimit;
     }
 
-    return BigNumber.from(0);
+    return 0;
   }
 
-  // borrowLimit + (totalDeposit / loanRatio)
-  // TODO: Fix this
   function calculateProjectedDebtLimit(
     _borrowLimit,
     _yieldDeposit,
@@ -185,32 +129,20 @@
       return undefined;
     }
 
-    const formatedYield = utils.formatUnits(_yieldDeposit, _yieldTokenData.decimals);
-    const formatedUnderlying = utils.formatUnits(_underlyingDeposit, _underlyingTokenData.decimals);
+    const _tokenDecimals = _underlyingTokenData.decimals + _yieldDeposit.gt(0) ? _yieldTokenData.decimals : 0;
+    const total = _underlyingDeposit.add(_yieldDeposit).div(BigNumber.from(10).pow(_tokenDecimals));
+    if (total.gt(0)) {
+      const _correctBorrowLimit = _borrowLimit
+        .mul(vault.underlyingPerShare)
+        .div(BigNumber.from(10).pow(BigNumber.from(_underlyingTokenData.decimals).mul(2)));
 
-    const total = parseFloat(formatedYield) + parseFloat(formatedUnderlying);
+      const _correctLoanRatio = $vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18));
 
-    const formatedBorrowLimit = parseFloat(utils.formatUnits(_borrowLimit, _underlyingTokenData.decimals));
+      const _fTotal = parseFloat(total.toString());
+      const _fcorrectBorrowLimit = parseFloat(_correctBorrowLimit.toString());
+      const _fCorrectLoanRatio = parseFloat(_correctLoanRatio.toString());
 
-    const formatedRatio = parseFloat(utils.formatUnits($vaultsStore[vault.type].ratio, 18));
-
-    // _borrowLimit
-    //    .add(total.div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18))))
-    //  .div(BigNumber.from(10).pow(decimals))
-    if (total > 0) {
-      const eBorrow = _borrowLimit.div(BigNumber.from(10).pow(_underlyingTokenData.decimals));
-
-      console.log(eBorrow.toString());
-
-      // const t = BigNumber.from(_borrowLimit)
-      //   .add(_yieldDeposit.add(_underlyingDeposit))
-      //   .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
-
-      // const decimals =
-      //   _underlyingTokenData.decimals + _yieldTokenData.decimals + _underlyingTokenData.decimals;
-
-      // console.log(utils.formatUnits(t, decimals));
-      return BigNumber.from(0);
+      return _fcorrectBorrowLimit + _fTotal / _fCorrectLoanRatio;
     } else {
       return undefined;
     }
@@ -223,7 +155,7 @@
     );
   }
 
-  $: startDebtLimit = initializeStartDebtLimit(borrowLimit, vault);
+  $: startDebtLimit = initializeStartDebtLimit(borrowLimit, vault, underlyingTokenData);
   $: projDeptLimit = calculateProjectedDebtLimit(
     borrowLimit,
     yieldDepositBN,
@@ -234,19 +166,19 @@
 
   $: totalDep = calculateTotalDeposit(vault, yieldDepositBN, underlyingDepositBN, underlyingTokenData);
 
-  onMount(() => {
-    startingDebtLimit = utils.formatUnits(
-      BigNumber.from(borrowLimit).div(BigNumber.from(parseFloat(utils.formatUnits(loanRatio, 18)))),
-      underlyingDecimals,
-    );
-  });
+  $: depositButtonDisabled =
+    !yieldDepositBN.add(underlyingDepositBN).gt(0) ||
+    yieldDepositBN.gt(yieldTokenData.balance) ||
+    underlyingDepositBN.gt(underlyingTokenData.balance);
 </script>
 
 {#if vault}
   <ContainerWithHeader>
     <div slot="header" class="p-4 text-sm flex justify-between">
       <p class="inline-block">{$_('modals.deposit_collateral')}</p>
-      <p class="inline-block">{$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther(loanRatio))}%</p>
+      <p class="inline-block">
+        {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio))}%
+      </p>
     </div>
     <div slot="body" class="p-4">
       <div class="flex space-x-4">
@@ -305,7 +237,10 @@
         {#if underlyingTokenData.balance.gt(BigNumber.from(0))}
           <div class="w-full">
             <label for="underlyingInput" class="text-sm text-lightgrey10">
-              {$_('available')}: {utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.deciamls)}
+              {$_('available')}: {utils.formatUnits(
+                underlyingTokenData.balance,
+                underlyingTokenData.deciamls,
+              )}
               {underlyingTokenData.symbol}
             </label>
             <div
@@ -362,9 +297,8 @@
       <div class="my-4 text-sm text-lightgrey10">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData.decimals)}
         -> {totalDep}<br />
-        {$_('modals.borrow_limit')}: {utils.formatUnits(startDebtLimit, 18)} -> {projectedDebtLimit}
-
-        {projDeptLimit}
+        {$_('modals.borrow_limit')}: {startDebtLimit} ->
+        {projDeptLimit || startDebtLimit}
       </div>
 
       <div class="my-4">
@@ -379,8 +313,8 @@
         height="h-12"
         borderSize="1"
         fontSize="text-md"
-        on:clicked="{onButtonDeposit}"
-        disabled="{depositDisabled}"
+        on:clicked="{() => onButtonDeposit(yieldDepositBN, underlyingDepositBN)}"
+        disabled="{depositButtonDisabled}"
       />
     </div>
   </ContainerWithHeader>
