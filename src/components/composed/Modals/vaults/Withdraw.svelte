@@ -281,7 +281,7 @@
                 backgroundColor="grey3"
                 borderSize="0"
                 height="h-10"
-                on:clicked="{() => setMaxYield(parseFloat(maxWithdrawAmountForYield))}"
+                on:clicked="{() => setMaxYield(maxWithdrawAmountForYield)}"
               />
               <Button
                 label="CLEAR"
@@ -327,7 +327,7 @@
                 backgroundColor="grey3"
                 borderSize="0"
                 height="h-10"
-                on:clicked="{() => setMaxUnderlying(parseFloat(maxWithdrawAmountForUnderlying))}"
+                on:clicked="{() => setMaxUnderlying(maxWithdrawAmountForUnderlying)}"
               />
               <Button
                 label="CLEAR"
