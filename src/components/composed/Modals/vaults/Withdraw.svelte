@@ -164,9 +164,15 @@
     return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
   }
 
-  function calculateMaxWithdrawAmount(_coveredDebtAmount, _openDebtAmount, _tokenData, _vault) {
+  function calculateMaxWithdrawAmount(
+    _coveredDebtAmount,
+    _openDebtAmount,
+    _tokenData,
+    _vault,
+    pricePerShare,
+  ) {
     const scalar = BigNumber.from(10).pow(_tokenData.decimals);
-    const amountToShare = _vault.balance.mul(_vault.underlyingPerShare).div(scalar);
+    const amountToShare = _vault.balance.mul(pricePerShare).div(scalar);
     const maxAmountAvailable = _coveredDebtAmount
       .sub(_openDebtAmount)
       .mul($vaultsStore[vault.type].ratio.div(scalar))
@@ -205,8 +211,20 @@
     .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
     .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
-  $: maxWithdrawAmountForYield = calculateMaxWithdrawAmount(cDebt, debt, yieldTokenData, vault);
-  $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(cDebt, debt, underlyingTokenData, vault);
+  $: maxWithdrawAmountForYield = calculateMaxWithdrawAmount(
+    cDebt,
+    debt,
+    yieldTokenData,
+    vault,
+    vault.yieldPerShare,
+  );
+  $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
+    cDebt,
+    debt,
+    underlyingTokenData,
+    vault,
+    vault.underlyingPerShare,
+  );
 
   $: withdrawButtonState = getWithdrawButtonState(
     underlyingWithdrawAmountShares,
@@ -329,7 +347,7 @@
       <div class="my-4 text-sm text-lightgrey10">
         {$_('modals.deposit_balance')}: {parseFloat(
           utils.formatUnits(vault.balance, underlyingTokenData.decimals),
-        ).toPrecision(2)}
+        )}
         -> {calculateRemainingBalance(
           vault,
           underlyingWithdrawAmountShares,
