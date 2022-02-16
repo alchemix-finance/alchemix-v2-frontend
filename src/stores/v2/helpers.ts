@@ -89,7 +89,7 @@ export function calculateVaultDebt(
 }
 
 export function getTokenDataFromBalances(address: string, [balancesStore]: [BalanceType[]]) {
-  return balancesStore.find((val) => val.address === address);
+  return balancesStore.find((val) => `${val.address}`.toLowerCase() === `${address}`.toLowerCase());
 }
 
 export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]: [BalanceType[]]) {

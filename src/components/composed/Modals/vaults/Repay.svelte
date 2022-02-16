@@ -1,75 +1,109 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { utils, FixedNumber } from 'ethers';
+  import { utils, FixedNumber, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
-  import tempTx from '../../../../stores/tempTx';
   import { VaultTypesInfos } from '@stores/v2/constants';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
-  import { balancesStore, tokensStore, vaultsStore } from 'src/stores/v2/alcxStore';
+  import { addressStore, balancesStore, tokensStore, vaultsStore } from 'src/stores/v2/alcxStore';
+  import { getTokenDataFromBalances } from 'src/stores/v2/helpers';
+  import { burn, repay } from 'src/stores/v2/vaultActions';
+  import { signer } from 'src/stores/v2/derived';
+  import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from 'src/stores/v2/asyncMethods';
+  import { modalReset } from '@stores/modal';
 
   export let selectedVaults;
 
-  export let underlyingTokens;
-  export let underlyingPerShare;
-  export let outstandingDebt;
-
-  let underlyingAmount;
-  let underlyingSymbol;
-  let underlyingToken;
-  let underlyingDecimals;
-
   let repayAmount;
   let canRepay = false;
-  let remainingDebt;
-  let method;
 
   let currentSelectedVault = selectedVaults[0];
-  $: vaultInfo = VaultTypesInfos[currentSelectedVault];
+  let currentUnderlyingToken = 0;
 
-  const setMaxRepay = () => {
+  const setMaxRepay = (_fAmount, _fDebt) => {
     repayAmount =
-      parseFloat(underlyingAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : underlyingAmount;
+      parseFloat(_fAmount) > parseFloat(_fDebt)
+        ? `${parseFloat(_fDebt).toFixed(6)}`
+        : `${parseFloat(_fAmount).toFixed(6)}`;
   };
 
   const clearRepay = () => {
     repayAmount = '';
   };
 
-  const repay = () => {
-    const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(underlyingDecimals);
-    const repayFormatted = FixedNumber.from(repayAmount).toUnsafeFloat().toFixed(underlyingDecimals);
-    $tempTx.amountRepay =
-      parseFloat(repayAmount) > parseFloat(outstandingDebt)
-        ? utils.parseUnits(debtFormatted.toString(), underlyingDecimals)
-        : utils.parseUnits(repayFormatted.toString(), underlyingDecimals);
-    $tempTx.underlyingToken = underlyingToken;
-    $tempTx.method = method;
-  };
-
-  const onRepayButton = async () => {};
-
-  const updateBalances = () => {
-    remainingDebt =
-      parseFloat(repayAmount) > parseFloat(outstandingDebt) ? 0 : outstandingDebt - (repayAmount || 0);
-    canRepay = parseFloat(repayAmount) > 0 && parseFloat(repayAmount) <= parseFloat(underlyingAmount);
-  };
-
-  const switchUnderlying = () => {
-    if (underlyingSymbol) {
-      const token = underlyingTokens.find((entry) => entry.symbol === underlyingSymbol);
-      underlyingDecimals = token.decimals;
-      underlyingAmount = utils.formatUnits(token.balance, underlyingDecimals);
-      underlyingToken = token.address;
-      method = token.method;
-      clearRepay();
-      updateBalances();
+  const onRepayButton = async (debTokenData, amount, vaultType) => {
+    modalReset();
+    if (VaultTypesInfos[vaultType].name === debTokenData.symbol) {
+      await burn(debTokenData.address, amount, vaultType, [$signer, $addressStore]).then(() => {
+        Promise.all([
+          fetchBalanceByAddress(debTokenData.address, [$signer]),
+          fetchVaultDebt(vaultType, [$addressStore, $signer]),
+          fetchVaultRatio(vaultType, [$signer]),
+        ]).then(() => console.log('[onRepayButton/burn]: Finished data update!'));
+      });
+    } else {
+      await repay(debTokenData.address, amount, vaultType, [$signer, $addressStore]).then(() => {
+        Promise.all([
+          fetchBalanceByAddress(debTokenData.address, [$signer]),
+          fetchVaultDebt(vaultType, [$addressStore, $signer]),
+          fetchVaultRatio(vaultType, [$signer]),
+        ]).then(() => console.log('[onRepayButton/repay]: Finished data update!'));
+      });
     }
   };
 
-  $: repayAmount, updateBalances();
-  $: underlyingSymbol, switchUnderlying();
-  $: underlyingTokens, console.log(underlyingTokens);
+  function generateTokenListBasedOnVaultId(_vaultId, _vaultsStore) {
+    if (!_vaultsStore[_vaultId] || _vaultId === undefined) {
+      return [];
+    }
+
+    const _vyTokens = [];
+
+    const debtTokenData = getTokenDataFromBalances(_vaultsStore[_vaultId].debtToken, [$balancesStore]);
+
+    console.log($balancesStore);
+    console.log(_vaultsStore[_vaultId].debtToken);
+
+    _vyTokens.push({
+      address: debtTokenData.address,
+      symbol: debtTokenData.symbol,
+    });
+
+    _vaultsStore[_vaultId].vaultBody.forEach((vault) => {
+      const _tokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
+
+      _vyTokens.push({
+        address: _tokenData.address,
+        symbol: _tokenData.symbol,
+      });
+    });
+
+    return _vyTokens;
+  }
+
+  const calculateRemainingDebt = (_fDebt, _fInputNumber) => {
+    return parseFloat(_fInputNumber) >= parseFloat(_fDebt)
+      ? 0
+      : parseFloat(_fDebt) - parseFloat(_fInputNumber);
+  };
+
+  $: underlyingTokenList = generateTokenListBasedOnVaultId(currentSelectedVault, $vaultsStore);
+
+  $: currentTokenData = getTokenDataFromBalances(underlyingTokenList[currentUnderlyingToken].address, [
+    $balancesStore,
+  ]);
+
+  $: ({ debt } = $vaultsStore[currentSelectedVault].debt);
+
+  $: currentUnderlyingToken, clearRepay();
+
+  $: lastDebt = calculateRemainingDebt(utils.formatEther(debt), repayAmount || 0);
+
+  $: canRepay =
+    parseFloat(repayAmount) > 0 &&
+    parseFloat(repayAmount) <= parseFloat(utils.formatEther(debt)) &&
+    parseFloat(repayAmount) <=
+      parseFloat(utils.formatUnits(currentTokenData.balance, currentTokenData.decimals));
 </script>
 
 <ContainerWithHeader>
@@ -91,24 +125,27 @@
       <select
         id="selectUnderlying"
         class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
-        bind:value="{underlyingSymbol}"
+        bind:value="{currentUnderlyingToken}"
       >
-        {#each underlyingTokens as token}
-          <option value="{token.symbol}">{token.symbol}</option>
+        {#each underlyingTokenList as token, index}
+          <option value="{index}">{token.symbol}</option>
+        {:else}
+          <option>...</option>
         {/each}
       </select>
     </div>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     <label for="repayInput" class="text-sm text-lightgrey10">
-      {$_('available')}: {underlyingAmount}
-      {underlyingSymbol}
+      {$_('available')}: {utils.formatUnits(currentTokenData.balance, currentTokenData.decimals)}
+      {currentTokenData.symbol}
     </label>
+
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <InputNumber
           id="repayInput"
-          placeholder="~0.00 {underlyingSymbol}"
+          placeholder="~0.00 {currentTokenData.symbol}"
           bind:value="{repayAmount}"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
         />
@@ -122,7 +159,11 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => setMaxRepay()}"
+          on:clicked="{() =>
+            setMaxRepay(
+              utils.formatUnits(currentTokenData.balance, currentTokenData.decimals),
+              utils.formatEther(debt),
+            )}"
         />
         <Button
           label="CLEAR"
@@ -137,7 +178,7 @@
       </div>
     </div>
     <div class="w-full text-sm text-lightgrey10">
-      {$_('modals.outstanding_debt')}: {outstandingDebt} -> {remainingDebt}
+      {$_('modals.outstanding_debt')}: {utils.formatEther(debt)} -> {lastDebt.toFixed(10)}
     </div>
     <Button
       label="{$_('actions.repay')}"
@@ -147,7 +188,12 @@
       height="h-12"
       fontSize="text-md"
       disabled="{!canRepay}"
-      on:clicked="{() => onRepayButton()}"
+      on:clicked="{() =>
+        onRepayButton(
+          currentTokenData,
+          utils.parseUnits(`${repayAmount}` || `0`, currentTokenData.decimals || 1),
+          currentSelectedVault,
+        )}"
     />
   </div>
 </ContainerWithHeader>
