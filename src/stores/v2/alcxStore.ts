@@ -40,3 +40,5 @@ export const providerStore = writable<providers.Web3Provider>(undefined);
 export const balancesStore = writable<BalanceType[]>([]);
 export const tokensStore = writable<TokensType>({});
 export const vaultsStore = writable<VaultsType>({});
+export const sentinelStore = writable<boolean>(undefined);
+export const controllerStore = writable<[]>([]);

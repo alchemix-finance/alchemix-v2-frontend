@@ -23,6 +23,7 @@
   import Farms from './views/Farms.svelte';
   import Governance from './views/Governance.svelte';
   import Settings from './views/Settings.svelte';
+  import Sentinel from './views/Sentinel.svelte';
 
   import { connect } from '@helpers/walletManager';
 
@@ -80,6 +81,7 @@
               <Route path="/settings" component="{Settings}" />
               <Route path="/" component="{Landing}" />
               <Route path="/*" component="{Error}" />
+              <Route path="/sentinel" component="{Sentinel}" />
             {/if}
           </div>
         </div>

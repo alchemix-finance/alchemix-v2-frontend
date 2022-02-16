@@ -12,6 +12,7 @@ import {
   updateVaultByAddress,
   updateVaultDebt,
   updateVaultRatio,
+  updateSentinelRole,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
 import { VaultConstants } from '@stores/v2/constants';
@@ -125,4 +126,28 @@ export async function fetchUpdateVaultByAddress(
   return vaultData.then((_vaultData) => {
     updateVaultByAddress(vaultId, vaultAddress, _vaultData);
   });
+}
+
+export async function fetchAlchemistSentinelRole(
+  vaultId: VaultTypes,
+  [signer, accountAddress]: [ethers.Signer, string],
+) {
+  if (signer) {
+    const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
+    return instance.sentinels(accountAddress).then((_role) => {
+      updateSentinelRole(_role);
+    });
+  }
+}
+
+export async function fetchTokenEnabledStatus(
+  vaultType: VaultTypes,
+  tokenAddress: string,
+  signer: ethers.Signer,
+) {
+  const { instance } = contractWrapper(VaultConstants[vaultType].alchemistContractSelector, signer);
+  const token = (await instance.isSupportedUnderlyingToken(tokenAddress))
+    ? await instance.getUnderlyingTokenParameters(tokenAddress)
+    : await instance.getYieldTokenParameters(tokenAddress);
+  return token.enabled;
 }

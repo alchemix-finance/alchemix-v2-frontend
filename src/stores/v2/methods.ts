@@ -1,7 +1,14 @@
 import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
-import { addressStore, providerStore, balancesStore, vaultsStore, tokensStore } from './alcxStore';
+import {
+  addressStore,
+  providerStore,
+  balancesStore,
+  vaultsStore,
+  tokensStore,
+  sentinelStore,
+} from './alcxStore';
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);
@@ -10,6 +17,8 @@ export const updateAddress = (address: string) => {
 export const updateProvider = (provider: providers.Web3Provider) => {
   providerStore.set(provider);
 };
+
+export const updateSentinelRole = (role: boolean) => sentinelStore.set(role);
 
 export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(balances);
 

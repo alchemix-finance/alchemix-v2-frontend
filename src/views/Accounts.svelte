@@ -137,7 +137,7 @@
             totalDeposit="{$aggregate.balance}"
             totalDebtLimit="{$aggregate.balance.div(BigNumber.from(2))}"
             aggregatedApy="0"
-            totalDebt="{$aggregate.totalDebt}"
+            totalDebt="{utils.parseUnits($aggregate.totalDebt.toString(), 18)}"
             totalInterest="0"
           />
         </div>
