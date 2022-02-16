@@ -118,11 +118,7 @@
   function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _openDebtAmount) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
 
-    const globalCover = toShares(
-      $vaultsAggregatedBalances[vault.type].toString(),
-      18,
-      vault.underlyingPerShare,
-    )
+    const globalCover = toShares($vaultsAggregatedBalances[vault.type].toString(), 18, vault.yieldPerShare)
       .div(BigNumber.from(10).pow(18))
       .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
@@ -345,9 +341,7 @@
       </div>
 
       <div class="my-4 text-sm text-lightgrey10">
-        {$_('modals.deposit_balance')}: {parseFloat(
-          utils.formatUnits(vault.balance, underlyingTokenData.decimals),
-        )}
+        {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
         -> {calculateRemainingBalance(
           vault,
           underlyingWithdrawAmountShares,
