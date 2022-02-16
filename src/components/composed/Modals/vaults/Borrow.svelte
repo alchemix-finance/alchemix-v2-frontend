@@ -7,17 +7,11 @@
   import Button from '../../../elements/Button.svelte';
   import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
-
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { addressStore, balancesStore, tokensStore, vaultsStore } from 'src/stores/v2/alcxStore';
   import { signer, vaultsAggregatedDebt } from 'src/stores/v2/derived';
   import { mint } from 'src/stores/v2/vaultActions';
-  import {
-    fetchAllVaultsBodies,
-    fetchBalanceByAddress,
-    fetchVaultDebt,
-    fetchVaultRatio,
-  } from 'src/stores/v2/asyncMethods';
+  import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from 'src/stores/v2/asyncMethods';
   import { getTokenDataFromBalancesBySymbol } from 'src/stores/v2/helpers';
   import { modalReset } from '@stores/modal';
   export let selectedVaults;
@@ -66,7 +60,6 @@
         fetchVaultRatio(_currentVaultType, [$signer]),
         fetchVaultDebt(_currentVaultType, [$addressStore, $signer]),
         fetchBalanceByAddress(alUSDData.address, [$signer]),
-        fetchAllVaultsBodies(_currentVaultType, [$signer, $tokensStore, $addressStore]),
       ]).then(() => {
         console.log('[onMintButton/mint/finish]: Updated values related to borrow!');
       });
