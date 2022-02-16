@@ -79,6 +79,7 @@ module.exports = {
       alcxLogo: ['Reem Kufi', 'sans-serif'],
       alcxTitles: ['neue-kabel', 'Josefin Sans', 'sans-serif'],
       alcxFlow: ['Montserrat', 'sans-serif'],
+      alcxMono: ['monospace']
     },
   },
   variants: {

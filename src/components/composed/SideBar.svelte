@@ -3,7 +3,8 @@
   import { globalHistory } from 'svelte-routing/src/history';
   import { _ } from 'svelte-i18n';
   import Wallet from './Wallet.svelte';
-  import { routerGuard } from '../../helpers/routerGuard.js';
+  import { routerGuard } from '@helpers/routerGuard';
+  import { sentinelStore } from '@stores/v2/alcxStore';
 
   const sidebarSetup = [
     {
@@ -30,6 +31,11 @@
       label: 'governance',
       path: 'governance',
       icon: 'alcx_thick.svg',
+    },
+    {
+      label: 'sentinel',
+      path: 'sentinel',
+      icon: 'sentinel_thick.svg',
     },
   ];
 
@@ -58,7 +64,7 @@
   {$_('navigation')}
 </p>
 <ul>
-  {#each sidebarSetup as sidebarItem}
+  {#each sidebarSetup.filter((key) => key.label !== 'sentinel') as sidebarItem}
     <li
       class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(1) ===
       `${sidebarItem.path}`
@@ -69,5 +75,20 @@
       <span>{$_(sidebarItem.label)}</span>
       <img src="images/icons/{sidebarItem.icon}" class="w-6 h-6" />
     </li>
+  {/each}
+  {#each sidebarSetup.filter((key) => key.label === 'sentinel') as sidebarItem}
+    {#if $sentinelStore}
+      <li
+        class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(
+          1,
+        ) === `${sidebarItem.path}`
+          ? 'bg-grey10 opacity-100'
+          : 'opacity-40'} hover:bg-grey10 hover:opacity-100"
+        on:click="{() => routerGuard(sidebarItem.path)}"
+      >
+        <span>{$_(sidebarItem.label)}</span>
+        <img src="images/icons/{sidebarItem.icon}" class="w-6 h-6" />
+      </li>
+    {/if}
   {/each}
 </ul>
