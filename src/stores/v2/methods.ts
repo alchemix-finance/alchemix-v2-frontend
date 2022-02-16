@@ -18,8 +18,7 @@ export const updateProvider = (provider: providers.Web3Provider) => {
   providerStore.set(provider);
 };
 
-// TODO remove inverse
-export const updateSentinelRole = (role: boolean) => sentinelStore.set(!role);
+export const updateSentinelRole = (role: boolean) => sentinelStore.set(role);
 
 export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(balances);
 
