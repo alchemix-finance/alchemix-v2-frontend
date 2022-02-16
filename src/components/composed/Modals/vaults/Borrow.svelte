@@ -11,9 +11,14 @@
 
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
+  import { VaultTypesInfos } from '@stores/v2/constants';
+  import { vaultsStore } from 'src/stores/v2/alcxStore';
+
   export let debtToken;
   export let maxDebt;
   export let currentDebt;
+
+  export let selectedVaults;
 
   let availableAmount;
   let borrowAmount;
@@ -79,6 +84,10 @@
     availableAmount = parseFloat(maxDebt) - parseFloat(currentDebt);
   });
 
+  $: debtTokenInfo = VaultTypesInfos[selectedVaults[0]];
+
+  $: console.log($vaultsStore[selectedVaults[0]].debt);
+
   $: borrowAmount, updateValues();
   $: exportAndTransfer, updateValues();
   $: targetWallet, updateValues();
@@ -87,7 +96,7 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="inline-block">{$_('actions.borrow')} {debtToken.symbol}</p>
+    <p class="inline-block">{$_('actions.borrow')} {debtTokenInfo.name}</p>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     {#if availableAmount === 0 && maxDebt > 0}
@@ -97,13 +106,13 @@
     {:else}
       <label for="borrowInput" class="text-sm text-lightgrey10">
         {$_('available')}: {availableAmount}
-        {debtToken.symbol}
+        {debtTokenInfo.name}
       </label>
       <div class="flex bg-grey3 rounded border border-grey3">
         <div class="w-full">
           <InputNumber
             id="borrowInput"
-            placeholder="~0.00 {debtToken.symbol}"
+            placeholder="~0.00 {debtTokenInfo.name}"
             bind:value="{borrowAmount}"
             class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
           />

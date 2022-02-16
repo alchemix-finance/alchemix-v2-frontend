@@ -672,6 +672,7 @@
         address: '',
       },
       vaultType: VaultTypes.alETH,
+      selectedVaults: $vaultsSelector,
       maxDebt: $alusd.maxDebt,
       currentDebt: $alusd.userDebt,
     });
