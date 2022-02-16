@@ -542,29 +542,6 @@
     };
   });
 
-  $: console.log('old', rowsAll);
-
-  $: console.log('strategies', currentRowsOnCurrentStrategyType);
-
-  function reactiveVaultsRendering(_vaultsStore, _selectedVaultsStore) {
-    if (!_vaultsStore) {
-      console.error('[reactiveVaultsRendering]: vaultStore is empty!');
-      return [];
-    }
-
-    let bvaults = Object.keys(_vaultsStore)
-      .map((vTypeId) => {
-        if (_selectedVaultsStore.includes(parseInt(vTypeId))) {
-          return _vaultsStore[parseInt(vTypeId)].vaultBody;
-        }
-      })
-      .filter((elm) => elm !== undefined)
-      .reduce((accumulator, value) => accumulator.concat(value), []);
-    // .filter((v) => v.balance.lte(BigNumber.from(0)));
-
-    return bvaults;
-  }
-
   // @dev updates the arrays used to feed data to "borrow", "repay" and "liquidate" modals
   const refreshValueArrays = () => {
     underlyingTokenAlusd.length = 0;
@@ -690,13 +667,7 @@
 
   const openBorrowModal = () =>
     showModal(Borrow, {
-      debtToken: {
-        symbol: 'alUSD',
-        address: '',
-      },
-      vaultType: VaultTypes.alETH,
-      maxDebt: $alusd.maxDebt,
-      currentDebt: $alusd.userDebt,
+      selectedVaults: $vaultsSelector,
     });
 
   const openRepayModal = () =>
