@@ -41,6 +41,8 @@
     $tempTx.method = method;
   };
 
+  const onRepayButton = async () => {};
+
   const updateBalances = () => {
     remainingDebt =
       parseFloat(repayAmount) > parseFloat(outstandingDebt) ? 0 : outstandingDebt - (repayAmount || 0);
@@ -125,7 +127,7 @@
       height="h-12"
       fontSize="text-md"
       disabled="{!canRepay}"
-      on:clicked="{() => repay()}"
+      on:clicked="{() => onRepayButton()}"
     />
   </div>
 </ContainerWithHeader>
