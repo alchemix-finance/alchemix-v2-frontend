@@ -249,7 +249,7 @@
       <div class="flex space-x-4">
         <div class="w-full">
           <label for="yieldInput" class="text-sm text-lightgrey10">
-            {$_('available')}: ~{parseFloat(maxWithdrawAmountForYield)}
+            {$_('available')}: ~{maxWithdrawAmountForYield}
             {yieldTokenData.symbol}
           </label>
           <div
@@ -294,7 +294,7 @@
         </div>
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
-            {$_('available')}: ~{parseFloat(maxWithdrawAmountForUnderlying)}
+            {$_('available')}: ~{maxWithdrawAmountForUnderlying}
             {underlyingTokenData.symbol}
           </label>
           <div
