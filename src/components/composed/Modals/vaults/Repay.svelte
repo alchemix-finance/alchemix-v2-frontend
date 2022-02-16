@@ -4,8 +4,11 @@
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
   import tempTx from '../../../../stores/tempTx';
-
+  import { VaultTypesInfos } from '@stores/v2/constants';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { balancesStore, tokensStore, vaultsStore } from 'src/stores/v2/alcxStore';
+
+  export let selectedVaults;
 
   export let underlyingTokens;
   export let underlyingPerShare;
@@ -20,6 +23,9 @@
   let canRepay = false;
   let remainingDebt;
   let method;
+
+  let currentSelectedVault = selectedVaults[0];
+  $: vaultInfo = VaultTypesInfos[currentSelectedVault];
 
   const setMaxRepay = () => {
     repayAmount =
@@ -69,15 +75,29 @@
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.repay_loans')}</p>
-    <select
-      id="selectUnderlying"
-      class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
-      bind:value="{underlyingSymbol}"
-    >
-      {#each underlyingTokens as token}
-        <option value="{token.symbol}">{token.symbol}</option>
-      {/each}
-    </select>
+    <div class="flex gap-1">
+      {#if selectedVaults.length > 1}
+        <select
+          name="selectToken"
+          id="selectToken"
+          class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+          bind:value="{currentSelectedVault}"
+        >
+          {#each selectedVaults as vaultId}
+            <option value="{vaultId}">{VaultTypesInfos[vaultId].name}</option>
+          {/each}
+        </select>
+      {/if}
+      <select
+        id="selectUnderlying"
+        class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+        bind:value="{underlyingSymbol}"
+      >
+        {#each underlyingTokens as token}
+          <option value="{token.symbol}">{token.symbol}</option>
+        {/each}
+      </select>
+    </div>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     <label for="repayInput" class="text-sm text-lightgrey10">

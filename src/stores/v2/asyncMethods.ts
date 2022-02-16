@@ -12,6 +12,7 @@ import {
   updateVaultByAddress,
   updateVaultDebt,
   updateVaultRatio,
+  updateVaultDebtToken,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
 import { VaultConstants } from '@stores/v2/constants';
@@ -73,6 +74,19 @@ export async function fetchVaultDebt(vaultId: VaultTypes, [accountAddress, signe
   const rawDebt = await instance.accounts(accountAddress);
 
   updateVaultDebt(vaultId, rawDebt);
+}
+
+export async function fetchVaultDebtToken(vaultId: VaultTypes, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchBalanceByAddress]: signer is undefined`);
+    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+  }
+
+  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
+
+  const debtToken = await instance.debtToken();
+
+  updateVaultDebtToken(vaultId, debtToken);
 }
 
 export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Signer]) {

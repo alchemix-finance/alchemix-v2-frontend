@@ -6,6 +6,7 @@
     fetchAllBalances,
     fetchAllVaultsBodies,
     fetchBalanceByAddress,
+    fetchVaultDebtToken,
     fetchVaultDebt,
     fetchVaultRatio,
     fetchVaultTokens,
@@ -25,6 +26,8 @@
     await fetchVaultDebt(VaultTypes.alUSD, [$addressStore, $signer]);
 
     await fetchVaultRatio(VaultTypes.alUSD, [$signer]);
+
+    await fetchVaultDebtToken(VaultTypes.alUSD, [$signer]);
 
     await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
 

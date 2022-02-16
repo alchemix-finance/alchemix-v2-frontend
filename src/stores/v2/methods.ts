@@ -60,6 +60,19 @@ export const updateVaultRatio = (vault: VaultTypes, ratio: ethers.BigNumber) =>
     return _store;
   });
 
+export const updateVaultDebtToken = (vault: VaultTypes, debtToken: string) =>
+  vaultsStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vault]: {
+        ..._store[vault],
+        debtToken: debtToken,
+      },
+    };
+
+    return _store;
+  });
+
 export const updateAllVaultBody = (vault: VaultTypes, vaultsBodies: BodyVaultType[]) =>
   vaultsStore.update((_store) => {
     _store = {
