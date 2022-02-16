@@ -159,7 +159,7 @@
     _yieldWithdrawAmount,
     _underlyingTokenData,
   ) {
-    const _remainingBalanceBN = _vault.balance.sub(_underlyingWithdrawAmount).sub(_yieldWithdrawAmount);
+    const _remainingBalanceBN = _vault.balance.sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount));
 
     return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
   }
@@ -196,7 +196,7 @@
   $: yieldWithdrawAmountShares = toShares(
     `${yieldWithdrawAmount}`,
     yieldTokenData.decimals,
-    vault.underlyingPerShare,
+    vault.yieldPerShare,
   );
 
   $: underlyingWithdrawAmountShares = toShares(
