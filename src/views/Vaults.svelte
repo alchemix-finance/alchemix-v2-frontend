@@ -667,14 +667,7 @@
 
   const openBorrowModal = () =>
     showModal(Borrow, {
-      debtToken: {
-        symbol: 'alUSD',
-        address: '',
-      },
-      vaultType: VaultTypes.alETH,
       selectedVaults: $vaultsSelector,
-      maxDebt: $alusd.maxDebt,
-      currentDebt: $alusd.userDebt,
     });
 
   const openRepayModal = () =>

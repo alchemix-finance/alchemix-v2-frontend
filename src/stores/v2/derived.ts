@@ -39,13 +39,6 @@ export const vaultsAggregatedBalances = derived([vaultsStore], ([$vaults]) => {
 
     let initialVal = BigNumber.from(0);
 
-    //  const vaultDebt = calculateVaultDebt(
-    //    vault.balance,
-    //    vault.underlyingPerShare,
-    //    underlyingTokenData.decimals,
-    //    $vaultsStore[vault.type].ratio,
-    //  );
-
     balances = {
       ...balances,
       [Number(vaultTypeKey)]: vaultBody.reduce((_prevVault, _currentVault) => {
