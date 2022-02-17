@@ -75,10 +75,9 @@
     if (!_aggregatedDebtStore[_selectedVault] || !_vaultsStore[_selectedVault]) {
       return BigNumber.from(0);
     }
-
     return utils
       .parseUnits(_aggregatedDebtStore[_selectedVault].toString(), 18)
-      .sub(_vaultsStore[_selectedVault].debt);
+      .sub(_vaultsStore[_selectedVault].debt.debt);
   }
 
   function getMaxDebt(_aggregatedDebtStore, _selectedVault) {

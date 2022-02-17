@@ -300,11 +300,6 @@ function vaultAlusdRowBuilder(tokens) {
       } else {
         _aggregate.balance = balanceValue;
       }
-      if (_aggregate.withdrawable) {
-        _aggregate.withdrawable = _aggregate.withdrawable.add(0);
-      } else {
-        _aggregate.withdrawable = 0;
-      }
       aggregate.set({ ..._aggregate });
       alusd.set({ ..._alusd });
       if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;
@@ -336,6 +331,11 @@ async function initAlusdVault() {
   _alusd.ratio = utils.formatEther(rawRatio.toString());
   alusd.set({ ..._alusd });
 
+  // if (_aggregate.withdrawable) {
+  //   _aggregate.withdrawable = _aggregate.withdrawable.add(0);
+  // } else {
+  //   _aggregate.withdrawable = position.shares.sub(rawDebt.debt.mul(rawRatio));
+  // }
   _aggregate.totalDebt = parseFloat(_alusd.userDebt);
 
   vaultAlusdRowBuilderQueue(_alusd.yieldTokens);

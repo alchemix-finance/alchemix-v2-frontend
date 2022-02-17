@@ -73,7 +73,7 @@ export async function fetchVaultDebt(vaultId: VaultTypes, [accountAddress, signe
 
   const rawDebt = await instance.accounts(accountAddress);
 
-  updateVaultDebt(vaultId, rawDebt[0]);
+  updateVaultDebt(vaultId, rawDebt);
 }
 
 export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Signer]) {
