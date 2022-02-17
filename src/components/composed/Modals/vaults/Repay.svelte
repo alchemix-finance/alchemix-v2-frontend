@@ -21,10 +21,8 @@
   let currentUnderlyingToken = 0;
 
   const setMaxRepay = (_fAmount, _fDebt) => {
-    repayAmount =
-      parseFloat(_fAmount) > parseFloat(_fDebt)
-        ? `${parseFloat(_fDebt).toFixed(6)}`
-        : `${parseFloat(_fAmount).toFixed(6)}`;
+    // const amountBN = utils.parseEther(_fAmount);
+    repayAmount = parseFloat(_fAmount) > parseFloat(_fDebt) ? `${_fDebt}` : `${_fAmount}`;
   };
 
   const clearRepay = () => {
@@ -67,6 +65,7 @@
     _vyTokens.push({
       address: debtTokenData.address,
       symbol: debtTokenData.symbol,
+      underlyingPerShare: BigNumber.from(1),
     });
 
     _vaultsStore[_vaultId].vaultBody.forEach((vault) => {
@@ -75,6 +74,7 @@
       _vyTokens.push({
         address: _tokenData.address,
         symbol: _tokenData.symbol,
+        underlyingPerShare: vault.underlyingPerShare,
       });
     });
 
@@ -98,6 +98,25 @@
   $: currentUnderlyingToken, clearRepay();
 
   $: lastDebt = calculateRemainingDebt(utils.formatEther(debt), repayAmount || 0);
+
+  $: {
+    try {
+      console.log(
+        'underlyingPerShare',
+        underlyingTokenList[currentUnderlyingToken].underlyingPerShare.toString(),
+      );
+      console.log(
+        utils.formatUnits(
+          debt.mul(
+            underlyingTokenList[currentUnderlyingToken].underlyingPerShare.div(
+              BigNumber.from(10).pow(currentTokenData.decimals),
+            ),
+          ),
+          currentTokenData.decimals,
+        ),
+      );
+    } catch (e) {}
+  }
 
   $: canRepay =
     parseFloat(repayAmount) > 0 &&
