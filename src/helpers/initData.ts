@@ -300,6 +300,11 @@ function vaultAlusdRowBuilder(tokens) {
       } else {
         _aggregate.balance = balanceValue;
       }
+      if (_aggregate.withdrawable) {
+        _aggregate.withdrawable = _aggregate.withdrawable.add(0);
+      } else {
+        _aggregate.withdrawable = 0;
+      }
       aggregate.set({ ..._aggregate });
       alusd.set({ ..._alusd });
       if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;

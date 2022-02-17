@@ -83,8 +83,9 @@ export function calculateVaultDebt(
 ) {
   return (
     _vaultBalance
-      .mul(_underlyingPerShare.div(BigNumber.from(10).pow(BigNumber.from(_underlyingDecimals))))
-      .div(BigNumber.from(_debtRatio).div(BigNumber.from(10).pow(18))) ?? BigNumber.from(0)
+      .div(_debtRatio.div(BigNumber.from(10).pow(18)).mul(BigNumber.from(10).pow(_underlyingDecimals)))
+      .mul(_underlyingPerShare)
+      .div(BigNumber.from(10).pow(_underlyingDecimals)) ?? BigNumber.from(0)
   );
 }
 
