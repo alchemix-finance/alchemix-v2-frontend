@@ -31,6 +31,7 @@ export interface VaultsType {
   [key: number]: {
     debt: any;
     ratio: ethers.BigNumber;
+    debtTokenAddress: string;
     vaultBody: BodyVaultType[];
   };
 }
