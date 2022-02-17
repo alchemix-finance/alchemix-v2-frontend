@@ -36,8 +36,6 @@
   $: if (isExpanded && !ExpandedRowComponent) {
     throw new Error('Row needs an ExpandedRowComponent when expanded');
   }
-
-  $: console.log(row.cells);
 </script>
 
 <style>

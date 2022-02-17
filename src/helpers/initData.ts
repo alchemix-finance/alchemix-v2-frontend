@@ -227,6 +227,8 @@ function vaultAlusdRowBuilder(tokens) {
         const debtTokenAddress = await contract.debtToken();
         _alusd.debtToken = await tokenFinder(debtTokenAddress);
       }
+      // const accounts = await contract.accounts(_account.address);
+      // const debt = accounts.debt;
       const params = await contract.getYieldTokenParameters(token);
       const underlyingToken = params.underlyingToken;
       const yieldConfig = await tokenFinder(token);
@@ -300,6 +302,14 @@ function vaultAlusdRowBuilder(tokens) {
       } else {
         _aggregate.balance = balanceValue;
       }
+      // console.log(
+      //   balance.toString(),
+      //   debt.toString(),
+      //   debt.mul(ethers.BigNumber.from(parseFloat(_alusd.ratio))).toString(),
+      // );
+      // _aggregate.withdraw = _aggregate.totalDeposit.sub(
+      //   debt.mul(ethers.BigNumber.from(parseFloat(_alusd.ratio))),
+      // );
       aggregate.set({ ..._aggregate });
       alusd.set({ ..._alusd });
       if (_alusd.yieldTokens.length === _alusd.rows.length) _alusd.loadingRowData = false;
