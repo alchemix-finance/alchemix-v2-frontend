@@ -29,7 +29,11 @@
   let userVerifiedToggle = false;
 
   const onLiquidateButton = async (yieldTokenData, amount, vaultType) => {
-    const _fAmount = utils.parseUnits(utils.formatEther(amount), yieldTokenData.decimals);
+    const _fAmount = utils
+      .parseUnits(utils.formatEther(amount), yieldTokenData.decimals)
+      .mul(yieldTokenData.yieldPerShare)
+      .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+
     modalReset();
     await liquidate(yieldTokenData.address, _fAmount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
       () => {
