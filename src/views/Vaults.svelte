@@ -680,6 +680,7 @@
 
   const openRepayModal = () =>
     showModal(Repay, {
+      selectedVaultsType: $vaultsSelector,
       underlyingTokens: underlyingTokenAlusd,
       outstandingDebt: $alusd.userDebt,
     });

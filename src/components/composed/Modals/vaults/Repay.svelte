@@ -7,6 +7,8 @@
 
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
 
+  export let selectedVaultsType;
+
   export let underlyingTokens;
   export let underlyingPerShare;
   export let outstandingDebt;
@@ -20,6 +22,9 @@
   let canRepay = false;
   let remainingDebt;
   let method;
+
+  let currentSelectedVaultType = selectedVaultsType[0];
+  let currentSelectedYieldToken = 0;
 
   const setMaxRepay = () => {
     repayAmount =
