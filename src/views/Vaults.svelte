@@ -687,6 +687,7 @@
 
   const openLiquidateModal = () =>
     showModal(Liquidate, {
+      selectedVaultsType: $vaultsSelector,
       outstandingDebt: $alusd.userDebt,
       yieldTokens: yieldTokenAlusd,
     });

@@ -50,19 +50,6 @@ export async function fetchDataForVault(
   const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
   const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
-  // Check if debtRatio is null
-  /**
-   *  const vaultDebt = balance
-   .div(utils.parseUnits(_alusd.ratio, 18))
-   .mul(underlyingPerShare)
-   .div(ethers.BigNumber.from(10).pow(underlyingDecimals));
-   *
-   */
-  // const debt = position.shares
-  //   .mul(underlyingPerShare.div(BigNumber.from(10).pow(_uyToken.decimals)))
-  //   .div(_debtRatio.div(BigNumber.from(10).pow(18)));
-  // .pow(_uyToken.decimals)
-  // const isUsed = BigNumber.from(position.shares).gt(BigNumber.from(0));
 
   return {
     type: vaultType,
@@ -72,6 +59,7 @@ export async function fetchDataForVault(
     yieldPerShare: yieldPerShare,
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,
+    totalShares: tokenParams.totalShares,
   };
 }
 
