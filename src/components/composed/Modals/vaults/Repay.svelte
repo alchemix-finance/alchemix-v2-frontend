@@ -1,11 +1,14 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { utils, FixedNumber } from 'ethers';
+  import { utils, FixedNumber, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
   import tempTx from '../../../../stores/tempTx';
 
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { VaultTypesInfos } from '@stores/v2/constants';
+  import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
 
   export let selectedVaultsType;
 
@@ -24,7 +27,7 @@
   let method;
 
   let currentSelectedVaultType = selectedVaultsType[0];
-  let currentSelectedYieldToken = 0;
+  let currentSelectedUnderlyingToken = 0;
 
   const setMaxRepay = () => {
     repayAmount =
@@ -64,6 +67,33 @@
     }
   };
 
+  const useTokenListForVaultType = (vaultType, [vaultsStore]) => {
+    if (!vaultsStore || vaultType === undefined) {
+      return [];
+    }
+
+    const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
+
+    return [
+      {
+        address: debtTokenData.address,
+        symbol: debtTokenData.symbol,
+        underlyingPerShare: BigNumber.from(1),
+      },
+      ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
+        const underlyingTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
+
+        return {
+          address: underlyingTokenData.address,
+          symbol: underlyingTokenData.symbol,
+          underlyingPerShare: bodyVault.underlyingPerShare,
+        };
+      }),
+    ];
+  };
+
+  $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]);
+
   $: repayAmount, updateBalances();
   $: underlyingSymbol, switchUnderlying();
   $: underlyingTokens, console.log(underlyingTokens);
@@ -72,26 +102,39 @@
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.repay_loans')}</p>
-    <select
-      id="selectUnderlying"
-      class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
-      bind:value="{underlyingSymbol}"
-    >
-      {#each underlyingTokens as token}
-        <option value="{token.symbol}">{token.symbol}</option>
-      {/each}
-    </select>
+    <div class="flex gap-1">
+      {#if selectedVaultsType.length > 1}
+        <select
+          id="selectVaultType"
+          class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+          bind:value="{currentSelectedVaultType}"
+        >
+          {#each selectedVaultsType as vaultType}
+            <option value="{vaultType}">{VaultTypesInfos[vaultType].name}</option>
+          {/each}
+        </select>
+      {/if}
+      <select
+        id="selectUnderlying"
+        class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+        bind:value="{currentSelectedUnderlyingToken}"
+      >
+        {#each tokensForVaultType as token, index}
+          <option value="{index}">{token.symbol}</option>
+        {/each}
+      </select>
+    </div>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     <label for="repayInput" class="text-sm text-lightgrey10">
       {$_('available')}: {underlyingAmount}
-      {underlyingSymbol}
+      {tokensForVaultType[currentSelectedUnderlyingToken].symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <InputNumber
           id="repayInput"
-          placeholder="~0.00 {underlyingSymbol}"
+          placeholder="~0.00 {tokensForVaultType[currentSelectedUnderlyingToken].symbol}"
           bind:value="{repayAmount}"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
         />
