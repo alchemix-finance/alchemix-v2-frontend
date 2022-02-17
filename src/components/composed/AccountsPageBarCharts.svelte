@@ -26,11 +26,12 @@
   //     ),
   //   ) * $global.conversionRate
   // ).toFixed(2);
-  $: withdrawable = totalWithdrawable;
-  $: totalDepositFormatted = parseFloat(utils.formatEther(totalDeposit));
-  $: totalDebtLimitFormatted = parseFloat(utils.formatEther(totalDeposit.div(BigNumber.from(2))));
-  $: totalDebtFormatted = parseFloat(totalDebt.toString());
-  $: console.log(totalDepositFormatted, totalDebtLimitFormatted, totalDebtFormatted);
+  $: totalDepositFormatted = parseFloat(utils.formatEther(totalDeposit)).toFixed(2);
+  $: totalDebtLimitFormatted = parseFloat(utils.formatEther(totalDeposit.div(BigNumber.from(2)))).toFixed(2);
+  $: totalDebtFormatted = parseFloat(utils.formatEther(totalDebt)).toFixed(2);
+  $: withdrawable = parseFloat(utils.formatEther(totalDeposit.sub(totalDebt.mul(BigNumber.from(2))))).toFixed(
+    2,
+  );
 
   // TODO: use tailwind exported colors everywhere
   const GREY = '#74767C';
@@ -91,6 +92,9 @@
       title: {
         display: false,
       },
+      tooltip: {
+        enabled: false,
+      },
     },
 
     scales: {
@@ -107,8 +111,6 @@
             family: MONTSERRAT,
           },
           callback: function (val, index, c) {
-            console.log(this.getLabelForValue(val));
-
             if (this.getLabelForValue(val)[0].toUpperCase() === $_('table.withdrawable').toUpperCase()) {
               return [
                 ...this.getLabelForValue(val),
@@ -128,14 +130,23 @@
         },
       },
       y: {
-        suggestedMax: Math.floor(totalDebtLimitFormatted || 0),
+        suggestedMax: Math.floor(totalDepositFormatted || 0),
 
         ticks: {
           stepSize: 1,
           padding: 10,
           callback: function (value) {
-            if ([0, Math.floor(totalDebtLimitFormatted), Math.floor(totalDepositFormatted)].includes(value)) {
-              return value.toLocaleString();
+            const values = [0, Math.floor(totalDebtLimitFormatted), Math.floor(totalDepositFormatted)];
+            if (
+              [
+                0,
+                Math.round(totalDebtLimitFormatted / 100) * 100,
+                Math.round(totalDepositFormatted / 100) * 100,
+              ].includes(value)
+            ) {
+              return values.reduce((prev, curr) => {
+                return Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev;
+              });
             }
 
             return undefined;
@@ -157,12 +168,11 @@
           tickColor: GREY,
 
           color: (context) => {
-            console.log(context.tick);
             if (
               between(
                 context.tick.value,
-                Math.floor(totalDebtLimitFormatted - 10),
-                Math.floor(totalDebtLimitFormatted + 10),
+                Math.round(totalDebtLimitFormatted / 100) * 100 - 10,
+                Math.round(totalDebtLimitFormatted / 100) * 100 + 10,
               )
             ) {
               return GREEN;
@@ -171,8 +181,8 @@
             if (
               between(
                 context.tick.value,
-                Math.floor(totalDepositFormatted - 10),
-                Math.floor(totalDepositFormatted + 10),
+                Math.round(totalDepositFormatted / 100) * 100 - 10,
+                Math.round(totalDepositFormatted / 100) * 100 + 10,
               )
             ) {
               return ORANGE;
