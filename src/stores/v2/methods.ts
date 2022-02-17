@@ -43,6 +43,19 @@ export const updateAllTokens = (vault: VaultTypes, _yTokens: string[], _uyTokens
   }));
 };
 
+export const updateVaultDebtTokenAddress = (vault: VaultTypes, debtTokenAddress: string) =>
+  vaultsStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vault]: {
+        ..._store[vault],
+        debtTokenAddress: debtTokenAddress,
+      },
+    };
+
+    return _store;
+  });
+
 export const updateVaultDebt = (vault: VaultTypes, debt: any) =>
   vaultsStore.update((_store) => {
     _store = {

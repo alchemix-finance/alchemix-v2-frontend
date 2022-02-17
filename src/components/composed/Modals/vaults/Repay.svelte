@@ -1,93 +1,173 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { utils, FixedNumber } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
-  import tempTx from '../../../../stores/tempTx';
 
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { VaultTypesInfos } from '@stores/v2/constants';
+  import { addressStore, balancesStore, vaultsStore } from '@stores/v2/alcxStore';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { burn, repay } from '@stores/v2/vaultActions';
+  import { signer } from '@stores/v2/derived';
+  import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
+  import { modalReset } from '@stores/modal';
 
-  export let underlyingTokens;
+  export let selectedVaultsType;
+
   export let underlyingPerShare;
-  export let outstandingDebt;
 
-  let underlyingAmount;
-  let underlyingSymbol;
   let underlyingToken;
-  let underlyingDecimals;
 
-  let repayAmount;
+  let inputRepayAmount = 0;
   let canRepay = false;
-  let remainingDebt;
   let method;
 
-  const setMaxRepay = () => {
-    repayAmount =
-      parseFloat(underlyingAmount) >= parseFloat(outstandingDebt) ? outstandingDebt : underlyingAmount;
-  };
+  let currentSelectedVaultType = selectedVaultsType[0];
+  let currentSelectedUnderlyingToken = 0;
 
-  const clearRepay = () => {
-    repayAmount = '';
-  };
+  const onRepayButton = async (repayAmount, underlyingTokenData, debtTokenData, vaultType) => {
+    const _fRepayAmount = utils.parseUnits(utils.formatEther(repayAmount), underlyingTokenData.decimals);
 
-  const repay = () => {
-    const debtFormatted = FixedNumber.from(outstandingDebt).toUnsafeFloat().toFixed(underlyingDecimals);
-    const repayFormatted = FixedNumber.from(repayAmount).toUnsafeFloat().toFixed(underlyingDecimals);
-    $tempTx.amountRepay =
-      parseFloat(repayAmount) > parseFloat(outstandingDebt)
-        ? utils.parseUnits(debtFormatted.toString(), underlyingDecimals)
-        : utils.parseUnits(repayFormatted.toString(), underlyingDecimals);
-    $tempTx.underlyingToken = underlyingToken;
-    $tempTx.method = method;
-  };
+    modalReset();
 
-  const updateBalances = () => {
-    remainingDebt =
-      parseFloat(repayAmount) > parseFloat(outstandingDebt) ? 0 : outstandingDebt - (repayAmount || 0);
-    canRepay = parseFloat(repayAmount) > 0 && parseFloat(repayAmount) <= parseFloat(underlyingAmount);
-  };
-
-  const switchUnderlying = () => {
-    if (underlyingSymbol) {
-      const token = underlyingTokens.find((entry) => entry.symbol === underlyingSymbol);
-      underlyingDecimals = token.decimals;
-      underlyingAmount = utils.formatUnits(token.balance, underlyingDecimals);
-      underlyingToken = token.address;
-      method = token.method;
-      clearRepay();
-      updateBalances();
+    if (underlyingTokenData.address === debtTokenData.address) {
+      await burn(underlyingTokenData.address, _fRepayAmount, vaultType, [$signer, $addressStore]).then(() => {
+        Promise.all([
+          fetchBalanceByAddress(underlyingTokenData.address, [$signer]),
+          fetchVaultDebt(vaultType, [$addressStore, $signer]),
+          fetchVaultRatio(vaultType, [$signer]),
+        ]).then(() => {
+          console.log('[onRepayButton/burn]: Finished data update!');
+        });
+      });
+    } else {
+      await repay(underlyingTokenData.address, _fRepayAmount, vaultType, [$signer, $addressStore]).then(
+        () => {
+          Promise.all([
+            fetchBalanceByAddress(underlyingTokenData.address, [$signer]),
+            fetchVaultDebt(vaultType, [$addressStore, $signer]),
+            fetchVaultRatio(vaultType, [$signer]),
+          ]).then(() => {
+            console.log('[onRepayButton/burn]: Finished data update!');
+          });
+        },
+      );
     }
   };
 
-  $: repayAmount, updateBalances();
-  $: underlyingSymbol, switchUnderlying();
-  $: underlyingTokens, console.log(underlyingTokens);
+  const useTokenListForVaultType = (vaultType, [vaultsStore]) => {
+    if (!vaultsStore || vaultType === undefined) {
+      return [];
+    }
+
+    const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
+
+    return [
+      {
+        address: debtTokenData.address,
+        balance: debtTokenData.balance,
+        symbol: debtTokenData.symbol,
+        decimals: debtTokenData.decimals,
+        underlyingPerShare: BigNumber.from(1),
+      },
+      ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
+        const underlyingTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
+
+        return {
+          address: underlyingTokenData.address,
+          balance: underlyingTokenData.balance,
+          symbol: underlyingTokenData.symbol,
+          decimals: underlyingTokenData.decimals,
+          underlyingPerShare: bodyVault.underlyingPerShare,
+        };
+      }),
+    ];
+  };
+
+  const setInputMax = (underlyingTokenData, debt) => {
+    const underlyingBalance18Decimals = utils.parseEther(
+      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
+    );
+
+    inputRepayAmount = underlyingBalance18Decimals.gte(debt)
+      ? utils.formatEther(debt)
+      : utils.formatEther(underlyingBalance18Decimals);
+  };
+
+  const useBigNumberForInput = (inputValue) => {
+    if (inputValue === 0 || inputValue === '') {
+      return BigNumber.from(0);
+    }
+
+    return utils.parseEther(`${inputValue}`);
+  };
+
+  const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
+    const underlyingBalance18Decimals = utils.parseEther(
+      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
+    );
+
+    return (
+      inputAmount.gt(BigNumber.from(0)) &&
+      inputAmount.lte(debt) &&
+      inputAmount.lte(underlyingBalance18Decimals)
+    );
+  };
+
+  $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]);
+
+  $: inputRepayAmountBN = useBigNumberForInput(inputRepayAmount);
+
+  $: debtAmount = $vaultsStore[currentSelectedVaultType].debt[0] || BigNumber.from(0);
+
+  $: remainingDebtAmount = inputRepayAmountBN.gte(debtAmount)
+    ? BigNumber.from(0)
+    : debtAmount.sub(inputRepayAmountBN) || BigNumber.from(0);
+
+  $: currentSelectedUnderlyingToken, currentSelectedVaultType, (inputRepayAmount = '');
 </script>
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.repay_loans')}</p>
-    <select
-      id="selectUnderlying"
-      class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
-      bind:value="{underlyingSymbol}"
-    >
-      {#each underlyingTokens as token}
-        <option value="{token.symbol}">{token.symbol}</option>
-      {/each}
-    </select>
+    <div class="flex gap-1">
+      {#if selectedVaultsType.length > 1}
+        <select
+          id="selectVaultType"
+          class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+          bind:value="{currentSelectedVaultType}"
+        >
+          {#each selectedVaultsType as vaultType}
+            <option value="{vaultType}">{VaultTypesInfos[vaultType].name}</option>
+          {/each}
+        </select>
+      {/if}
+      <select
+        id="selectUnderlying"
+        class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+        bind:value="{currentSelectedUnderlyingToken}"
+      >
+        {#each tokensForVaultType as token, index}
+          <option value="{index}">{token.symbol}</option>
+        {/each}
+      </select>
+    </div>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
     <label for="repayInput" class="text-sm text-lightgrey10">
-      {$_('available')}: {underlyingAmount}
-      {underlyingSymbol}
+      {$_('available')}: {utils.formatUnits(
+        tokensForVaultType[currentSelectedUnderlyingToken].balance,
+        tokensForVaultType[currentSelectedUnderlyingToken].decimals,
+      )}
+      {tokensForVaultType[currentSelectedUnderlyingToken].symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <InputNumber
           id="repayInput"
-          placeholder="~0.00 {underlyingSymbol}"
-          bind:value="{repayAmount}"
+          placeholder="~0.00 {tokensForVaultType[currentSelectedUnderlyingToken].symbol}"
+          bind:value="{inputRepayAmount}"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
         />
       </div>
@@ -100,7 +180,7 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => setMaxRepay()}"
+          on:clicked="{() => setInputMax(tokensForVaultType[currentSelectedUnderlyingToken], debtAmount)}"
         />
         <Button
           label="CLEAR"
@@ -110,12 +190,14 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => clearRepay()}"
+          on:clicked="{() => (inputRepayAmount = '')}"
         />
       </div>
     </div>
     <div class="w-full text-sm text-lightgrey10">
-      {$_('modals.outstanding_debt')}: {outstandingDebt} -> {remainingDebt}
+      {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
+        remainingDebtAmount,
+      )}
     </div>
     <Button
       label="{$_('actions.repay')}"
@@ -124,8 +206,18 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!canRepay}"
-      on:clicked="{() => repay()}"
+      disabled="{!checkButtonState(
+        inputRepayAmountBN,
+        tokensForVaultType[currentSelectedUnderlyingToken],
+        debtAmount,
+      )}"
+      on:clicked="{() =>
+        onRepayButton(
+          inputRepayAmountBN,
+          tokensForVaultType[currentSelectedUnderlyingToken],
+          tokensForVaultType[0],
+          currentSelectedVaultType,
+        )}"
     />
   </div>
 </ContainerWithHeader>

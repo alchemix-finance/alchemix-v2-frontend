@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -680,6 +680,7 @@
 
   const openRepayModal = () =>
     showModal(Repay, {
+      selectedVaultsType: $vaultsSelector,
       underlyingTokens: underlyingTokenAlusd,
       outstandingDebt: $alusd.userDebt,
     });

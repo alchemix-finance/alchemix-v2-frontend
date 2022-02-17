@@ -10,6 +10,7 @@
     fetchVaultRatio,
     fetchVaultTokens,
     fetchAlchemistSentinelRole,
+    fetchVaultDebtTokenAddress,
   } from 'src/stores/v2/asyncMethods';
   import { updateAllVaultBody } from 'src/stores/v2/methods';
   import { VaultTypes } from 'src/stores/v2/types';
@@ -26,6 +27,8 @@
     await fetchVaultDebt(VaultTypes.alUSD, [$addressStore, $signer]);
 
     await fetchVaultRatio(VaultTypes.alUSD, [$signer]);
+
+    await fetchVaultDebtTokenAddress(VaultTypes.alUSD, [$signer]);
 
     await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
 
