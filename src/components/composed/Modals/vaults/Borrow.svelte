@@ -14,6 +14,7 @@
   import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from 'src/stores/v2/asyncMethods';
   import { getTokenDataFromBalancesBySymbol } from 'src/stores/v2/helpers';
   import { modalReset } from '@stores/modal';
+
   export let selectedVaults;
 
   let borrowAmount = 0;
@@ -74,8 +75,9 @@
     if (!_aggregatedDebtStore[_selectedVault] || !_vaultsStore[_selectedVault]) {
       return BigNumber.from(0);
     }
-
-    return _aggregatedDebtStore[_selectedVault].sub(_vaultsStore[_selectedVault].debt.debt);
+    return utils
+      .parseUnits(_aggregatedDebtStore[_selectedVault].toString(), 18)
+      .sub(_vaultsStore[_selectedVault].debt.debt);
   }
 
   function getMaxDebt(_aggregatedDebtStore, _selectedVault) {

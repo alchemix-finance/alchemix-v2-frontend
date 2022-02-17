@@ -19,6 +19,7 @@ const defaults = {
     totalDebt: 0,
     debtLimit: 0,
     balance: 0,
+    withdrawable: 0,
   },
 };
 

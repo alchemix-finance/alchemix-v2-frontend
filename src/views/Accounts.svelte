@@ -135,10 +135,11 @@
         <div slot="body" class="px-4 pb-4 bg-grey15">
           <AccountsPageBarCharts
             totalDeposit="{$aggregate.balance}"
-            totalDebtLimit="{$aggregate.balance.div(BigNumber.from(2))}"
+            totalDebtLimit="{$aggregate.debtLimit}"
             aggregatedApy="0"
             totalDebt="{utils.parseUnits($aggregate.totalDebt.toString(), 18)}"
             totalInterest="0"
+            totalWithdrawable="{$aggregate.withdrawable}"
           />
         </div>
       </ContainerWithHeader>

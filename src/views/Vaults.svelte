@@ -490,6 +490,8 @@
       $vaultsStore[vault.type].ratio,
     );
 
+    const ratio = $vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18));
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       alchemist: 'alusd',
@@ -519,7 +521,13 @@
         },
         limit: {
           CellComponent: CurrencyCell,
-          value: utils.formatUnits(vaultDebt.mul(vault.underlyingPerShare), underlyingTokenData.decimals * 2),
+          value: utils.formatUnits(
+            vault.balance
+              .mul(vault.underlyingPerShare)
+              .div(BigNumber.from(10).pow(underlyingTokenData.decimals))
+              .div(ratio),
+            underlyingTokenData.decimals,
+          ),
           prefix: '+',
           colSize: 2,
         },

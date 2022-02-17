@@ -13,18 +13,20 @@
   export let aggregatedApy;
   export let totalDebt;
   export let totalInterest;
+  export let totalWithdrawable;
   export let forceState;
 
   // $: withdrawable = (totalDeposit || 0) - (totalDebt || 0);
   // ((totalDepositFormatted || 0) * $global.conversionRate).toFixed(2)
   // FIXME debt needs a supplied ratio to calculate the proper withdrawable amount
-  $: withdrawable = (
-    parseFloat(
-      utils.formatEther(
-        totalDeposit.sub(utils.parseEther(BigNumber.from(totalDebt).mul(BigNumber.from(2)).toString())),
-      ),
-    ) * $global.conversionRate
-  ).toFixed(2);
+  // $: withdrawable = (
+  //   parseFloat(
+  //     utils.formatEther(
+  //       totalDeposit.sub(utils.parseEther(BigNumber.from(totalDebt).mul(BigNumber.from(2)).toString())),
+  //     ),
+  //   ) * $global.conversionRate
+  // ).toFixed(2);
+  $: withdrawable = totalWithdrawable;
   $: totalDepositFormatted = parseFloat(utils.formatEther(totalDeposit));
   $: totalDebtLimitFormatted = parseFloat(utils.formatEther(totalDeposit.div(BigNumber.from(2))));
   $: totalDebtFormatted = parseFloat(totalDebt.toString());
