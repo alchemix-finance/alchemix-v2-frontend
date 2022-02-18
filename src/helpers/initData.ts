@@ -346,7 +346,7 @@ async function initAlusdVault() {
   // } else {
   //   _aggregate.withdrawable = position.shares.sub(rawDebt.debt.mul(rawRatio));
   // }
-  _aggregate.totalDebt = parseFloat(_alusd.userDebt);
+  _aggregate.totalDebt = _alusd.userDebt.toString();
 
   vaultAlusdRowBuilderQueue(_alusd.yieldTokens);
   return true;

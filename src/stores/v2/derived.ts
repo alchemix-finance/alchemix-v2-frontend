@@ -3,7 +3,7 @@ import { derived } from 'svelte/store';
 import { balancesStore, providerStore, tokensStore, vaultsStore } from './alcxStore';
 import { poolLookup } from '@stores/stakingPools';
 import { BigNumber } from 'ethers';
-import { calculateVaultDebt, getTokenDataFromBalances } from './helpers';
+import { calculateVaultDebt, getTokenDataFromBalances, normalizeAmount } from './helpers';
 
 export const signer = derived([providerStore], ([$provider]) => $provider?.getSigner());
 
@@ -27,7 +27,7 @@ export const fullTokenList = derived([tokensStore], ([$tokensStore]) => {
   return _list;
 });
 
-export const vaultsAggregatedBalances = derived([vaultsStore], ([$vaults]) => {
+export const vaultsAggregatedBalances = derived([vaultsStore, balancesStore], ([$vaults, $balances]) => {
   if (!$vaults) {
     return undefined;
   }
@@ -42,7 +42,10 @@ export const vaultsAggregatedBalances = derived([vaultsStore], ([$vaults]) => {
     balances = {
       ...balances,
       [Number(vaultTypeKey)]: vaultBody.reduce((_prevVault, _currentVault) => {
-        return _prevVault.add(_currentVault.balance);
+        const underlyingTokenData = getTokenDataFromBalances(_currentVault.underlyingAddress, [$balances]);
+        const normalizedAmount = normalizeAmount(_currentVault.balance, underlyingTokenData.decimals, 18);
+
+        return _prevVault.add(normalizedAmount);
       }, initialVal),
     };
   });
