@@ -52,6 +52,11 @@
       utils.formatUnits(tokenData.balance, tokenData.decimals),
     );
 
+    if (debt.lte(BigNumber.from(0))) {
+      inputLiquidateAmount = '';
+      return;
+    }
+
     inputLiquidateAmount = underlyingBalance18Decimals.gte(debt)
       ? utils.formatEther(debt)
       : utils.formatEther(underlyingBalance18Decimals);
