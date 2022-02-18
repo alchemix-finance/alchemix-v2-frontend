@@ -84,9 +84,9 @@
   };
 
   const useCurrentBalance = (yieldTokenData) => {
-    return yieldTokenData.balance
-      .mul(yieldTokenData.yieldPerShare)
-      .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    return yieldTokenData.balance;
+    // .mul(yieldTokenData.yieldPerShare)
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
   };
 
   const useBigNumberForInput = (inputValue) => {
