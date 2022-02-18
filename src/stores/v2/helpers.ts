@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import { erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
 import { VaultTypes } from './types';
@@ -82,4 +82,8 @@ export function getTokenDataFromBalances(address: string, [balancesStore]: [Bala
 
 export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]: [BalanceType[]]) {
   return balancesStore.find((val) => val.symbol === symbol);
+}
+
+export function normalizeAmount(_amount: BigNumber, _decimalsFrom: number, _decimalsTo: number) {
+  return utils.parseUnits(utils.formatUnits(_amount, _decimalsFrom), _decimalsTo);
 }

@@ -14,7 +14,7 @@
   import { modalReset } from '@stores/modal';
 
   import { balancesStore } from '@stores/v2/alcxStore';
-  import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { getTokenDataFromBalances, normalizeAmount } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
 
@@ -36,8 +36,9 @@
    * */
   const toShares = (amount, decimals, sharePrice) => {
     if (amount && decimals && sharePrice) {
-      const scalar = BigNumber.from(10).pow(decimals);
-      return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
+      // const scalar = BigNumber.from(10).pow(decimals);
+
+      return utils.parseUnits(amount, decimals).div(sharePrice);
     } else {
       return BigNumber.from(0);
     }
@@ -123,7 +124,7 @@
       .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
     const freeCover = globalCover
-      .sub(_openDebtAmount)
+      .sub(_openDebtAmount.div(BigNumber.from(10).pow(18)))
       .mul($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
     return (
@@ -141,11 +142,7 @@
 
   function initializeCoveredDebt(_vault, _aggregatedBalances, _underlyingTokenData) {
     if (_aggregatedBalances) {
-      return toShares(
-        utils.formatUnits(_aggregatedBalances, _underlyingTokenData.decimals),
-        18,
-        _vault.underlyingPerShare,
-      );
+      return toShares(utils.formatEther(_aggregatedBalances), 18, _vault.underlyingPerShare);
     }
   }
 
@@ -168,17 +165,18 @@
     pricePerShare,
   ) {
     const scalar = BigNumber.from(10).pow(_tokenData.decimals);
-    const amountToShare = _vault.balance.mul(pricePerShare).div(scalar);
-    const maxAmountAvailable = _coveredDebtAmount
-      .sub(_openDebtAmount)
-      .mul($vaultsStore[vault.type].ratio.div(scalar))
+    const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar);
+    const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
+    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
+    const maxAmountAvailable = normalizedShares
+      .sub(_openDebtAmount.mul($vaultsStore[vault.type].ratio.div(scalar)))
       .gt(BigNumber.from(0));
 
     return maxAmountAvailable
-      ? utils.formatUnits(amountToShare, _tokenData.decimals)
+      ? utils.formatUnits(shareToAmount, _tokenData.decimals)
       : utils.formatUnits(
-          amountToShare.sub(_openDebtAmount).gt(BigNumber.from(0))
-            ? amountToShare.sub(_openDebtAmount)
+          normalizedShares.sub(debtToCover).gt(BigNumber.from(0))
+            ? normalizeAmount(normalizedShares.sub(debtToCover), 18, _tokenData.decimals)
             : BigNumber.from(0),
           _tokenData.decimals,
         );
@@ -207,19 +205,20 @@
     .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
     .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
-  $: maxWithdrawAmountForYield = calculateMaxWithdrawAmount(
-    cDebt,
-    debt,
-    yieldTokenData,
-    vault,
-    vault.yieldPerShare,
-  );
   $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
     cDebt,
     debt,
     underlyingTokenData,
     vault,
     vault.underlyingPerShare,
+  );
+
+  $: maxWithdrawAmountForYield = utils.formatUnits(
+    utils
+      .parseUnits(maxWithdrawAmountForUnderlying, yieldTokenData.decimals)
+      .div(vault.underlyingPerShare)
+      .mul(vault.yieldPerShare),
+    yieldTokenData.decimals,
   );
 
   $: withdrawButtonState = getWithdrawButtonState(
@@ -236,8 +235,8 @@
       <div>
         {#if !debt.eq(BigNumber.from(0))}
           <p class="inline-block">
-            {$_('chart.debt')}: {utils.formatUnits(debt, underlyingTokenData.decimals)}
-            {VaultTypesInfos[vault.type]} |
+            {$_('chart.debt')}: {utils.formatEther(debt)}
+            {VaultTypesInfos[vault.type].name} |
           </p>
         {/if}
         <p class="inline-block">
@@ -349,10 +348,9 @@
           underlyingTokenData,
         )}
         <br />
-        {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)} -> {utils.formatUnits(
-          projDebtLimit,
-          underlyingTokenData.decimals,
-        ) || utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
+        {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
+        -> {utils.formatUnits(projDebtLimit, underlyingTokenData.decimals) ||
+          utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
       </div>
 
       <div class="my-4">
