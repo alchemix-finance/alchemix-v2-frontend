@@ -59,7 +59,6 @@ export async function fetchDataForVault(
     yieldPerShare: yieldPerShare,
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,
-    totalShares: tokenParams.totalShares,
   };
 }
 

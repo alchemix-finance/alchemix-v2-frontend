@@ -11,7 +11,7 @@
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { liquidate } from '@stores/v2/vaultActions';
   import { signer } from '@stores/v2/derived';
-  import { fetchUpdateVaultByAddress, fetchVaultDebt } from '@stores/v2/asyncMethods';
+  import { fetchUpdateVaultByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
   import { modalReset } from '@stores/modal';
 
   export let yieldTokens;
@@ -33,16 +33,23 @@
       .parseUnits(utils.formatEther(amount), yieldTokenData.decimals)
       .mul(yieldTokenData.yieldPerShare)
       .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    // .mul(yieldTokenData.yieldPerShare)
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
 
     modalReset();
     await liquidate(yieldTokenData.address, _fAmount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
       () => {
         Promise.all([
+          fetchVaultRatio(vaultType, [$signer]),
           fetchVaultDebt(vaultType, [$addressStore, $signer]),
           fetchUpdateVaultByAddress(vaultType, yieldTokenData.address, [$signer, $addressStore]),
-        ]).then(() => {
-          console.log('[onLiquidateButton/finished]: Data updated!');
-        });
+        ])
+          .then(() => {
+            console.log('[onLiquidateButton/finished]: Data updated!');
+          })
+          .catch((e) => {
+            console.error(`[onLiquidateButton/finished]: ${e}`);
+          });
       },
     );
   };
@@ -77,16 +84,15 @@
           symbol: yieldTokenData.symbol,
           decimals: yieldTokenData.decimals,
           yieldPerShare: bodyVault.yieldPerShare,
-          totalShares: bodyVault.totalShares,
         };
       }),
     ];
   };
 
   const useCurrentBalance = (yieldTokenData) => {
-    return yieldTokenData.balance;
-    // .mul(yieldTokenData.yieldPerShare)
-    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    return yieldTokenData.balance
+      .mul(yieldTokenData.yieldPerShare)
+      .div(BigNumber.from(10).pow(yieldTokenData.decimals));
   };
 
   const useBigNumberForInput = (inputValue) => {
@@ -128,6 +134,8 @@
   $: currentYieldBalance = useCurrentBalance(yieldTokenList[selectedYieldToken]);
 
   $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
+
+  $: console.log(`debt: ${$vaultsStore[selectedVaultType].debt[0]}`);
 
   $: debtAmount = $vaultsStore[selectedVaultType].debt[0] || BigNumber.from(0);
 

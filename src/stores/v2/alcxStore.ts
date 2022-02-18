@@ -18,7 +18,6 @@ export type BodyVaultType = {
   underlyingAddress: string;
   underlyingPerShare: ethers.BigNumber;
   tvl: ethers.BigNumber;
-  totalShares: ethers.BigNumber;
 };
 
 export interface TokensType {

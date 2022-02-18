@@ -336,8 +336,12 @@ export async function mint(
       gasPrice: gas,
     })) as ContractTransaction;
 
+    console.log('not finished tx:', tx);
+
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);
+
+      console.log('finished tx:', tx);
 
       return {
         typeOfVault,
@@ -345,7 +349,7 @@ export async function mint(
     });
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
-    console.error(`[vaultActions/mint]: ${error}`);
+    console.error(`[vaultActions/mint]:`, error);
     throw Error(error);
   }
 }
