@@ -31,10 +31,14 @@
   const onLiquidateButton = async (yieldTokenData, amount, vaultType) => {
     const _fAmount = utils
       .parseUnits(utils.formatEther(amount), yieldTokenData.decimals)
-      .mul(yieldTokenData.yieldPerShare)
-      .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+      .div(yieldTokenData.yieldPerShare)
+      .mul(yieldTokenData.underlyingPerShare);
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
     // .mul(yieldTokenData.yieldPerShare)
     // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+
+    console.log(utils.formatUnits(_fAmount, yieldTokenData.decimals));
 
     modalReset();
     await liquidate(yieldTokenData.address, _fAmount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
@@ -64,6 +68,8 @@
       return;
     }
 
+    const tDebt = debt.add(utils.parseUnits('1', 16));
+
     inputLiquidateAmount = underlyingBalance18Decimals.gte(debt)
       ? utils.formatEther(debt)
       : utils.formatEther(underlyingBalance18Decimals);
@@ -84,6 +90,7 @@
           symbol: yieldTokenData.symbol,
           decimals: yieldTokenData.decimals,
           yieldPerShare: bodyVault.yieldPerShare,
+          underlyingPerShare: bodyVault.underlyingPerShare,
         };
       }),
     ];
