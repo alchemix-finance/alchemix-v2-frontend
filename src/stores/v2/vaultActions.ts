@@ -336,8 +336,12 @@ export async function mint(
       gasPrice: gas,
     })) as ContractTransaction;
 
+    console.log('not finished tx:', tx);
+
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);
+
+      console.log('finished tx:', tx);
 
       return {
         typeOfVault,
@@ -345,7 +349,7 @@ export async function mint(
     });
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
-    console.error(`[vaultActions/mint]: ${error}`);
+    console.error(`[vaultActions/mint]:`, error);
     throw Error(error);
   }
 }
@@ -433,11 +437,11 @@ export async function liquidate(
   yieldToken: string,
   amountToRepay: BigNumber,
   typeOfVault: VaultTypes,
-  [signerStore]: [Signer, string],
+  maximumLoss: BigNumber,
+  [signerStore]: [Signer],
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const dataPackage = utils.parseEther('0');
 
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
@@ -446,7 +450,7 @@ export async function liquidate(
 
     setPendingWallet();
 
-    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, dataPackage, {
+    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, maximumLoss, {
       gasPrice: gas,
     })) as ContractTransaction;
 

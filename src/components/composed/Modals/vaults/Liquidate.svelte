@@ -4,121 +4,199 @@
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
   import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
-  import tempTx from '../../../../stores/tempTx';
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { addressStore, balancesStore, vaultsStore } from '@stores/v2/alcxStore';
+  import { VaultTypesInfos } from '@stores/v2/constants';
+  import { liquidate } from '@stores/v2/vaultActions';
+  import { signer } from '@stores/v2/derived';
+  import { fetchUpdateVaultByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
+  import { modalReset } from '@stores/modal';
 
-  export let outstandingDebt;
   export let yieldTokens;
 
-  let tokenAddress;
-  let tokenSymbol;
-  let tokenAmount;
-  let tokenAmountFormatted;
-  let tokenDecimals;
-  let yieldPerShare;
-  let underlyingPerShare;
-  let underlyingAmount;
+  export let selectedVaultsType;
 
-  let liquidateAmount;
-  let remainingDebt;
-  let remainingDebtFormatted;
-  let remainingDeposit;
-  let remainingDepositFormatted;
+  let selectedVaultType = selectedVaultsType[0];
+  let selectedYieldToken = 0;
 
-  let debtToWei;
-  let tokenAmountToShares;
-  let liquidateAmountToWei;
-
-  let userVerified = false;
-  let canLiquidate = false;
   let maximumLoss;
 
-  const setUserVerified = (event) => {
-    userVerified = event.detail.value;
-    updateBalances();
+  let inputLiquidateAmount = 0;
+
+  let toggleForceState = false;
+  let userVerifiedToggle = false;
+
+  const onLiquidateButton = async (yieldTokenData, amount, vaultType) => {
+    const _fAmount = utils
+      .parseUnits(utils.formatEther(amount), yieldTokenData.decimals)
+      .div(yieldTokenData.yieldPerShare)
+      .mul(yieldTokenData.underlyingPerShare);
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    // .mul(yieldTokenData.yieldPerShare)
+    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+
+    console.log(utils.formatUnits(_fAmount, yieldTokenData.decimals));
+
+    modalReset();
+    await liquidate(yieldTokenData.address, _fAmount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
+      () => {
+        Promise.all([
+          fetchVaultRatio(vaultType, [$signer]),
+          fetchVaultDebt(vaultType, [$addressStore, $signer]),
+          fetchUpdateVaultByAddress(vaultType, yieldTokenData.address, [$signer, $addressStore]),
+        ])
+          .then(() => {
+            console.log('[onLiquidateButton/finished]: Data updated!');
+          })
+          .catch((e) => {
+            console.error(`[onLiquidateButton/finished]: ${e}`);
+          });
+      },
+    );
   };
 
-  const clearLiquidate = () => {
-    liquidateAmount = '';
-  };
+  const setInputMax = (tokenData, debt) => {
+    const underlyingBalance18Decimals = utils.parseEther(
+      utils.formatUnits(tokenData.balance, tokenData.decimals),
+    );
 
-  const setMaxLiquidate = () => {
-    liquidateAmount = tokenAmount.gte(debtToWei) ? outstandingDebt : tokenAmountFormatted;
-  };
-
-  const updateBalances = () => {
-    if (liquidateAmount) {
-      liquidateAmountToWei = utils.parseUnits(liquidateAmount.toString() || '0', tokenDecimals);
-      remainingDebt = liquidateAmountToWei.gt(debtToWei)
-        ? BigNumber.from(0)
-        : debtToWei.sub(liquidateAmountToWei);
-      remainingDebtFormatted = utils.formatUnits(remainingDebt, tokenDecimals);
-      remainingDeposit = liquidateAmountToWei.gt(tokenAmount)
-        ? BigNumber.from(0)
-        : tokenAmount?.sub(liquidateAmountToWei) || BigNumber.from(0);
-      remainingDepositFormatted = utils.formatUnits(remainingDeposit, tokenDecimals);
-      underlyingAmount = liquidateAmountToWei.div(yieldPerShare).mul(underlyingPerShare);
-      canLiquidate =
-        liquidateAmountToWei.gt(BigNumber.from(0)) && liquidateAmountToWei.lte(tokenAmount) && userVerified;
-    } else {
-      remainingDebtFormatted = outstandingDebt;
-      remainingDepositFormatted = tokenAmountFormatted;
+    if (debt.lte(BigNumber.from(0))) {
+      inputLiquidateAmount = '';
+      return;
     }
+
+    const tDebt = debt.add(utils.parseUnits('1', 16));
+
+    inputLiquidateAmount = underlyingBalance18Decimals.gte(debt)
+      ? utils.formatEther(debt)
+      : utils.formatEther(underlyingBalance18Decimals);
   };
 
-  const switchUnderlying = () => {
-    if (tokenSymbol) {
-      const token = yieldTokens.find((entry) => entry.symbol === tokenSymbol);
-      const scalar = BigNumber.from(10).pow(token.decimals);
-      tokenDecimals = token.decimals;
-      yieldPerShare = utils.parseUnits(token.yieldPerShare, tokenDecimals);
-      underlyingPerShare = utils.parseUnits(token.underlyingPerShare, tokenDecimals);
-      tokenAmount = token.balance.mul(yieldPerShare).div(scalar);
-      tokenAmountFormatted = utils.formatUnits(tokenAmount, tokenDecimals);
-      tokenAddress = token.address;
-      debtToWei = utils.parseUnits(outstandingDebt, 18);
-      clearLiquidate();
-      updateBalances();
+  const useTokenListForVaultType = (vaultType, [vaultsStore]) => {
+    if (!vaultsStore || vaultType === undefined) {
+      return [];
     }
+
+    return [
+      ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
+        const yieldTokenData = getTokenDataFromBalances(bodyVault.address, [$balancesStore]);
+
+        return {
+          address: yieldTokenData.address,
+          balance: bodyVault.balance,
+          symbol: yieldTokenData.symbol,
+          decimals: yieldTokenData.decimals,
+          yieldPerShare: bodyVault.yieldPerShare,
+          underlyingPerShare: bodyVault.underlyingPerShare,
+        };
+      }),
+    ];
   };
 
-  const liquidate = () => {
-    $tempTx.amountRepay = liquidateAmountToWei.gt(debtToWei) ? debtToWei : liquidateAmountToWei;
-    $tempTx.yieldToken = tokenAddress;
-    $tempTx.maximumLoss = BigNumber.from(maximumLoss);
-    $tempTx.method = 'liquidate';
+  const useCurrentBalance = (yieldTokenData) => {
+    return yieldTokenData.balance
+      .mul(yieldTokenData.yieldPerShare)
+      .div(BigNumber.from(10).pow(yieldTokenData.decimals));
   };
 
-  $: tokenSymbol, switchUnderlying();
-  $: liquidateAmount, updateBalances();
+  const useBigNumberForInput = (inputValue) => {
+    if (inputValue === 0 || inputValue === '') {
+      return BigNumber.from(0);
+    }
+
+    return utils.parseEther(`${inputValue}`);
+  };
+
+  const useRemainingBalance = (inputAmount, yieldTokenData) => {
+    const vaultBalanceAs18Decimals = utils.parseEther(
+      utils.formatUnits(yieldTokenData.balance, yieldTokenData.decimals),
+    );
+
+    return vaultBalanceAs18Decimals.sub(inputAmount).lte(BigNumber.from(0))
+      ? BigNumber.from(0)
+      : vaultBalanceAs18Decimals.sub(inputAmount);
+  };
+
+  const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
+    const underlyingBalance18Decimals = utils.parseEther(
+      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
+    );
+
+    return (
+      inputAmount.gt(BigNumber.from(0)) &&
+      inputAmount.lte(debt) &&
+      inputAmount.lte(underlyingBalance18Decimals)
+    );
+  };
+
+  const setToggleToDefault = () => {
+    toggleForceState = !toggleForceState;
+    userVerifiedToggle = false;
+  };
+
+  $: yieldTokenList = useTokenListForVaultType(selectedVaultType, [$vaultsStore]);
+  $: currentYieldBalance = useCurrentBalance(yieldTokenList[selectedYieldToken]);
+
+  $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
+
+  $: console.log(`debt: ${$vaultsStore[selectedVaultType].debt[0]}`);
+
+  $: debtAmount = $vaultsStore[selectedVaultType].debt[0] || BigNumber.from(0);
+
+  $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
+    ? BigNumber.from(0)
+    : debtAmount.sub(inputLiquidateAmountBN) || BigNumber.from(0);
+
+  $: remainingBalance = useRemainingBalance(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken]);
+
+  $: selectedYieldToken, selectedVaultType, (inputLiquidateAmount = ''), setToggleToDefault();
 </script>
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.liquidate_debt')}</p>
-    <select
-      name="selectToken"
-      id="selectToken"
-      class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
-      bind:value="{tokenSymbol}"
-    >
-      {#each yieldTokens as token}
-        <option value="{token.symbol}">{token.symbol}</option>
-      {/each}
-    </select>
+    <div class="flex gap-1">
+      {#if selectedVaultsType.length > 1}
+        <select
+          id="selectVaultType"
+          class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+          bind:value="{selectedVaultType}"
+        >
+          {#each selectedVaultsType as vaultType}
+            <option value="{vaultType}">{VaultTypesInfos[vaultType].name}</option>
+          {/each}
+        </select>
+      {/if}
+
+      <select
+        name="selectToken"
+        id="selectToken"
+        class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+        bind:value="{selectedYieldToken}"
+      >
+        {#each yieldTokenList as token, index}
+          <option value="{index}">{token.symbol}</option>
+        {/each}
+      </select>
+    </div>
   </div>
   <div slot="body" class="flex flex-col space-y-4 p-4">
     <label for="liquidateInput" class="text-sm text-lightgrey10">
-      {$_('available')}: ~{parseFloat(tokenAmountFormatted).toFixed(4)}
-      {tokenSymbol}
+      {$_('available')}: ~{utils.formatUnits(
+        currentYieldBalance,
+        yieldTokenList[selectedYieldToken].decimals,
+      )}
+      {yieldTokenList[selectedYieldToken].symbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <InputNumber
           id="liquidateInput"
-          placeholder="~0.00 {tokenSymbol}"
-          bind:value="{liquidateAmount}"
+          placeholder="~0.00 {yieldTokenList[selectedYieldToken].symbol}"
+          bind:value="{inputLiquidateAmount}"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 "
         />
       </div>
@@ -131,7 +209,7 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => setMaxLiquidate()}"
+          on:clicked="{() => setInputMax(yieldTokenList[selectedYieldToken], debtAmount)}"
         />
         <Button
           label="CLEAR"
@@ -141,24 +219,35 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => clearLiquidate()}"
+          on:clicked="{() => {
+            inputLiquidateAmount = '';
+
+            setToggleToDefault();
+          }}"
         />
       </div>
     </div>
     <div class="w-full text-sm text-lightgrey10">
-      {$_('modals.outstanding_debt')}: {outstandingDebt} -> {remainingDebtFormatted} <br />
-      {$_('modals.remaining_deposit')}: {tokenAmountFormatted}
-      {tokenSymbol} -> {remainingDepositFormatted}
-      {tokenSymbol}
+      {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
+        remainingDebtAmount,
+      )} <br />
+      {$_('modals.remaining_deposit')}: {utils.formatUnits(
+        currentYieldBalance,
+        yieldTokenList[selectedYieldToken].decimals,
+      )}
+      {yieldTokenList[selectedYieldToken].symbol} -> {utils.formatEther(remainingBalance)}
+      {yieldTokenList[selectedYieldToken].symbol}
     </div>
     <div class="w-full">
-      <MaxLossController
-        on:valueChanged="{(event) => {
-          maximumLoss = event.detail.value;
-        }}"
-      />
+      <MaxLossController bind:maxLoss="{maximumLoss}" />
     </div>
-    <ToggleSwitch label="{$_('modals.liq_disclaimer')}" on:toggleChange="{setUserVerified}" />
+    <ToggleSwitch
+      label="{$_('modals.liq_disclaimer')}"
+      forceState="{toggleForceState}"
+      on:toggleChange="{() => {
+        userVerifiedToggle = !userVerifiedToggle;
+      }}"
+    />
     <Button
       label="{$_('actions.liquidate')}"
       borderColor="green4"
@@ -166,8 +255,12 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!canLiquidate}"
-      on:clicked="{() => liquidate()}"
+      disabled="{!(
+        checkButtonState(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken], debtAmount) &&
+        userVerifiedToggle
+      )}"
+      on:clicked="{() =>
+        onLiquidateButton(yieldTokenList[selectedYieldToken], inputLiquidateAmountBN, selectedVaultType)}"
     />
   </div>
 </ContainerWithHeader>
