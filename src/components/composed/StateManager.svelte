@@ -1,18 +1,16 @@
 <script lang="ts">
-  import { addressStore, balancesStore, tokensStore, vaultsStore } from '@stores/v2/alcxStore';
+  import { addressStore, tokensStore } from '@stores/v2/alcxStore';
   import { fullTokenList, signer } from '@stores/v2/derived';
-  import { BigNumber } from 'ethers';
   import {
+    fetchAlchemistSentinelRole,
     fetchAllBalances,
     fetchAllVaultsBodies,
-    fetchBalanceByAddress,
+    fetchVaultApy,
     fetchVaultDebt,
+    fetchVaultDebtTokenAddress,
     fetchVaultRatio,
     fetchVaultTokens,
-    fetchAlchemistSentinelRole,
-    fetchVaultDebtTokenAddress,
   } from 'src/stores/v2/asyncMethods';
-  import { updateAllVaultBody } from 'src/stores/v2/methods';
   import { VaultTypes } from 'src/stores/v2/types';
 
   import { vaultsLoading } from '@stores/v2/loadingStores';

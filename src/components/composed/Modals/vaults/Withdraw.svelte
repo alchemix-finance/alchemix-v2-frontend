@@ -36,9 +36,8 @@
    * */
   const toShares = (amount, decimals, sharePrice) => {
     if (amount && decimals && sharePrice) {
-      // const scalar = BigNumber.from(10).pow(decimals);
-
-      return utils.parseUnits(amount, decimals).div(sharePrice);
+      const scalar = BigNumber.from(10).pow(decimals);
+      return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
     } else {
       return BigNumber.from(0);
     }
