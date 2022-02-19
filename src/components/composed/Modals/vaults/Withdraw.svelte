@@ -141,7 +141,7 @@
 
   function initializeCoveredDebt(_vault, _aggregatedBalances, _underlyingTokenData) {
     if (_aggregatedBalances) {
-      return toShares(utils.formatEther(_aggregatedBalances), 18, _vault.underlyingPerShare);
+      return _aggregatedBalances;
     }
   }
 
@@ -163,13 +163,17 @@
     _vault,
     pricePerShare,
   ) {
-    const scalar = BigNumber.from(10).pow(_tokenData.decimals);
-    const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar);
+    const scalar = (decimals) => BigNumber.from(10).pow(decimals);
+    const ratio = $vaultsStore[vault.type].ratio.div(scalar(18));
+    const normalizeBalance = utils.parseUnits(utils.formatUnits(_vault.balance, _tokenData.decimals), 18);
+    const requiredCover = _openDebtAmount.mul(ratio);
+    const freeDeposits = _coveredDebtAmount.sub(requiredCover);
+    const maxAmount = freeDeposits.sub(normalizeBalance);
+    const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
+
+    const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
     const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
     const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
-    const maxAmountAvailable = normalizedShares
-      .sub(_openDebtAmount.mul($vaultsStore[vault.type].ratio.div(scalar)))
-      .gt(BigNumber.from(0));
 
     return maxAmountAvailable
       ? utils.formatUnits(shareToAmount, _tokenData.decimals)
