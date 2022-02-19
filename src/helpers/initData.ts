@@ -544,9 +544,10 @@ async function initCurveFarm() {
   const rewardRateAlcx = await crvRewarder.rewardRate();
   const virtualPrice = await crvMetapool.get_virtual_price();
   const poolConfig = externalLookup.find((pool) => pool.address.toLowerCase() === lpToken.toLowerCase());
+  const userUnclaimed = `${utils.formatEther(rewardsAlcx)} ALCX + ${utils.formatEther(rewardsCrv)} CRV`;
   const payload = {
     type: 'crv',
-    reward: 'yes',
+    reward: '0.0',
     token: lpToken,
     lpToken,
     rewardsCrv,
@@ -558,6 +559,7 @@ async function initCurveFarm() {
     rewardRateAlcx,
     virtualPrice,
     poolConfig,
+    userUnclaimed,
   };
   _stakingPools.allPools.push(payload);
   stakingPools.set({ ..._stakingPools });
