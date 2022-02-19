@@ -489,7 +489,7 @@
       underlyingTokenData.decimals,
       $vaultsStore[vault.type].ratio,
     );
-
+    const vaultApy = Math.round(vault.apy * 10000) / 100;
     const ratio = $vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18));
 
     return {
@@ -537,7 +537,7 @@
           colSize: 2,
         },
         col4: {
-          value: 'N/A',
+          value: vaultApy + '%',
           colSize: 2,
         },
         col5: {
