@@ -21,6 +21,10 @@
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
   import { getTokenDecimals } from '@helpers/getTokenData';
   import { getProvider } from '@helpers/walletManager';
+  import makeSelectorStore from '@stores/v2/selectorStore';
+  import { VaultTypes } from '@stores/v2/types';
+
+  const transmuterCategory = makeSelectorStore([VaultTypes.alUSD]);
 
   const toggleButtons = {
     transmuterSelect: {

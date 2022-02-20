@@ -12,6 +12,12 @@ export const TransmuterConstants = {
   },
 };
 
+export const TransmuterNameAliases = {
+  dai: 'Van Helmont',
+  usdc: 'Ge Hong',
+  usdt: 'Paracelsus',
+};
+
 export const AllowedVaultTypes = [VaultTypes.alUSD, VaultTypes.alETH];
 export const AllowedTransmuterTypes = [VaultTypes.alUSD, VaultTypes.alETH];
 
