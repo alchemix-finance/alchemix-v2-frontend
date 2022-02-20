@@ -1,6 +1,6 @@
 import { BigNumber, ethers, utils } from 'ethers';
-import { erc20Contract } from '@helpers/contractWrapper';
-import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
+import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
+import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
 import { VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 
@@ -62,6 +62,32 @@ export async function fetchDataForVault(
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,
     apy,
+  };
+}
+
+export async function fetchDataForTransmuter(
+  contractSelector: string,
+  signer: ethers.Signer,
+  accountAddress: string,
+): Promise<TransmuterType> {
+  const { instance: transmuterInstance, address: transmuterAddress } = contractWrapper(
+    contractSelector,
+    signer,
+  );
+
+  const syntethicTokenAddress = await transmuterInstance.syntheticToken();
+  const underlyingTokenAddress = await transmuterInstance.underlyingToken();
+  const totalUnexchanged = await transmuterInstance.totalUnexchanged();
+  const exchangedBalance = await transmuterInstance.getExchangedBalance(accountAddress);
+  const unexchangedBalance = await transmuterInstance.getUnexchangedBalance(accountAddress);
+
+  return {
+    transmuterAddress: transmuterAddress,
+    synthAddress: syntethicTokenAddress,
+    underlyingTokenAddress: underlyingTokenAddress,
+    totalUnexchangedBN: totalUnexchanged,
+    exchangedBalanceBN: exchangedBalance,
+    unexchangedBalanceBN: unexchangedBalance,
   };
 }
 
