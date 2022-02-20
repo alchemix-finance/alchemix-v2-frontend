@@ -1,4 +1,4 @@
-import { BalanceType, BodyVaultType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType, transmutersStore, TransmuterType } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
 import {
@@ -106,6 +106,35 @@ export const updateVaultByAddress = (vault: VaultTypes, vaultAddress: string, va
     const index = _store[vault].vaultBody.findIndex((vault) => vault.address === vaultAddress);
     if (index !== -1) {
       _store[vault].vaultBody[index] = vaultBody;
+    }
+
+    return _store;
+  });
+
+export const updateAllTransmuters = (vaultType: VaultTypes, transmuters: TransmuterType[]) =>
+  transmutersStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vaultType]: {
+        transmuters,
+      },
+    };
+
+    return _store;
+  });
+
+export const updateTransmuterByAddress = (
+  vaultType: VaultTypes,
+  transmuterAddress: string,
+  transmuter: TransmuterType,
+) =>
+  transmutersStore.update((_store) => {
+    const index = _store[vaultType].transmuters.findIndex(
+      (_transmuter) =>
+        `${_transmuter.transmuterAddress}`.toLowerCase() === `${transmuterAddress}`.toLowerCase(),
+    );
+    if (index !== -1) {
+      _store[vaultType].transmuters[index] = transmuter;
     }
 
     return _store;
