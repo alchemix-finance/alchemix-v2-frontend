@@ -128,13 +128,17 @@
     };
   });
 
-  onMount(async () => {
+  const onInitialize = async () => {
     transmutersLoading.set(true);
 
     await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
 
     transmutersLoading.set(false);
-  });
+  };
+
+  $: if ($addressStore !== undefined) {
+    onInitialize();
+  }
 </script>
 
 <ViewContainer>
