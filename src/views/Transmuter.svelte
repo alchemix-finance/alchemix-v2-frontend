@@ -12,13 +12,15 @@
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
-  import transmuters from '../stores/transmuters';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
   import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
-  import { balancesStore, transmutersStore } from '@stores/v2/alcxStore';
+  import { addressStore, balancesStore, transmutersStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { transmutersLoading } from '@stores/v2/loadingStores';
+  import { onMount } from 'svelte';
+  import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
+  import { signer } from '@stores/v2/derived';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD]);
 
@@ -124,6 +126,14 @@
         colSize: 2,
       },
     };
+  });
+
+  onMount(async () => {
+    transmutersLoading.set(true);
+
+    await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
+
+    transmutersLoading.set(false);
   });
 </script>
 

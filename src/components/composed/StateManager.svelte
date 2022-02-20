@@ -31,12 +31,6 @@
 
     await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
 
-    transmutersLoading.set(true);
-
-    await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
-
-    transmutersLoading.set(false);
-
     vaultsLoading.set(false);
     await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore]);
   }
