@@ -1,6 +1,7 @@
 import {
   fetchDataForETH,
   fetchDataForToken,
+  fetchDataForTransmuter,
   fetchDataForVault,
   generateTokenPromises,
 } from '@stores/v2/helpers';
@@ -14,9 +15,11 @@ import {
   updateVaultRatio,
   updateSentinelRole,
   updateVaultDebtTokenAddress,
+  updateAllTransmuters,
+  updateTransmuterByAddress,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
-import { VaultConstants } from '@stores/v2/constants';
+import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
 import { VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
@@ -139,6 +142,48 @@ export async function fetchUpdateVaultByAddress(
 
   return vaultData.then((_vaultData) => {
     updateVaultByAddress(vaultId, vaultAddress, _vaultData);
+  });
+}
+
+export async function fetchTransmutersForVaultType(
+  vaultType: VaultTypes,
+  [signer, accountAddress]: [ethers.Signer, string],
+) {
+  if (!signer) {
+    console.error(`[fetchTransmutersForVaultType]: signer is undefined`);
+    return Promise.reject(`[fetchTransmutersForVaultType]: signer is undefined`);
+  }
+
+  const transmutersFetchDataPromises = TransmuterConstants[vaultType].transmuterContractSelectors.map(
+    (selectorId) => {
+      return fetchDataForTransmuter(vaultType, selectorId, signer, accountAddress);
+    },
+  );
+
+  return Promise.all([...transmutersFetchDataPromises]).then((transmuters) => {
+    updateAllTransmuters(vaultType, transmuters);
+  });
+}
+
+export async function fetchTransmuterBySelector(
+  vaultType: VaultTypes,
+  transmuterSelector: string,
+  [signer, accountAddress]: [ethers.Signer, string],
+) {
+  if (!signer) {
+    console.error(`[fetchTransmuterBySelector]: signer is undefined`);
+    return Promise.reject(`[fetchTransmuterBySelector]: signer is undefined`);
+  }
+
+  const fetchDataForTransmuterPromise = fetchDataForTransmuter(
+    vaultType,
+    transmuterSelector,
+    signer,
+    accountAddress,
+  );
+
+  return fetchDataForTransmuterPromise.then((_transmuter) => {
+    updateTransmuterByAddress(vaultType, _transmuter.transmuterAddress, _transmuter);
   });
 }
 

@@ -12,38 +12,17 @@
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
-  import getContract from '../helpers/getContract';
-  import getUserGas from '../helpers/getUserGas';
-  import transmuters from '../stores/transmuters';
-  import account from '@stores/account';
-  import tempTx, { tempTxReset } from '../stores/tempTx';
-  import setTokenAllowance from '@helpers/setTokenAllowance';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
-  import { getTokenDecimals } from '@helpers/getTokenData';
-  import { getProvider } from '@helpers/walletManager';
+  import makeSelectorStore from '@stores/v2/selectorStore';
+  import { VaultTypes } from '@stores/v2/types';
+  import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
+  import { addressStore, balancesStore, transmutersStore } from '@stores/v2/alcxStore';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { transmutersLoading } from '@stores/v2/loadingStores';
+  import { onMount } from 'svelte';
+  import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
+  import { signer } from '@stores/v2/derived';
 
-  const toggleButtons = {
-    transmuterSelect: {
-      all: true,
-      aleth: false,
-      alusd: false,
-    },
-  };
-
-  const buttonToggler = (selector, key) => {
-    Object.keys(toggleButtons[selector]).forEach((entry) => {
-      if (toggleButtons[selector][entry] !== key) {
-        toggleButtons[selector][entry] = false;
-      }
-    });
-    toggleButtons[selector][key] = true;
-  };
-
-  // @dev logic for controlling the filtered views
-  const vaultFilter = (filter) => {
-    const selector = ['transmuterSelect', 'modeSelect', 'stratSelect'];
-    buttonToggler(selector[filter.id], filter.filter);
-  };
+  const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD]);
 
   const columns = [
     {
@@ -85,156 +64,81 @@
       colSize: 2,
     },
   ];
-  let rows = [];
 
   const goTo = (url) => {
     window.open(url, '_blank');
   };
 
-  const provider = getProvider();
-  const abiCoder = utils.defaultAbiCoder;
+  $: currentTransmutersBasedOnType =
+    Object.keys($transmutersStore)
+      .map((vTypeId) => {
+        if ($currentTransmuterCategories.includes(parseInt(vTypeId))) {
+          return $transmutersStore[parseInt(vTypeId)].transmuters;
+        }
+      })
+      .filter((elm) => elm !== undefined)
+      .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
 
-  const deposit = async () => {
-    const contract = getContract($tempTx.transmuter);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const allowance = $tempTx.alTokenAllowance;
-    console.log('allowance', allowance);
-    const amountToWei = utils.parseEther($tempTx.amountAlToken.toString());
-    if (!allowance) {
-      try {
-        await setTokenAllowance($tempTx.alToken, $tempTx.transmuterAddress);
-      } catch (e) {
-        setError(e.data ? await e.data.message : e.message);
-        console.trace(e);
-      }
-    }
-    try {
-      setPendingWallet();
-      const tx = await contract.deposit(amountToWei, $account.address, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        // TODO add refreshData here
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.trace(e);
-    }
-    tempTxReset();
+  $: currentRowsForSelectedType = currentTransmutersBasedOnType.map((_transmuterData) => {
+    const synthTokenData = getTokenDataFromBalances(_transmuterData.synthAddress, [$balancesStore]);
+    const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
+      $balancesStore,
+    ]);
+
+    const nameAlias = TransmuterNameAliases[`${underlyingTokenData.symbol}`.toLowerCase()];
+
+    const totalDeposited = _transmuterData.exchangedBalanceBN.add(_transmuterData.unexchangedBalanceBN);
+
+    return {
+      col1: {
+        CellComponent: ExpandRowCell,
+        expandedRow: {
+          ExpandedRowComponent: ExpandedTransmuter,
+        },
+        transmuterData: _transmuterData,
+        colSize: 1,
+      },
+      col2: {
+        CellComponent: FarmNameCell,
+        farmIcon: synthTokenData.symbol.toLowerCase() + '_med.svg',
+        tokenIcon: underlyingTokenData.symbol.toLowerCase(),
+        farmName: nameAlias,
+        farmSubtitle: synthTokenData.symbol + '-' + underlyingTokenData.symbol,
+        colSize: 2,
+      },
+      col3: {
+        CellComponent: CurrencyCell,
+        value: utils.formatUnits(totalDeposited, synthTokenData.decimals),
+        colSize: 2,
+      },
+      col4: {
+        CellComponent: CurrencyCell,
+        value: utils.formatUnits(_transmuterData.unexchangedBalanceBN, synthTokenData.decimals),
+        colSize: 2,
+      },
+      col6: {
+        CellComponent: CurrencyCell,
+        value: utils.formatUnits(_transmuterData.exchangedBalanceBN, synthTokenData.decimals),
+        colSize: 2,
+      },
+      col5: {
+        value: '455%',
+        colSize: 2,
+      },
+    };
+  });
+
+  const onInitialize = async () => {
+    transmutersLoading.set(true);
+
+    await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
+
+    transmutersLoading.set(false);
   };
 
-  const withdraw = async () => {
-    const contract = getContract($tempTx.transmuter);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const amountToWei = utils.parseEther($tempTx.amountUnderlying);
-    try {
-      setPendingWallet();
-      const tx = await contract.withdraw(amountToWei, $account.address, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        // TODO add refreshData here
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.trace(e);
-    }
-    tempTxReset();
-  };
-
-  const claim = async () => {
-    const contract = getContract($tempTx.transmuter);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const decimals = await getTokenDecimals($tempTx.underlyingToken);
-    const amountToWei = utils.parseUnits($tempTx.amountUnderlying, decimals);
-    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
-    try {
-      setPendingWallet();
-      const tx = await contract.claim(amountToWei, $account.address, [$tempTx.underlyingToken], dataPackage, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        // TODO add refreshData here
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.trace(e);
-    }
-    tempTxReset();
-  };
-
-  const methodLookup = {
-    deposit: deposit,
-    withdraw: withdraw,
-    claim: claim,
-  };
-
-  const renderTransmuters = () => {
-    for (const prop of $transmuters.props) {
-      const expandedProps = {
-        alToken: prop.alToken,
-        alTokenAllowance: prop.alTokenAllowance,
-        alTokenSymbol: prop.alTokenSymbol,
-        underlyingToken: prop.getUnderlyingToken,
-        underlyingTokenSymbol: prop.underlyingTokenSymbol,
-        exchangedBalance: prop.exchangedBalance,
-        unexchangedBalance: prop.unexchangedBalance,
-        transmuter: prop.transmuter,
-        address: prop.address,
-      };
-
-      const payload = {
-        col1: {
-          CellComponent: ExpandRowCell,
-          expandedRow: {
-            ExpandedRowComponent: ExpandedTransmuter,
-          },
-          ...expandedProps,
-          colSize: 1,
-        },
-        col2: {
-          CellComponent: FarmNameCell,
-          farmIcon: prop.alTokenSymbol.toLowerCase() + '_med.svg',
-          tokenIcon: prop.underlyingTokenSymbol.toLowerCase(),
-          farmName: prop.transmuterName,
-          farmSubtitle: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
-          colSize: 2,
-          alignment: 'justify-self-start',
-        },
-        col3: {
-          CellComponent: CurrencyCell,
-          value: prop.totalDeposited,
-          colSize: 2,
-        },
-        col4: {
-          CellComponent: CurrencyCell,
-          value: prop.unexchangedBalance,
-          colSize: 2,
-        },
-        col6: {
-          CellComponent: CurrencyCell,
-          value: prop.exchangedBalance,
-          colSize: 2,
-        },
-        col5: {
-          value: '455%',
-          colSize: 2,
-        },
-      };
-
-      rows.push(payload);
-    }
-    $transmuters.fetching = false;
-  };
-
-  $: if ($tempTx.method !== null) methodLookup[$tempTx.method]();
-  $: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
+  $: if ($addressStore !== undefined) {
+    onInitialize();
+  }
 </script>
 
 <ViewContainer>
@@ -245,7 +149,6 @@
       pageSubtitle="{$_('transmuter_page.subtitle')}"
     />
   </div>
-
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
@@ -267,55 +170,54 @@
 
   <div class="w-full mb-8">
     <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm">
+      <div slot="header" class="py-4 px-6 text-sm flex gap-1">
         <Button
           label="{$_('transmuter_page.all_transmuter')}"
           width="w-max"
           canToggle="{true}"
-          selected="{toggleButtons.transmuterSelect.all}"
+          selected="{currentTransmuterCategories.isSelectedAll(
+            $currentTransmuterCategories,
+            AllowedTransmuterTypes,
+          )}"
           solid="{false}"
           borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'all' })}"
+          on:clicked="{() => currentTransmuterCategories.select(AllowedTransmuterTypes)}"
         >
           <p slot="leftSlot">
             <img src="images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
-        <Button
-          label="alETH"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.transmuterSelect.aleth}"
-          solid="{false}"
-          borderSize="0"
-          disabled
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'aleth' })}"
-        >
-          <p slot="leftSlot">
-            <img src="images/icons/aleth_med.svg" alt="aleth vaultAlUsd" class="w-5 h-5" />
-          </p>
-        </Button>
-        <Button
-          label="alUSD"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.transmuterSelect.alusd}"
-          solid="{false}"
-          borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'alusd' })}"
-        >
-          <p slot="leftSlot">
-            <img src="images/icons/alusd_med.svg" alt="alusd vaultAlUsd" class="w-5 h-5" />
-          </p>
-        </Button>
+        {#each AllowedTransmuterTypes as transmuterType}
+          <Button
+            label="{VaultTypesInfos[transmuterType].name}"
+            width="w-max"
+            canToggle="{true}"
+            selected="{currentTransmuterCategories.isSelected($currentTransmuterCategories, transmuterType)}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => currentTransmuterCategories.select([transmuterType])}"
+          >
+            <p slot="leftSlot">
+              <img
+                src="{VaultTypesInfos[transmuterType].icon}"
+                alt="{VaultTypesInfos[transmuterType].name} transmuters"
+                class="w-5 h-5"
+              />
+            </p>
+          </Button>
+        {/each}
       </div>
       <div slot="body">
-        {#if $transmuters.fetching}
+        {#if $transmutersLoading}
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>
+        {:else if currentRowsForSelectedType.length > 0}
+          <Table rows="{currentRowsForSelectedType}" columns="{columns}" />
         {:else}
-          <Table rows="{rows}" columns="{columns}" />
+          <div class="flex justify-center my-4">
+            <p>Didn't found any transmuters for this type of asset.</p>
+          </div>
         {/if}
       </div>
     </ContainerWithHeader>
