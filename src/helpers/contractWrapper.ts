@@ -12,6 +12,17 @@ export const contractWrapper = (selector: string, signer: ethers.Signer, address
   };
 };
 
+export const externalContractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
+  const contractData = require(`../external-abi/${selector}.json`);
+  const _instance = new ethers.Contract(address || contractData.address, contractData.abi, signer);
+
+  return {
+    fragment: new ethers.utils.Interface(contractData.abi),
+    address: contractData.address,
+    instance: _instance,
+  };
+};
+
 /** 
  * const setTokenAllowance = async (token, spender, amount) => {
   console.log('setting allowance', token, spender);
