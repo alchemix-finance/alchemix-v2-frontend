@@ -12,46 +12,15 @@
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
-  import getContract from '../helpers/getContract';
-  import getUserGas from '../helpers/getUserGas';
   import transmuters from '../stores/transmuters';
-  import account from '@stores/account';
-  import tempTx, { tempTxReset } from '../stores/tempTx';
-  import setTokenAllowance from '@helpers/setTokenAllowance';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
-  import { getTokenDecimals } from '@helpers/getTokenData';
-  import { getProvider } from '@helpers/walletManager';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
   import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
   import { balancesStore, transmutersStore } from '@stores/v2/alcxStore';
-  import { transmutersLoading } from '@stores/v2/loadingStores';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { transmutersLoading } from '@stores/v2/loadingStores';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD]);
-
-  const toggleButtons = {
-    transmuterSelect: {
-      all: true,
-      aleth: false,
-      alusd: false,
-    },
-  };
-
-  const buttonToggler = (selector, key) => {
-    Object.keys(toggleButtons[selector]).forEach((entry) => {
-      if (toggleButtons[selector][entry] !== key) {
-        toggleButtons[selector][entry] = false;
-      }
-    });
-    toggleButtons[selector][key] = true;
-  };
-
-  // @dev logic for controlling the filtered views
-  const vaultFilter = (filter) => {
-    const selector = ['transmuterSelect', 'modeSelect', 'stratSelect'];
-    buttonToggler(selector[filter.id], filter.filter);
-  };
 
   const columns = [
     {
@@ -93,94 +62,9 @@
       colSize: 2,
     },
   ];
-  let rows = [];
 
   const goTo = (url) => {
     window.open(url, '_blank');
-  };
-
-  const provider = getProvider();
-  const abiCoder = utils.defaultAbiCoder;
-
-  const deposit = async () => {
-    const contract = getContract($tempTx.transmuter);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const allowance = $tempTx.alTokenAllowance;
-    console.log('allowance', allowance);
-    const amountToWei = utils.parseEther($tempTx.amountAlToken.toString());
-    if (!allowance) {
-      try {
-        await setTokenAllowance($tempTx.alToken, $tempTx.transmuterAddress);
-      } catch (e) {
-        setError(e.data ? await e.data.message : e.message);
-        console.trace(e);
-      }
-    }
-    try {
-      setPendingWallet();
-      const tx = await contract.deposit(amountToWei, $account.address, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        // TODO add refreshData here
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.trace(e);
-    }
-    tempTxReset();
-  };
-
-  const withdraw = async () => {
-    const contract = getContract($tempTx.transmuter);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const amountToWei = utils.parseEther($tempTx.amountUnderlying);
-    try {
-      setPendingWallet();
-      const tx = await contract.withdraw(amountToWei, $account.address, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        // TODO add refreshData here
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.trace(e);
-    }
-    tempTxReset();
-  };
-
-  const claim = async () => {
-    const contract = getContract($tempTx.transmuter);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    const decimals = await getTokenDecimals($tempTx.underlyingToken);
-    const amountToWei = utils.parseUnits($tempTx.amountUnderlying, decimals);
-    const dataPackage = abiCoder.encode(['bytes[]'], [[]]);
-    try {
-      setPendingWallet();
-      const tx = await contract.claim(amountToWei, $account.address, [$tempTx.underlyingToken], dataPackage, {
-        gasPrice: gas,
-      });
-      setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        // TODO add refreshData here
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.trace(e);
-    }
-    tempTxReset();
-  };
-
-  const methodLookup = {
-    deposit: deposit,
-    withdraw: withdraw,
-    claim: claim,
   };
 
   $: currentTransmutersBasedOnType =
@@ -241,66 +125,6 @@
       },
     };
   });
-
-  const renderTransmuters = () => {
-    for (const prop of $transmuters.props) {
-      const expandedProps = {
-        alToken: prop.alToken,
-        alTokenAllowance: prop.alTokenAllowance,
-        alTokenSymbol: prop.alTokenSymbol,
-        underlyingToken: prop.getUnderlyingToken,
-        underlyingTokenSymbol: prop.underlyingTokenSymbol,
-        exchangedBalance: prop.exchangedBalance,
-        unexchangedBalance: prop.unexchangedBalance,
-        transmuter: prop.transmuter,
-        address: prop.address,
-      };
-
-      const payload = {
-        col1: {
-          CellComponent: ExpandRowCell,
-          expandedRow: {
-            ExpandedRowComponent: ExpandedTransmuter,
-          },
-          ...expandedProps,
-          colSize: 1,
-        },
-        col2: {
-          CellComponent: FarmNameCell,
-          farmIcon: prop.alTokenSymbol.toLowerCase() + '_med.svg',
-          tokenIcon: prop.underlyingTokenSymbol.toLowerCase(),
-          farmName: prop.transmuterName,
-          farmSubtitle: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
-          colSize: 2,
-        },
-        col3: {
-          CellComponent: CurrencyCell,
-          value: prop.totalDeposited,
-          colSize: 2,
-        },
-        col4: {
-          CellComponent: CurrencyCell,
-          value: prop.unexchangedBalance,
-          colSize: 2,
-        },
-        col6: {
-          CellComponent: CurrencyCell,
-          value: prop.exchangedBalance,
-          colSize: 2,
-        },
-        col5: {
-          value: '455%',
-          colSize: 2,
-        },
-      };
-
-      rows.push(payload);
-    }
-    $transmuters.fetching = false;
-  };
-
-  $: if ($tempTx.method !== null) methodLookup[$tempTx.method]();
-  $: if (!$account.loadingTransmuterConfigurations) renderTransmuters();
 </script>
 
 <ViewContainer>
@@ -315,25 +139,6 @@
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
         <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
-        <div>
-          <Button width="w-max" label="">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              slot="rightSlot"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-          </Button>
-        </div>
       </div>
       <div slot="body" class="py-4 px-6 flex space-x-4">
         <Button on:clicked="{() => goTo('http://curve.fi')}" label="Curve" width="w-max" py="py-2">
@@ -389,7 +194,7 @@
         {/each}
       </div>
       <div slot="body">
-        {#if $transmuters.fetching}
+        {#if $transmutersLoading}
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>
