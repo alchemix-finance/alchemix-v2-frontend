@@ -205,6 +205,7 @@
           farmName: prop.transmuterName,
           farmSubtitle: prop.alTokenSymbol + '-' + prop.underlyingTokenSymbol,
           colSize: 2,
+          alignment: 'justify-self-start',
         },
         col3: {
           CellComponent: CurrencyCell,

@@ -267,6 +267,7 @@
               farmName: pool.poolConfig.title,
               farmSubtitle: pool.poolConfig.subtitle,
               colSize: 7,
+              alignment: 'justify-self-start',
             },
             col2: {
               value: pool.userDeposit,
