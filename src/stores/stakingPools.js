@@ -29,7 +29,7 @@ export const externalLookup = [
   {
     // Curve alUSD3CRV
     address: '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c',
-    title: 'alUSD3CRV',
+    title: 'alUSD3CRV v2',
     subtitle: 'Curve alUSD Metapool',
     farmIcon: 'alusd_med.svg',
     tokenIcon: 'crv',

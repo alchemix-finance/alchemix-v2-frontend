@@ -1,8 +1,9 @@
 <script>
   export let snapshot;
+  export let state;
 </script>
 
-<div class="py-3">
+<div class="py-3 {state === 'closed' ? 'opacity-50' : 'opacity-100'}">
   <a href="https://etherscan.io/block/{snapshot}" target="_blank">
     {snapshot}
     <svg

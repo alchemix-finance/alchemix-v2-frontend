@@ -56,12 +56,16 @@ const getTokenDecimals = async (address) => {
  * @param token the token to check
  * @param owner the owner of the allowance
  * @param spender the spender of the allowance
- * @returns boolean has allowance (true) or not (false)
+ * @param amount the amount in 18 decimal wei
+ * @returns boolean has allowance for amount
  * */
-const getTokenAllowance = async (token, owner, spender) => {
-  const contract = new ethers.Contract(token, genericAbi, provider);
-  const allowanceCheck = await contract.allowance(owner, spender);
-  return BigNumber.from(allowanceCheck).toString() !== '0';
+const getTokenAllowance = async (token, owner, spender, amount) => {
+  const _amount = amount ? amount : ethers.constants.MaxUint256;
+  if (token && owner && spender) {
+    const contract = new ethers.Contract(token, genericAbi, provider);
+    const allowanceCheck = await contract.allowance(owner, spender);
+    return allowanceCheck.sub(_amount).gt(BigNumber.from(0));
+  }
 };
 
 export { getTokenSymbol, getTokenBalance, getTokenName, getTokenDecimals, getTokenAllowance };
