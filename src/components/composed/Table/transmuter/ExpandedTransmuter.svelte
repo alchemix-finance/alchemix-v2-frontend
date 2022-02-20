@@ -200,7 +200,11 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
-        disabled="{!checkButtonState(inputWithdrawBN, synthTokenData.balance, synthTokenData.decimals)}"
+        disabled="{!checkButtonState(
+          inputWithdrawBN,
+          transmuterData.unexchangedBalanceBN,
+          synthTokenData.decimals,
+        )}"
         on:clicked="{() =>
           onWithdrawButton(synthTokenData.address, inputWithdrawBN, synthTokenData.decimals)}"
       />
@@ -259,7 +263,7 @@
         fontSize="text-md"
         disabled="{!checkButtonState(
           inputClaimBN,
-          underlyingTokenData.balance,
+          transmuterData.exchangedBalanceBN,
           underlyingTokenData.decimals,
         )}"
         on:clicked="{() =>
