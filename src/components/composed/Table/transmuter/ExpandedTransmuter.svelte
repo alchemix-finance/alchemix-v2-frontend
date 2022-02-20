@@ -2,77 +2,68 @@
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import Button from '../../../elements/Button.svelte';
-  import walletBalance from '../../../../stores/walletBalance';
-  import tempTx from '../../../../stores/tempTx';
-  import getUserGas from '../../../../helpers/getUserGas';
-  import { setError } from '../../../../helpers/setToast';
   import { BigNumber, utils } from 'ethers';
-
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { balancesStore } from '@stores/v2/alcxStore';
-
-  export let alToken;
-  export let alTokenAllowance;
-  export let alTokenSymbol;
-  export let underlyingToken;
-  export let underlyingTokenSymbol;
-  export let exchangedBalance;
-  export let unexchangedBalance;
-  export let transmuter;
-  export let address;
+  import { addressStore, balancesStore } from '@stores/v2/alcxStore';
+  import { claim, deposit, withdraw } from '@stores/v2/transmuterActions';
+  import { signer } from '@stores/v2/derived';
+  import { fetchBalanceByAddress, fetchTransmuterBySelector } from '@stores/v2/asyncMethods';
 
   export let transmuterData;
 
-  let depositAmount;
-  let withdrawAmount;
-  let claimAmount;
+  const onDepositButton = async (tokenAddress, amountToDeposit, tokenDecimals) => {
+    const _fAmountToDeposit = utils.parseUnits(utils.formatEther(amountToDeposit), tokenDecimals);
 
-  // const
-  const format = utils.formatUnits;
-
-  const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  const alTokenData = $walletBalance.tokens.find((userToken) => userToken.address === alToken);
-  let alTokenBalance;
-  if (alTokenData) {
-    alTokenBalance = alTokenData.balance;
-    console.log('ATB', alTokenBalance);
-  }
-  console.log('altokenbal', alTokenData);
-
-  const deposit = () => {
-    if (depositAmount > alTokenBalance) {
-      setError($_('toast.error_deposit_amount'));
-    } else {
-      $tempTx.transmuter = transmuter;
-      $tempTx.transmuterAddress = address;
-      $tempTx.alTokenAllowance = alTokenAllowance;
-      $tempTx.amountAlToken = depositAmount;
-      $tempTx.alToken = alToken;
-      $tempTx.method = 'deposit';
-    }
+    await deposit(tokenAddress, _fAmountToDeposit, transmuterData.contractSelector, [
+      $signer,
+      $addressStore,
+    ]).then(() => {
+      Promise.all([
+        fetchBalanceByAddress(tokenAddress, [$signer]),
+        fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [
+          $signer,
+          $addressStore,
+        ]),
+      ]).then(() => {
+        console.log(`[onDepositButton/deposit/finish]: Updated!`);
+      });
+    });
   };
 
-  const withdraw = async () => {
-    if (withdrawAmount > unexchangedBalance) {
-      setError($_('toast.error_withdraw_amount'));
-    } else {
-      $tempTx.transmuter = transmuter;
-      $tempTx.underlyingToken = underlyingToken;
-      $tempTx.amountUnderlying = withdrawAmount;
-      $tempTx.method = 'withdraw';
-    }
+  const onWithdrawButton = async (tokenAddress, amountToWithdraw, tokenDecimals) => {
+    const _fAmountToWithdraw = utils.parseUnits(utils.formatEther(amountToWithdraw), tokenDecimals);
+
+    await withdraw(_fAmountToWithdraw, transmuterData.contractSelector, [$signer, $addressStore]).then(() => {
+      Promise.all([
+        fetchBalanceByAddress(tokenAddress, [$signer]),
+        fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [
+          $signer,
+          $addressStore,
+        ]),
+      ]).then(() => {
+        console.log(`[onWithdrawButton/withdraw/finish]: Updated!`);
+      });
+    });
   };
 
-  const claim = async () => {
-    if (claimAmount > exchangedBalance) {
-      setError($_('toast.error_claim_amount'));
-    } else {
-      $tempTx.transmuter = transmuter;
-      $tempTx.underlyingToken = underlyingToken;
-      $tempTx.amountUnderlying = claimAmount;
-      $tempTx.method = 'claim';
-    }
+  const onClaimButton = async (tokenAddress, amountToClaim, tokenDecimals) => {
+    const _fAmountToClaim = utils.parseUnits(utils.formatEther(amountToClaim), tokenDecimals);
+
+    await claim(tokenAddress, _fAmountToClaim, transmuterData.contractSelector, [
+      $signer,
+      $addressStore,
+    ]).then(() => {
+      Promise.all([
+        fetchBalanceByAddress(tokenAddress, [$signer]),
+        fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [
+          $signer,
+          $addressStore,
+        ]),
+      ]).then(() => {
+        console.log(`[onWithdrawButton/withdraw/finish]: Updated!`);
+      });
+    });
   };
 
   const fetchDataForToken = (address) => {
@@ -147,7 +138,7 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
-        on:clicked="{() => deposit()}"
+        on:clicked="{() => onDepositButton(synthTokenData.address, inputDepositBN, synthTokenData.decimals)}"
       />
     </div>
     <div class="p-4 flex flex-col space-y-4">
@@ -202,7 +193,8 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
-        on:clicked="{() => withdraw()}"
+        on:clicked="{() =>
+          onWithdrawButton(synthTokenData.address, inputWithdrawBN, synthTokenData.decimals)}"
       />
     </div>
     <div class="p-4 flex flex-col space-y-4">
@@ -257,7 +249,8 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
-        on:clicked="{() => claim()}"
+        on:clicked="{() =>
+          onClaimButton(underlyingTokenData.address, inputClaimBN, underlyingTokenData.decimals)}"
       />
     </div>
   </div>

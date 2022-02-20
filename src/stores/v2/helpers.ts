@@ -66,6 +66,7 @@ export async function fetchDataForVault(
 }
 
 export async function fetchDataForTransmuter(
+  vaultType: number,
   contractSelector: string,
   signer: ethers.Signer,
   accountAddress: string,
@@ -82,6 +83,7 @@ export async function fetchDataForTransmuter(
   const unexchangedBalance = await transmuterInstance.getUnexchangedBalance(accountAddress);
 
   return {
+    type: vaultType,
     contractSelector: contractSelector,
     transmuterAddress: transmuterAddress,
     synthAddress: syntethicTokenAddress,

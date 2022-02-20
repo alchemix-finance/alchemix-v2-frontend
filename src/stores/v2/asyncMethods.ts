@@ -156,7 +156,7 @@ export async function fetchTransmutersForVaultType(
 
   const transmutersFetchDataPromises = TransmuterConstants[vaultType].transmuterContractSelectors.map(
     (selectorId) => {
-      return fetchDataForTransmuter(selectorId, signer, accountAddress);
+      return fetchDataForTransmuter(vaultType, selectorId, signer, accountAddress);
     },
   );
 
@@ -175,7 +175,12 @@ export async function fetchTransmuterBySelector(
     return Promise.reject(`[fetchTransmuterBySelector]: signer is undefined`);
   }
 
-  const fetchDataForTransmuterPromise = fetchDataForTransmuter(transmuterSelector, signer, accountAddress);
+  const fetchDataForTransmuterPromise = fetchDataForTransmuter(
+    vaultType,
+    transmuterSelector,
+    signer,
+    accountAddress,
+  );
 
   return fetchDataForTransmuterPromise.then((_transmuter) => {
     updateTransmuterByAddress(vaultType, _transmuter.transmuterAddress, _transmuter);
