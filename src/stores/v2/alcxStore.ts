@@ -38,6 +38,7 @@ export interface VaultsType {
 }
 
 export interface TransmuterType {
+  contractSelector: string;
   transmuterAddress: string;
   synthAddress: string;
   underlyingTokenAddress: string;

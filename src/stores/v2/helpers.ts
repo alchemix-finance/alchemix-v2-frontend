@@ -82,6 +82,7 @@ export async function fetchDataForTransmuter(
   const unexchangedBalance = await transmuterInstance.getUnexchangedBalance(accountAddress);
 
   return {
+    contractSelector: contractSelector,
     transmuterAddress: transmuterAddress,
     synthAddress: syntethicTokenAddress,
     underlyingTokenAddress: underlyingTokenAddress,
