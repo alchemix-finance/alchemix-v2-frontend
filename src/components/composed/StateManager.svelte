@@ -5,6 +5,7 @@
     fetchAlchemistSentinelRole,
     fetchAllBalances,
     fetchAllVaultsBodies,
+    fetchTransmutersForVaultType,
     fetchVaultApy,
     fetchVaultDebt,
     fetchVaultDebtTokenAddress,
@@ -13,7 +14,7 @@
   } from 'src/stores/v2/asyncMethods';
   import { VaultTypes } from 'src/stores/v2/types';
 
-  import { vaultsLoading } from '@stores/v2/loadingStores';
+  import { transmutersLoading, vaultsLoading } from '@stores/v2/loadingStores';
 
   async function initialize() {
     await fetchVaultTokens(VaultTypes.alUSD, [$signer]);
@@ -29,6 +30,12 @@
     await fetchVaultDebtTokenAddress(VaultTypes.alUSD, [$signer]);
 
     await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
+
+    transmutersLoading.set(true);
+
+    await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
+
+    transmutersLoading.set(false);
 
     vaultsLoading.set(false);
     await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore]);

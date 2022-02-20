@@ -23,7 +23,10 @@
   import { getProvider } from '@helpers/walletManager';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
-  import { AllowedTransmuterTypes, VaultTypesInfos } from '@stores/v2/constants';
+  import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
+  import { balancesStore, transmutersStore } from '@stores/v2/alcxStore';
+  import { transmutersLoading } from '@stores/v2/loadingStores';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD]);
 
@@ -180,6 +183,65 @@
     claim: claim,
   };
 
+  $: currentTransmutersBasedOnType =
+    Object.keys($transmutersStore)
+      .map((vTypeId) => {
+        if ($currentTransmuterCategories.includes(parseInt(vTypeId))) {
+          return $transmutersStore[parseInt(vTypeId)].transmuters;
+        }
+      })
+      .filter((elm) => elm !== undefined)
+      .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
+
+  $: currentRowsForSelectedType = currentTransmutersBasedOnType.map((_transmuterData) => {
+    const synthTokenData = getTokenDataFromBalances(_transmuterData.synthAddress, [$balancesStore]);
+    const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
+      $balancesStore,
+    ]);
+
+    const nameAlias = TransmuterNameAliases[`${underlyingTokenData.symbol}`.toLowerCase()];
+
+    const totalDeposited = _transmuterData.exchangedBalanceBN.add(_transmuterData.unexchangedBalanceBN);
+
+    return {
+      col1: {
+        CellComponent: ExpandRowCell,
+        expandedRow: {
+          ExpandedRowComponent: ExpandedTransmuter,
+        },
+        expandedProps: _transmuterData,
+        colSize: 1,
+      },
+      col2: {
+        CellComponent: FarmNameCell,
+        farmIcon: synthTokenData.symbol.toLowerCase() + '_med.svg',
+        tokenIcon: underlyingTokenData.symbol.toLowerCase(),
+        farmName: nameAlias,
+        farmSubtitle: synthTokenData.symbol + '-' + underlyingTokenData.symbol,
+        colSize: 2,
+      },
+      col3: {
+        CellComponent: CurrencyCell,
+        value: utils.formatUnits(totalDeposited, synthTokenData.decimals),
+        colSize: 2,
+      },
+      col4: {
+        CellComponent: CurrencyCell,
+        value: utils.formatUnits(_transmuterData.unexchangedBalanceBN, synthTokenData.decimals),
+        colSize: 2,
+      },
+      col6: {
+        CellComponent: CurrencyCell,
+        value: utils.formatUnits(_transmuterData.exchangedBalanceBN, synthTokenData.decimals),
+        colSize: 2,
+      },
+      col5: {
+        value: '455%',
+        colSize: 2,
+      },
+    };
+  });
+
   const renderTransmuters = () => {
     for (const prop of $transmuters.props) {
       const expandedProps = {
@@ -249,7 +311,6 @@
       pageSubtitle="{$_('transmuter_page.subtitle')}"
     />
   </div>
-
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
@@ -333,7 +394,7 @@
             <BarLoader color="#F5C59F" />
           </div>
         {:else}
-          <Table rows="{rows}" columns="{columns}" />
+          <Table rows="{currentRowsForSelectedType}" columns="{columns}" />
         {/if}
       </div>
     </ContainerWithHeader>
