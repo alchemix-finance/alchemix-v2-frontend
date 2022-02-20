@@ -6,8 +6,17 @@
   import getContract from '../../../../helpers/getContract';
   import getUserGas from '../../../../helpers/getUserGas';
   import { getProvider } from '@helpers/walletManager';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import {
+    setPendingWallet,
+    setPendingApproval,
+    setPendingTx,
+    setSuccessTx,
+    setError,
+  } from '@helpers/setToast';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { getTokenAllowance } from '@helpers/getTokenData';
+  import setTokenAllowance from '@helpers/setTokenAllowance';
+  import account from '@stores/account';
 
   export let poolId;
   export let token;
@@ -24,13 +33,17 @@
   const deposit = async () => {
     const amountToWei = utils.parseEther(depositAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const allowance = await getTokenAllowance(token.address, $account.address, contract.address, amountToWei);
     if (depositAmount > token.balance) {
       setError($_('toast.error_deposit_amount'));
     } else {
       try {
-        let tx;
+        if (!allowance) {
+          setPendingApproval();
+          await setTokenAllowance(token.address, contract.address);
+        }
         setPendingWallet();
-        tx = await contract.deposit(poolId, amountToWei, {
+        const tx = await contract.deposit(poolId, amountToWei, {
           gasPrice: gas,
         });
         setPendingTx();

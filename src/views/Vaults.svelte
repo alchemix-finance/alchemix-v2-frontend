@@ -95,7 +95,12 @@
 
   const deposit = async () => {
     try {
-      const allowance = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
+      const allowance = await getTokenAllowance(
+        $tempTx.yieldToken,
+        $account.address,
+        contract.address,
+        $tempTx.amountYield,
+      );
       const decimals = await getTokenDecimals($tempTx.yieldToken);
       const amountToWei = $tempTx.amountYield;
       const token = $tempTx.yieldToken;
@@ -130,6 +135,7 @@
         $tempTx.underlyingToken,
         $account.address,
         contract.address,
+        $tempTx.amountUnderlying,
       );
       const decimals = await getTokenDecimals($tempTx.underlyingToken);
       const amountToWei = $tempTx.amountUnderlying;
@@ -167,8 +173,14 @@
         $tempTx.underlyingToken,
         $account.address,
         contract.address,
+        $tempTx.amountUnderlying,
       );
-      const allowanceYield = await getTokenAllowance($tempTx.yieldToken, $account.address, contract.address);
+      const allowanceYield = await getTokenAllowance(
+        $tempTx.yieldToken,
+        $account.address,
+        contract.address,
+        $tempTx.amountYield,
+      );
       const decimals = await getTokenDecimals($tempTx.underlyingToken);
       const yieldToWei = $tempTx.amountYield;
       const underlyingToWei = $tempTx.amountUnderlying;
@@ -262,6 +274,7 @@
       $tempTx.underlyingToken,
       $account.address,
       contract.address,
+      $tempTx.amountRepay,
     );
     try {
       setPendingWallet();

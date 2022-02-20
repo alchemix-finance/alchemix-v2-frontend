@@ -5,10 +5,18 @@
   import { getExternalContract } from '@helpers/getContract';
   import getUserGas from '@helpers/getUserGas';
   import { getProvider } from '@helpers/walletManager';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import {
+    setPendingWallet,
+    setPendingApproval,
+    setPendingTx,
+    setSuccessTx,
+    setError,
+  } from '@helpers/setToast';
   import account from '@stores/account';
   import Button from '@components/elements/Button.svelte';
   import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+  import { getTokenAllowance } from '@helpers/getTokenData';
+  import setTokenAllowance from '@helpers/setTokenAllowance';
 
   export let token;
   export let stakedBalance;
@@ -31,10 +39,20 @@
   const deposit = async () => {
     const depositToWei = utils.parseEther(depositAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const allowance = await getTokenAllowance(
+      token.address,
+      $account.address,
+      mcv2contract.address,
+      depositToWei,
+    );
     if (depositToWei.gt(slpBalance)) {
       setError($_('toast.error_deposit_amount'));
     } else {
       try {
+        if (!allowance) {
+          setPendingApproval();
+          await setTokenAllowance(token.address, mcv2contract.address);
+        }
         setPendingWallet();
         const tx = await mcv2contract.deposit(0, depositToWei, $account.address, {
           gasPrice: gas,
