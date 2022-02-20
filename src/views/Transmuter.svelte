@@ -23,8 +23,9 @@
   import { getProvider } from '@helpers/walletManager';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
+  import { AllowedTransmuterTypes, VaultTypesInfos } from '@stores/v2/constants';
 
-  const transmuterCategory = makeSelectorStore([VaultTypes.alUSD]);
+  const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD]);
 
   const toggleButtons = {
     transmuterSelect: {
@@ -294,42 +295,37 @@
           label="{$_('transmuter_page.all_transmuter')}"
           width="w-max"
           canToggle="{true}"
-          selected="{toggleButtons.transmuterSelect.all}"
+          selected="{currentTransmuterCategories.isSelectedAll(
+            $currentTransmuterCategories,
+            AllowedTransmuterTypes,
+          )}"
           solid="{false}"
           borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'all' })}"
+          on:clicked="{() => currentTransmuterCategories.select(AllowedTransmuterTypes)}"
         >
           <p slot="leftSlot">
             <img src="images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
-        <Button
-          label="alETH"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.transmuterSelect.aleth}"
-          solid="{false}"
-          borderSize="0"
-          disabled
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'aleth' })}"
-        >
-          <p slot="leftSlot">
-            <img src="images/icons/aleth_med.svg" alt="aleth vaultAlUsd" class="w-5 h-5" />
-          </p>
-        </Button>
-        <Button
-          label="alUSD"
-          width="w-max"
-          canToggle="{true}"
-          selected="{toggleButtons.transmuterSelect.alusd}"
-          solid="{false}"
-          borderSize="0"
-          on:clicked="{() => vaultFilter({ id: 0, filter: 'alusd' })}"
-        >
-          <p slot="leftSlot">
-            <img src="images/icons/alusd_med.svg" alt="alusd vaultAlUsd" class="w-5 h-5" />
-          </p>
-        </Button>
+        {#each AllowedTransmuterTypes as transmuterType}
+          <Button
+            label="{VaultTypesInfos[transmuterType].name}"
+            width="w-max"
+            canToggle="{true}"
+            selected="{currentTransmuterCategories.isSelected($currentTransmuterCategories, transmuterType)}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => currentTransmuterCategories.select([transmuterType])}"
+          >
+            <p slot="leftSlot">
+              <img
+                src="{VaultTypesInfos[transmuterType].icon}"
+                alt="{VaultTypesInfos[transmuterType].name} transmuters"
+                class="w-5 h-5"
+              />
+            </p>
+          </Button>
+        {/each}
       </div>
       <div slot="body">
         {#if $transmuters.fetching}
