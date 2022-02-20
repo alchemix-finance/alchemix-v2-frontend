@@ -6,7 +6,14 @@ export const VaultConstants = {
   },
 };
 
+export const TransmuterConstants = {
+  [VaultTypes.alUSD]: {
+    transmuterContractSelectors: ['TransmuterV2_DAI', 'TransmuterV2_USDC', 'TransmuterV2_USDT'],
+  },
+};
+
 export const AllowedVaultTypes = [VaultTypes.alUSD, VaultTypes.alETH];
+export const AllowedTransmuterTypes = [VaultTypes.alUSD, VaultTypes.alETH];
 
 export const VaultTypesInfos = {
   [VaultTypes.alUSD]: {
