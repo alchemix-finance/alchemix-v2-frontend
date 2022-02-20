@@ -105,6 +105,7 @@
         farmName: nameAlias,
         farmSubtitle: synthTokenData.symbol + '-' + underlyingTokenData.symbol,
         colSize: 2,
+        alignment: 'justify-self-start',
       },
       col3: {
         CellComponent: CurrencyCell,

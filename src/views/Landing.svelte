@@ -2,8 +2,6 @@
   import { fade } from 'svelte/transition';
   import { onMount, onDestroy } from 'svelte';
   import { _ } from 'svelte-i18n';
-  import Button from '../components/elements/Button.svelte';
-  import BorderContainer from '../components/elements/BorderContainer.svelte';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
   import settings from '../stores/settings';
   import global from '../stores/global';
