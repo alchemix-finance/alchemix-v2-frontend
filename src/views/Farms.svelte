@@ -18,6 +18,8 @@
   import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
   import ExpandedCrvFarm from '@components/composed/Table/farms/ExpandedCrvFarm.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
+  import StakedCell from '@components/composed/Table/farms/StakedCell';
+  import ClaimableCell from '@components/composed/Table/farms/ClaimableCell';
   import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
   import account from '@stores/account';
@@ -270,11 +272,15 @@
               alignment: 'justify-self-start',
             },
             col2: {
-              value: pool.userDeposit,
+              CellComponent: StakedCell,
+              amount: pool.userDeposit,
+              tokenSymbol: pool.tokenSymbol,
               colSize: 4,
             },
             col3: {
-              value: pool.userUnclaimed,
+              CellComponent: ClaimableCell,
+              rewardAmount: pool.userUnclaimed,
+              rewardToken: pool.rewardToken,
               colSize: 4,
             },
             col4: {
