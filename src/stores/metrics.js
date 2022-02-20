@@ -16,11 +16,11 @@ const defaults = {
       value: 100.1,
       metric: METRICS.millions,
       currency: CURRENCIES.dollar,
-      percentChanged: 2.82,
+      percentChanged: 0,
       percentChangedIsIncrease: true,
     },
     globalTVL: {
-      label: 'Global TVL',
+      label: 'Outstanding Debt',
       value: 2.5,
       metric: METRICS.billions,
       currency: CURRENCIES.dollar,
@@ -28,7 +28,7 @@ const defaults = {
       percentChangedIsIncrease: true,
     },
     globalDebt: {
-      label: 'Global Debt',
+      label: 'Open Credit Balance',
       value: 1.05,
       metric: METRICS.billions,
       currency: CURRENCIES.dollar,

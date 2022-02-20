@@ -448,6 +448,7 @@ async function initFarms() {
     for (let i = 0; i < poolCounter; i++) {
       const checkToken = await contract.getPoolToken(i);
       const token = checkToken.toLowerCase();
+      const tokenSymbol = await getTokenSymbol(token);
       const checkReward = await contract.getPoolRewardRate(i);
       const reward = utils.formatEther(checkReward.toString());
       const checkUserDeposit = await contract.getStakeTotalDeposited(_account.address, i);
@@ -460,6 +461,7 @@ async function initFarms() {
       const rewardToken = 'ALCX';
       const payload = {
         token,
+        tokenSymbol,
         reward,
         userDeposit,
         userUnclaimed,
@@ -534,6 +536,7 @@ async function initCurveFarm() {
   // @dev grab data from contracts
   const rewardToken = await crvRewarder.rewardsToken();
   const lpToken = await crvGauge.lp_token();
+  const tokenSymbol = await getTokenSymbol(lpToken);
   const crvToken = await crvGauge.crv_token();
   const slpBalance = await getTokenBalance(lpToken);
   const slpSupply = await crvMetapool.totalSupply();
@@ -544,20 +547,23 @@ async function initCurveFarm() {
   const rewardRateAlcx = await crvRewarder.rewardRate();
   const virtualPrice = await crvMetapool.get_virtual_price();
   const poolConfig = externalLookup.find((pool) => pool.address.toLowerCase() === lpToken.toLowerCase());
+  const userUnclaimed = `${utils.formatEther(rewardsAlcx)} ALCX + ${utils.formatEther(rewardsCrv)} CRV`;
   const payload = {
     type: 'crv',
-    reward: 'yes',
+    reward: '0.0',
     token: lpToken,
+    tokenSymbol,
     lpToken,
     rewardsCrv,
     rewardsAlcx,
     slpBalance,
     slpSupply,
-    userDeposit,
+    userDeposit: utils.formatEther(userDeposit),
     totalSupply,
     rewardRateAlcx,
     virtualPrice,
     poolConfig,
+    userUnclaimed,
   };
   _stakingPools.allPools.push(payload);
   stakingPools.set({ ..._stakingPools });

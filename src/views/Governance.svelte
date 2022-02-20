@@ -15,6 +15,8 @@
   import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
   import IpfsCell from '../components/composed/Table/governance/IpfsCell.svelte';
   import SnapshotCell from '../components/composed/Table/governance/SnapshotCell.svelte';
+  import GenericCell from '../components/composed/Table/governance/GenericCell.svelte';
+  import StatusCell from '../components/composed/Table/governance/StatusCell.svelte';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -91,29 +93,39 @@
           value: proposal.title,
           colSize: 8,
           alignment: 'justify-self-start',
+          CellComponent: GenericCell,
+          state: proposal.state,
         },
         col2: {
           value: proposal.state,
           colSize: 2,
+          CellComponent: StatusCell,
+          state: proposal.state,
         },
         col3: {
           value: snapshotToDate(proposal.start),
           colSize: 2,
+          CellComponent: GenericCell,
+          state: proposal.state,
         },
         col4: {
           value: snapshotToDate(proposal.end),
           colSize: 2,
+          CellComponent: GenericCell,
+          state: proposal.state,
         },
         col5: {
           snapshot: proposal.snapshot,
           colSize: 3,
           CellComponent: SnapshotCell,
+          state: proposal.state,
         },
         col6: {
           ipfsShort: proposal.ipfs.slice(0, 8),
           ipfsId: proposal.ipfs,
           colSize: 3,
           CellComponent: IpfsCell,
+          state: proposal.state,
         },
       };
       rows.push(payload);
