@@ -1,13 +1,22 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import Button from '../../../elements/Button.svelte';
   import getContract from '../../../../helpers/getContract';
   import getUserGas from '../../../../helpers/getUserGas';
   import { getProvider } from '@helpers/walletManager';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import {
+    setPendingWallet,
+    setPendingApproval,
+    setPendingTx,
+    setSuccessTx,
+    setError,
+  } from '@helpers/setToast';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { getTokenAllowance } from '@helpers/getTokenData';
+  import setTokenAllowance from '@helpers/setTokenAllowance';
+  import account from '@stores/account';
 
   export let poolId;
   export let token;
@@ -24,13 +33,17 @@
   const deposit = async () => {
     const amountToWei = utils.parseEther(depositAmount.toString());
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const allowance = await getTokenAllowance(token.address, $account.address, contract.address, amountToWei);
     if (depositAmount > token.balance) {
       setError($_('toast.error_deposit_amount'));
     } else {
       try {
-        let tx;
+        if (!allowance) {
+          setPendingApproval();
+          await setTokenAllowance(token.address, contract.address);
+        }
         setPendingWallet();
-        tx = await contract.deposit(poolId, amountToWei, {
+        const tx = await contract.deposit(poolId, amountToWei, {
           gasPrice: gas,
         });
         setPendingTx();
@@ -101,20 +114,14 @@
     withdrawAmount = '';
   };
 
-  const setWithdrawValue = (event) => {
-    // TODO if new value < 1 wei -> withdrawAmount = 1 wei
-    withdrawAmount = (parseFloat(stakedBalance) / 100) * event.detail.value;
-  };
+  $: canClaim = parseFloat(unclaimedRewards) > 0;
+  $: canWithdraw =
+    !!withdrawAmount && parseFloat(withdrawAmount) > 0 && stakedBalance.amount.gt(BigNumber.from(0));
+  $: canDeposit = !!depositAmount && parseFloat(depositAmount) > 0 && token.balance > 0;
 </script>
-
-<!-- NOTE -- the token object is not working at the moment so I had to put in placeholders for styling -->
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
   <div class="p-4 flex flex-col space-y-4">
-    <!-- <p class="text-sm text-lightgrey10 self-start">Available</p>
-    <div class="w-full self-center">
-      <p>{token.balance} {token.symbol}</p>
-    </div> -->
     <label for="borrowInput" class="text-sm text-lightgrey10">
       {$_('available')}: {token.balance}
       {token.symbol}
@@ -159,6 +166,7 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
+      disabled="{!canDeposit}"
       on:clicked="{() => deposit()}"
     />
   </div>
@@ -207,6 +215,7 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
+      disabled="{!canWithdraw}"
       on:clicked="{() => withdraw()}"
     />
   </div>
@@ -229,6 +238,7 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
+      disabled="{!canClaim}"
       on:clicked="{() => claim()}"
     />
   </div>

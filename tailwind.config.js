@@ -81,6 +81,15 @@ module.exports = {
       alcxFlow: ['Montserrat', 'sans-serif'],
       alcxMono: ['monospace'],
     },
+    extend: {
+      backgroundSize: {
+        'size-200': '200% 200%',
+      },
+      backgroundPosition: {
+        'pos-0': '0% 0%',
+        'pos-100': '100% 100%',
+      },
+    },
   },
   variants: {
     'flex-basis': ['responsive'],
@@ -88,6 +97,7 @@ module.exports = {
       cursor: ['hover'],
       opacity: ['disabled'],
       block: ['group-hover'],
+      backgroundPosition: ['hover'],
     },
   },
   plugins: [require('@tkh/tailwind-plugin-flex-basis')()],

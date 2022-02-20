@@ -47,9 +47,25 @@
   "max_slippage": "Maximum Slippage",
   "sentinel": "Sentinel",
   "landing": {
-    "intro_title": "Take Out A Self-Repaying Loan",
-    "intro_subtitle": "Increase capital efficiency by borrowing the future yield of your deposit today.",
-    "button_label": "Enter Alchemix"
+    "intro_title": "Alchemix Self-Repaying Loans allow you to leverage a range of tokens without risk of liquidation.",
+    "intro_subtitle_0": "Borrow up to 50% of your deposited collateral",
+    "intro_subtitle_1": "Spend and save at the same time",
+    "intro_subtitle_2": "Your only debt is time",
+    "button_label": "Get your first Self-Repaying Loan",
+    "learn_more": "Learn more",
+    "short_explainer": "By borrowing a synthetic version of the asset you deposit you'll avoid the risk of liquidation. Defi innovation on a whole new level, Alchemix is the first same-asset loan product in DeFi. Using your collateral we earn yield on your behalf to pay off your loan automagically!",
+    "path_headline": "Choose your path",
+    "path_subtitle": "A multi-functional account for all your financial needs",
+    "leverage_headline": "Leverage your assets",
+    "benefits_headline": "The benefits of Alchemix",
+    "benefit_leverage_title": "Leverage your wealth",
+    "benefit_leverage_blurb": "Keep exposure to important assets while making them work for you. Leverage more of your wealth (without risk of liquidation!) by borrowing a synthetic version of your collateral.",
+    "benefit_range_title": "Wide range of tokens",
+    "benefit_range_blurb": "Alchemix is opening doors to new collateral types. Leverage more of your wealth than ever before.",
+    "benefit_liquidations_title": "No liquidations",
+    "benefit_liquidations_blurb": "No matter what happens we'll never liquidate your deposit. You can choose to self-liquidate your own loan at your own discretion.",
+    "benefit_flexible_title": "Completely flexible",
+    "benefit_flexible_blurb": "Alchemix doesn't lock your deposit or charge you fees. Your funds are accessible 100% of the time. You can also repay your debt whenever you like."
   },
   "settings_page": {
     "locale": "Locale",
