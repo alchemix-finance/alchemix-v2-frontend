@@ -209,7 +209,7 @@
         expandedRow: {
           ExpandedRowComponent: ExpandedTransmuter,
         },
-        expandedProps: _transmuterData,
+        transmuterData: _transmuterData,
         colSize: 1,
       },
       col2: {
@@ -351,7 +351,7 @@
 
   <div class="w-full mb-8">
     <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm">
+      <div slot="header" class="py-4 px-6 text-sm flex gap-1">
         <Button
           label="{$_('transmuter_page.all_transmuter')}"
           width="w-max"
@@ -393,8 +393,12 @@
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>
-        {:else}
+        {:else if currentRowsForSelectedType.length > 0}
           <Table rows="{currentRowsForSelectedType}" columns="{columns}" />
+        {:else}
+          <div class="flex justify-center my-4">
+            <p>Didn't found any transmuters for this type of asset.</p>
+          </div>
         {/if}
       </div>
     </ContainerWithHeader>

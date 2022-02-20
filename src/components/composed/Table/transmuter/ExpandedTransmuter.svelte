@@ -6,9 +6,11 @@
   import tempTx from '../../../../stores/tempTx';
   import getUserGas from '../../../../helpers/getUserGas';
   import { setError } from '../../../../helpers/setToast';
-  import { utils } from 'ethers';
+  import { BigNumber, utils } from 'ethers';
 
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { balancesStore } from '@stores/v2/alcxStore';
 
   export let alToken;
   export let alTokenAllowance;
@@ -19,6 +21,8 @@
   export let unexchangedBalance;
   export let transmuter;
   export let address;
+
+  export let transmuterData;
 
   let depositAmount;
   let withdrawAmount;
@@ -71,181 +75,190 @@
     }
   };
 
-  const setDepositValue = (event) => {
-    // TODO if new value < 1 wei -> depositAmount = 1 wei
-    depositAmount = (parseFloat(alTokenBalance) / 100) * event.detail.value;
-  };
-  const setWithdrawValue = (event) => {
-    // TODO if new value < 1 wei -> withdrawAmount = 1 wei
-    withdrawAmount = (parseFloat(unexchangedBalance) / 100) * event.detail.value;
-  };
-  const setClaimValue = (event) => {
-    claimAmount = (parseFloat(exchangedBalance) / 100) * event.detail.value;
+  const fetchDataForToken = (address) => {
+    return getTokenDataFromBalances(address, [$balancesStore]);
   };
 
-  const setMaxDeposit = () => {
-    depositAmount = alTokenBalance;
+  const useBigNumberForInput = (inputValue) => {
+    if (inputValue === 0 || inputValue === '') {
+      return BigNumber.from(0);
+    }
+
+    return utils.parseEther(`${inputValue}`);
   };
-  const setMaxWithdraw = () => {
-    withdrawAmount = unexchangedBalance;
-  };
-  const setMaxClaim = () => {
-    claimAmount = exchangedBalance;
-  };
-  const clearDeposit = () => {
-    depositAmount = '';
-  };
-  const clearWithdraw = () => {
-    withdrawAmount = '';
-  };
-  const clearClaim = () => {
-    claimAmount = '';
-  };
+
+  let inputDepositAmount = 0;
+  let inputWithdrawAmount = 0;
+  let inputClaimAmount = 0;
+
+  $: synthTokenData = fetchDataForToken(transmuterData.synthAddress);
+  $: underlyingTokenData = fetchDataForToken(transmuterData.underlyingTokenAddress);
+
+  $: inputDepositBN = useBigNumberForInput(inputDepositAmount);
+  $: inputWithdrawBN = useBigNumberForInput(inputWithdrawAmount);
+  $: inputClaimBN = useBigNumberForInput(inputClaimAmount);
 </script>
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
-  <div class="p-4 flex flex-col space-y-4">
-    <label for="depositInput" class="text-sm text-lightgrey10">
-      {$_('available')}: {alTokenBalance}
-      {alTokenSymbol}
-    </label>
-    <div class="flex bg-grey3 rounded border border-grey3">
-      <div class="w-full">
-        <InputNumber
-          id="depositInput"
-          placeholder="~0.00 {alTokenSymbol}"
-          bind:value="{depositAmount}"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
-        />
+{#if transmuterData}
+  <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+    <div class="p-4 flex flex-col space-y-4">
+      <label for="depositInput" class="text-sm text-lightgrey10">
+        {$_('available')}: {utils.formatUnits(synthTokenData.balance, synthTokenData.decimals)}
+        {synthTokenData.symbol}
+      </label>
+      <div class="flex bg-grey3 rounded border border-grey3">
+        <div class="w-full">
+          <InputNumber
+            id="depositInput"
+            placeholder="~0.00 {synthTokenData.symbol}"
+            bind:value="{inputDepositAmount}"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+          />
+        </div>
+        <div class="flex flex-col">
+          <Button
+            label="MAX"
+            width="w-full"
+            fontSize="text-xs"
+            textColor="lightgrey10"
+            backgroundColor="grey3"
+            borderSize="0"
+            height="h-10"
+            on:clicked="{() =>
+              (inputDepositAmount = utils.formatUnits(synthTokenData.balance, synthTokenData.decimals))}"
+          />
+          <Button
+            label="CLEAR"
+            width="w-max"
+            fontSize="text-xs"
+            textColor="lightgrey10"
+            backgroundColor="grey3"
+            borderSize="0"
+            height="h-10"
+            on:clicked="{() => (inputDepositAmount = '')}"
+          />
+        </div>
       </div>
-      <div class="flex flex-col">
-        <Button
-          label="MAX"
-          width="w-full"
-          fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => setMaxDeposit()}"
-        />
-        <Button
-          label="CLEAR"
-          width="w-max"
-          fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => clearDeposit()}"
-        />
-      </div>
+      <Button
+        label="{$_('actions.deposit')}"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => deposit()}"
+      />
     </div>
-    <Button
-      label="{$_('actions.deposit')}"
-      borderSize="1"
-      borderColor="green4"
-      backgroundColor="black1"
-      hoverColor="green4"
-      height="h-12"
-      fontSize="text-md"
-      on:clicked="{() => deposit()}"
-    />
-  </div>
-  <div class="p-4 flex flex-col space-y-4">
-    <label for="withdrawInput" class="text-sm text-lightgrey10">
-      {$_('table.withdrawable')}: {unexchangedBalance}
-      {alTokenSymbol}
-    </label>
-    <div class="flex bg-grey3 rounded border border-grey3">
-      <div class="w-full">
-        <InputNumber
-          id="withdrawInput"
-          placeholder="~0.00 {alTokenSymbol}"
-          bind:value="{withdrawAmount}"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
-        />
+    <div class="p-4 flex flex-col space-y-4">
+      <label for="withdrawInput" class="text-sm text-lightgrey10">
+        {$_('table.withdrawable')}: {utils.formatUnits(
+          transmuterData.unexchangedBalanceBN,
+          synthTokenData.decimals,
+        )}
+        {synthTokenData.symbol}
+      </label>
+      <div class="flex bg-grey3 rounded border border-grey3">
+        <div class="w-full">
+          <InputNumber
+            id="withdrawInput"
+            placeholder="~0.00 {synthTokenData.symbol}"
+            bind:value="{inputWithdrawAmount}"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+          />
+        </div>
+        <div class="flex flex-col">
+          <Button
+            label="MAX"
+            width="w-full"
+            fontSize="text-xs"
+            textColor="lightgrey10"
+            backgroundColor="grey3"
+            borderSize="0"
+            height="h-10"
+            on:clicked="{() =>
+              (inputWithdrawAmount = utils.formatUnits(
+                transmuterData.unexchangedBalanceBN,
+                synthTokenData.decimals,
+              ))}"
+          />
+          <Button
+            label="CLEAR"
+            width="w-max"
+            fontSize="text-xs"
+            textColor="lightgrey10"
+            backgroundColor="grey3"
+            borderSize="0"
+            height="h-10"
+            on:clicked="{() => (inputWithdrawAmount = '')}"
+          />
+        </div>
       </div>
-      <div class="flex flex-col">
-        <Button
-          label="MAX"
-          width="w-full"
-          fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => setMaxWithdraw()}"
-        />
-        <Button
-          label="CLEAR"
-          width="w-max"
-          fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => clearWithdraw()}"
-        />
-      </div>
+      <Button
+        label="{$_('actions.withdraw')}"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => withdraw()}"
+      />
     </div>
-    <Button
-      label="{$_('actions.withdraw')}"
-      borderSize="1"
-      borderColor="green4"
-      backgroundColor="black1"
-      hoverColor="green4"
-      height="h-12"
-      fontSize="text-md"
-      on:clicked="{() => withdraw()}"
-    />
-  </div>
-  <div class="p-4 flex flex-col space-y-4">
-    <label for="claimInput" class="text-sm text-lightgrey10">
-      {$_('expanded.transmuted')}: {exchangedBalance}
-      {underlyingTokenSymbol}
-    </label>
-    <div class="flex bg-grey3 rounded border border-grey3">
-      <div class="w-full">
-        <InputNumber
-          id="claimInput"
-          placeholder="~0.00 {underlyingTokenSymbol}"
-          bind:value="{claimAmount}"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
-        />
+    <div class="p-4 flex flex-col space-y-4">
+      <label for="claimInput" class="text-sm text-lightgrey10">
+        {$_('expanded.transmuted')}: {utils.formatUnits(
+          transmuterData.exchangedBalanceBN,
+          underlyingTokenData.decimals,
+        )}
+        {underlyingTokenData.symbol}
+      </label>
+      <div class="flex bg-grey3 rounded border border-grey3">
+        <div class="w-full">
+          <InputNumber
+            id="claimInput"
+            placeholder="~0.00 {underlyingTokenData.symbol}"
+            bind:value="{inputClaimAmount}"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+          />
+        </div>
+        <div class="flex flex-col">
+          <Button
+            label="MAX"
+            width="w-full"
+            fontSize="text-xs"
+            textColor="lightgrey10"
+            backgroundColor="grey3"
+            borderSize="0"
+            height="h-10"
+            on:clicked="{() =>
+              (inputClaimAmount = utils.formatUnits(
+                transmuterData.exchangedBalanceBN,
+                underlyingTokenData.decimals,
+              ))}"
+          />
+          <Button
+            label="CLEAR"
+            width="w-max"
+            fontSize="text-xs"
+            textColor="lightgrey10"
+            backgroundColor="grey3"
+            borderSize="0"
+            height="h-10"
+            on:clicked="{() => (inputClaimAmount = '')}"
+          />
+        </div>
       </div>
-      <div class="flex flex-col">
-        <Button
-          label="MAX"
-          width="w-full"
-          fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => setMaxClaim()}"
-        />
-        <Button
-          label="CLEAR"
-          width="w-max"
-          fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => clearClaim()}"
-        />
-      </div>
+      <Button
+        label="{$_('actions.claim')}"
+        borderSize="1"
+        borderColor="green4"
+        backgroundColor="black1"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        on:clicked="{() => claim()}"
+      />
     </div>
-    <Button
-      label="{$_('actions.claim')}"
-      borderSize="1"
-      borderColor="green4"
-      backgroundColor="black1"
-      hoverColor="green4"
-      height="h-12"
-      fontSize="text-md"
-      on:clicked="{() => claim()}"
-    />
   </div>
-</div>
+{/if}
