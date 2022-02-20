@@ -78,6 +78,12 @@
     return utils.parseEther(`${inputValue}`);
   };
 
+  const checkButtonState = (inputBN, maxBalance, balanceDecimals) => {
+    const _balance = utils.parseEther(utils.formatUnits(maxBalance, balanceDecimals));
+
+    return inputBN.gt(BigNumber.from(0)) && _balance.gte(inputBN);
+  };
+
   let inputDepositAmount = 0;
   let inputWithdrawAmount = 0;
   let inputClaimAmount = 0;
@@ -138,6 +144,7 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
+        disabled="{!checkButtonState(inputDepositBN, synthTokenData.balance, synthTokenData.decimals)}"
         on:clicked="{() => onDepositButton(synthTokenData.address, inputDepositBN, synthTokenData.decimals)}"
       />
     </div>
@@ -193,6 +200,7 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
+        disabled="{!checkButtonState(inputWithdrawBN, synthTokenData.balance, synthTokenData.decimals)}"
         on:clicked="{() =>
           onWithdrawButton(synthTokenData.address, inputWithdrawBN, synthTokenData.decimals)}"
       />
@@ -249,6 +257,11 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
+        disabled="{!checkButtonState(
+          inputClaimBN,
+          underlyingTokenData.balance,
+          underlyingTokenData.decimals,
+        )}"
         on:clicked="{() =>
           onClaimButton(underlyingTokenData.address, inputClaimBN, underlyingTokenData.decimals)}"
       />
