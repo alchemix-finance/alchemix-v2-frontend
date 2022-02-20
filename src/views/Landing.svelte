@@ -15,38 +15,48 @@
     videoPlaying = !videoPlaying;
   };
 
-  const assets = [
+  let assets = [
     {
       name: 'ETH',
       ltv: '50',
       address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      price: '',
     },
     {
       name: 'DAI',
       ltv: '50',
       address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+      price: '',
     },
     {
       name: 'USDC',
       ltv: '50',
       address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+      price: '',
     },
     {
       name: 'USDT',
       ltv: '50',
       address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+      price: '',
     },
   ];
 
-  const getPrice = (address) => {
-    const price =
-      $global.tokenPrices.find((token) => token.address.toLowerCase() === address.toLowerCase())?.price *
-      $global.conversionRate;
-    return new Intl.NumberFormat($settings.userLanguage.locale, {
-      style: 'currency',
-      currency: $settings.baseCurrency.symbol,
-    }).format(parseFloat(((price || 0) * $global.conversionRate).toFixed(2)));
+  const getPrice = () => {
+    let _assets = assets;
+    _assets.forEach((asset) => {
+      const price =
+        $global.tokenPrices.find((token) => token.address.toLowerCase() === asset.address.toLowerCase())
+          ?.price * $global.conversionRate;
+      asset.price = new Intl.NumberFormat($settings.userLanguage.locale, {
+        style: 'currency',
+        currency: $settings.baseCurrency.symbol,
+      }).format(parseFloat(((price || 0) * $global.conversionRate).toFixed(2)));
+    });
+    assets = [..._assets];
   };
+
+  $: $global.tokenPrices, getPrice();
 
   let carouselItems = ['intro_subtitle_0', 'intro_subtitle_1', 'intro_subtitle_2'];
   let carouselItem = carouselItems[0];
@@ -200,7 +210,7 @@
             <div>
               <p>{asset.name}</p>
               <p>
-                {getPrice(asset.address)}
+                {asset.price}
               </p>
               <p>{asset.ltv}% LTV</p>
             </div>
@@ -222,7 +232,7 @@
           <p class="font-light text-lg opacity-75 mb">{$_('landing.benefit_leverage_blurb')}</p>
           <a
             href="https://alchemix-finance.gitbook.io/alchemix-finance/"
-            class="text-center absolute bottom-4 inset-x-0">{$_('landing.learn_more')}</a
+            class="text-center absolute bottom-4 inset-x-0 underline">{$_('landing.learn_more')}</a
           >
         </div>
         <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
@@ -230,7 +240,7 @@
           <p class="font-light text-lg opacity-75">{$_('landing.benefit_range_blurb')}</p>
           <a
             href="https://alchemix-finance.gitbook.io/alchemix-finance/"
-            class="absolute bottom-4 inset-x-0 text-center">{$_('landing.learn_more')}</a
+            class="absolute bottom-4 inset-x-0 text-center underline">{$_('landing.learn_more')}</a
           >
         </div>
         <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
@@ -240,7 +250,7 @@
           <p class="font-light text-lg opacity-75">{$_('landing.benefit_liquidations_blurb')}</p>
           <a
             href="https://alchemix-finance.gitbook.io/alchemix-finance/"
-            class="text-center absolute inset-x-0 bottom-4">{$_('landing.learn_more')}</a
+            class="text-center absolute inset-x-0 bottom-4 underline">{$_('landing.learn_more')}</a
           >
         </div>
         <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
@@ -250,7 +260,7 @@
           <p class="font-light text-lg opacity-75">{$_('landing.benefit_flexible_blurb')}</p>
           <a
             href="https://alchemix-finance.gitbook.io/alchemix-finance/"
-            class="text-center absolute bottom-4 inset-x-0">{$_('landing.learn_more')}</a
+            class="text-center absolute bottom-4 inset-x-0 underline">{$_('landing.learn_more')}</a
           >
         </div>
       </div>
