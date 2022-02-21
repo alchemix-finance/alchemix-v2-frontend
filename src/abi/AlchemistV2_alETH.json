@@ -393,6 +393,12 @@
                     "internalType": "uint256",
                     "name": "maximumLoss",
                     "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "totalHarvested",
+                    "type": "uint256"
                 }
             ],
             "name": "Harvest",
@@ -2265,5 +2271,5 @@
             "type": "function"
         }
     ],
-    "address": "0x12E764B439558E0b7d310EC963f6BD8828B0f498"
+    "address": "0xbb57296aA8EE3cD1aC456443cCa36Dc553E402b0"
 }

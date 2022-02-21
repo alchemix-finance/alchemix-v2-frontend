@@ -102,7 +102,7 @@
       <button
         class="h-max
         w-max
-        font-medium
+        font-alcxTitles
         p-4
         text-xl
         rounded-lg
@@ -184,7 +184,10 @@
       {/if}
     </div>
 
-    <p class="text-center font-alcxFlow text-lg opacity-75">{$_('landing.short_explainer')}</p>
+    <div>
+      <p class="text-center font-alcxFlow text-lg opacity-75 mb-4">{$_('landing.short_explainer')}</p>
+      <p class="text-center font-alcxFlow text-lg opacity-75">{$_('landing.short_explainer_end')}</p>
+    </div>
 
     <div class="w-full flex flex-col">
       <p class="text-center font-alcxTitles text-3xl opacity-75">{$_('landing.path_headline')}</p>
@@ -268,7 +271,7 @@
       <button
         class="h-max
         w-max
-        font-medium
+        font-alcxTitles
         p-4
         text-xl
         rounded-lg
