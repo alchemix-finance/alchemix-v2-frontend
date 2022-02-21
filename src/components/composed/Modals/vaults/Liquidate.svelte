@@ -29,19 +29,8 @@
   let userVerifiedToggle = false;
 
   const onLiquidateButton = async (yieldTokenData, amount, vaultType) => {
-    const _fAmount = utils
-      .parseUnits(utils.formatEther(amount), yieldTokenData.decimals)
-      .div(yieldTokenData.yieldPerShare)
-      .mul(yieldTokenData.underlyingPerShare);
-    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
-    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
-    // .mul(yieldTokenData.yieldPerShare)
-    // .div(BigNumber.from(10).pow(yieldTokenData.decimals));
-
-    console.log(utils.formatUnits(_fAmount, yieldTokenData.decimals));
-
     modalReset();
-    await liquidate(yieldTokenData.address, _fAmount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
+    await liquidate(yieldTokenData.address, amount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
       () => {
         Promise.all([
           fetchVaultRatio(vaultType, [$signer]),
@@ -57,6 +46,7 @@
       },
     );
   };
+  $: console.log($signer);
 
   const setInputMax = (tokenData, debt) => {
     const underlyingBalance18Decimals = utils.parseEther(
