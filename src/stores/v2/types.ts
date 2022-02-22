@@ -27,8 +27,19 @@ export interface InternalFarmType {
 
 export interface SushiFarmType {
   tokenAddress: string;
+  userDeposit: ethers.BigNumber;
+  rewards: ethers.BigNumber[];
 }
 
 export interface CurveFarmType {
   tokenAddress: string;
+  userDeposit: ethers.BigNumber;
+  rewards: ethers.BigNumber[];
+}
+
+export interface FarmsType {
+  farms: {
+    type: FarmTypes;
+    body: InternalFarmType | SushiFarmType | CurveFarmType;
+  }[];
 }
