@@ -2,7 +2,6 @@ import { writable } from 'svelte/store';
 import { ethers, providers } from 'ethers';
 import {
   CurveFarmType,
-  FarmsType,
   FarmTypes,
   GenericFarmType,
   InternalFarmType,
