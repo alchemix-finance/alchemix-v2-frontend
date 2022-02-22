@@ -133,6 +133,7 @@
     transmutersLoading.set(true);
 
     await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
+    await fetchTransmutersForVaultType(VaultTypes.alETH, [$signer, $addressStore]);
 
     transmutersLoading.set(false);
   };

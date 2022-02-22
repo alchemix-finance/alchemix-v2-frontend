@@ -63,11 +63,16 @@ export async function depositUnderlying(
   amountYield: BigNumber,
   maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
+  useGateway = false,
 ) {
   try {
     const erc20Instance = erc20Contract(underlyingAddress, signerStore);
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
+      signerStore,
+    );
+    const { instance: gatewayInstance } = contractWrapper(
+      VaultConstants[typeOfVault].gatewayContractSelector,
       signerStore,
     );
 
@@ -82,27 +87,54 @@ export async function depositUnderlying(
 
     setPendingWallet();
 
-    const tx = (await alchemistInstance.depositUnderlying(
-      tokenAddress,
-      amountYield,
-      userAddressStore,
-      maximumLoss,
-      {
-        gasPrice: gas,
-      },
-    )) as ethers.ContractTransaction;
-
-    setPendingTx();
-
-    return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
-
-      return {
-        typeOfVault,
+    if (!useGateway) {
+      const tx = (await alchemistInstance.depositUnderlying(
         tokenAddress,
-        underlyingAddress,
-      };
-    });
+        amountYield,
+        userAddressStore,
+        maximumLoss,
+        {
+          gasPrice: gas,
+        },
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          tokenAddress,
+          underlyingAddress,
+        };
+      });
+    } else {
+      console.log('using weth gateway');
+      console.log(alchemistAddress, tokenAddress, amountYield.toString(), userAddressStore, maximumLoss);
+      const tx = (await gatewayInstance.depositUnderlying(
+        alchemistAddress,
+        tokenAddress,
+        amountYield,
+        userAddressStore,
+        maximumLoss,
+        {
+          gasPrice: gas,
+        },
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          tokenAddress,
+          underlyingAddress,
+        };
+      });
+    }
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/depositUnderlying]: ${error}`);

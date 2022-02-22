@@ -29,6 +29,7 @@
   $: totalDepositFormatted = parseFloat(utils.formatEther(totalDeposit)).toFixed(2);
   $: totalDebtLimitFormatted = parseFloat(utils.formatEther(totalDeposit.div(BigNumber.from(2)))).toFixed(2);
   $: totalDebtFormatted = parseFloat(utils.formatEther(totalDebt)).toFixed(2);
+  $: totalInterestFormatted = parseFloat(utils.formatEther(totalInterest)).toFixed(2);
   $: withdrawable = parseFloat(utils.formatEther(totalDeposit.sub(totalDebt.mul(BigNumber.from(2))))).toFixed(
     2,
   );
@@ -68,7 +69,7 @@
     labels: [[$_('table.withdrawable')], [$_('chart.debt')], [$_('chart.interest')]],
     datasets: [
       {
-        data: [withdrawable || 0, totalDebtFormatted || 0, totalInterest || 0],
+        data: [withdrawable || 0, totalDebtFormatted || 0, totalInterestFormatted || 0],
         backgroundColor: [background1],
         borderRadius: 5,
       },
@@ -122,7 +123,10 @@
                 `${totalDebtFormatted} ${$settings.baseCurrency?.symbol || '$'}`,
               ];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.interest').toUpperCase()) {
-              return [...this.getLabelForValue(val), `${totalInterest} %`];
+              return [
+                ...this.getLabelForValue(val),
+                `${totalInterestFormatted} ${$settings.baseCurrency?.symbol || '$'}`,
+              ];
             }
 
             return [...this.getLabelForValue(val), ``];
@@ -136,12 +140,16 @@
           stepSize: 1,
           padding: 10,
           callback: function (value) {
-            const values = [0, Math.floor(totalDebtLimitFormatted), Math.floor(totalDepositFormatted)];
+            const values = [
+              0,
+              Math.round(parseFloat(totalDebtLimitFormatted)),
+              Math.round(parseFloat(totalDepositFormatted)),
+            ];
             if (
               [
                 0,
-                Math.round(totalDebtLimitFormatted / 100) * 100,
-                Math.round(totalDepositFormatted / 100) * 100,
+                Math.round(parseFloat(totalDebtLimitFormatted)),
+                Math.round(parseFloat(totalDepositFormatted)),
               ].includes(value)
             ) {
               return values.reduce((prev, curr) => {
@@ -168,27 +176,30 @@
           tickColor: GREY,
 
           color: (context) => {
-            if (
-              between(
-                context.tick.value,
-                Math.round(totalDebtLimitFormatted / 100) * 100 - 10,
-                Math.round(totalDebtLimitFormatted / 100) * 100 + 10,
-              )
-            ) {
-              return GREEN;
-            }
-
-            if (
-              between(
-                context.tick.value,
-                Math.round(totalDepositFormatted / 100) * 100 - 10,
-                Math.round(totalDepositFormatted / 100) * 100 + 10,
-              )
-            ) {
-              return ORANGE;
-            }
-
-            return LIGHT_GREY;
+            return [totalDebtLimitFormatted, totalDepositFormatted].reduce((prev, curr) => {
+              return Math.abs(curr - context.tick.value) < Math.abs(prev - context.tick.value)
+                ? ORANGE
+                : GREEN;
+            });
+            // if (
+            //   between(
+            //     context.tick.value,
+            //     Math.round(totalDebtLimitFormatted / 100) * 100 - 10,
+            //     Math.round(totalDebtLimitFormatted / 100) * 100 + 10,
+            //   )
+            // ) {
+            //   return GREEN;
+            // }
+            //
+            // if (
+            //   between(
+            //     context.tick.value,
+            //     Math.round(totalDepositFormatted / 100) * 100 - 10,
+            //     Math.round(totalDepositFormatted / 100) * 100 + 10,
+            //   )
+            // ) {
+            //   return ORANGE;
+            // }
           },
         },
       },
