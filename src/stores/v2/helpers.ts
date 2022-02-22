@@ -3,6 +3,7 @@ import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
 import { VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
+import { VaultTypesInfos } from '@stores/v2/constants';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -52,6 +53,7 @@ export async function fetchDataForVault(
   const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
   const apy = await getVaultApy(tokenAddress);
+  const useGateway = VaultTypesInfos[vaultType].useGateway;
 
   return {
     type: vaultType,
@@ -62,6 +64,7 @@ export async function fetchDataForVault(
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,
     apy,
+    useGateway,
   };
 }
 

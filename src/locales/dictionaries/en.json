@@ -154,6 +154,7 @@
     "ipfs": "IPFS",
     "no_strategies": "You don't have any active strategies.",
     "all_strategies": "You are using all available strategies.",
+    "no_strategies_avail": "No strategies are available at this moment.",
     "your_strategies_select": "Your Strategies",
     "all_strategies_select": "All Strategies",
     "unused_strategies_select": "Unused Strategies",

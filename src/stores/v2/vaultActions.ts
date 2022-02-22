@@ -63,6 +63,7 @@ export async function depositUnderlying(
   amountYield: BigNumber,
   maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
+  useGateway = false,
 ) {
   try {
     const erc20Instance = erc20Contract(underlyingAddress, signerStore);
@@ -82,27 +83,57 @@ export async function depositUnderlying(
 
     setPendingWallet();
 
-    const tx = (await alchemistInstance.depositUnderlying(
-      tokenAddress,
-      amountYield,
-      userAddressStore,
-      maximumLoss,
-      {
-        gasPrice: gas,
-      },
-    )) as ethers.ContractTransaction;
-
-    setPendingTx();
-
-    return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
-
-      return {
-        typeOfVault,
+    if (!useGateway) {
+      const tx = (await alchemistInstance.depositUnderlying(
         tokenAddress,
-        underlyingAddress,
-      };
-    });
+        amountYield,
+        userAddressStore,
+        maximumLoss,
+        {
+          gasPrice: gas,
+        },
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          tokenAddress,
+          underlyingAddress,
+        };
+      });
+    } else {
+      const { instance: gatewayInstance } = contractWrapper(
+        VaultConstants[typeOfVault].gatewayContractSelector,
+        signerStore,
+      );
+      const tx = (await gatewayInstance.depositUnderlying(
+        alchemistAddress,
+        tokenAddress,
+        amountYield,
+        userAddressStore,
+        maximumLoss,
+        {
+          gasPrice: gas,
+          value: amountYield,
+        },
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          tokenAddress,
+          underlyingAddress,
+        };
+      });
+    }
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/depositUnderlying]: ${error}`);
@@ -223,38 +254,86 @@ export async function withdrawUnderlying(
   accountAddress: string,
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
+  useGateway = false,
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 
-    const { instance: alchemistInstance } = contractWrapper(
+    const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
     );
 
-    setPendingWallet();
+    if (!useGateway) {
+      setPendingWallet();
 
-    const tx = (await alchemistInstance.withdrawUnderlying(
-      yieldTokenAddress,
-      amountUnderlying,
-      accountAddress,
-      maximumLoss,
-      {
-        gasPrice: gas,
-      },
-    )) as ethers.ContractTransaction;
-
-    setPendingTx();
-
-    return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
-
-      return {
-        typeOfVault,
+      const tx = (await alchemistInstance.withdrawUnderlying(
         yieldTokenAddress,
-        underlyingTokenAddress,
-      };
-    });
+        amountUnderlying,
+        accountAddress,
+        maximumLoss,
+        {
+          gasPrice: gas,
+        },
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          yieldTokenAddress,
+          underlyingTokenAddress,
+        };
+      });
+    } else {
+      const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
+        VaultConstants[typeOfVault].gatewayContractSelector,
+        signerStore,
+      );
+      // check withdrawAllowance on alchemist
+      // if insufficient, call approveWithdraw for amount on alchemist with spender gateway
+
+      const withdrawApproval = await alchemistInstance.withdrawAllowance(
+        accountAddress,
+        gatewayAddress,
+        yieldTokenAddress,
+      );
+      const canWithdraw = withdrawApproval.gte(amountUnderlying);
+
+      if (!canWithdraw) {
+        setPendingApproval();
+        await alchemistInstance.approveWithdraw(gatewayAddress, yieldTokenAddress, amountUnderlying, {
+          gasPrice: gas,
+        });
+      }
+      setPendingWallet();
+
+      const tx = (await gatewayInstance.withdrawUnderlying(
+        alchemistAddress,
+        yieldTokenAddress,
+        amountUnderlying,
+        accountAddress,
+        maximumLoss,
+        {
+          gasPrice: gas,
+        },
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          yieldTokenAddress,
+          underlyingTokenAddress,
+        };
+      });
+    }
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/withdraw]: ${error}`);

@@ -19,6 +19,7 @@ export type BodyVaultType = {
   underlyingPerShare: ethers.BigNumber;
   tvl: ethers.BigNumber;
   apy: number;
+  useGateway: boolean;
 };
 
 export interface TokensType {

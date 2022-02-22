@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   export let label;
+  export let secondLabel;
   export let forceState;
 
   let checkboxState = false;
@@ -44,4 +45,9 @@
     <div class="line block bg-grey5 w-10 h-6 rounded-full"></div>
     <div class="dot absolute left-1 top-1 bg-lightgrey10 w-4 h-4 rounded-full transition"></div>
   </div>
+  {#if secondLabel}
+    <p class="inline-block text-lightgrey10 text-sm ml-2">
+      {secondLabel}
+    </p>
+  {/if}
 </label>

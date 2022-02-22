@@ -137,8 +137,12 @@
             totalDeposit="{$aggregate.balance}"
             totalDebtLimit="{$aggregate.debtLimit}"
             aggregatedApy="0"
-            totalDebt="{utils.parseUnits($aggregate.totalDebt, 18)}"
-            totalInterest="0"
+            totalDebt="{utils.parseUnits($aggregate.totalDebt, 18).gt(BigNumber.from(0))
+              ? utils.parseUnits($aggregate.totalDebt, 18)
+              : BigNumber.from(0)}"
+            totalInterest="{utils.parseUnits($aggregate.totalDebt, 18).lt(BigNumber.from(0))
+              ? utils.parseUnits($aggregate.totalDebt, 18).mul(BigNumber.from(-1))
+              : BigNumber.from(0)}"
             totalWithdrawable="{$aggregate.withdrawable}"
           />
         </div>
