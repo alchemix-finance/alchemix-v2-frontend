@@ -25,7 +25,7 @@
       };
       try {
         setPendingVote();
-        let pendingVote = await sendVote(payload);
+        const pendingVote = await sendVote(payload);
         if (pendingVote.code == 4001) {
           setRejectedVote();
         } else {
