@@ -61,7 +61,7 @@ export interface TransmutersType {
   };
 }
 
-export interface FarmsStoreType {
+export interface FarmStoreType {
   type: FarmTypes;
   body: InternalFarmType | SushiFarmType | CurveFarmType | GenericFarmType;
 }
@@ -74,4 +74,4 @@ export const vaultsStore = writable<VaultsType>({});
 export const transmutersStore = writable<TransmutersType>({});
 export const sentinelStore = writable<boolean>(undefined);
 export const controllerStore = writable<[]>([]);
-export const farmsStore = writable<FarmsStoreType[]>([]);
+export const farmsStore = writable<FarmStoreType[]>([]);

@@ -21,11 +21,11 @@ export interface GenericFarmType {
   tokenSymbol: string;
   isActive: boolean;
   userDeposit: ethers.BigNumber;
+  tvl: ethers.BigNumber;
 }
 
 export interface InternalFarmType extends GenericFarmType {
   rewardRate: ethers.BigNumber;
-  tvl: ethers.BigNumber;
   rewardToken: string;
   userUnclaimed: ethers.BigNumber;
 }

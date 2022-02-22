@@ -1,6 +1,14 @@
-import { BalanceType, BodyVaultType, transmutersStore, TransmuterType } from '@stores/v2/alcxStore';
+import {
+  BalanceType,
+  BodyVaultType,
+  farmsStore,
+  FarmsStoreType,
+  FarmStoreType,
+  transmutersStore,
+  TransmuterType,
+} from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
-import { VaultTypes } from '@stores/v2/types';
+import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import {
   addressStore,
   providerStore,
@@ -135,6 +143,21 @@ export const updateTransmuterByAddress = (
     );
     if (index !== -1) {
       _store[vaultType].transmuters[index] = transmuter;
+    }
+
+    return _store;
+  });
+
+export const updateAllFarms = (farms: FarmStoreType[]) => farmsStore.set(farms);
+
+export const updateFarmByTokenAddress = (type: FarmTypes, tokenAddress: string, farm: FarmStoreType) =>
+  farmsStore.update((_store) => {
+    const index = _store.findIndex(
+      (value) => value.type === type && value.body.tokenAddress === tokenAddress,
+    );
+
+    if (index !== -1) {
+      _store[index] = farm;
     }
 
     return _store;
