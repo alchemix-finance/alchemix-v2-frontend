@@ -21,8 +21,9 @@
   import { onMount } from 'svelte';
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
+  import global from '@stores/global';
 
-  const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD]);
+  const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
   const columns = [
     {
@@ -69,6 +70,10 @@
     window.open(url, '_blank');
   };
 
+  function calculateBalanceValue(_tokenAmount, _price) {
+    return parseFloat(utils.formatEther(_tokenAmount)) * _price;
+  }
+
   $: currentTransmutersBasedOnType =
     Object.keys($transmutersStore)
       .map((vTypeId) => {
@@ -84,10 +89,17 @@
     const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
       $balancesStore,
     ]);
+    const tokenPrice = $global.tokenPrices.find(
+      (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
+    )?.price;
+    console.log(tokenPrice);
 
     const nameAlias = TransmuterNameAliases[`${underlyingTokenData.symbol}`.toLowerCase()];
 
     const totalDeposited = _transmuterData.exchangedBalanceBN.add(_transmuterData.unexchangedBalanceBN);
+    const depositValue = calculateBalanceValue(totalDeposited, tokenPrice);
+    const withdrawValue = calculateBalanceValue(_transmuterData.unexchangedBalanceBN, tokenPrice);
+    const claimValue = calculateBalanceValue(_transmuterData.exchangedBalanceBN, tokenPrice);
 
     return {
       col1: {
@@ -109,17 +121,17 @@
       },
       col3: {
         CellComponent: CurrencyCell,
-        value: utils.formatUnits(totalDeposited, synthTokenData.decimals),
+        value: depositValue,
         colSize: 2,
       },
       col4: {
         CellComponent: CurrencyCell,
-        value: utils.formatUnits(_transmuterData.unexchangedBalanceBN, synthTokenData.decimals),
+        value: withdrawValue,
         colSize: 2,
       },
       col6: {
         CellComponent: CurrencyCell,
-        value: utils.formatUnits(_transmuterData.exchangedBalanceBN, synthTokenData.decimals),
+        value: claimValue,
         colSize: 2,
       },
       col5: {
