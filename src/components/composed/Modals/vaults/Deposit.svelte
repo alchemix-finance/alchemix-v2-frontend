@@ -163,6 +163,7 @@
   function switchDepositType() {
     depositEth = !depositEth;
     underlyingDeposit = '';
+    yieldDeposit = '';
   }
 
   $: startDebtLimit = initializeStartDebtLimit(borrowLimit, vault, underlyingTokenData);

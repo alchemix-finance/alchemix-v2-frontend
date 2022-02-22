@@ -5,6 +5,7 @@
   import Button from '../../../elements/Button.svelte';
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+  import ToggleSwitch from '@components/elements/ToggleSwitch';
 
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
   import { addressStore, vaultsStore } from 'src/stores/v2/alcxStore';
@@ -28,6 +29,16 @@
   let maximumLoss;
   let yieldWithdrawAmount = 0;
   let underlyingWithdrawAmount = 0;
+
+  let withdrawEth = false;
+  $: useGateway = vault.useGateway;
+
+  function switchWithdrawType() {
+    withdrawEth = !withdrawEth;
+    clearUnderlying();
+    clearYield();
+  }
+
   /*
    * @param amount the String amount to transform into shares
    * @param decimals the Number of decimal places to use for calculations
@@ -49,7 +60,7 @@
   };
 
   const clearYield = () => {
-    yieldWithdrawAmount = 0;
+    yieldWithdrawAmount = '';
   };
 
   const setMaxUnderlying = (max) => {
@@ -58,7 +69,7 @@
   };
 
   const clearUnderlying = () => {
-    underlyingWithdrawAmount = 0;
+    underlyingWithdrawAmount = '';
   };
 
   const onWithdrawButton = async () => {
@@ -88,6 +99,7 @@
         $addressStore,
         BigNumber.from(maximumLoss),
         [$signer],
+        useGateway,
       ).then(() => {
         Promise.all([
           fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
@@ -128,8 +140,8 @@
 
     return (
       sharesWithdrawAmount.gt(BigNumber.from(0)) &&
-      sharesWithdrawAmount.lt(vault.balance) &&
-      sharesWithdrawAmount.lt(freeCover)
+      sharesWithdrawAmount.lte(vault.balance) &&
+      sharesWithdrawAmount.lte(freeCover)
     );
   }
 
@@ -187,6 +199,7 @@
 
   $: yieldTokenData = initializeTokenDataForAddress(vault.address);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
+  $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
 
   $: cDebt = initializeCoveredDebt(vault, $vaultsAggregatedBalances[vault.type], underlyingTokenData);
 
@@ -248,56 +261,64 @@
       </div>
     </div>
     <div slot="body" class="p-4">
+      {#if useGateway}
+        <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
+          <span>Withdraw Type:</span>
+          <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchWithdrawType()}" />
+        </div>
+      {/if}
       <div class="flex space-x-4">
-        <div class="w-full">
-          <label for="yieldInput" class="text-sm text-lightgrey10">
-            {$_('available')}: ~{maxWithdrawAmountForYield}
-            {yieldTokenData.symbol}
-          </label>
-          <div
-            class="flex bg-grey3 rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
-              ? 'border-red3'
-              : 'border-grey3'}"
-          >
-            <div class="w-full">
-              <InputNumber
-                id="yieldInput"
-                bind:value="{yieldWithdrawAmount}"
-                placeholder="~0.00 {yieldTokenData.symbol}"
-                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
-                parseFloat(maxWithdrawAmountForYield)
-                  ? 'text-red3'
-                  : 'text-lightgrey5'}"
-              />
-            </div>
-            <div class="flex flex-col">
-              <Button
-                label="MAX"
-                width="w-full"
-                fontSize="text-xs"
-                textColor="lightgrey10"
-                backgroundColor="grey3"
-                borderSize="0"
-                height="h-10"
-                on:clicked="{() => setMaxYield(maxWithdrawAmountForYield)}"
-              />
-              <Button
-                label="CLEAR"
-                width="w-max"
-                fontSize="text-xs"
-                textColor="lightgrey10"
-                backgroundColor="grey3"
-                borderSize="0"
-                height="h-10"
-                on:clicked="{() => clearYield()}"
-              />
+        {#if !withdrawEth}
+          <div class="w-full">
+            <label for="yieldInput" class="text-sm text-lightgrey10">
+              {$_('available')}: ~{maxWithdrawAmountForYield}
+              {yieldTokenData.symbol}
+            </label>
+            <div
+              class="flex bg-grey3 rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
+                ? 'border-red3'
+                : 'border-grey3'}"
+            >
+              <div class="w-full">
+                <InputNumber
+                  id="yieldInput"
+                  bind:value="{yieldWithdrawAmount}"
+                  placeholder="~0.00 {yieldTokenData.symbol}"
+                  class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
+                  parseFloat(maxWithdrawAmountForYield)
+                    ? 'text-red3'
+                    : 'text-lightgrey5'}"
+                />
+              </div>
+              <div class="flex flex-col">
+                <Button
+                  label="MAX"
+                  width="w-full"
+                  fontSize="text-xs"
+                  textColor="lightgrey10"
+                  backgroundColor="grey3"
+                  borderSize="0"
+                  height="h-10"
+                  on:clicked="{() => setMaxYield(maxWithdrawAmountForYield)}"
+                />
+                <Button
+                  label="CLEAR"
+                  width="w-max"
+                  fontSize="text-xs"
+                  textColor="lightgrey10"
+                  backgroundColor="grey3"
+                  borderSize="0"
+                  height="h-10"
+                  on:clicked="{() => clearYield()}"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        {/if}
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
             {$_('available')}: ~{maxWithdrawAmountForUnderlying}
-            {underlyingTokenData.symbol}
+            {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}
           </label>
           <div
             class="flex bg-grey3 rounded border {underlyingWithdrawAmount >
@@ -309,7 +330,7 @@
               <InputNumber
                 id="underlyingInput"
                 bind:value="{underlyingWithdrawAmount}"
-                placeholder="~0.00 {underlyingTokenData.symbol}"
+                placeholder="~0.00 {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}"
                 class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdrawAmount >
                 parseFloat(maxWithdrawAmountForUnderlying)
                   ? 'text-red3'
