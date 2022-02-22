@@ -127,7 +127,7 @@
     "debt": "Debt",
     "interest": "Interest",
     "total_deposit": "Total Deposit",
-    "aggregate_apy": "Aggregate APY"
+    "aggregate_apy": "Average APY"
   },
   "table": {
     "strategy": "Strategy",

@@ -77,7 +77,6 @@ export async function withdraw(
 }
 
 export async function claim(
-  underlyingTokenAddress: string,
   amountToClaim: ethers.BigNumber,
   transmuterSelector: string,
   [signer, addressStore]: [ethers.Signer, string],
@@ -85,19 +84,12 @@ export async function claim(
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer);
-    const dataPackage = new ethers.utils.AbiCoder().encode(['bytes[]'], [[]]);
 
     setPendingWallet();
 
-    const tx = (await transmuterInstance.claim(
-      amountToClaim,
-      addressStore,
-      [underlyingTokenAddress],
-      dataPackage,
-      {
-        gasPrice: gas,
-      },
-    )) as ContractTransaction;
+    const tx = (await transmuterInstance.claim(amountToClaim, addressStore, {
+      gasPrice: gas,
+    })) as ContractTransaction;
 
     setPendingTx();
 

@@ -251,7 +251,7 @@
             </div>
           </div>
         {/if}
-        {#if underlyingTokenData.balance.gt(BigNumber.from(0))}
+        {#if depositEth ? ethData.balance.gt(BigNumber.from(0)) : underlyingTokenData.balance.gt(BigNumber.from(0))}
           <div class="w-full">
             <label for="underlyingInput" class="text-sm text-lightgrey10">
               {$_('available')}: {depositEth
