@@ -99,3 +99,14 @@ export function setSuccessVote() {
   _toastConfig.closeTimeout = 2000;
   toastConfig.set({ ..._toastConfig });
 }
+
+export function setRejectedVote() {
+  _toastConfig.kind = 'error';
+  _toastConfig.title = getItl('toast.error');
+  _toastConfig.subtitle = getItl('toast.vote_rejected');
+  _toastConfig.closeOnMount = true;
+  _toastConfig.spinner = false;
+  _toastConfig.visible = true;
+  _toastConfig.closeTimeout = 4000;
+  toastConfig.set({ ..._toastConfig })
+};
