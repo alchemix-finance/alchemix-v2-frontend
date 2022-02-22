@@ -161,7 +161,6 @@ export async function fetchTransmutersForVaultType(
   );
 
   return Promise.all([...transmutersFetchDataPromises]).then((transmuters) => {
-    console.log(vaultType, transmuters);
     updateAllTransmuters(vaultType, transmuters);
   });
 }

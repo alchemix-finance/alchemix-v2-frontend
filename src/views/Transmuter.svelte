@@ -92,7 +92,6 @@
     const tokenPrice = $global.tokenPrices.find(
       (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
     )?.price;
-    console.log(tokenPrice);
 
     const nameAlias = TransmuterNameAliases[`${underlyingTokenData.symbol}`.toLowerCase()];
 
