@@ -143,6 +143,7 @@
                 token: {
                   balance: pool.slpBalance,
                   symbol: 'SLP',
+                  address: pool.token,
                 },
                 stakedBalance: pool.userDeposit,
                 unclaimedAlcx: pool.rewardsAlcx,
