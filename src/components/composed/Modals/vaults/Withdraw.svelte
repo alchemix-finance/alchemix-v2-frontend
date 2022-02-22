@@ -99,7 +99,7 @@
         $addressStore,
         BigNumber.from(maximumLoss),
         [$signer],
-        useGateway,
+        withdrawEth,
       ).then(() => {
         Promise.all([
           fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
