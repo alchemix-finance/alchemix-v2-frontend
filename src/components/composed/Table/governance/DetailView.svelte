@@ -3,7 +3,7 @@
   import { _ } from 'svelte-i18n';
   import { sendVote } from '../../../../middleware/snapshot';
   import governance from '../../../../stores/governance';
-  import { setPendingVote, setSuccessVote, setError } from '../../../../helpers/setToast';
+  import { setPendingVote, setSuccessVote, setError, setRejectedVote } from '../../../../helpers/setToast';
   import Button from '../../../elements/Button.svelte';
   import { getProvider } from '../../../../helpers/walletManager';
 
@@ -25,8 +25,12 @@
       };
       try {
         setPendingVote();
-        await sendVote(payload);
-        setSuccessVote();
+        let pendingVote = await sendVote(payload);
+        if (pendingVote.code == 4001) {
+          setRejectedVote();
+        } else {
+          setSuccessVote();
+        }
       } catch (e) {
         setError(e.message);
         console.trace(e);

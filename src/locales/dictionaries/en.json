@@ -191,6 +191,7 @@
     "init_data": "Initializing Data",
     "registering_vote": "Registering Vote on Snapshot",
     "vote_registered": "Vote was registered",
+    "vote_rejected": "User Rejected Metamask Signature",
     "currency_updated": "Currency updated",
     "using": "Using",
     "as_default": "as default",
