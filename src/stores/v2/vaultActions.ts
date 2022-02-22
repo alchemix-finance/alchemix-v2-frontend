@@ -71,10 +71,6 @@ export async function depositUnderlying(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
     );
-    const { instance: gatewayInstance } = contractWrapper(
-      VaultConstants[typeOfVault].gatewayContractSelector,
-      signerStore,
-    );
 
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 
@@ -110,8 +106,10 @@ export async function depositUnderlying(
         };
       });
     } else {
-      console.log('using weth gateway');
-      console.log(alchemistAddress, tokenAddress, amountYield.toString(), userAddressStore, maximumLoss);
+      const { instance: gatewayInstance } = contractWrapper(
+        VaultConstants[typeOfVault].gatewayContractSelector,
+        signerStore,
+      );
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
         tokenAddress,
@@ -120,6 +118,7 @@ export async function depositUnderlying(
         maximumLoss,
         {
           gasPrice: gas,
+          value: amountYield,
         },
       )) as ethers.ContractTransaction;
 
