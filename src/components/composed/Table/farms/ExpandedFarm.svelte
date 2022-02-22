@@ -115,8 +115,7 @@
   };
 
   $: canClaim = parseFloat(unclaimedRewards) > 0;
-  $: canWithdraw =
-    !!withdrawAmount && parseFloat(withdrawAmount) > 0 && stakedBalance.amount.gt(BigNumber.from(0));
+  $: canWithdraw = !!withdrawAmount && parseFloat(withdrawAmount) > 0 && parseFloat(stakedBalance) > 0;
   $: canDeposit = !!depositAmount && parseFloat(depositAmount) > 0 && token.balance > 0;
 </script>
 
