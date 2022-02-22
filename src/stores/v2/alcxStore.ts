@@ -1,6 +1,14 @@
 import { writable } from 'svelte/store';
 import { ethers, providers } from 'ethers';
-import { VaultTypes } from '@stores/v2/types';
+import {
+  CurveFarmType,
+  FarmsType,
+  FarmTypes,
+  GenericFarmType,
+  InternalFarmType,
+  SushiFarmType,
+  VaultTypes,
+} from '@stores/v2/types';
 
 export type BalanceType = {
   address: string;
@@ -54,6 +62,11 @@ export interface TransmutersType {
   };
 }
 
+export interface FarmsStoreType {
+  type: FarmTypes;
+  body: InternalFarmType | SushiFarmType | CurveFarmType | GenericFarmType;
+}
+
 export const addressStore = writable<string>(undefined);
 export const providerStore = writable<providers.Web3Provider>(undefined);
 export const balancesStore = writable<BalanceType[]>([]);
@@ -62,3 +75,4 @@ export const vaultsStore = writable<VaultsType>({});
 export const transmutersStore = writable<TransmutersType>({});
 export const sentinelStore = writable<boolean>(undefined);
 export const controllerStore = writable<[]>([]);
+export const farmsStore = writable<FarmsStoreType[]>([]);

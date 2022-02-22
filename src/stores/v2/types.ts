@@ -16,30 +16,24 @@ export enum FarmStatus {
   Retired = 1,
 }
 
-export interface InternalFarmType {
+export interface GenericFarmType {
   tokenAddress: string;
+  tokenSymbol: string;
+  isActive: boolean;
+  userDeposit: ethers.BigNumber;
+}
+
+export interface InternalFarmType extends GenericFarmType {
   rewardRate: ethers.BigNumber;
   tvl: ethers.BigNumber;
   rewardToken: string;
-  userDeposit: ethers.BigNumber;
   userUnclaimed: ethers.BigNumber;
 }
 
-export interface SushiFarmType {
-  tokenAddress: string;
-  userDeposit: ethers.BigNumber;
+export interface SushiFarmType extends GenericFarmType {
   rewards: ethers.BigNumber[];
 }
 
-export interface CurveFarmType {
-  tokenAddress: string;
-  userDeposit: ethers.BigNumber;
+export interface CurveFarmType extends GenericFarmType {
   rewards: ethers.BigNumber[];
-}
-
-export interface FarmsType {
-  farms: {
-    type: FarmTypes;
-    body: InternalFarmType | SushiFarmType | CurveFarmType;
-  }[];
 }
