@@ -104,15 +104,21 @@
     }, [])
     .map((val) => val.vaultDebt)
     .reduce((prev, curr) => prev + curr);
+  $: lockedDeposit = aggregate
+    .reduce((list, item) => {
+      if (!list.some((obj) => obj.vaultType === item.vaultType)) {
+        list.push(item);
+      }
+      return list;
+    }, [])
+    .map((val) => val.vaultDebt * val.ratio)
+    .reduce((prev, curr) => prev + curr);
   $: debtLimit = aggregate.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr);
   $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
   $: vaultApy =
     aggregate.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
     aggregate.map((val) => val.vaultApy).length;
-  $: totalWithdraw =
-    aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr) > totalDeposit
-      ? totalDeposit
-      : aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr);
+  $: totalWithdraw = totalDeposit - lockedDeposit;
   $: totalInterest = aggregate.map((val) => val.vaultInterest).reduce((prev, curr) => prev + curr);
   $: fiatDeposit = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
