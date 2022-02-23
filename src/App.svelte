@@ -13,6 +13,7 @@
   import HeaderBar from '@components/composed/HeaderBar.svelte';
   import SideBar from '@components/composed/SideBar.svelte';
   import Footer from '@components/composed/Footer.svelte';
+  import Emergency from '@components/elements/Emergency';
 
   // router configuration and views
   import Landing from './views/Landing.svelte';
@@ -67,6 +68,7 @@
         <div class="col-span-12 bg-grey30 pl-8 pt-5 pb-5 border-grey5 border-b">
           <HeaderBar />
         </div>
+        <Emergency />
         <div class="col-span-12 flex">
           <div class="pl-8 pr-9 pt-8 w-96 sm:hidden xl:block">
             <SideBar />

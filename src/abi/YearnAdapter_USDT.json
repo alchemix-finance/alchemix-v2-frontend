@@ -43,6 +43,22 @@
             "type": "error"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minimumAmountOut",
+                    "type": "uint256"
+                }
+            ],
+            "name": "SlippageExceeded",
+            "type": "error"
+        },
+        {
             "inputs": [],
             "name": "price",
             "outputs": [
@@ -95,7 +111,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -124,7 +140,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -140,5 +156,5 @@
             "type": "function"
         }
     ],
-    "address": "0x42143fcf825AA24aB4d737D74280465587cB9e23"
+    "address": "0x84CBFA5D90a122d220598A71C86817c881b6d923"
 }

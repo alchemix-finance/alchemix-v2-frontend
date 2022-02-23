@@ -329,13 +329,8 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "yieldToken",
+                    "name": "underlyingToken",
                     "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "maximumLoss",
-                    "type": "uint256"
                 }
             ],
             "name": "exchange",
@@ -837,7 +832,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -847,5 +842,5 @@
             "type": "function"
         }
     ],
-    "address": "0x49c8532100b2aEb263E592853087ecD5869E0497"
+    "address": "0xE623C51e8EE28Aa24FB20C6AF348b3047C3c3Aaa"
 }

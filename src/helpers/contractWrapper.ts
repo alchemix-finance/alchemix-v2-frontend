@@ -12,7 +12,7 @@ export const contractWrapper = (selector: string, signer: ethers.Signer, address
   };
 };
 
-/** 
+/**
  * const setTokenAllowance = async (token, spender, amount) => {
   console.log('setting allowance', token, spender);
   const amountInfinite = ethers.constants.MaxUint256;
@@ -20,8 +20,8 @@ export const contractWrapper = (selector: string, signer: ethers.Signer, address
   await contract.approve(spender, amount || amountInfinite);
 };
 
- * 
-*/
+ *
+ */
 
 export const erc20Contract = (address: string, signer: ethers.Signer) => {
   const _contract = new ethers.Contract(address, genericAbi, signer);

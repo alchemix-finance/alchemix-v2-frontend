@@ -50,10 +50,7 @@
   const onClaimButton = async (tokenAddress, amountToClaim, tokenDecimals) => {
     const _fAmountToClaim = utils.parseUnits(utils.formatEther(amountToClaim), tokenDecimals);
 
-    await claim(tokenAddress, _fAmountToClaim, transmuterData.contractSelector, [
-      $signer,
-      $addressStore,
-    ]).then(() => {
+    await claim(_fAmountToClaim, transmuterData.contractSelector, [$signer, $addressStore]).then(() => {
       Promise.all([
         fetchBalanceByAddress(tokenAddress, [$signer]),
         fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [

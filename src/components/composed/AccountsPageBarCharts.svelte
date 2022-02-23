@@ -1,38 +1,68 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import global from '../../stores/global';
   import settings from '../../stores/settings';
   import BarChart from './Charts/BarChart.svelte';
   import tailwind from '../../../tailwind.config';
-  import ChildUpdater from '../elements/ChildUpdater.svelte';
+  import { VaultTypes } from '@stores/v2/types';
+  import { AllowedVaultTypes, VaultTypesInfos } from '@stores/v2/constants';
+  import { calculateVaultDebt, getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
 
-  export let totalDeposit;
-  export let totalDebtLimit;
-  export let aggregatedApy;
-  export let totalDebt;
-  export let totalInterest;
-  export let totalWithdrawable;
-  export let forceState;
+  export let vaults;
 
-  // $: withdrawable = (totalDeposit || 0) - (totalDebt || 0);
-  // ((totalDepositFormatted || 0) * $global.conversionRate).toFixed(2)
-  // FIXME debt needs a supplied ratio to calculate the proper withdrawable amount
-  // $: withdrawable = (
-  //   parseFloat(
-  //     utils.formatEther(
-  //       totalDeposit.sub(utils.parseEther(BigNumber.from(totalDebt).mul(BigNumber.from(2)).toString())),
-  //     ),
-  //   ) * $global.conversionRate
-  // ).toFixed(2);
-  $: totalDepositFormatted = parseFloat(utils.formatEther(totalDeposit)).toFixed(2);
-  $: totalDebtLimitFormatted = parseFloat(utils.formatEther(totalDeposit.div(BigNumber.from(2)))).toFixed(2);
-  $: totalDebtFormatted = parseFloat(utils.formatEther(totalDebt)).toFixed(2);
-  $: totalInterestFormatted = parseFloat(utils.formatEther(totalInterest)).toFixed(2);
-  $: withdrawable = parseFloat(utils.formatEther(totalDeposit.sub(totalDebt.mul(BigNumber.from(2))))).toFixed(
-    2,
-  );
+  const calculateBalanceValue = (_balance, _perShare, _decimals, _price) => {
+    return (
+      parseFloat(
+        utils.formatUnits(_balance.mul(_perShare).div(BigNumber.from(10).pow(_decimals)), _decimals),
+      ) * _price
+    );
+  };
+
+  $: aggregate = vaults.map((vault, index) => {
+    const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
+    const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
+    const tokenPrice = $global.tokenPrices.find(
+      (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
+    )?.price;
+    const depositValue = calculateBalanceValue(
+      vault.balance,
+      vault.underlyingPerShare,
+      underlyingTokenData.decimals,
+      tokenPrice,
+    );
+    const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type].ratio));
+    const debtLimit = depositValue / ratio;
+    const tvlValue = calculateBalanceValue(
+      vault.tvl,
+      vault.underlyingPerShare,
+      underlyingTokenData.decimals,
+      tokenPrice,
+    );
+    const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt));
+    const vaultWithdraw = depositValue - vaultDebt * ratio;
+    const vaultApy = Math.round(vault.apy * 10000) / 100;
+    return {
+      vaultType: vault.type,
+      token: vault.debtTokenAddress,
+      ratio,
+      depositValue,
+      debtLimit,
+      vaultDebt: vaultDebt > 0 ? vaultDebt : 0,
+      vaultInterest: vaultDebt < 0 ? vaultDebt : 0,
+      vaultWithdraw,
+      vaultApy,
+    };
+  });
+
+  const toFiat = (amount) => {
+    return new Intl.NumberFormat($settings.userLanguage.locale, {
+      style: 'currency',
+      currency: $settings.baseCurrency.symbol,
+    }).format(parseFloat((amount * $global.conversionRate).toFixed(2)));
+  };
 
   // TODO: use tailwind exported colors everywhere
   const GREY = '#74767C';
@@ -64,12 +94,33 @@
 
     context.fillStyle = background1;
   });
+  $: totalDebt = aggregate
+    .reduce((list, item) => {
+      if (!list.some((obj) => obj.vaultType === item.vaultType)) {
+        list.push(item);
+      }
+      return list;
+    }, [])
+    .map((val) => val.vaultDebt)
+    .reduce((prev, curr) => prev + curr);
+  $: debtLimit = aggregate.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr);
+  $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
+  $: vaultApy =
+    aggregate.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
+    aggregate.map((val) => val.vaultApy).length;
+  $: totalWithdraw = aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr);
+  $: totalInterest = aggregate.map((val) => val.vaultInterest).reduce((prev, curr) => prev + curr);
 
   $: data = {
     labels: [[$_('table.withdrawable')], [$_('chart.debt')], [$_('chart.interest')]],
     datasets: [
       {
-        data: [withdrawable || 0, totalDebtFormatted || 0, totalInterestFormatted || 0],
+        // data: [
+        //   aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr),
+        //   totalDebtFormatted || 0,
+        //   totalInterestFormatted || 0,
+        // ],
+        data: [totalWithdraw, totalDebt, totalInterest],
         backgroundColor: [background1],
         borderRadius: 5,
       },
@@ -112,21 +163,13 @@
             family: MONTSERRAT,
           },
           callback: function (val, index, c) {
+            // this sets the numerical values and labels for the bars
             if (this.getLabelForValue(val)[0].toUpperCase() === $_('table.withdrawable').toUpperCase()) {
-              return [
-                ...this.getLabelForValue(val),
-                `${withdrawable} ${$settings.baseCurrency?.symbol || '$'}`,
-              ];
+              return [...this.getLabelForValue(val), `${toFiat(totalWithdraw || 0)}`];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.debt').toUpperCase()) {
-              return [
-                ...this.getLabelForValue(val),
-                `${totalDebtFormatted} ${$settings.baseCurrency?.symbol || '$'}`,
-              ];
+              return [...this.getLabelForValue(val), `${toFiat(totalDebt || 0)}`];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.interest').toUpperCase()) {
-              return [
-                ...this.getLabelForValue(val),
-                `${totalInterestFormatted} ${$settings.baseCurrency?.symbol || '$'}`,
-              ];
+              return [...this.getLabelForValue(val), `${toFiat(totalInterest || 0)}`];
             }
 
             return [...this.getLabelForValue(val), ``];
@@ -134,29 +177,19 @@
         },
       },
       y: {
-        suggestedMax: Math.floor(totalDepositFormatted || 0),
+        suggestedMax: totalDeposit,
 
         ticks: {
           stepSize: 1,
           padding: 10,
           callback: function (value) {
-            const values = [
-              0,
-              Math.round(parseFloat(totalDebtLimitFormatted)),
-              Math.round(parseFloat(totalDepositFormatted)),
-            ];
-            if (
-              [
-                0,
-                Math.round(parseFloat(totalDebtLimitFormatted)),
-                Math.round(parseFloat(totalDepositFormatted)),
-              ].includes(value)
-            ) {
-              return values.reduce((prev, curr) => {
-                return Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev;
-              });
-            }
-
+            // this iterates over _all_ ticks and should return ticks that match 0, debtLimit and totalDeposit
+            // it also generates the labels on the y axis and creates a callback for each label
+            const floorDebt = Math.round(debtLimit);
+            const floorDeposit = Math.round(totalDeposit);
+            if (value === 0) return value;
+            if (between(floorDebt, value - 50, value + 50)) return toFiat(debtLimit);
+            if (between(floorDeposit, value - 50, value + 50)) return toFiat(totalDeposit);
             return undefined;
           },
 
@@ -176,38 +209,19 @@
           tickColor: GREY,
 
           color: (context) => {
-            return [totalDebtLimitFormatted, totalDepositFormatted].reduce((prev, curr) => {
-              return Math.abs(curr - context.tick.value) < Math.abs(prev - context.tick.value)
-                ? ORANGE
-                : GREEN;
+            const roundDebt = Math.round(debtLimit);
+            const roundDeposit = Math.round(totalDeposit);
+            return [roundDebt, roundDeposit].reduce((prev, curr) => {
+              console.log(context.tick.value, prev, curr);
+              if (between(context.tick.value, roundDebt - 50, roundDebt + 50)) return GREEN;
+              if (between(context.tick.value, roundDeposit - 50, roundDeposit + 50)) return ORANGE;
+              return undefined;
             });
-            // if (
-            //   between(
-            //     context.tick.value,
-            //     Math.round(totalDebtLimitFormatted / 100) * 100 - 10,
-            //     Math.round(totalDebtLimitFormatted / 100) * 100 + 10,
-            //   )
-            // ) {
-            //   return GREEN;
-            // }
-            //
-            // if (
-            //   between(
-            //     context.tick.value,
-            //     Math.round(totalDepositFormatted / 100) * 100 - 10,
-            //     Math.round(totalDepositFormatted / 100) * 100 + 10,
-            //   )
-            // ) {
-            //   return ORANGE;
-            // }
           },
         },
       },
     },
   };
-
-  $: normalizedDeposit = ((totalDepositFormatted || 0) * $global.conversionRate).toFixed(2);
-  $: normalizedDebt = ((totalDebtLimitFormatted || 0) * $global.conversionRate).toFixed(2);
 </script>
 
 <div class="h-96">
@@ -221,7 +235,7 @@
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">{$_('chart.total_deposit')}</span>
-          <span class="text-lg">{normalizedDeposit} {$settings.baseCurrency?.symbol || '$'}</span>
+          <span class="text-lg">{toFiat(totalDeposit || 0)}</span>
         </div>
         <div class="mr-8 flex items-center">
           <span class="text-green1 mr-05">
@@ -230,11 +244,14 @@
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">{$_('table.debt_limit')}</span>
-          <span class="text-lg">{normalizedDebt} {$settings.baseCurrency?.symbol || '$'}</span>
+          <span class="text-lg">{toFiat(debtLimit || 0)}</span>
         </div>
         <div class="flex items-center">
           <span class="text-grey2 mr-2">{$_('chart.aggregate_apy')}</span>
-          <span class="text-lg">{aggregatedApy}%</span>
+          <span class="text-lg"
+            >{vaultApy.toFixed(2) || 0}
+            %</span
+          >
         </div>
       </div>
     </div>

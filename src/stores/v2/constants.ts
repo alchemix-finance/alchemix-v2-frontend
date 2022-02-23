@@ -20,6 +20,15 @@ export const TransmuterConstants = {
   },
 };
 
+export const AdapterConstants = {
+  [VaultTypes.alUSD]: {
+    adapterContractSelectors: ['YearnAdapter_DAI', 'YearnAdapter_USDC', 'YearnAdapter_USDT'],
+  },
+  [VaultTypes.alETH]: {
+    adapterContractSelectors: ['YearnAdapter_WETH'],
+  },
+};
+
 export const TransmuterNameAliases = {
   dai: 'Zosimos',
   usdc: 'Ge Hong',
@@ -29,6 +38,7 @@ export const TransmuterNameAliases = {
 
 export const AllowedVaultTypes = [VaultTypes.alUSD, VaultTypes.alETH];
 export const AllowedTransmuterTypes = [VaultTypes.alUSD, VaultTypes.alETH];
+export const AllowedAdapterTypes = [VaultTypes.alUSD, VaultTypes.alETH];
 
 export const VaultTypesInfos = {
   [VaultTypes.alUSD]: {

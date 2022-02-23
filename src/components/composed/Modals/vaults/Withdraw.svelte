@@ -8,13 +8,17 @@
   import ToggleSwitch from '@components/elements/ToggleSwitch';
 
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
-  import { addressStore, vaultsStore } from 'src/stores/v2/alcxStore';
+  import { VaultTypes } from '@stores/v2/types';
+  import { addressStore, vaultsStore, balancesStore, adaptersStore } from 'src/stores/v2/alcxStore';
   import { signer, vaultsAggregatedBalances } from 'src/stores/v2/derived';
-  import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
+  import {
+    fetchBalanceByAddress,
+    fetchUpdateVaultByAddress,
+    fetchAdaptersForVaultType,
+  } from 'src/stores/v2/asyncMethods';
 
   import { modalReset } from '@stores/modal';
 
-  import { balancesStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances, normalizeAmount } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
@@ -74,6 +78,21 @@
 
   const onWithdrawButton = async () => {
     modalReset();
+
+    // @dev we need to fetch the adapter prices
+    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
+
+    const adapterPrice = $adaptersStore[vault.type].adapters.filter(
+      (adapter) =>
+        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+    )[0].price;
+
+    const underlyingToYield = underlyingWithdrawAmountShares
+      .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
+      .div(adapterPrice);
+    const subTokens = underlyingToYield.mul(BigNumber.from(maximumLoss)).div(100000);
+    const minimumOut = underlyingToYield.sub(subTokens);
+
     if (
       yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
       (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
@@ -99,6 +118,7 @@
         $addressStore,
         BigNumber.from(maximumLoss),
         [$signer],
+        minimumOut,
         withdrawEth,
       ).then(() => {
         Promise.all([
@@ -117,6 +137,7 @@
         $addressStore,
         maximumLoss,
         [$signer],
+        minimumOut,
       ).then(() => {
         Promise.all([
           fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
@@ -362,7 +383,9 @@
           </div>
         </div>
       </div>
-
+      <div class="my-4">
+        <MaxLossController bind:maxLoss="{maximumLoss}" />
+      </div>
       <div class="my-4 text-sm text-lightgrey10">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
         -> {calculateRemainingBalance(
@@ -375,10 +398,6 @@
         {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
         -> {utils.formatUnits(projDebtLimit, underlyingTokenData.decimals) ||
           utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
-      </div>
-
-      <div class="my-4">
-        <MaxLossController bind:maxLoss="{maximumLoss}" />
       </div>
 
       <Button

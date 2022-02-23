@@ -49,9 +49,21 @@ export interface TransmuterType {
   unexchangedBalanceBN: ethers.BigNumber;
 }
 
+export interface AdapterType {
+  type: VaultTypes;
+  contractSelector: string;
+  price: ethers.BigNumber;
+}
+
 export interface TransmutersType {
   [key: number]: {
     transmuters: TransmuterType[];
+  };
+}
+
+export interface AdaptersType {
+  [key: number]: {
+    adapters: AdapterType[];
   };
 }
 
@@ -61,5 +73,6 @@ export const balancesStore = writable<BalanceType[]>([]);
 export const tokensStore = writable<TokensType>({});
 export const vaultsStore = writable<VaultsType>({});
 export const transmutersStore = writable<TransmutersType>({});
+export const adaptersStore = writable<AdaptersType>({});
 export const sentinelStore = writable<boolean>(undefined);
 export const controllerStore = writable<[]>([]);

@@ -1,6 +1,6 @@
 import { BigNumber, ethers, utils } from 'ethers';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
-import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
 import { VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 import { VaultTypesInfos } from '@stores/v2/constants';
@@ -65,6 +65,22 @@ export async function fetchDataForVault(
     underlyingPerShare: underlyingPerShare,
     apy,
     useGateway,
+  };
+}
+
+export async function fetchDataForAdapter(
+  vaultType: number,
+  contractSelector: string,
+  signer: ethers.Signer,
+): Promise<AdapterType> {
+  const { instance: adapterInstance } = contractWrapper(contractSelector, signer);
+
+  const price = await adapterInstance.price();
+
+  return {
+    type: vaultType,
+    contractSelector: contractSelector,
+    price: price,
   };
 }
 

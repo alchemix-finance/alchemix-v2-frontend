@@ -63,6 +63,7 @@ export async function depositUnderlying(
   amountYield: BigNumber,
   maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
+  minimumAmountOut: BigNumber,
   useGateway = false,
 ) {
   try {
@@ -88,7 +89,7 @@ export async function depositUnderlying(
         tokenAddress,
         amountYield,
         userAddressStore,
-        maximumLoss,
+        minimumAmountOut,
         {
           gasPrice: gas,
         },
@@ -115,7 +116,7 @@ export async function depositUnderlying(
         tokenAddress,
         amountYield,
         userAddressStore,
-        maximumLoss,
+        minimumAmountOut,
         {
           gasPrice: gas,
           value: amountYield,
@@ -149,6 +150,7 @@ export async function multicallDeposit(
   amountYield: BigNumber,
   maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
+  minimumOut: BigNumber,
 ) {
   try {
     const yieldTokenInstance = erc20Contract(yieldTokenAddress, signerStore);
@@ -188,7 +190,7 @@ export async function multicallDeposit(
       yieldTokenAddress,
       amountUnderlying,
       userAddressStore,
-      maximumLoss,
+      minimumOut,
     ]);
     const dataPackage = [deposit, depositUnderlying];
 
@@ -254,6 +256,7 @@ export async function withdrawUnderlying(
   accountAddress: string,
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
+  minimumAmountOut: BigNumber,
   useGateway = false,
 ) {
   try {
@@ -271,7 +274,7 @@ export async function withdrawUnderlying(
         yieldTokenAddress,
         amountUnderlying,
         accountAddress,
-        maximumLoss,
+        minimumAmountOut,
         {
           gasPrice: gas,
         },
@@ -316,7 +319,7 @@ export async function withdrawUnderlying(
         yieldTokenAddress,
         amountUnderlying,
         accountAddress,
-        maximumLoss,
+        minimumAmountOut,
         {
           gasPrice: gas,
         },
@@ -350,6 +353,7 @@ export async function multicallWithdraw(
   accountAddress: string,
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
+  minimumAmountOut: BigNumber,
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
@@ -362,7 +366,7 @@ export async function multicallWithdraw(
       yieldTokenAddress,
       underlyingAmount,
       accountAddress,
-      maximumLoss,
+      minimumAmountOut,
     ]);
 
     const encodedWithdrawFunc = alchemistInterface.encodeFunctionData('withdraw', [
@@ -518,6 +522,7 @@ export async function liquidate(
   typeOfVault: VaultTypes,
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
+  minimumAmountOut: BigNumber,
 ) {
   try {
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
@@ -529,7 +534,7 @@ export async function liquidate(
 
     setPendingWallet();
 
-    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, maximumLoss, {
+    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, minimumAmountOut, {
       gasPrice: gas,
     })) as ContractTransaction;
 
