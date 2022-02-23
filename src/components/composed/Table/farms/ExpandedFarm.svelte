@@ -47,7 +47,7 @@
       });
       setPendingTx();
 
-      return await tx.wait().then((transaction) => {
+      await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
 
         Promise.all([
@@ -73,7 +73,7 @@
 
       setPendingTx();
 
-      return await tx.wait().then((transaction) => {
+      await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
 
         Promise.all([
@@ -96,7 +96,7 @@
         gasPrice: gas,
       });
 
-      return await tx.wait().then((transaction) => {
+      await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
 
         Promise.all([
