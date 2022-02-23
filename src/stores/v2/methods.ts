@@ -1,14 +1,19 @@
-import { BalanceType, BodyVaultType, transmutersStore, TransmuterType } from '@stores/v2/alcxStore';
-import { ethers, providers } from 'ethers';
-import { VaultTypes } from '@stores/v2/types';
 import {
+  BalanceType,
+  BodyVaultType,
+  transmutersStore,
+  TransmuterType,
+  AdapterType,
   addressStore,
   providerStore,
   balancesStore,
   vaultsStore,
   tokensStore,
   sentinelStore,
-} from './alcxStore';
+  adaptersStore,
+} from '@stores/v2/alcxStore';
+import { ethers, providers } from 'ethers';
+import { VaultTypes } from '@stores/v2/types';
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);
@@ -117,6 +122,18 @@ export const updateAllTransmuters = (vaultType: VaultTypes, transmuters: Transmu
       ..._store,
       [vaultType]: {
         transmuters,
+      },
+    };
+
+    return _store;
+  });
+
+export const updateAllAdapters = (vaultType: VaultTypes, adapters: AdapterType[]) =>
+  adaptersStore.update((_store) => {
+    _store = {
+      ..._store,
+      [vaultType]: {
+        adapters,
       },
     };
 

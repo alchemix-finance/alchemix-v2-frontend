@@ -7,15 +7,21 @@
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { addressStore, balancesStore, vaultsStore } from '@stores/v2/alcxStore';
+  import { addressStore, balancesStore, vaultsStore, adaptersStore } from '@stores/v2/alcxStore';
+  import { VaultTypes } from '@stores/v2/types';
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { liquidate } from '@stores/v2/vaultActions';
   import { signer } from '@stores/v2/derived';
-  import { fetchUpdateVaultByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
+  import {
+    fetchUpdateVaultByAddress,
+    fetchVaultDebt,
+    fetchVaultRatio,
+    fetchAdaptersForVaultType,
+  } from '@stores/v2/asyncMethods';
   import { modalReset } from '@stores/modal';
 
   export let yieldTokens;
-
+  export let vaults;
   export let selectedVaultsType;
 
   let selectedVaultType = selectedVaultsType[0];
@@ -30,23 +36,57 @@
 
   const onLiquidateButton = async (yieldTokenData, amount, vaultType) => {
     modalReset();
-    await liquidate(yieldTokenData.address, amount, vaultType, BigNumber.from(maximumLoss), [$signer]).then(
-      () => {
-        Promise.all([
-          fetchVaultRatio(vaultType, [$signer]),
-          fetchVaultDebt(vaultType, [$addressStore, $signer]),
-          fetchUpdateVaultByAddress(vaultType, yieldTokenData.address, [$signer, $addressStore]),
-        ])
-          .then(() => {
-            console.log('[onLiquidateButton/finished]: Data updated!');
-          })
-          .catch((e) => {
-            console.error(`[onLiquidateButton/finished]: ${e}`);
-          });
-      },
+
+    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vaultType]], [$signer]);
+
+    const vaultData = vaults.filter(
+      (vault) =>
+        getTokenDataFromBalances(vault.address, [$balancesStore]).address.toLowerCase() ===
+        yieldTokenData.address.toLowerCase(),
+    )[0];
+    console.log(vaultData);
+    const underlyingTokenData = getTokenDataFromBalances(vaultData.underlyingAddress, [$balancesStore]);
+    console.log(underlyingTokenData);
+    console.log($adaptersStore[vaultType].adapters);
+    console.log(
+      $adaptersStore[vaultType].adapters.filter(
+        (adapter) =>
+          adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+      ),
     );
+    const adapterPrice = $adaptersStore[vaultType].adapters.filter(
+      (adapter) =>
+        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+    )[0].price;
+    const adapterYieldAmount = amount
+      .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
+      .div(adapterPrice);
+    console.log(amount.toString(), adapterYieldAmount.toString());
+    const subTokens = adapterYieldAmount.mul(BigNumber.from(maximumLoss)).div(100000);
+    const minimumOut = adapterYieldAmount.sub(subTokens);
+    console.log(minimumOut.toString());
+
+    await liquidate(
+      yieldTokenData.address,
+      amount,
+      vaultType,
+      BigNumber.from(maximumLoss),
+      [$signer],
+      minimumOut,
+    ).then(() => {
+      Promise.all([
+        fetchVaultRatio(vaultType, [$signer]),
+        fetchVaultDebt(vaultType, [$addressStore, $signer]),
+        fetchUpdateVaultByAddress(vaultType, yieldTokenData.address, [$signer, $addressStore]),
+      ])
+        .then(() => {
+          console.log('[onLiquidateButton/finished]: Data updated!');
+        })
+        .catch((e) => {
+          console.error(`[onLiquidateButton/finished]: ${e}`);
+        });
+    });
   };
-  $: console.log($signer);
 
   const setInputMax = (tokenData, debt) => {
     const underlyingBalance18Decimals = utils.parseEther(
@@ -217,6 +257,9 @@
         />
       </div>
     </div>
+    <div class="w-full">
+      <MaxLossController bind:maxLoss="{maximumLoss}" />
+    </div>
     <div class="w-full text-sm text-lightgrey10">
       {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
         remainingDebtAmount,
@@ -228,9 +271,7 @@
       {yieldTokenList[selectedYieldToken].symbol} -> {utils.formatEther(remainingBalance)}
       {yieldTokenList[selectedYieldToken].symbol}
     </div>
-    <div class="w-full">
-      <MaxLossController bind:maxLoss="{maximumLoss}" />
-    </div>
+
     <ToggleSwitch
       label="{$_('modals.liq_disclaimer')}"
       forceState="{toggleForceState}"

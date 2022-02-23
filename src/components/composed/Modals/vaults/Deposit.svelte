@@ -5,9 +5,14 @@
   import Button from '../../../elements/Button.svelte';
   import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
-  import { addressStore, balancesStore, vaultsStore } from 'src/stores/v2/alcxStore';
+  import { VaultTypes } from '@stores/v2/types';
+  import { addressStore, balancesStore, vaultsStore, adaptersStore } from 'src/stores/v2/alcxStore';
   import { signer } from 'src/stores/v2/derived';
-  import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from 'src/stores/v2/asyncMethods';
+  import {
+    fetchBalanceByAddress,
+    fetchUpdateVaultByAddress,
+    fetchAdaptersForVaultType,
+  } from 'src/stores/v2/asyncMethods';
   import MaxLossController from '@components/composed/MaxLossController';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { modalReset } from '@stores/modal';
@@ -26,6 +31,19 @@
   const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
     modalReset();
 
+    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
+
+    const adapterPrice = $adaptersStore[vault.type].adapters.filter(
+      (adapter) =>
+        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+    )[0].price;
+    const yieldTokens = underlyingDepositBN
+      .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
+      .div(adapterPrice);
+    const subTokens = yieldTokens.mul(BigNumber.from(maximumLoss)).div(100000);
+    const underlyingMinimumIn = yieldTokens.sub(subTokens);
+    console.log(_underlyingDeposit.toString(), underlyingMinimumIn.toString());
+
     if (_yieldDeposit.gt(0) && _underlyingDeposit.gt(0)) {
       await multicallDeposit(
         vault.type,
@@ -35,6 +53,7 @@
         _yieldDeposit,
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
+        underlyingMinimumIn,
       )
         .then(() => {
           Promise.all([
@@ -70,6 +89,7 @@
         _underlyingDeposit,
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
+        underlyingMinimumIn,
         depositEth,
       )
         .then(() => {
@@ -178,6 +198,7 @@
   $: totalDep = calculateTotalDeposit(vault, yieldDepositBN, underlyingDepositBN, underlyingTokenData);
 
   $: depositButtonDisabled =
+    maximumLoss / 1000 >= 100 ||
     !yieldDepositBN.add(underlyingDepositBN).gt(0) ||
     yieldDepositBN.gt(yieldTokenData.balance) ||
     underlyingDepositBN.gt(depositEth ? ethData.balance : underlyingTokenData.balance);
@@ -315,15 +336,15 @@
         {/if}
       </div>
 
+      <div class="my-4">
+        <MaxLossController bind:maxLoss="{maximumLoss}" />
+      </div>
+
       <div class="my-4 text-sm text-lightgrey10">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData.decimals)}
         -> {totalDep}<br />
         {$_('modals.borrow_limit')}: {startDebtLimit} ->
-        {projDeptLimit || startDebtLimit}
-      </div>
-
-      <div class="my-4">
-        <MaxLossController bind:maxLoss="{maximumLoss}" />
+        {projDeptLimit || startDebtLimit} <br />
       </div>
 
       <Button

@@ -217,6 +217,9 @@
     "transfer_loan": "Transfer loan to a different wallet",
     "target_wallet": "Target Wallet",
     "transfer_error": "The provided address is not valid. Please check the input.",
-    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan"
+    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan",
+    "slippage_below_safe": "Slippage tolerance very low, transaction might revert.",
+    "slippage_above_max": "Slippage higher than maximum possible amount.",
+    "slippage_above_safe": "Slippage tolerance very high, loss of funds might occur."
   }
 }

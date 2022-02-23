@@ -75,7 +75,9 @@
     );
   }
 
-  let hasStrategies = false;
+  // let hasStrategies = false;
+
+  $: hasStrategies = currentVaultsBasedOnStrategyType.some((vault) => vault.balance.gt(BigNumber.from(0)));
 
   $: currentVaultsBasedOnType =
     Object.keys($vaultsStore)
@@ -115,9 +117,6 @@
       $vaultsStore[vault.type].ratio,
     );
     const vaultApy = Math.round(vault.apy * 10000) / 100;
-
-    if (vault.balance.gt(BigNumber.from(0))) hasStrategies = true;
-
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
@@ -190,7 +189,7 @@
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 text-sm">{$_('vaults_page.title')}</div>
         <div slot="body">
-          {#if currentRowsOnCurrentStrategyType.length > 0}
+          {#if currentRowsOnCurrentStrategyType.filter((rows) => rows.type === 'used').length > 0}
             <Table
               rows="{[
                 ...currentRowsOnCurrentStrategyType

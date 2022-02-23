@@ -207,6 +207,7 @@
     showModal(Liquidate, {
       selectedVaultsType: $vaultsSelector,
       outstandingDebt: $alusd.userDebt,
+      vaults: currentVaultsBasedOnStrategyType,
     });
 
   const closeModal = () => modalReset();

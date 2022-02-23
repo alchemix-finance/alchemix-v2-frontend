@@ -160,6 +160,22 @@
         {
             "inputs": [
                 {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minimumAmountOut",
+                    "type": "uint256"
+                }
+            ],
+            "name": "SlippageExceeded",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
                     "internalType": "address",
                     "name": "token",
                     "type": "address"
@@ -1175,7 +1191,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -1494,7 +1510,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -1639,7 +1655,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -2221,7 +2237,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -2260,7 +2276,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -2276,5 +2292,5 @@
             "type": "function"
         }
     ],
-    "address": "0x623c3B59d6792AB7D565b54C98E5C7DB66F8e2bE"
+    "address": "0xDB54e85FE3a85cC2f8e9315AcD0223605f8095fb"
 }

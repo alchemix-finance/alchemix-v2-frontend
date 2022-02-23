@@ -108,5 +108,5 @@ export function setRejectedVote() {
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
   _toastConfig.closeTimeout = 4000;
-  toastConfig.set({ ..._toastConfig })
-};
+  toastConfig.set({ ..._toastConfig });
+}

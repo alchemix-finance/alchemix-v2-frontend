@@ -82,7 +82,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -161,7 +161,7 @@
                 },
                 {
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 }
             ],
@@ -175,5 +175,5 @@
             "type": "receive"
         }
     ],
-    "address": "0x87c85F88cc1f61dFC855e9eC2c8dc5fd099Feb32"
+    "address": "0x53f4227703e5A5EA9a8BF9BAdb911559b5A526AC"
 }

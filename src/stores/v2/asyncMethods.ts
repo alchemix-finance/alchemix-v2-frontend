@@ -3,6 +3,7 @@ import {
   fetchDataForToken,
   fetchDataForTransmuter,
   fetchDataForVault,
+  fetchDataForAdapter,
   generateTokenPromises,
 } from '@stores/v2/helpers';
 import {
@@ -17,9 +18,10 @@ import {
   updateVaultDebtTokenAddress,
   updateAllTransmuters,
   updateTransmuterByAddress,
+  updateAllAdapters,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
-import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
+import { TransmuterConstants, VaultConstants, AdapterConstants } from '@stores/v2/constants';
 import { VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
@@ -142,6 +144,21 @@ export async function fetchUpdateVaultByAddress(
 
   return vaultData.then((_vaultData) => {
     updateVaultByAddress(vaultId, vaultAddress, _vaultData);
+  });
+}
+
+export async function fetchAdaptersForVaultType(vaultType: VaultTypes, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchAdaptersForVaultType]: signer is undefined`);
+    return Promise.reject(`[fetchAdaptersForVaultType]: signer is undefined`);
+  }
+
+  const adaptersFetchDataPromise = AdapterConstants[vaultType].adapterContractSelectors.map((selectorId) => {
+    return fetchDataForAdapter(vaultType, selectorId, signer);
+  });
+
+  return Promise.all([...adaptersFetchDataPromise]).then((adapters) => {
+    updateAllAdapters(vaultType, adapters);
   });
 }
 
