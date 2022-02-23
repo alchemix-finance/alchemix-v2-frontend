@@ -1,5 +1,6 @@
 import {
   fetchDataForETH,
+  fetchDataForInternalFarm,
   fetchDataForToken,
   fetchDataForTransmuter,
   fetchDataForVault,
@@ -7,22 +8,24 @@ import {
 } from '@stores/v2/helpers';
 import {
   updateAllBalances,
+  updateAllFarms,
   updateAllTokens,
+  updateAllTransmuters,
   updateAllVaultBody,
   updateOneBalance,
+  updateSentinelRole,
+  updateTransmuterByAddress,
   updateVaultByAddress,
   updateVaultDebt,
-  updateVaultRatio,
-  updateSentinelRole,
   updateVaultDebtTokenAddress,
-  updateAllTransmuters,
-  updateTransmuterByAddress,
+  updateVaultRatio,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
 import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
-import { VaultTypes } from '@stores/v2/types';
+import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
+import { InternalFarmsMetadata } from '@stores/v2/farmsConstants';
 
 export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Signer]) {
   if (!signer) {
@@ -184,6 +187,28 @@ export async function fetchTransmuterBySelector(
 
   return fetchDataForTransmuterPromise.then((_transmuter) => {
     updateTransmuterByAddress(vaultType, _transmuter.transmuterAddress, _transmuter);
+  });
+}
+
+export async function fetchInternalFarms([signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchInternalFarms]: signer is undefined`);
+    return Promise.reject(`[fetchInternalFarms]: signer is undefined`);
+  }
+
+  const promises = Object.keys(InternalFarmsMetadata).map((poolAddress, index) => {
+    return fetchDataForInternalFarm(index, [signer]);
+  });
+
+  Promise.all([...promises]).then((data) => {
+    updateAllFarms(
+      data.map((_data) => {
+        return {
+          type: FarmTypes.INTERNAL,
+          body: _data,
+        };
+      }),
+    );
   });
 }
 

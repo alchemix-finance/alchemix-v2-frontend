@@ -120,57 +120,10 @@ export function normalizeAmount(_amount: BigNumber, _decimalsFrom: number, _deci
   return utils.parseUnits(utils.formatUnits(_amount, _decimalsFrom), _decimalsTo);
 }
 
-/*
-* // @dev orchestrates initialization of all farms
-async function initFarms() {
-  if (_stakingPools.allPools.length === 0) {
-    // @dev init external farms first
-    await initSushiFarm();
-    await initCurveFarm();
-    // @dev continue routine for internal farms
-    const contract = getContract('StakingPools');
-    const poolCounter = parseInt(_stakingPools.pools, 10);
-    for (let i = 0; i < poolCounter; i++) {
-      const checkToken = await contract.getPoolToken(i);
-      const token = checkToken.toLowerCase();
-      const tokenSymbol = await getTokenSymbol(token);
-      const checkReward = await contract.getPoolRewardRate(i);
-      const reward = utils.formatEther(checkReward.toString());
-      const checkUserDeposit = await contract.getStakeTotalDeposited(_account.address, i);
-      const userDeposit = utils.formatEther(checkUserDeposit.toString());
-      const checkUserUnclaimed = await contract.getStakeTotalUnclaimed(_account.address, i);
-      const userUnclaimed = utils.formatEther(checkUserUnclaimed.toString());
-      const tvl = await contract.getPoolTotalDeposited(i);
-      // const tvl = utils.formatEther(checkTvl.toString());
-      const poolConfig = poolLookup.find((pool) => pool.address === token);
-      const rewardToken = 'ALCX';
-      const payload = {
-        token,
-        tokenSymbol,
-        reward,
-        userDeposit,
-        userUnclaimed,
-        tvl,
-        poolConfig,
-        rewardToken,
-        poolId: i,
-        type: 'internal',
-      };
-      _stakingPools.allPools.push(payload);
-      stakingPools.set({ ..._stakingPools });
-      if (i + 1 === poolCounter) {
-        _account.loadingFarmsConfigurations = false;
-        account.set({ ..._account });
-      }
-    }
-  } else {
-    _account.loadingFarmsConfigurations = false;
-    account.set({ ..._account });
-  }
-}
-* */
-
-export async function fetchDataForInternalFarm(poolId: number, [signer]: [ethers.Signer]): InternalFarmType {
+export async function fetchDataForInternalFarm(
+  poolId: number,
+  [signer]: [ethers.Signer],
+): Promise<InternalFarmType> {
   const { instance: stakingInstance } = contractWrapper('StakingPools', signer);
   const accountAddress = await signer.getAddress();
 
