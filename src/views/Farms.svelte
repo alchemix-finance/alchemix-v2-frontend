@@ -28,73 +28,108 @@
   import { addressStore, farmsStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchInternalFarms } from '@stores/v2/asyncMethods';
+  import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
+  import { castToInternalFarmType } from '@stores/v2/types';
 
-  const colsActive = [
-    {
-      columnId: 'col0',
-      value: '',
-      colSize: 1,
-    },
-    {
-      columnId: 'col1',
-      CellComponent: HeaderCell,
-      value: $_('table.pool'),
-      colSize: '3',
-    },
-    {
-      columnId: 'col2',
-      CellComponent: HeaderCell,
-      value: $_('table.tvl'),
-      colSize: 2,
-    },
-    {
-      columnId: 'col3',
-      CellComponent: HeaderCell,
-      value: $_('table.rewards'),
-      colSize: 3,
-    },
-    {
-      columnId: 'col4',
-      CellComponent: HeaderCell,
-      value: $_('table.apr'),
-      colSize: 1,
-    },
-    {
-      columnId: 'col5',
-      CellComponent: HeaderCell,
-      value: $_('table.action'),
-      colSize: 3,
-    },
-  ];
-  let rowsActive = [];
+  const filterTypes = Object.freeze({
+    ACTIVE: 0,
+    RETIRED: 1,
+    EXTERNAL: 2,
+  });
 
-  const colsRetired = [
-    {
-      columnId: 'col1',
-      CellComponent: HeaderCell,
-      value: $_('table.pool'),
-      colSize: 7,
-    },
-    {
-      columnId: 'col2',
-      CellComponent: HeaderCell,
-      value: $_('table.staked_token'),
-      colSize: 4,
-    },
-    {
-      columnId: 'col3',
-      CellComponent: HeaderCell,
-      value: $_('table.claimable_rewards'),
-      colSize: 4,
-    },
-    {
-      columnId: 'col4',
-      CellComponent: HeaderCell,
-      value: $_('table.action'),
-      colSize: 5,
-    },
-  ];
-  let rowsRetired = [];
+  let currentFilter = filterTypes.ACTIVE;
+
+  const colsDefinition = {
+    [filterTypes.ACTIVE]: [
+      {
+        columnId: 'col0',
+        value: '',
+        colSize: 1,
+      },
+      {
+        columnId: 'col1',
+        CellComponent: HeaderCell,
+        value: $_('table.pool'),
+        colSize: '3',
+      },
+      {
+        columnId: 'col2',
+        CellComponent: HeaderCell,
+        value: $_('table.tvl'),
+        colSize: 2,
+      },
+      {
+        columnId: 'col3',
+        CellComponent: HeaderCell,
+        value: $_('table.rewards'),
+        colSize: 3,
+      },
+      {
+        columnId: 'col4',
+        CellComponent: HeaderCell,
+        value: $_('table.apr'),
+        colSize: 1,
+      },
+      {
+        columnId: 'col5',
+        CellComponent: HeaderCell,
+        value: $_('table.action'),
+        colSize: 3,
+      },
+    ],
+    [filterTypes.RETIRED]: [
+      {
+        columnId: 'col1',
+        CellComponent: HeaderCell,
+        value: $_('table.pool'),
+        colSize: 7,
+      },
+      {
+        columnId: 'col2',
+        CellComponent: HeaderCell,
+        value: $_('table.staked_token'),
+        colSize: 4,
+      },
+      {
+        columnId: 'col3',
+        CellComponent: HeaderCell,
+        value: $_('table.claimable_rewards'),
+        colSize: 4,
+      },
+      {
+        columnId: 'col4',
+        CellComponent: HeaderCell,
+        value: $_('table.action'),
+        colSize: 5,
+      },
+    ],
+    [filterTypes.EXTERNAL]: [
+      {
+        columnId: 'col1',
+        CellComponent: HeaderCell,
+        value: $_('table.pool'),
+        colSize: 7,
+      },
+      {
+        columnId: 'col2',
+        CellComponent: HeaderCell,
+        value: $_('table.staked_token'),
+        colSize: 4,
+      },
+      {
+        columnId: 'col3',
+        CellComponent: HeaderCell,
+        value: $_('table.claimable_rewards'),
+        colSize: 4,
+      },
+      {
+        columnId: 'col4',
+        CellComponent: HeaderCell,
+        value: $_('table.action'),
+        colSize: 5,
+      },
+    ],
+  };
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -130,185 +165,296 @@
     return $global.tokenPrices.find((entry) => entry.address.toUpperCase() === token.toUpperCase())?.price;
   };
 
-  let loading = true;
-  const renderFarms = async () => {
-    if (loading) {
-      $stakingPools.allPools.forEach((pool) => {
-        const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
-        if (pool.poolConfig && pool.reward !== '0.0') {
-          let expandedProps;
-          let rewards;
-          let component;
-          let tvl;
-          switch (pool.type) {
-            case 'sushi':
-              expandedProps = {
-                token: {
-                  balance: pool.slpBalance,
-                  symbol: 'SLP',
-                },
-                stakedBalance: pool.userDeposit,
-                unclaimedAlcx: pool.rewardsAlcx,
-                unclaimedSushi: pool.rewardsSushi,
-                slpBalance: pool.slpBalance,
-              };
-              rewards = [
-                {
-                  iconName: 'alchemix',
-                  tokenName: 'ALCX',
-                },
-                {
-                  iconName: 'sushi',
-                  tokenName: 'SUSHI',
-                },
-              ];
-              component = ExpandedSushiFarm;
-              const price0 = getPrice(pool.underlying0);
-              const price1 = getPrice(pool.underlying1);
-              const value0 = parseFloat(utils.formatEther(pool.reserve._reserve0)) * price0;
-              const value1 = parseFloat(utils.formatEther(pool.reserve._reserve1)) * price1;
-              tvl = value0 + value1;
-              break;
-            case 'crv':
-              expandedProps = {
-                token: {
-                  balance: pool.slpBalance,
-                  symbol: pool.poolConfig.title,
-                },
-                stakedBalance: pool.userDeposit,
-                unclaimedAlcx: pool.rewardsAlcx,
-                unclaimedCrv: pool.rewardsCrv,
-                slpBalance: pool.slpSupply,
-              };
-              rewards = [
-                {
-                  iconName: 'alchemix',
-                  tokenName: 'ALCX',
-                },
-                {
-                  iconName: 'crv',
-                  tokenName: 'CRV',
-                },
-              ];
-              component = ExpandedCrvFarm;
-              tvl = utils.formatEther(
-                pool.totalSupply.mul(pool.virtualPrice).div(BigNumber.from(10).pow(18)),
-              );
-              break;
-            case 'internal':
-            default:
-              expandedProps = {
-                poolId: pool.poolId,
-                token: userToken,
-                stakedBalance: pool.userDeposit,
-                unclaimedRewards: pool.userUnclaimed,
-                reward: pool.rewardToken,
-              };
-              rewards = [
-                {
-                  iconName: 'alchemix',
-                  tokenName: 'ALCX',
-                },
-              ];
-              component = ExpandedFarm;
-              // @lord forgive me for I'm about to sin
-              const price = getPrice(
-                pool.poolConfig.tokenIcon === 'saddle'
-                  ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-                  : pool.token,
-              );
-              tvl = parseFloat(utils.formatEther(pool.tvl)) * price;
-              break;
-          }
-          const payload = {
-            col0: {
-              CellComponent: ExpandRowCell,
-              expandedRow: {
-                ExpandedRowComponent: component,
-              },
-              ...expandedProps,
-              colSize: 1,
-            },
-            col1: {
-              CellComponent: FarmNameCell,
-              farmName: pool.poolConfig.title,
-              farmSubtitle: pool.poolConfig.subtitle,
-              farmIcon: pool.poolConfig.farmIcon,
-              tokenIcon: pool.poolConfig.tokenIcon,
-              colSize: 3,
-              alignment: 'justify-self-start',
-            },
-            col2: {
-              CellComponent: CurrencyCell,
-              value: tvl,
-              colSize: 2,
-            },
-            col3: {
-              CellComponent: RewardCell,
-              rewards: rewards,
-              colSize: 3,
-            },
-            col4: {
-              value: 'N/A',
-              colSize: 1,
-            },
-            col5: {
-              CellComponent: ActionsCell,
-              label: $_('table.manage'),
-              expandedRow: {
-                ExpandedRowComponent: component,
-              },
-              ...expandedProps,
-              colSize: 3,
-            },
-          };
-          rowsActive.push(payload);
-        } else if (pool.poolConfig && pool.reward === '0.0') {
-          const payload = {
-            col1: {
-              CellComponent: FarmNameCell,
-              tokenIcon: pool.poolConfig.tokenIcon,
-              farmIcon: pool.poolConfig.farmIcon,
-              farmName: pool.poolConfig.title,
-              farmSubtitle: pool.poolConfig.subtitle,
-              colSize: 7,
-              alignment: 'justify-self-start',
-            },
-            col2: {
-              CellComponent: StakedCell,
-              amount: pool.userDeposit,
-              tokenSymbol: pool.tokenSymbol,
-              colSize: 4,
-            },
-            col3: {
-              CellComponent: ClaimableCell,
-              rewardAmount: pool.userUnclaimed,
-              rewardToken: pool.rewardToken,
-              colSize: 4,
-            },
-            col4: {
-              CellComponent: ExitCell,
-              poolId: pool.poolId,
-              colSize: 5,
-            },
-          };
-          rowsRetired.push(payload);
-        }
-        if (pool.poolId + 1 === parseInt($stakingPools.pools, 10)) {
-          loading = false;
-        }
-      });
-    }
+  // let loading = true;
+  // const renderFarms = async () => {
+  //   if (loading) {
+  //     $stakingPools.allPools.forEach((pool) => {
+  //       const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
+  //       if (pool.poolConfig && pool.reward !== '0.0') {
+  //         let expandedProps;
+  //         let rewards;
+  //         let component;
+  //         let tvl;
+  //         switch (pool.type) {
+  //           case 'sushi':
+  //             expandedProps = {
+  //               token: {
+  //                 balance: pool.slpBalance,
+  //                 symbol: 'SLP',
+  //               },
+  //               stakedBalance: pool.userDeposit,
+  //               unclaimedAlcx: pool.rewardsAlcx,
+  //               unclaimedSushi: pool.rewardsSushi,
+  //               slpBalance: pool.slpBalance,
+  //             };
+  //             rewards = [
+  //               {
+  //                 iconName: 'alchemix',
+  //                 tokenName: 'ALCX',
+  //               },
+  //               {
+  //                 iconName: 'sushi',
+  //                 tokenName: 'SUSHI',
+  //               },
+  //             ];
+  //             component = ExpandedSushiFarm;
+  //             const price0 = getPrice(pool.underlying0);
+  //             const price1 = getPrice(pool.underlying1);
+  //             const value0 = parseFloat(utils.formatEther(pool.reserve._reserve0)) * price0;
+  //             const value1 = parseFloat(utils.formatEther(pool.reserve._reserve1)) * price1;
+  //             tvl = value0 + value1;
+  //             break;
+  //           case 'crv':
+  //             expandedProps = {
+  //               token: {
+  //                 balance: pool.slpBalance,
+  //                 symbol: pool.poolConfig.title,
+  //               },
+  //               stakedBalance: pool.userDeposit,
+  //               unclaimedAlcx: pool.rewardsAlcx,
+  //               unclaimedCrv: pool.rewardsCrv,
+  //               slpBalance: pool.slpSupply,
+  //             };
+  //             rewards = [
+  //               {
+  //                 iconName: 'alchemix',
+  //                 tokenName: 'ALCX',
+  //               },
+  //               {
+  //                 iconName: 'crv',
+  //                 tokenName: 'CRV',
+  //               },
+  //             ];
+  //             component = ExpandedCrvFarm;
+  //             tvl = utils.formatEther(
+  //               pool.totalSupply.mul(pool.virtualPrice).div(BigNumber.from(10).pow(18)),
+  //             );
+  //             break;
+  //           case 'internal':
+  //           default:
+  //             expandedProps = {
+  //               poolId: pool.poolId,
+  //               token: userToken,
+  //               stakedBalance: pool.userDeposit,
+  //               unclaimedRewards: pool.userUnclaimed,
+  //               reward: pool.rewardToken,
+  //             };
+  //             rewards = [
+  //               {
+  //                 iconName: 'alchemix',
+  //                 tokenName: 'ALCX',
+  //               },
+  //             ];
+  //             component = ExpandedFarm;
+  //             // @lord forgive me for I'm about to sin
+  //             const price = getPrice(
+  //               pool.poolConfig.tokenIcon === 'saddle'
+  //                 ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+  //                 : pool.token,
+  //             );
+  //             tvl = parseFloat(utils.formatEther(pool.tvl)) * price;
+  //             break;
+  //         }
+  //         const payload = {
+  //           col0: {
+  //             CellComponent: ExpandRowCell,
+  //             expandedRow: {
+  //               ExpandedRowComponent: component,
+  //             },
+  //             ...expandedProps,
+  //             colSize: 1,
+  //           },
+  //           col1: {
+  //             CellComponent: FarmNameCell,
+  //             farmName: pool.poolConfig.title,
+  //             farmSubtitle: pool.poolConfig.subtitle,
+  //             farmIcon: pool.poolConfig.farmIcon,
+  //             tokenIcon: pool.poolConfig.tokenIcon,
+  //             colSize: 3,
+  //             alignment: 'justify-self-start',
+  //           },
+  //           col2: {
+  //             CellComponent: CurrencyCell,
+  //             value: tvl,
+  //             colSize: 2,
+  //           },
+  //           col3: {
+  //             CellComponent: RewardCell,
+  //             rewards: rewards,
+  //             colSize: 3,
+  //           },
+  //           col4: {
+  //             value: 'N/A',
+  //             colSize: 1,
+  //           },
+  //           col5: {
+  //             CellComponent: ActionsCell,
+  //             label: $_('table.manage'),
+  //             expandedRow: {
+  //               ExpandedRowComponent: component,
+  //             },
+  //             ...expandedProps,
+  //             colSize: 3,
+  //           },
+  //         };
+  //         rowsActive.push(payload);
+  //       } else if (pool.poolConfig && pool.reward === '0.0') {
+  //         const payload = {
+  //           col1: {
+  //             CellComponent: FarmNameCell,
+  //             tokenIcon: pool.poolConfig.tokenIcon,
+  //             farmIcon: pool.poolConfig.farmIcon,
+  //             farmName: pool.poolConfig.title,
+  //             farmSubtitle: pool.poolConfig.subtitle,
+  //             colSize: 7,
+  //             alignment: 'justify-self-start',
+  //           },
+  //           col2: {
+  //             CellComponent: StakedCell,
+  //             amount: pool.userDeposit,
+  //             tokenSymbol: pool.tokenSymbol,
+  //             colSize: 4,
+  //           },
+  //           col3: {
+  //             CellComponent: ClaimableCell,
+  //             rewardAmount: pool.userUnclaimed,
+  //             rewardToken: pool.rewardToken,
+  //             colSize: 4,
+  //           },
+  //           col4: {
+  //             CellComponent: ExitCell,
+  //             poolId: pool.poolId,
+  //             colSize: 5,
+  //           },
+  //         };
+  //         rowsRetired.push(payload);
+  //       }
+  //       if (pool.poolId + 1 === parseInt($stakingPools.pools, 10)) {
+  //         loading = false;
+  //       }
+  //     });
+  //   }
+  // };
+  //
+  // $: if (!$account.loadingFarmsConfigurations && !$account.loadingWalletBalance) renderFarms();
+
+  const filterFuncs = {
+    [filterTypes.ACTIVE]: (value) => value.body.isActive,
+    [filterTypes.RETIRED]: (value) => !value.body.isActive,
+    [filterTypes.EXTERNAL]: (value) => false,
   };
 
-  $: if (!$account.loadingFarmsConfigurations && !$account.loadingWalletBalance) renderFarms();
+  $: filteredRows = $farmsStore
+    .filter(
+      (val) =>
+        InternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined ||
+        ExternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined,
+    )
+    .filter(filterFuncs[currentFilter])
+    .map((farm) => {
+      const farmMetadata =
+        InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()] ||
+        ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
-  onMount(() => {});
+      if (farm.body.isActive) {
+        const price = getPrice(
+          InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
+            ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+            : farm.body.tokenAddress,
+        );
+
+        console.log(castToInternalFarmType(farm.body));
+
+        return {
+          col0: {
+            CellComponent: ExpandRowCell,
+            expandedRow: {
+              ExpandedRowComponent: ExpandedFarm,
+            },
+            farm: castToInternalFarmType(farm.body),
+            farmType: farm.type,
+            colSize: 1,
+          },
+          col1: {
+            CellComponent: FarmNameCell,
+            farmName: farmMetadata.title,
+            farmSubtitle: farmMetadata.subtitle,
+            farmIcon: farmMetadata.farmIcon,
+            tokenIcon: farmMetadata.tokenIcon,
+            colSize: 3,
+            alignment: 'justify-self-start',
+          },
+          col2: {
+            CellComponent: CurrencyCell,
+            value: parseFloat(utils.formatEther(farm.body.tvl)) * price,
+            colSize: 2,
+          },
+          col3: {
+            CellComponent: RewardCell,
+            rewards: [
+              {
+                iconName: 'alchemix',
+                tokenName: 'ALCX',
+              },
+            ],
+            colSize: 3,
+          },
+          col4: {
+            value: 'N/A',
+            colSize: 1,
+          },
+          col5: {
+            CellComponent: ActionsCell,
+            label: $_('table.manage'),
+            expandedRow: {
+              ExpandedRowComponent: ExpandedFarm,
+            },
+            poolId: castToInternalFarmType(farm.body).poolId,
+            farmType: farm.type,
+            farm: castToInternalFarmType(farm.body),
+            colSize: 3,
+          },
+        };
+      } else {
+        return {
+          col1: {
+            CellComponent: FarmNameCell,
+            tokenIcon: farmMetadata.tokenIcon,
+            farmIcon: farmMetadata.farmIcon,
+            farmName: farmMetadata.title,
+            farmSubtitle: farmMetadata.subtitle,
+            colSize: 7,
+            alignment: 'justify-self-start',
+          },
+          col2: {
+            CellComponent: StakedCell,
+            amount: farm.body.userDeposit,
+            tokenSymbol: farm.body.tokenSymbol,
+            colSize: 4,
+          },
+          col3: {
+            CellComponent: ClaimableCell,
+            rewardAmount: farm.body.userUnclaimed,
+            rewardToken: farm.body.rewardToken,
+            colSize: 4,
+          },
+          col4: {
+            CellComponent: ExitCell,
+            poolId: castToInternalFarmType(farm.body).poolId,
+            colSize: 5,
+          },
+        };
+      }
+    });
+
+  let loadingVaults = true;
 
   const onInitialize = async () => {
+    loadingVaults = true;
+
     await fetchInternalFarms([$signer]);
 
-    console.log($farmsStore);
+    loadingVaults = false;
   };
 
   $: if ($addressStore) {
@@ -328,52 +474,54 @@
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
-        {#if loading}
-          <p class="inline-block self-center">{$_('fetching_data')}</p>
-        {:else}
-          <Button
-            label="{$_('table.active_select')}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{toggleButtons.farmSelect.active}"
-            solid="{false}"
-            borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 0, filter: 'active' })}"
-          />
+        <Button
+          label="{$_('table.active_select')}"
+          width="w-max"
+          canToggle="{true}"
+          selected="{currentFilter === filterTypes.ACTIVE}"
+          solid="{false}"
+          borderSize="0"
+          on:clicked="{() => (currentFilter = filterTypes.ACTIVE)}"
+        />
 
-          {#if rowsRetired.length > 0}
-            <Button
-              label="{$_('table.retired_select')}"
-              width="w-max"
-              canToggle="{true}"
-              selected="{toggleButtons.farmSelect.retired}"
-              solid="{false}"
-              borderSize="0"
-              on:clicked="{() => vaultFilter({ id: 0, filter: 'retired' })}"
-            />
-          {/if}
+        <Button
+          label="{$_('table.retired_select')}"
+          width="w-max"
+          canToggle="{true}"
+          selected="{currentFilter === filterTypes.RETIRED}"
+          solid="{false}"
+          borderSize="0"
+          on:clicked="{() => (currentFilter = filterTypes.RETIRED)}"
+        />
 
-          <Button
-            label="{$_('table.external_select')}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{toggleButtons.farmSelect.external}"
-            solid="{false}"
-            borderSize="0"
-            on:clicked="{() => vaultFilter({ id: 0, filter: 'external' })}"
-          />
-        {/if}
+        <Button
+          label="{$_('table.external_select')}"
+          width="w-max"
+          canToggle="{true}"
+          selected="{currentFilter === filterTypes.EXTERNAL}"
+          solid="{false}"
+          borderSize="0"
+          on:clicked="{() => (currentFilter = filterTypes.EXTERNAL)}"
+        />
       </div>
       <div slot="body">
-        {#if loading}
-          <div class="flex justify-center my-4">
-            <BarLoader color="#F5C59F" />
-          </div>
-        {:else if toggleButtons.farmSelect.active}
-          <Table columns="{colsActive}" rows="{rowsActive}" />
-        {:else if toggleButtons.farmSelect.retired}
-          <Table columns="{colsRetired}" rows="{rowsRetired}" />
-        {:else if toggleButtons.farmSelect.external}
+        {#if currentFilter === filterTypes.ACTIVE}
+          {#if loadingVaults}
+            <div class="flex justify-center my-4">
+              <BarLoader color="#F5C59F" />
+            </div>
+          {:else}
+            <Table columns="{colsDefinition[filterTypes.ACTIVE]}" rows="{filteredRows}" />
+          {/if}
+        {:else if currentFilter === filterTypes.RETIRED}
+          {#if loadingVaults}
+            <div class="flex justify-center my-4">
+              <BarLoader color="#F5C59F" />
+            </div>
+          {:else}
+            <Table columns="{colsDefinition[filterTypes.RETIRED]}" rows="{filteredRows}" />
+          {/if}
+        {:else}
           <ExternalFarms />
         {/if}
       </div>

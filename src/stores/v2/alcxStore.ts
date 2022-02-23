@@ -63,7 +63,7 @@ export interface TransmutersType {
 
 export interface FarmStoreType {
   type: FarmTypes;
-  body: InternalFarmType | SushiFarmType | CurveFarmType | GenericFarmType;
+  body: any;
 }
 
 export const addressStore = writable<string>(undefined);

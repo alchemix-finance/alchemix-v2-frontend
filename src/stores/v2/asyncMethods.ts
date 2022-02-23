@@ -12,6 +12,7 @@ import {
   updateAllTokens,
   updateAllTransmuters,
   updateAllVaultBody,
+  updateFarmByTokenAddress,
   updateOneBalance,
   updateSentinelRole,
   updateTransmuterByAddress,
@@ -25,7 +26,6 @@ import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
 import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
-import { InternalFarmsMetadata } from '@stores/v2/farmsConstants';
 
 export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Signer]) {
   if (!signer) {
@@ -196,9 +196,13 @@ export async function fetchInternalFarms([signer]: [ethers.Signer]) {
     return Promise.reject(`[fetchInternalFarms]: signer is undefined`);
   }
 
-  const promises = Object.keys(InternalFarmsMetadata).map((poolAddress, index) => {
-    return fetchDataForInternalFarm(index, [signer]);
-  });
+  const poolCount = await contractWrapper('StakingPools', signer).instance.poolCount();
+
+  const promises = [];
+
+  for (let i = 0; i < poolCount.toNumber(); i++) {
+    promises.push(fetchDataForInternalFarm(i, [signer]));
+  }
 
   return Promise.all([...promises]).then((data) => {
     updateAllFarms(
@@ -209,6 +213,22 @@ export async function fetchInternalFarms([signer]: [ethers.Signer]) {
         };
       }),
     );
+  });
+}
+
+export async function fetchInternalFarmByAddress(
+  farmType: FarmTypes,
+  poolId: number,
+  tokenAddress: string,
+  [signer]: [ethers.Signer],
+) {
+  if (!signer) {
+    console.error(`[fetchInternalFarmByAddress]: signer is undefined`);
+    return Promise.reject(`[fetchInternalFarmByAddress]: signer is undefined`);
+  }
+
+  await fetchDataForInternalFarm(poolId, [signer]).then((data) => {
+    updateFarmByTokenAddress(farmType, tokenAddress, { type: farmType, body: data });
   });
 }
 

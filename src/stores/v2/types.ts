@@ -28,6 +28,7 @@ export interface InternalFarmType extends GenericFarmType {
   rewardRate: ethers.BigNumber;
   rewardToken: string;
   userUnclaimed: ethers.BigNumber;
+  poolId: number;
 }
 
 export interface SushiFarmType extends GenericFarmType {
@@ -37,3 +38,7 @@ export interface SushiFarmType extends GenericFarmType {
 export interface CurveFarmType extends GenericFarmType {
   rewards: ethers.BigNumber[];
 }
+
+export const castToInternalFarmType = (farm: any) => {
+  return farm as InternalFarmType;
+};

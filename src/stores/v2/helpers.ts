@@ -147,6 +147,7 @@ export async function fetchDataForInternalFarm(
     rewardToken: 'ALCX',
     userUnclaimed,
     tvl,
+    poolId,
   };
 }
 export async function fetchDataForSushiFarm() {}

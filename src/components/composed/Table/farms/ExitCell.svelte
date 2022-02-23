@@ -4,21 +4,22 @@
   import getUserGas from '../../../../helpers/getUserGas';
   import { getProvider } from '../../../../helpers/walletManager';
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
+  import { contractWrapper } from '@helpers/contractWrapper';
+  import { signer } from '@stores/v2/derived';
 
   export let poolId;
 
-  const contract = getContract('StakingPools');
-  const provider = getProvider();
+  const { instance } = contractWrapper('StakingPools', $signer);
 
   const exitPool = async () => {
     try {
-      let tx;
       setPendingWallet();
-      tx = await contract.exit(poolId, {
+      const tx = await instance.exit(poolId, {
         gasPrice: getUserGas(),
       });
       setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
+
+      await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
     } catch (e) {
