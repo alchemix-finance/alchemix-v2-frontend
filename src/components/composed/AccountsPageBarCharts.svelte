@@ -113,6 +113,26 @@
       ? totalDeposit
       : aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr);
   $: totalInterest = aggregate.map((val) => val.vaultInterest).reduce((prev, curr) => prev + curr);
+  $: fiatDeposit = new Intl.NumberFormat($settings.userLanguage.locale, {
+    style: 'currency',
+    currency: $settings.baseCurrency.symbol,
+  }).format(parseFloat(((totalDeposit || 0) * $global.conversionRate).toFixed(2)));
+  $: fiatWithdraw = new Intl.NumberFormat($settings.userLanguage.locale, {
+    style: 'currency',
+    currency: $settings.baseCurrency.symbol,
+  }).format(parseFloat(((totalWithdraw || 0) * $global.conversionRate).toFixed(2)));
+  $: fiatDebtLimit = new Intl.NumberFormat($settings.userLanguage.locale, {
+    style: 'currency',
+    currency: $settings.baseCurrency.symbol,
+  }).format(parseFloat(((debtLimit || 0) * $global.conversionRate).toFixed(2)));
+  $: fiatDebt = new Intl.NumberFormat($settings.userLanguage.locale, {
+    style: 'currency',
+    currency: $settings.baseCurrency.symbol,
+  }).format(parseFloat((totalDebt * $global.conversionRate).toFixed(2)));
+  $: fiatInterest = new Intl.NumberFormat($settings.userLanguage.locale, {
+    style: 'currency',
+    currency: $settings.baseCurrency.symbol,
+  }).format(parseFloat(((totalInterest || 0) * $global.conversionRate).toFixed(2)));
 
   $: data = {
     labels: [[$_('table.withdrawable')], [$_('chart.debt')], [$_('chart.interest')]],
@@ -168,11 +188,11 @@
           callback: function (val, index, c) {
             // this sets the numerical values and labels for the bars
             if (this.getLabelForValue(val)[0].toUpperCase() === $_('table.withdrawable').toUpperCase()) {
-              return [...this.getLabelForValue(val), `${toFiat(totalWithdraw || 0)}`];
+              return [...this.getLabelForValue(val), `${fiatWithdraw}`];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.debt').toUpperCase()) {
-              return [...this.getLabelForValue(val), `${toFiat(totalDebt || 0)}`];
+              return [...this.getLabelForValue(val), `${fiatDebt}`];
             } else if (this.getLabelForValue(val)[0].toUpperCase() === $_('chart.interest').toUpperCase()) {
-              return [...this.getLabelForValue(val), `${toFiat(totalInterest || 0)}`];
+              return [...this.getLabelForValue(val), `${fiatInterest}`];
             }
 
             return [...this.getLabelForValue(val), ``];
@@ -191,8 +211,8 @@
             const floorDebt = Math.round(debtLimit);
             const floorDeposit = Math.round(totalDeposit);
             if (value === 0) return value;
-            if (between(floorDebt, value - 50, value + 50)) return toFiat(debtLimit);
-            if (between(floorDeposit, value - 50, value + 50)) return toFiat(totalDeposit);
+            if (between(floorDebt, value - 50, value + 50)) return fiatDebtLimit;
+            if (between(floorDeposit, value - 50, value + 50)) return fiatDeposit;
             return undefined;
           },
 
@@ -237,7 +257,7 @@
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">{$_('chart.total_deposit')}</span>
-          <span class="text-lg">{toFiat(totalDeposit || 0)}</span>
+          <span class="text-lg">{fiatDeposit}</span>
         </div>
         <div class="mr-8 flex items-center">
           <span class="text-green1 mr-05">
@@ -246,7 +266,7 @@
             <span>-</span>
           </span>
           <span class="mx-2 text-grey2">{$_('table.debt_limit')}</span>
-          <span class="text-lg">{toFiat(debtLimit || 0)}</span>
+          <span class="text-lg">{fiatDebtLimit}</span>
         </div>
         <div class="flex items-center">
           <span class="text-grey2 mr-2">{$_('chart.aggregate_apy')}</span>
