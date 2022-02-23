@@ -77,14 +77,13 @@ export async function depositUnderlying(
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
 
-    if (BigNumber.from(allowance).lt(amountYield)) {
-      setPendingApproval();
-      await erc20Instance.approve(alchemistAddress);
-    }
-
-    setPendingWallet();
-
     if (!useGateway) {
+      if (BigNumber.from(allowance).lt(amountYield)) {
+        setPendingApproval();
+        await erc20Instance.approve(alchemistAddress);
+      }
+
+      setPendingWallet();
       const tx = (await alchemistInstance.depositUnderlying(
         tokenAddress,
         amountYield,
@@ -111,6 +110,8 @@ export async function depositUnderlying(
         VaultConstants[typeOfVault].gatewayContractSelector,
         signerStore,
       );
+      setPendingWallet();
+
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
         tokenAddress,
