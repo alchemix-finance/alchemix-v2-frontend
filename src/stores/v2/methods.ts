@@ -2,7 +2,6 @@ import {
   BalanceType,
   BodyVaultType,
   farmsStore,
-  FarmsStoreType,
   FarmStoreType,
   transmutersStore,
   TransmuterType,
@@ -17,6 +16,7 @@ import {
   tokensStore,
   sentinelStore,
 } from './alcxStore';
+import { _ } from 'svelte-i18n';
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);
@@ -148,7 +148,14 @@ export const updateTransmuterByAddress = (
     return _store;
   });
 
-export const updateAllFarms = (farms: FarmStoreType[]) => farmsStore.set(farms);
+export const clearAllFarms = () => farmsStore.set([]);
+
+export const updateAllFarms = (farms: FarmStoreType[]) =>
+  farmsStore.update((_store) => {
+    _store = [..._store, ...farms];
+
+    return _store;
+  });
 
 export const updateFarmByTokenAddress = (type: FarmTypes, tokenAddress: string, farm: FarmStoreType) =>
   farmsStore.update((_store) => {

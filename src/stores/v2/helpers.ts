@@ -1,7 +1,7 @@
 import { BigNumber, ethers, utils } from 'ethers';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
-import { VaultTypes } from './types';
+import { InternalFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
@@ -119,3 +119,82 @@ export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]
 export function normalizeAmount(_amount: BigNumber, _decimalsFrom: number, _decimalsTo: number) {
   return utils.parseUnits(utils.formatUnits(_amount, _decimalsFrom), _decimalsTo);
 }
+
+/*
+* // @dev orchestrates initialization of all farms
+async function initFarms() {
+  if (_stakingPools.allPools.length === 0) {
+    // @dev init external farms first
+    await initSushiFarm();
+    await initCurveFarm();
+    // @dev continue routine for internal farms
+    const contract = getContract('StakingPools');
+    const poolCounter = parseInt(_stakingPools.pools, 10);
+    for (let i = 0; i < poolCounter; i++) {
+      const checkToken = await contract.getPoolToken(i);
+      const token = checkToken.toLowerCase();
+      const tokenSymbol = await getTokenSymbol(token);
+      const checkReward = await contract.getPoolRewardRate(i);
+      const reward = utils.formatEther(checkReward.toString());
+      const checkUserDeposit = await contract.getStakeTotalDeposited(_account.address, i);
+      const userDeposit = utils.formatEther(checkUserDeposit.toString());
+      const checkUserUnclaimed = await contract.getStakeTotalUnclaimed(_account.address, i);
+      const userUnclaimed = utils.formatEther(checkUserUnclaimed.toString());
+      const tvl = await contract.getPoolTotalDeposited(i);
+      // const tvl = utils.formatEther(checkTvl.toString());
+      const poolConfig = poolLookup.find((pool) => pool.address === token);
+      const rewardToken = 'ALCX';
+      const payload = {
+        token,
+        tokenSymbol,
+        reward,
+        userDeposit,
+        userUnclaimed,
+        tvl,
+        poolConfig,
+        rewardToken,
+        poolId: i,
+        type: 'internal',
+      };
+      _stakingPools.allPools.push(payload);
+      stakingPools.set({ ..._stakingPools });
+      if (i + 1 === poolCounter) {
+        _account.loadingFarmsConfigurations = false;
+        account.set({ ..._account });
+      }
+    }
+  } else {
+    _account.loadingFarmsConfigurations = false;
+    account.set({ ..._account });
+  }
+}
+* */
+
+export async function fetchDataForInternalFarm(poolId: number, [signer]: [ethers.Signer]): InternalFarmType {
+  const { instance: stakingInstance } = contractWrapper('StakingPools', signer);
+  const accountAddress = await signer.getAddress();
+
+  const tokenAddress = await stakingInstance.getPoolToken(poolId);
+  const tokenContract = erc20Contract(tokenAddress, signer);
+
+  const tokenSymbol = await tokenContract.symbol();
+  const userDeposit = await stakingInstance.getStakeTotalDeposited(accountAddress, poolId);
+
+  const rewardRate = await stakingInstance.getPoolRewardRate(poolId);
+  const userUnclaimed = await stakingInstance.getStakeTotalUnclaimed(accountAddress, i);
+
+  const tvl = await stakingInstance.getPoolTotalDeposited(poolId);
+
+  return {
+    tokenAddress,
+    tokenSymbol,
+    userDeposit,
+    isActive: rewardRate.gt(BigNumber.from(0)),
+    rewardRate,
+    rewardToken: 'ALCX',
+    userUnclaimed,
+    tvl,
+  };
+}
+export async function fetchDataForSushiFarm() {}
+export async function fetchDataForCrvFarm() {}
