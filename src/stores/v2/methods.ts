@@ -17,6 +17,7 @@ import {
   sentinelStore,
 } from './alcxStore';
 import { _ } from 'svelte-i18n';
+import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);
@@ -148,11 +149,15 @@ export const updateTransmuterByAddress = (
     return _store;
   });
 
-export const clearAllFarms = () => farmsStore.set([]);
-
 export const updateAllFarms = (farms: FarmStoreType[]) =>
   farmsStore.update((_store) => {
-    _store = [..._store, ...farms];
+    farms.forEach((farm) => {
+      const isAlreadyExists = _store.some((val) => val.body.tokenAddress === farm.body.tokenAddress);
+
+      if (!isAlreadyExists) {
+        _store.push(farm);
+      }
+    });
 
     return _store;
   });

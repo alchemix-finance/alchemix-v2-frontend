@@ -134,7 +134,7 @@ export async function fetchDataForInternalFarm(
   const userDeposit = await stakingInstance.getStakeTotalDeposited(accountAddress, poolId);
 
   const rewardRate = await stakingInstance.getPoolRewardRate(poolId);
-  const userUnclaimed = await stakingInstance.getStakeTotalUnclaimed(accountAddress, i);
+  const userUnclaimed = await stakingInstance.getStakeTotalUnclaimed(accountAddress, poolId);
 
   const tvl = await stakingInstance.getPoolTotalDeposited(poolId);
 

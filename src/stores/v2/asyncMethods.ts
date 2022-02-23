@@ -200,7 +200,7 @@ export async function fetchInternalFarms([signer]: [ethers.Signer]) {
     return fetchDataForInternalFarm(index, [signer]);
   });
 
-  Promise.all([...promises]).then((data) => {
+  return Promise.all([...promises]).then((data) => {
     updateAllFarms(
       data.map((_data) => {
         return {

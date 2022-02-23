@@ -25,6 +25,9 @@
   import account from '@stores/account';
   import walletBalance from '../stores/walletBalance';
   import global from '../stores/global';
+  import { addressStore, farmsStore } from '@stores/v2/alcxStore';
+  import { signer } from '@stores/v2/derived';
+  import { fetchInternalFarms } from '@stores/v2/asyncMethods';
 
   const colsActive = [
     {
@@ -301,6 +304,16 @@
   $: if (!$account.loadingFarmsConfigurations && !$account.loadingWalletBalance) renderFarms();
 
   onMount(() => {});
+
+  const onInitialize = async () => {
+    await fetchInternalFarms([$signer]);
+
+    console.log($farmsStore);
+  };
+
+  $: if ($addressStore) {
+    onInitialize();
+  }
 </script>
 
 <ViewContainer>
