@@ -51,7 +51,7 @@
       depositValue,
       debtLimit,
       vaultDebt: vaultDebt > 0 ? vaultDebt : 0,
-      vaultInterest: vaultDebt < 0 ? vaultDebt : 0,
+      vaultInterest: vaultDebt < 0 ? vaultDebt * -1 : 0,
       vaultWithdraw,
       vaultApy,
     };
@@ -108,7 +108,10 @@
   $: vaultApy =
     aggregate.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
     aggregate.map((val) => val.vaultApy).length;
-  $: totalWithdraw = aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr);
+  $: totalWithdraw =
+    aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr) > totalDeposit
+      ? totalDeposit
+      : aggregate.map((val) => val.vaultWithdraw).reduce((prev, curr) => prev + curr);
   $: totalInterest = aggregate.map((val) => val.vaultInterest).reduce((prev, curr) => prev + curr);
 
   $: data = {
@@ -212,7 +215,6 @@
             const roundDebt = Math.round(debtLimit);
             const roundDeposit = Math.round(totalDeposit);
             return [roundDebt, roundDeposit].reduce((prev, curr) => {
-              console.log(context.tick.value, prev, curr);
               if (between(context.tick.value, roundDebt - 50, roundDebt + 50)) return GREEN;
               if (between(context.tick.value, roundDeposit - 50, roundDeposit + 50)) return ORANGE;
               return undefined;
