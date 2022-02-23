@@ -42,7 +42,8 @@
       tokenPrice,
     );
     const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt));
-    const vaultWithdraw = depositValue - vaultDebt * ratio;
+    const rawWithdraw = depositValue - vaultDebt * ratio;
+    const vaultWithdraw = rawWithdraw < 0 ? 0 : rawWithdraw;
     const vaultApy = Math.round(vault.apy * 10000) / 100;
     return {
       vaultType: vault.type,
