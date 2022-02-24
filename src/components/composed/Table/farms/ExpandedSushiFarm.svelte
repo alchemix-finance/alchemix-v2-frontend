@@ -2,9 +2,7 @@
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
-  import { getExternalContract } from '@helpers/getContract';
   import getUserGas from '@helpers/getUserGas';
-  import { getProvider } from '@helpers/walletManager';
   import {
     setPendingWallet,
     setPendingApproval,
@@ -12,20 +10,12 @@
     setSuccessTx,
     setError,
   } from '@helpers/setToast';
-  import account from '@stores/account';
   import Button from '@components/elements/Button.svelte';
   import InputNumber from '@components/elements/inputs/InputNumber.svelte';
-  import { getTokenAllowance } from '@helpers/getTokenData';
-  import setTokenAllowance from '@helpers/setTokenAllowance';
+
   import { erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
   import { signer } from '@stores/v2/derived';
   import { addressStore } from '@stores/v2/alcxStore';
-
-  export let token;
-  export let stakedBalance;
-  export let unclaimedAlcx;
-  export let unclaimedSushi;
-  export let slpBalance;
 
   export let farm;
 
@@ -121,107 +111,6 @@
   const checkButtonState = (inputAmount, balance) => {
     return inputAmount.gt(0) && balance.lte(inputAmount) && balance.gt(BigNumber.from(0));
   };
-
-  // const claim = async () => {
-  //   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  //   try {
-  //     setPendingWallet();
-  //     const tx = await mcv2contract.harvest(0, $account.address, {
-  //       gasPrice: gas,
-  //     });
-  //     setPendingTx();
-  //     await provider.once(tx.hash, (transaction) => {
-  //       setSuccessTx(transaction.transactionHash);
-  //     });
-  //   } catch (e) {
-  //     setError(e.message);
-  //     console.debug(e);
-  //   }
-  // };
-
-  // let depositAmount;
-  // let withdrawAmount;
-  //
-  // const mcv2contract = getExternalContract('SushiMasterchefV2');
-  // const provider = getProvider();
-  //
-  // const setMaxDeposit = () => {
-  //   depositAmount = utils.formatEther(slpBalance);
-  // };
-  // const clearDeposit = () => {
-  //   depositAmount = '';
-  // };
-  // const deposit = async () => {
-  //   const depositToWei = utils.parseEther(depositAmount.toString());
-  //   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  //   const allowance = await getTokenAllowance(
-  //     token.address,
-  //     $account.address,
-  //     mcv2contract.address,
-  //     depositToWei,
-  //   );
-  //   if (depositToWei.gt(slpBalance)) {
-  //     setError($_('toast.error_deposit_amount'));
-  //   } else {
-  //     try {
-  //       if (!allowance) {
-  //         setPendingApproval();
-  //         await setTokenAllowance(token.address, mcv2contract.address);
-  //       }
-  //       setPendingWallet();
-  //       const tx = await mcv2contract.deposit(0, depositToWei, $account.address, {
-  //         gasPrice: gas,
-  //       });
-  //       setPendingTx();
-  //       await provider.once(tx.hash, (transaction) => {
-  //         setSuccessTx(transaction.transactionHash);
-  //       });
-  //       clearDeposit();
-  //     } catch (e) {
-  //       setError(e.message);
-  //       console.debug(e);
-  //     }
-  //   }
-  // };
-
-  // const setMaxWithdraw = () => {
-  //   withdrawAmount = utils.formatEther(stakedBalance.amount);
-  // };
-  // const clearWithdraw = () => {
-  //   withdrawAmount = '';
-  // };
-  // const withdraw = async () => {
-  //   const withdrawToWei = utils.parseEther(withdrawAmount.toString());
-  //   const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-  //   if (withdrawToWei.gt(stakedBalance.amount)) {
-  //     setError($_('toast.error_withdraw_amount'));
-  //   } else {
-  //     try {
-  //       setPendingWallet();
-  //       const tx = await mcv2contract.withdrawAndHarvest(0, withdrawToWei, $account.address, {
-  //         gasPrice: gas,
-  //       });
-  //       setPendingTx();
-  //       await provider.once(tx.hash, (transaction) => {
-  //         setSuccessTx(transaction.transactionHash);
-  //       });
-  //       clearWithdraw();
-  //     } catch (e) {
-  //       setError(e.message);
-  //       console.debug(e);
-  //     }
-  //   }
-  // };
-
-  //$: canClaim =
-  //  parseFloat(utils.formatEther(unclaimedAlcx)) + parseFloat(utils.formatEther(unclaimedSushi)) > 0;
-  //$: canWithdraw =
-  //  !!withdrawAmount && parseFloat(withdrawAmount) !== 0 && stakedBalance.amount.gt(BigNumber.from(0));
-  //$: canDeposit = !!depositAmount && parseFloat(depositAmount) !== 0 && token.balance > 0;
-  //$: unclaimedAlcxFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedAlcx))).toFixed(4);
-  //$: unclaimedSushiFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedSushi))).toFixed(4);
-
-  //utils.formatEther(farm.userDeposit.amount)
 </script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
