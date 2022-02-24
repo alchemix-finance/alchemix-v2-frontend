@@ -94,7 +94,7 @@
 
 <div class="flex font-alcxTitles text-lg tracking-wide justify-between">
   <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('total_deposit')}</div>
+    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.total_deposit')}</div>
     <div class="flex">
       <div class="flex mr-2">
         {totalDepositFiat}
@@ -107,7 +107,7 @@
   </div>
 
   <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('open_debt')}</div>
+    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.open_debt')}</div>
     <div class="flex">
       <div class="flex mr-2">
         {openDebtFiat}
@@ -116,7 +116,7 @@
   </div>
 
   <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('open_credit')}</div>
+    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.open_credit')}</div>
     <div class="flex">
       <div class="flex mr-2">
         {openCreditFiat}
@@ -125,7 +125,7 @@
   </div>
 
   <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('global_tvl')}</div>
+    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.global_tvl')}</div>
     <div class="flex">
       <div class="flex mr-2">
         {tvlFiat}
