@@ -239,8 +239,8 @@
       <div class="flex bg-grey3 rounded border border-grey3">
         <div class="w-full">
           <div class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 bg-grey3">
-            {utils.formatEther(farm.userUnclaimed)}
-            {farm.rewardToken}
+            {utils.formatEther(farm.userUnclaimed[0])}
+            {farm.rewards[0].tokenName}
           </div>
         </div>
       </div>
@@ -252,7 +252,7 @@
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
-        disabled="{!farm.userUnclaimed.gt(BigNumber.from(0))}"
+        disabled="{!farm.userUnclaimed[0].gt(BigNumber.from(0))}"
         on:clicked="{() => claim()}"
       />
     </div>

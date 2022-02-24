@@ -135,19 +135,25 @@ export async function fetchDataForInternalFarm(
   const userDeposit = await stakingInstance.getStakeTotalDeposited(accountAddress, poolId);
 
   const rewardRate = await stakingInstance.getPoolRewardRate(poolId);
-  const userUnclaimed = await stakingInstance.getStakeTotalUnclaimed(accountAddress, poolId);
+  const uUnclaimed = await stakingInstance.getStakeTotalUnclaimed(accountAddress, poolId);
 
   const tvl = await stakingInstance.getPoolTotalDeposited(poolId);
 
   return {
     uuid: uuidv4(),
     tokenAddress,
+    rewards: [
+      {
+        iconName: 'alchemix',
+        tokenName: 'ALCX',
+      },
+    ],
     tokenSymbol,
     userDeposit,
     isActive: rewardRate.gt(BigNumber.from(0)),
     rewardRate,
     rewardToken: 'ALCX',
-    userUnclaimed,
+    userUnclaimed: [uUnclaimed],
     tvl,
     poolId,
   };
@@ -231,6 +237,8 @@ export async function fetchDataForSushiFarm(
   const underlying0 = await lpInstance.token0();
   const underlying1 = await lpInstance.token1();
 
+  const reserve = await lpInstance.getReserves();
+
   return {
     uuid: uuidv4(),
     rewards: [
@@ -243,6 +251,7 @@ export async function fetchDataForSushiFarm(
         tokenName: 'SUSHI',
       },
     ],
+    underlyingAddresses: [underlying0, underlying1],
     tokenSymbol,
     tokenBalance: tokenBalance,
     totalDeposit: totalDeposit,
@@ -250,7 +259,8 @@ export async function fetchDataForSushiFarm(
     isActive: alcxPerBlock.add(sushiPerBlock).gt(BigNumber.from(0)),
     userDeposit: userDeposit,
     userUnclaimed: [rewardsAlcx, rewardsSushi],
-    tvl: [underlying0, underlying1],
+    poolTokenAddress: lpAddress,
+    tvl: [reserve._reserve0, reserve._reserve1],
   };
 }
 export async function fetchDataForCrvFarm() {}

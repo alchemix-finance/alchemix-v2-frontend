@@ -1,5 +1,5 @@
 export const ExternalFarmsMetadata = {
-  '0xEF0881eC094552b2e128Cf945EF17a6752B4Ec5d': {
+  '0xef0881ec094552b2e128cf945ef17a6752b4ec5d': {
     title: 'ALCX/ETH v2',
     subtitle: 'SushiSwap LP',
     farmIcon: 'alusd_med.svg',

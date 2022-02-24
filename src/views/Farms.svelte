@@ -29,7 +29,7 @@
   import { signer } from '@stores/v2/derived';
   import { fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
-  import { castToInternalFarmType } from '@stores/v2/types';
+  import { castToInternalFarmType, castToSushiFarmType, FarmTypes } from '@stores/v2/types';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,
@@ -358,19 +358,58 @@
 
       if (farm.body.isActive) {
         //TODO: Wait for the price to be fetched
-        const price = getPrice(
-          InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
-            ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-            : farm.body.tokenAddress,
-        );
+
+        const price = (() => {
+          if (farm.type === FarmTypes.INTERNAL) {
+            return getPrice(
+              InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
+                ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+                : farm.body.tokenAddress,
+            );
+          }
+
+          return 0;
+        })();
+
+        const tvl = (() => {
+          if (farm.type === FarmTypes.INTERNAL) {
+            return parseFloat(utils.formatEther(farm.body.tvl)) * price;
+          } else if (farm.type === FarmTypes.SUSHI) {
+            const sushiFarm = castToSushiFarmType(farm.body);
+
+            const price0 = getPrice(sushiFarm.underlyingAddresses[0]);
+            const price1 = getPrice(sushiFarm.underlyingAddresses[1]);
+            const value0 = parseFloat(utils.formatEther(sushiFarm.tvl[0])) * price0;
+            const value1 = parseFloat(utils.formatEther(sushiFarm.tvl[1])) * price1;
+            return value0 + value1;
+          }
+
+          return 0;
+        })();
+
+        const expandedComponent = (() => {
+          if (farm.type === FarmTypes.INTERNAL) {
+            return ExpandedFarm;
+          } else if (farm.type === FarmTypes.SUSHI) {
+            return ExpandedSushiFarm;
+          }
+        })();
+
+        const farmData = (() => {
+          if (farm.type === FarmTypes.INTERNAL) {
+            return castToInternalFarmType(farm.body);
+          } else if (farm.type === FarmTypes.SUSHI) {
+            return castToSushiFarmType(farm.body);
+          }
+        })();
 
         return {
           col0: {
             CellComponent: ExpandRowCell,
             expandedRow: {
-              ExpandedRowComponent: ExpandedFarm,
+              ExpandedRowComponent: expandedComponent,
             },
-            farm: castToInternalFarmType(farm.body),
+            farm: farmData,
             farmType: farm.type,
             colSize: 1,
           },
@@ -385,17 +424,12 @@
           },
           col2: {
             CellComponent: CurrencyCell,
-            value: parseFloat(utils.formatEther(farm.body.tvl)) * price,
+            value: tvl,
             colSize: 2,
           },
           col3: {
             CellComponent: RewardCell,
-            rewards: [
-              {
-                iconName: 'alchemix',
-                tokenName: 'ALCX',
-              },
-            ],
+            rewards: farm.body.rewards,
             colSize: 3,
           },
           col4: {
@@ -406,11 +440,11 @@
             CellComponent: ActionsCell,
             label: $_('table.manage'),
             expandedRow: {
-              ExpandedRowComponent: ExpandedFarm,
+              ExpandedRowComponent: expandedComponent,
             },
-            poolId: castToInternalFarmType(farm.body).poolId,
+            poolId: farmData.poolId,
             farmType: farm.type,
-            farm: castToInternalFarmType(farm.body),
+            farm: farmData,
             colSize: 3,
           },
         };
@@ -433,8 +467,12 @@
           },
           col3: {
             CellComponent: ClaimableCell,
-            rewardAmount: farm.body.userUnclaimed,
-            rewardToken: farm.body.rewardToken,
+            rewardAmount: `${farm.body.rewards.map((reward, index) => {
+              return `${farm.body.userUnclaimed} ${reward.tokenName} ${
+                index !== farm.body.rewards.length - 1 ? '+' : ''
+              }`;
+            })}`,
+            rewardToken: '',
             colSize: 4,
           },
           col4: {

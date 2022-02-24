@@ -23,20 +23,21 @@ export interface GenericFarmType {
   isActive: boolean;
   userDeposit: ethers.BigNumber;
   tvl: ethers.BigNumber | ethers.BigNumber[];
+  rewards: {}[];
+  userUnclaimed: ethers.BigNumber[];
 }
 
 export interface InternalFarmType extends GenericFarmType {
   rewardRate: ethers.BigNumber;
   rewardToken: string;
-  userUnclaimed: ethers.BigNumber;
   poolId: number;
 }
 
 export interface SushiFarmType extends GenericFarmType {
-  rewards: {}[];
-  userUnclaimed: ethers.BigNumber[];
   tokenBalance: ethers.BigNumber;
   totalDeposit: ethers.BigNumber;
+  underlyingAddresses: string[];
+  poolTokenAddress: string;
 }
 
 export interface CurveFarmType extends GenericFarmType {
@@ -45,4 +46,8 @@ export interface CurveFarmType extends GenericFarmType {
 
 export const castToInternalFarmType = (farm: any) => {
   return farm as InternalFarmType;
+};
+
+export const castToSushiFarmType = (farm: any) => {
+  return farm as SushiFarmType;
 };

@@ -225,13 +225,28 @@ export async function fetchSushiFarm([signer]: [ethers.Signer]) {
 
   return fetchDataForSushiFarm('SushiLP', 'SushiMasterchefV2', 'SushiOnsenRewarder', [signer]).then(
     (farmData) => {
-      console.log(farmData);
       updateAllFarms([
         {
           type: FarmTypes.SUSHI,
           body: farmData,
         },
       ]);
+    },
+  );
+}
+
+export async function fetchSushiFarmByUuid(uuid: string, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchSushiFarm]: signer is undefined`);
+    return Promise.reject(`[fetchSushiFarm]: signer is undefined`);
+  }
+
+  return fetchDataForSushiFarm('SushiLP', 'SushiMasterchefV2', 'SushiOnsenRewarder', [signer]).then(
+    (farmData) => {
+      updateFarmByUuid(uuid, {
+        type: FarmTypes.SUSHI,
+        body: farmData,
+      });
     },
   );
 }
