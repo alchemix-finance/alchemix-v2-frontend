@@ -7,10 +7,8 @@
   import global from '../stores/global';
   import { routerGuard } from '@helpers/routerGuard.js';
 
-  let videoPlaying = false;
-
   const playVideo = () => {
-    videoPlaying = !videoPlaying;
+    window.open('https://www.youtube.com/embed/FlWP9FC8C3c?autoplay=1', '_blank');
   };
 
   let assets = [
@@ -83,44 +81,49 @@
   });
 </script>
 
+<style>
+  .glow {
+    box-shadow: 0 0 15px 0 rgba(245, 192, 154, 0.5);
+  }
+
+  .glow:hover {
+    box-shadow: 0 0 15px 9px rgba(245, 192, 154, 0.6);
+  }
+</style>
+
 <ViewContainer>
   <div class="flex flex-col space-y-14">
     <div class="text-center text-5xl font-alcxTitles leading-tight font-medium mt-12">
       <span
         style="color: transparent"
-        class="bg-clip-text bg-gradient-to-r from-orange4 via-white2 to-orange4"
+        class="bg-clip-text bg-gradient-to-br from-orange4 via-lightbronze1 to-orange4"
       >
         {$_('landing.intro_title')}
       </span>
     </div>
 
-    <p class="text-center opacity-50 font-alcxTitles font-medium text-3xl" transition:fade>
+    <p class="text-center opacity-50 font-thin text-3xl" transition:fade>
       {$_(`landing.${carouselItem}`)}
     </p>
 
-    <div class="flex justify-center text-bronze4">
+    <div class="flex justify-center">
       <button
-        class="h-max
+        class="glow
+        h-max
         w-max
         font-alcxTitles
-        p-4
+        px-4
+        py-2
         text-xl
         rounded-lg
         border-2
-        border-bronze2
+        border-orange4
         transition-all
-        duration-500
-        bg-gradient-to-br
-        to-orange4
-        from-orange4
-        via-white2
-        bg-size-200
-        bg-pos-0
-        hover:bg-pos-100"
+        tracking-wider"
         on:click="{() => routerGuard('accounts')}"
       >
-        <span class="flex flex-row space-x-4 self-center content-center h-max">
-          <span class="self-center">{$_('landing.button_label')}</span>
+        <span class="flex flex-row space-x-4 self-center content-center h-max text-orange4">
+          <span class="self-center text-white2">{$_('landing.button_label')}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-8 w-8 self-center"
@@ -135,53 +138,26 @@
       </button>
     </div>
 
-    <div class="w-full flex relative justify-center text-orange4 h-auto overflow-hidden" style="height:405px">
+    <div
+      class="w-full flex relative justify-center text-orange4 h-auto overflow-hidden group cursor-pointer "
+      on:click="{() => playVideo()}"
+    >
       <img
         src="/images/landing-page/ad.jpg"
-        class:filter="{videoPlaying}"
-        class:blur-md="{videoPlaying}"
         alt="Watch the Alchemix cinematic ad"
         class="w-full transition-all"
       />
-
-      {#if videoPlaying}
-        <div class="absolute w-full flex justify-center text-white2" style="height:405px;" transition:fade>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-24 w-24 absolute top-8 right-8 cursor-pointer"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            on:click="{() => playVideo()}"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
-          <iframe
-            class="absolute self-center"
-            width="720"
-            height="405"
-            src="https://www.youtube.com/embed/FlWP9FC8C3c?autoplay=1"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
-        </div>
-      {:else}
-        <svg
-          role="img"
-          class="w-32 h-32 cursor-pointer absolute self-center opacity-50 transition-all hover:opacity-100"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          on:click="{() => playVideo()}"
-          transition:fade
-        >
-          <path
-            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
-          ></path>
-        </svg>
-      {/if}
+      <svg
+        role="img"
+        class="w-32 h-32 absolute self-center opacity-50 transition-all group-hover:opacity-100"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+      >
+        <path
+          d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+        ></path>
+      </svg>
     </div>
 
     <div>
@@ -269,27 +245,22 @@
 
     <div class="flex justify-center text-bronze4">
       <button
-        class="h-max
+        class="glow
+        h-max
         w-max
         font-alcxTitles
-        p-4
+        px-4
+        py-2
         text-xl
         rounded-lg
         border-2
-        border-bronze2
+        border-orange4
         transition-all
-        duration-500
-        bg-gradient-to-br
-        to-orange4
-        from-orange4
-        via-white2
-        bg-size-200
-        bg-pos-0
-        hover:bg-pos-100"
+        tracking-wider"
         on:click="{() => routerGuard('accounts')}"
       >
-        <span class="flex flex-row space-x-4 self-center content-center h-max">
-          <span class="self-center">{$_('landing.button_label')}</span>
+        <span class="flex flex-row space-x-4 self-center content-center h-max text-orange4">
+          <span class="self-center text-white2">{$_('landing.button_label')}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-8 w-8 self-center"
