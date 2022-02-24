@@ -1,7 +1,7 @@
 import { BigNumber, ethers, utils } from 'ethers';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
-import { InternalFarmType, VaultTypes } from './types';
+import { InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
@@ -150,5 +150,104 @@ export async function fetchDataForInternalFarm(
     poolId,
   };
 }
-export async function fetchDataForSushiFarm() {}
+
+/*
+* async function initSushiFarm() {
+  // @dev set up contract instances
+  const mcv2Contract = getExternalContract('SushiMasterchefV2');
+  const mcv2Address = getExternalAddress('SushiMasterchefV2');
+  const onsenContract = getExternalContract('SushiOnsenRewarder');
+  const slpContract = getExternalContract('SushiLP');
+  const slpAddress = getExternalAddress('SushiLP');
+  // @dev grab data from contracts
+  const slpBalance = await getTokenBalance(slpAddress);
+  const rewardsSushi = await mcv2Contract.pendingSushi(0, _account.address);
+  const rewardsAlcx = await onsenContract.pendingToken(0, _account.address);
+  const userDeposit = await mcv2Contract.userInfo(0, _account.address);
+  const totalDeposit = await slpContract.balanceOf(mcv2Address);
+  const reserve = await slpContract.getReserves();
+  const totalSupply = await slpContract.totalSupply();
+  const alcxPerBlock = await onsenContract.tokenPerBlock();
+  const sushiPerBlock = await mcv2Contract.sushiPerBlock();
+  const underlying0 = await slpContract.token0();
+  const underlying1 = await slpContract.token1();
+  const poolConfig = externalLookup.find((pool) => pool.address === mcv2Address);
+  const payload = {
+    type: 'sushi',
+    reward: 'yes',
+    token: slpAddress,
+    rewardsSushi,
+    rewardsAlcx,
+    slpBalance,
+    userDeposit,
+    tvl: totalDeposit,
+    reserve,
+    totalSupply,
+    alcxPerBlock,
+    sushiPerBlock,
+    underlying0,
+    underlying1,
+    poolConfig,
+  };
+  _stakingPools.allPools.push(payload);
+  stakingPools.set({ ..._stakingPools });
+  return true;
+}
+*
+* */
+
+export async function fetchDataForSushiFarm(
+  lpContractSelector: string,
+  masterchefContractSelector: string,
+  onsenContractSelector: string,
+  [signer]: [ethers.Signer],
+): Promise<SushiFarmType> {
+  const { instance: lpInstance, address: lpAddress } = contractWrapper(lpContractSelector, signer);
+  const { instance: onsenInstance } = contractWrapper(onsenContractSelector, signer);
+  const { instance: masterchefInstance, address: masterchefAddress } = contractWrapper(
+    masterchefContractSelector,
+    signer,
+  );
+
+  const accountAddress = await signer.getAddress();
+
+  const lpTokenInstance = erc20Contract(lpAddress, signer);
+
+  const tokenSymbol = await lpTokenInstance.symbol();
+
+  const tokenBalance = await lpTokenInstance.balanceOf(accountAddress);
+
+  const rewardsSushi = await masterchefInstance.pendingSushi(0, accountAddress);
+  const rewardsAlcx = await onsenInstance.pendingToken(0, accountAddress);
+
+  const userDeposit = await masterchefInstance.userInfo(0, accountAddress);
+  const totalDeposit = await lpInstance.balanceOf(masterchefAddress);
+
+  const alcxPerBlock = await onsenInstance.tokenPerBlock();
+  const sushiPerBlock = await masterchefInstance.sushiPerBlock();
+
+  const underlying0 = await lpInstance.token0();
+  const underlying1 = await lpInstance.token1();
+
+  return {
+    rewards: [
+      {
+        iconName: 'alchemix',
+        tokenName: 'ALCX',
+      },
+      {
+        iconName: 'sushi',
+        tokenName: 'SUSHI',
+      },
+    ],
+    tokenSymbol,
+    tokenBalance: tokenBalance,
+    totalDeposit: totalDeposit,
+    tokenAddress: lpAddress,
+    isActive: alcxPerBlock.add(sushiPerBlock).gt(BigNumber.from(0)),
+    userDeposit: userDeposit,
+    userUnclaimed: [rewardsAlcx, rewardsSushi],
+    tvl: [underlying0, underlying1],
+  };
+}
 export async function fetchDataForCrvFarm() {}

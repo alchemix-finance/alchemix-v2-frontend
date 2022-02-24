@@ -16,8 +16,6 @@ import {
   tokensStore,
   sentinelStore,
 } from './alcxStore';
-import { _ } from 'svelte-i18n';
-import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);

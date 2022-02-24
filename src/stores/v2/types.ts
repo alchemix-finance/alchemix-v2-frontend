@@ -21,7 +21,7 @@ export interface GenericFarmType {
   tokenSymbol: string;
   isActive: boolean;
   userDeposit: ethers.BigNumber;
-  tvl: ethers.BigNumber;
+  tvl: ethers.BigNumber | ethers.BigNumber[];
 }
 
 export interface InternalFarmType extends GenericFarmType {
@@ -32,7 +32,10 @@ export interface InternalFarmType extends GenericFarmType {
 }
 
 export interface SushiFarmType extends GenericFarmType {
-  rewards: ethers.BigNumber[];
+  rewards: {}[];
+  userUnclaimed: ethers.BigNumber[];
+  tokenBalance: ethers.BigNumber;
+  totalDeposit: ethers.BigNumber;
 }
 
 export interface CurveFarmType extends GenericFarmType {

@@ -357,13 +357,12 @@
         ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
       if (farm.body.isActive) {
+        //TODO: Wait for the price to be fetched
         const price = getPrice(
           InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
             ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
             : farm.body.tokenAddress,
         );
-
-        console.log(castToInternalFarmType(farm.body));
 
         return {
           col0: {
