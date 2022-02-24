@@ -287,7 +287,7 @@
       {#if showMetrics}
         <ContainerWithHeader>
           <div slot="header" class="py-4 px-6">
-            <Metrics />
+            <Metrics vaults="{currentVaultsBasedOnType}" />
           </div>
         </ContainerWithHeader>
       {:else}
