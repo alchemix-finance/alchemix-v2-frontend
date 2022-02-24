@@ -1,13 +1,6 @@
 import { writable } from 'svelte/store';
 import { ethers, providers } from 'ethers';
-import {
-  CurveFarmType,
-  FarmTypes,
-  GenericFarmType,
-  InternalFarmType,
-  SushiFarmType,
-  VaultTypes,
-} from '@stores/v2/types';
+import { FarmTypes, VaultTypes } from '@stores/v2/types';
 
 export type BalanceType = {
   address: string;

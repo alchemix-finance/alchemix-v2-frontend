@@ -27,7 +27,7 @@
   import global from '../stores/global';
   import { addressStore, farmsStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
-  import { fetchInternalFarms } from '@stores/v2/asyncMethods';
+  import { fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
   import { castToInternalFarmType } from '@stores/v2/types';
 
@@ -452,9 +452,12 @@
     loadingVaults = true;
 
     await fetchInternalFarms([$signer]);
+    await fetchSushiFarm([$signer]);
 
     loadingVaults = false;
   };
+
+  $: console.log($farmsStore);
 
   $: if ($addressStore) {
     onInitialize();

@@ -1,6 +1,7 @@
 import {
   fetchDataForETH,
   fetchDataForInternalFarm,
+  fetchDataForSushiFarm,
   fetchDataForToken,
   fetchDataForTransmuter,
   fetchDataForVault,
@@ -12,7 +13,7 @@ import {
   updateAllTokens,
   updateAllTransmuters,
   updateAllVaultBody,
-  updateFarmByTokenAddress,
+  updateFarmByUuid,
   updateOneBalance,
   updateSentinelRole,
   updateTransmuterByAddress,
@@ -216,19 +217,33 @@ export async function fetchInternalFarms([signer]: [ethers.Signer]) {
   });
 }
 
-export async function fetchInternalFarmByAddress(
-  farmType: FarmTypes,
-  poolId: number,
-  tokenAddress: string,
-  [signer]: [ethers.Signer],
-) {
+export async function fetchSushiFarm([signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchSushiFarm]: signer is undefined`);
+    return Promise.reject(`[fetchSushiFarm]: signer is undefined`);
+  }
+
+  return fetchDataForSushiFarm('SushiLP', 'SushiMasterchefV2', 'SushiOnsenRewarder', [signer]).then(
+    (farmData) => {
+      console.log(farmData);
+      updateAllFarms([
+        {
+          type: FarmTypes.SUSHI,
+          body: farmData,
+        },
+      ]);
+    },
+  );
+}
+
+export async function fetchInternalFarmByUuid(uuid: string, poolId: number, [signer]: [ethers.Signer]) {
   if (!signer) {
     console.error(`[fetchInternalFarmByAddress]: signer is undefined`);
     return Promise.reject(`[fetchInternalFarmByAddress]: signer is undefined`);
   }
 
   await fetchDataForInternalFarm(poolId, [signer]).then((data) => {
-    updateFarmByTokenAddress(farmType, tokenAddress, { type: farmType, body: data });
+    updateFarmByUuid(uuid, { type: FarmTypes.INTERNAL, body: data });
   });
 }
 

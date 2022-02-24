@@ -17,6 +17,7 @@ export enum FarmStatus {
 }
 
 export interface GenericFarmType {
+  uuid: string;
   tokenAddress: string;
   tokenSymbol: string;
   isActive: boolean;

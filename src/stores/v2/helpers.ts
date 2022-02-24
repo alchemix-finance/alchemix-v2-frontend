@@ -1,8 +1,9 @@
 import { BigNumber, ethers, utils } from 'ethers';
-import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
+import { contractWrapper, erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
 import { InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -139,6 +140,7 @@ export async function fetchDataForInternalFarm(
   const tvl = await stakingInstance.getPoolTotalDeposited(poolId);
 
   return {
+    uuid: uuidv4(),
     tokenAddress,
     tokenSymbol,
     userDeposit,
@@ -202,9 +204,9 @@ export async function fetchDataForSushiFarm(
   onsenContractSelector: string,
   [signer]: [ethers.Signer],
 ): Promise<SushiFarmType> {
-  const { instance: lpInstance, address: lpAddress } = contractWrapper(lpContractSelector, signer);
-  const { instance: onsenInstance } = contractWrapper(onsenContractSelector, signer);
-  const { instance: masterchefInstance, address: masterchefAddress } = contractWrapper(
+  const { instance: lpInstance, address: lpAddress } = externalContractWrapper(lpContractSelector, signer);
+  const { instance: onsenInstance } = externalContractWrapper(onsenContractSelector, signer);
+  const { instance: masterchefInstance, address: masterchefAddress } = externalContractWrapper(
     masterchefContractSelector,
     signer,
   );
@@ -230,6 +232,7 @@ export async function fetchDataForSushiFarm(
   const underlying1 = await lpInstance.token1();
 
   return {
+    uuid: uuidv4(),
     rewards: [
       {
         iconName: 'alchemix',
@@ -243,7 +246,7 @@ export async function fetchDataForSushiFarm(
     tokenSymbol,
     tokenBalance: tokenBalance,
     totalDeposit: totalDeposit,
-    tokenAddress: lpAddress,
+    tokenAddress: masterchefAddress,
     isActive: alcxPerBlock.add(sushiPerBlock).gt(BigNumber.from(0)),
     userDeposit: userDeposit,
     userUnclaimed: [rewardsAlcx, rewardsSushi],

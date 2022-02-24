@@ -3,9 +3,8 @@
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
   import Button from '../../../elements/Button.svelte';
-  import getContract from '../../../../helpers/getContract';
   import getUserGas from '../../../../helpers/getUserGas';
-  import { getProvider } from '@helpers/walletManager';
+
   import {
     setPendingWallet,
     setPendingApproval,
@@ -14,15 +13,12 @@
     setError,
   } from '@helpers/setToast';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
-  import { getTokenAllowance } from '@helpers/getTokenData';
-  import setTokenAllowance from '@helpers/setTokenAllowance';
-  import account from '@stores/account';
+
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { addressStore, balancesStore } from '@stores/v2/alcxStore';
   import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
   import { signer } from '@stores/v2/derived';
-  import { updateFarmByTokenAddress } from '@stores/v2/methods';
-  import { fetchBalanceByAddress, fetchInternalFarmByAddress } from '@stores/v2/asyncMethods';
+  import { fetchBalanceByAddress, fetchInternalFarmByUuid } from '@stores/v2/asyncMethods';
 
   export let farm;
   export let farmType;
@@ -51,7 +47,7 @@
         setSuccessTx(transaction.transactionHash);
 
         Promise.all([
-          fetchInternalFarmByAddress(farmType, farm.poolId, farm.tokenAddress, [$signer]),
+          fetchInternalFarmByUuid(farm.uuid, farm.poolId, [$signer]),
           fetchBalanceByAddress(farm.tokenAddress, [$signer]),
         ]);
       });
@@ -77,7 +73,7 @@
         setSuccessTx(transaction.transactionHash);
 
         Promise.all([
-          fetchInternalFarmByAddress(farmType, farm.poolId, farm.tokenAddress, [$signer]),
+          fetchInternalFarmByUuid(farm.uuid, farm.poolId, [$signer]),
           fetchBalanceByAddress(farm.tokenAddress, [$signer]),
         ]);
       });
@@ -100,7 +96,7 @@
         setSuccessTx(transaction.transactionHash);
 
         Promise.all([
-          fetchInternalFarmByAddress(farmType, farm.poolId, farm.tokenAddress, [$signer]),
+          fetchInternalFarmByUuid(farm.uuid, farm.poolId, [$signer]),
           fetchBalanceByAddress(farm.tokenAddress, [$signer]),
         ]);
       });

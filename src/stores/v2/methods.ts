@@ -162,11 +162,9 @@ export const updateAllFarms = (farms: FarmStoreType[]) =>
     return _store;
   });
 
-export const updateFarmByTokenAddress = (type: FarmTypes, tokenAddress: string, farm: FarmStoreType) =>
+export const updateFarmByUuid = (uuid: string, farm: FarmStoreType) =>
   farmsStore.update((_store) => {
-    const index = _store.findIndex(
-      (value) => value.type === type && value.body.tokenAddress === tokenAddress,
-    );
+    const index = _store.findIndex((value) => value.body.uuid === uuid);
 
     if (index !== -1) {
       _store[index] = farm;
