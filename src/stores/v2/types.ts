@@ -41,6 +41,7 @@ export interface SushiFarmType extends GenericFarmType {
 }
 
 export interface CurveFarmType extends GenericFarmType {
+  tokenBalance: ethers.BigNumber;
   lpTokenAddress: string;
 }
 

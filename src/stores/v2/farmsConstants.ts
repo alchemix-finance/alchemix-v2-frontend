@@ -3,13 +3,13 @@ export const ExternalFarmsMetadata = {
     title: 'ALCX/ETH v2',
     subtitle: 'SushiSwap LP',
     farmIcon: 'alusd_med.svg',
-    tokenIcon: undefined,
+    tokenIcon: 'sushi',
   },
   '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c': {
     title: 'alUSD3CRV v2',
     subtitle: 'Curve alUSD Metapool',
     farmIcon: 'alusd_med.svg',
-    tokenIcon: undefined,
+    tokenIcon: 'crv',
   },
 };
 
@@ -30,13 +30,13 @@ export const InternalFarmsMetadata = {
     title: 'ALCX/ETH v1',
     subtitle: 'SushiSwap LP',
     farmIcon: 'alusd_med.svg',
-    tokenIcon: undefined,
+    tokenIcon: 'sushi',
   },
   '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c': {
     title: 'alUSD3CRV',
     subtitle: 'Curve alUSD Metapool',
     farmIcon: 'alusd_med.svg',
-    tokenIcon: undefined,
+    tokenIcon: 'crv',
   },
   '0xc9da65931abf0ed1b74ce5ad8c041c4220940368': {
     title: 'Saddle alETH',
@@ -48,6 +48,6 @@ export const InternalFarmsMetadata = {
     title: 'alETH Curve',
     subtitle: 'Curve alETH Metapool',
     farmIcon: 'alusd_med.svg',
-    tokenIcon: undefined,
+    tokenIcon: 'crv',
   },
 };

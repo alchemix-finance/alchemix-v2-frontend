@@ -248,15 +248,18 @@ export async function fetchDataForCrvFarm(
   const rewardToken = await rewardsGaugeInstance.rewardsToken();
   const crvToken = await depositGaugeInstance.crv_token();
 
+  const tokenBalance = await lpTokenInstance.balanceOf(accountAddress);
+
   const rewardsCrv = await depositGaugeInstance.claimable_reward(accountAddress, crvToken);
   const rewardsAlcx = await depositGaugeInstance.claimable_reward(accountAddress, rewardToken);
 
   return {
     uuid: uuidv4(),
     tokenAddress: metapoolAddress,
+    tokenBalance,
     userDeposit,
     tokenSymbol: await lpTokenInstance.symbol(),
-    isActive: false,
+    isActive: true,
     lpTokenAddress: lpToken,
     tvl: totalSupply.mul(virtualPrice).div(BigNumber.from(10).pow(18)),
     userUnclaimed: [rewardsAlcx, rewardsCrv],

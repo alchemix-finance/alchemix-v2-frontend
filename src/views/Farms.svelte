@@ -29,7 +29,12 @@
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
-  import { castToInternalFarmType, castToSushiFarmType, FarmTypes } from '@stores/v2/types';
+  import {
+    castToCrvFarmType,
+    castToInternalFarmType,
+    castToSushiFarmType,
+    FarmTypes,
+  } from '@stores/v2/types';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,
@@ -395,6 +400,8 @@
             return ExpandedFarm;
           } else if (farm.type === FarmTypes.SUSHI) {
             return ExpandedSushiFarm;
+          } else if (farm.type === FarmTypes.CRV) {
+            return ExpandedCrvFarm;
           }
         })();
 
@@ -404,7 +411,7 @@
           } else if (farm.type === FarmTypes.SUSHI) {
             return castToSushiFarmType(farm.body);
           } else if (farm.type === FarmTypes.CRV) {
-            return farm.body;
+            return castToCrvFarmType(farm.body);
           }
         })();
 
