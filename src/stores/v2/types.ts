@@ -40,9 +40,7 @@ export interface SushiFarmType extends GenericFarmType {
   poolTokenAddress: string;
 }
 
-export interface CurveFarmType extends GenericFarmType {
-  rewards: ethers.BigNumber[];
-}
+export interface CurveFarmType extends GenericFarmType {}
 
 export const castToInternalFarmType = (farm: any) => {
   return farm as InternalFarmType;

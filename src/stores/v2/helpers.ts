@@ -1,7 +1,7 @@
 import { BigNumber, ethers, utils } from 'ethers';
 import { contractWrapper, erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
-import { InternalFarmType, SushiFarmType, VaultTypes } from './types';
+import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -219,60 +219,52 @@ export async function fetchDataForSushiFarm(
   };
 }
 
-/*
-s up external curve farm
-async function initCurveFarm() {
-  // @dev set up contract instances
-  const crvMetapool = getExternalContract('CurveGaugeMetapool');
-  const crvGauge = getExternalContract('CurveGaugeDeposit');
-  const crvRewarder = getExternalContract('CurveGaugeRewards');
-  // @dev grab data from contracts
-  const rewardToken = await crvRewarder.rewardsToken();
-  const lpToken = await crvGauge.lp_token();
-  const tokenSymbol = await getTokenSymbol(lpToken);
-  const crvToken = await crvGauge.crv_token();
-  const slpBalance = await getTokenBalance(lpToken);
-  const slpSupply = await crvMetapool.totalSupply();
-  const userDeposit = await crvGauge.balanceOf(_account.address);
-  const rewardsCrv = await crvGauge.claimable_reward(_account.address, crvToken);
-  const rewardsAlcx = await crvGauge.claimable_reward(_account.address, rewardToken);
-  const totalSupply = await crvGauge.totalSupply();
-  const rewardRateAlcx = await crvRewarder.rewardRate();
-  const virtualPrice = await crvMetapool.get_virtual_price();
-  const poolConfig = externalLookup.find((pool) => pool.address.toLowerCase() === lpToken.toLowerCase());
-  const userUnclaimed = `${utils.formatEther(rewardsAlcx)} ALCX + ${utils.formatEther(rewardsCrv)} CRV`;
-  const payload = {
-    type: 'crv',
-    reward: '0.0',
-    token: lpToken,
-    tokenSymbol,
-    lpToken,
-    rewardsCrv,
-    rewardsAlcx,
-    slpBalance,
-    slpSupply,
-    userDeposit: utils.formatEther(userDeposit),
-    totalSupply,
-    rewardRateAlcx,
-    virtualPrice,
-    poolConfig,
-    userUnclaimed,
-  };
-  _stakingPools.allPools.push(payload);
-  stakingPools.set({ ..._stakingPools });
-  return true;
-}
-* */
+export async function fetchDataForCrvFarm(
+  metapoolContractSelector: string,
+  depositContractSelector: string,
+  rewardsContractSelector: string,
+  [signer]: [ethers.Signer],
+): Promise<CurveFarmType> {
+  const { instance: metapoolGaugeInstance } = externalContractWrapper(metapoolContractSelector, signer);
+  const { instance: depositGaugeInstance } = externalContractWrapper(depositContractSelector, signer);
+  const { instance: rewardsGaugeInstance } = externalContractWrapper(rewardsContractSelector, signer);
 
-// export async function fetchDataForCrvFarm(
-//   metapoolContractSelector: string,
-//   depositContractSelector: string,
-//   rewardsContractSelector: string,
-//   [signer]: [ethers.Signer],
-// ): Promise<CurveFarmType> {
-//   const { instance: metapoolInstance } = externalContractWrapper(metapoolContractSelector, signer);
-//   const { instance: depositInstance } = externalContractWrapper(depositContractSelector, signer);
-//   const { instance: rewardsInstance } = externalContractWrapper(rewardsContractSelector, signer);
-//
-//   return {};
-// }
+  const accountAddress = await signer.getAddress();
+
+  const lpToken = await depositGaugeInstance.lp_token();
+
+  const lpTokenInstance = erc20Contract(lpToken, signer);
+
+  const userDeposit = await depositGaugeInstance.balanceOf(accountAddress);
+
+  const rewardRateAlcx = await rewardsGaugeInstance.rewardRate();
+
+  const totalSupply = await depositGaugeInstance.totalSupply();
+  const virtualPrice = await metapoolGaugeInstance.get_virtual_price();
+
+  const rewardToken = await rewardsGaugeInstance.rewardsToken();
+  const crvToken = await depositGaugeInstance.crv_token();
+
+  const rewardsCrv = await depositGaugeInstance.claimable_reward(accountAddress, crvToken);
+  const rewardsAlcx = await depositGaugeInstance.claimable_reward(accountAddress, rewardToken);
+
+  return {
+    uuid: uuidv4(),
+    tokenAddress: lpToken,
+    userDeposit,
+    tokenSymbol: await lpTokenInstance.symbol(),
+    isActive: rewardRateAlcx.gt(BigNumber.from(0)),
+    tvl: totalSupply.mul(virtualPrice).div(BigNumber.from(10).pow(18)),
+    userUnclaimed: [rewardsAlcx, rewardsCrv],
+    rewards: [
+      {
+        iconName: 'alchemix',
+        tokenName: 'ALCX',
+      },
+      {
+        iconName: 'crv',
+        tokenName: 'CRV',
+      },
+    ],
+  };
+}
