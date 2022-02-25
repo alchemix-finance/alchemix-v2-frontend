@@ -7,7 +7,7 @@ import {
   TransmuterType,
 } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
-import { FarmTypes, VaultTypes } from '@stores/v2/types';
+import { VaultTypes } from '@stores/v2/types';
 import {
   addressStore,
   providerStore,

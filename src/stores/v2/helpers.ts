@@ -159,51 +159,6 @@ export async function fetchDataForInternalFarm(
   };
 }
 
-/*
-* async function initSushiFarm() {
-  // @dev set up contract instances
-  const mcv2Contract = getExternalContract('SushiMasterchefV2');
-  const mcv2Address = getExternalAddress('SushiMasterchefV2');
-  const onsenContract = getExternalContract('SushiOnsenRewarder');
-  const slpContract = getExternalContract('SushiLP');
-  const slpAddress = getExternalAddress('SushiLP');
-  // @dev grab data from contracts
-  const slpBalance = await getTokenBalance(slpAddress);
-  const rewardsSushi = await mcv2Contract.pendingSushi(0, _account.address);
-  const rewardsAlcx = await onsenContract.pendingToken(0, _account.address);
-  const userDeposit = await mcv2Contract.userInfo(0, _account.address);
-  const totalDeposit = await slpContract.balanceOf(mcv2Address);
-  const reserve = await slpContract.getReserves();
-  const totalSupply = await slpContract.totalSupply();
-  const alcxPerBlock = await onsenContract.tokenPerBlock();
-  const sushiPerBlock = await mcv2Contract.sushiPerBlock();
-  const underlying0 = await slpContract.token0();
-  const underlying1 = await slpContract.token1();
-  const poolConfig = externalLookup.find((pool) => pool.address === mcv2Address);
-  const payload = {
-    type: 'sushi',
-    reward: 'yes',
-    token: slpAddress,
-    rewardsSushi,
-    rewardsAlcx,
-    slpBalance,
-    userDeposit,
-    tvl: totalDeposit,
-    reserve,
-    totalSupply,
-    alcxPerBlock,
-    sushiPerBlock,
-    underlying0,
-    underlying1,
-    poolConfig,
-  };
-  _stakingPools.allPools.push(payload);
-  stakingPools.set({ ..._stakingPools });
-  return true;
-}
-*
-* */
-
 export async function fetchDataForSushiFarm(
   lpContractSelector: string,
   masterchefContractSelector: string,
@@ -263,4 +218,61 @@ export async function fetchDataForSushiFarm(
     tvl: [reserve._reserve0, reserve._reserve1],
   };
 }
-export async function fetchDataForCrvFarm() {}
+
+/*
+s up external curve farm
+async function initCurveFarm() {
+  // @dev set up contract instances
+  const crvMetapool = getExternalContract('CurveGaugeMetapool');
+  const crvGauge = getExternalContract('CurveGaugeDeposit');
+  const crvRewarder = getExternalContract('CurveGaugeRewards');
+  // @dev grab data from contracts
+  const rewardToken = await crvRewarder.rewardsToken();
+  const lpToken = await crvGauge.lp_token();
+  const tokenSymbol = await getTokenSymbol(lpToken);
+  const crvToken = await crvGauge.crv_token();
+  const slpBalance = await getTokenBalance(lpToken);
+  const slpSupply = await crvMetapool.totalSupply();
+  const userDeposit = await crvGauge.balanceOf(_account.address);
+  const rewardsCrv = await crvGauge.claimable_reward(_account.address, crvToken);
+  const rewardsAlcx = await crvGauge.claimable_reward(_account.address, rewardToken);
+  const totalSupply = await crvGauge.totalSupply();
+  const rewardRateAlcx = await crvRewarder.rewardRate();
+  const virtualPrice = await crvMetapool.get_virtual_price();
+  const poolConfig = externalLookup.find((pool) => pool.address.toLowerCase() === lpToken.toLowerCase());
+  const userUnclaimed = `${utils.formatEther(rewardsAlcx)} ALCX + ${utils.formatEther(rewardsCrv)} CRV`;
+  const payload = {
+    type: 'crv',
+    reward: '0.0',
+    token: lpToken,
+    tokenSymbol,
+    lpToken,
+    rewardsCrv,
+    rewardsAlcx,
+    slpBalance,
+    slpSupply,
+    userDeposit: utils.formatEther(userDeposit),
+    totalSupply,
+    rewardRateAlcx,
+    virtualPrice,
+    poolConfig,
+    userUnclaimed,
+  };
+  _stakingPools.allPools.push(payload);
+  stakingPools.set({ ..._stakingPools });
+  return true;
+}
+* */
+
+// export async function fetchDataForCrvFarm(
+//   metapoolContractSelector: string,
+//   depositContractSelector: string,
+//   rewardsContractSelector: string,
+//   [signer]: [ethers.Signer],
+// ): Promise<CurveFarmType> {
+//   const { instance: metapoolInstance } = externalContractWrapper(metapoolContractSelector, signer);
+//   const { instance: depositInstance } = externalContractWrapper(depositContractSelector, signer);
+//   const { instance: rewardsInstance } = externalContractWrapper(rewardsContractSelector, signer);
+//
+//   return {};
+// }
