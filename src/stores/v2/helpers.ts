@@ -225,7 +225,10 @@ export async function fetchDataForCrvFarm(
   rewardsContractSelector: string,
   [signer]: [ethers.Signer],
 ): Promise<CurveFarmType> {
-  const { instance: metapoolGaugeInstance } = externalContractWrapper(metapoolContractSelector, signer);
+  const { instance: metapoolGaugeInstance, address: metapoolAddress } = externalContractWrapper(
+    metapoolContractSelector,
+    signer,
+  );
   const { instance: depositGaugeInstance } = externalContractWrapper(depositContractSelector, signer);
   const { instance: rewardsGaugeInstance } = externalContractWrapper(rewardsContractSelector, signer);
 
@@ -237,7 +240,7 @@ export async function fetchDataForCrvFarm(
 
   const userDeposit = await depositGaugeInstance.balanceOf(accountAddress);
 
-  const rewardRateAlcx = await rewardsGaugeInstance.rewardRate();
+  // const rewardRateAlcx = await rewardsGaugeInstance.rewardRate();
 
   const totalSupply = await depositGaugeInstance.totalSupply();
   const virtualPrice = await metapoolGaugeInstance.get_virtual_price();
@@ -250,10 +253,11 @@ export async function fetchDataForCrvFarm(
 
   return {
     uuid: uuidv4(),
-    tokenAddress: lpToken,
+    tokenAddress: metapoolAddress,
     userDeposit,
     tokenSymbol: await lpTokenInstance.symbol(),
-    isActive: rewardRateAlcx.gt(BigNumber.from(0)),
+    isActive: false,
+    lpTokenAddress: lpToken,
     tvl: totalSupply.mul(virtualPrice).div(BigNumber.from(10).pow(18)),
     userUnclaimed: [rewardsAlcx, rewardsCrv],
     rewards: [

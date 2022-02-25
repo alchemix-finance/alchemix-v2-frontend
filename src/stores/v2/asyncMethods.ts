@@ -242,7 +242,7 @@ export async function fetchCrvFarm([signer]: [ethers.Signer]) {
     return Promise.reject(`[fetchCrvFarm]: signer is undefined`);
   }
 
-  return fetchDataForCrvFarm('CurveGaugeMetapool', 'CurveGaugeDeposit', 'CurveGaugeRewards', signer).then(
+  return fetchDataForCrvFarm('CurveGaugeMetapool', 'CurveGaugeDeposit', 'CurveGaugeRewards', [signer]).then(
     (farmData) => {
       updateAllFarms([
         {

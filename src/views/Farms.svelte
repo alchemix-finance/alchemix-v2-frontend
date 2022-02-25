@@ -27,7 +27,7 @@
   import global from '../stores/global';
   import { addressStore, farmsStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
-  import { fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
+  import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
   import { castToInternalFarmType, castToSushiFarmType, FarmTypes } from '@stores/v2/types';
 
@@ -353,8 +353,9 @@
     .filter(filterFuncs[currentFilter])
     .map((farm) => {
       const farmMetadata =
-        InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()] ||
-        ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
+        farm.type === FarmTypes.INTERNAL
+          ? InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()]
+          : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
       if (farm.body.isActive) {
         //TODO: Wait for the price to be fetched
@@ -382,6 +383,8 @@
             const value0 = parseFloat(utils.formatEther(sushiFarm.tvl[0])) * price0;
             const value1 = parseFloat(utils.formatEther(sushiFarm.tvl[1])) * price1;
             return value0 + value1;
+          } else if (farm.type === FarmTypes.CRV) {
+            return utils.formatEther(farm.body.tvl);
           }
 
           return 0;
@@ -400,6 +403,8 @@
             return castToInternalFarmType(farm.body);
           } else if (farm.type === FarmTypes.SUSHI) {
             return castToSushiFarmType(farm.body);
+          } else if (farm.type === FarmTypes.CRV) {
+            return farm.body;
           }
         })();
 
@@ -491,6 +496,7 @@
 
     await fetchInternalFarms([$signer]);
     await fetchSushiFarm([$signer]);
+    await fetchCrvFarm([$signer]);
 
     loadingVaults = false;
   };

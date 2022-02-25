@@ -40,7 +40,9 @@ export interface SushiFarmType extends GenericFarmType {
   poolTokenAddress: string;
 }
 
-export interface CurveFarmType extends GenericFarmType {}
+export interface CurveFarmType extends GenericFarmType {
+  lpTokenAddress: string;
+}
 
 export const castToInternalFarmType = (farm: any) => {
   return farm as InternalFarmType;
@@ -48,4 +50,8 @@ export const castToInternalFarmType = (farm: any) => {
 
 export const castToSushiFarmType = (farm: any) => {
   return farm as SushiFarmType;
+};
+
+export const castToCrvFarmType = (farm: any) => {
+  return farm as CurveFarmType;
 };
