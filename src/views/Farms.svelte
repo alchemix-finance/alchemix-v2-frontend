@@ -479,17 +479,20 @@
           },
           col3: {
             CellComponent: ClaimableCell,
-            rewardAmount: `${farm.body.rewards.map((reward, index) => {
-              return `${farm.body.userUnclaimed} ${reward.tokenName} ${
-                index !== farm.body.rewards.length - 1 ? '+' : ''
-              }`;
-            })}`,
+            rewardAmount: `${farm.body.rewards
+              .map((reward, index) => {
+                return `${farm.body.userUnclaimed} ${reward.tokenName} ${
+                  index !== farm.body.rewards.length - 1 ? '+' : ''
+                }`;
+              })
+              .join(' ')}`,
             rewardToken: '',
             colSize: 4,
           },
           col4: {
             CellComponent: ExitCell,
-            poolId: castToInternalFarmType(farm.body).poolId,
+            farmType: farm.type,
+            farm: farm.body,
             colSize: 5,
           },
         };

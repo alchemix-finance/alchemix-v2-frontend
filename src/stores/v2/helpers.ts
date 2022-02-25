@@ -259,7 +259,7 @@ export async function fetchDataForCrvFarm(
     tokenBalance,
     userDeposit,
     tokenSymbol: await lpTokenInstance.symbol(),
-    isActive: true,
+    isActive: false,
     lpTokenAddress: lpToken,
     tvl: totalSupply.mul(virtualPrice).div(BigNumber.from(10).pow(18)),
     userUnclaimed: [rewardsAlcx, rewardsCrv],

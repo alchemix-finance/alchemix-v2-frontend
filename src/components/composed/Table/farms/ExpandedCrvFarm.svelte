@@ -189,7 +189,7 @@
       height="h-12"
       fontSize="text-md"
       disabled="{!checkButtonState(withdrawAmountBN, farm.userDeposit)}"
-      on:clicked="{() => withdraw(withdrawAmountBN)"
+      on:clicked="{() => withdraw(withdrawAmountBN)}"
     />
   </div>
   <div class="p-4 flex flex-col space-y-4">
