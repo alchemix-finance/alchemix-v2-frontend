@@ -1,4 +1,5 @@
 import {
+  fetchDataForCrvFarm,
   fetchDataForETH,
   fetchDataForInternalFarm,
   fetchDataForSushiFarm,
@@ -231,6 +232,40 @@ export async function fetchSushiFarm([signer]: [ethers.Signer]) {
           body: farmData,
         },
       ]);
+    },
+  );
+}
+
+export async function fetchCrvFarm([signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchCrvFarm]: signer is undefined`);
+    return Promise.reject(`[fetchCrvFarm]: signer is undefined`);
+  }
+
+  return fetchDataForCrvFarm('CurveGaugeMetapool', 'CurveGaugeDeposit', 'CurveGaugeRewards', signer).then(
+    (farmData) => {
+      updateAllFarms([
+        {
+          type: FarmTypes.CRV,
+          body: farmData,
+        },
+      ]);
+    },
+  );
+}
+
+export async function fetchCrvFarmByUuid(uuid: string, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchCrvFarmByUuid]: signer is undefined`);
+    return Promise.reject(`[fetchCrvFarmByUuid]: signer is undefined`);
+  }
+
+  return fetchDataForCrvFarm('CurveGaugeMetapool', 'CurveGaugeDeposit', 'CurveGaugeRewards', [signer]).then(
+    (farmData) => {
+      updateFarmByUuid(uuid, {
+        type: FarmTypes.CRV,
+        body: farmData,
+      });
     },
   );
 }
