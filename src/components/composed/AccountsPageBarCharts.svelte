@@ -215,11 +215,17 @@
           callback: function (value) {
             // this iterates over _all_ ticks and should return ticks that match 0, debtLimit and totalDeposit
             // it also generates the labels on the y axis and creates a callback for each label
-            const floorDebt = Math.round(debtLimit);
-            const floorDeposit = Math.round(totalDeposit);
+
+            const floorDebt = Math.floor(debtLimit);
+            const floorDeposit = Math.floor(totalDeposit);
+
             if (value === 0) return value;
-            if (between(floorDebt, value - 50, value + 50)) return fiatDebtLimit;
-            if (between(floorDeposit, value - 50, value + 50)) return fiatDeposit;
+
+            if ([0, floorDebt, floorDeposit].includes(value)) {
+              if (between(floorDebt, value - 50, value + 50)) return fiatDebtLimit;
+              if (between(floorDeposit, value - 50, value + 50)) return fiatDeposit;
+            }
+
             return undefined;
           },
 
