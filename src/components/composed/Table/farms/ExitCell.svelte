@@ -74,14 +74,14 @@
     if (Array.isArray(farm.userDeposit)) {
       console.log(farm);
       return (
-        farm.userDeposit.filter((elm) => elm.gt(BigNumber.from(0))).length > 0 ||
-        farm.userUnclaimed.filter((elm) => elm.gt(BigNumber.from(0))).length > 0
+        farm.userDeposit.some((elm) => elm.gt(BigNumber.from(0))) ||
+        farm.userUnclaimed.some((elm) => elm.gt(BigNumber.from(0)))
       );
     }
 
     return (
       BigNumber.from(farm.userDeposit).gt(BigNumber.from(0)) ||
-      farm.userUnclaimed.filter((elm) => elm.gt(BigNumber.from(0))).length > 0
+      farm.userUnclaimed.some((elm) => elm.gt(BigNumber.from(0)))
     );
   };
 </script>
