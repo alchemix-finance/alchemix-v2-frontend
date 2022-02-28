@@ -212,7 +212,7 @@ export async function fetchDataForSushiFarm(
     totalDeposit: totalDeposit,
     tokenAddress: masterchefAddress,
     isActive: alcxPerBlock.add(sushiPerBlock).gt(BigNumber.from(0)),
-    userDeposit: userDeposit,
+    userDeposit: userDeposit.amount,
     userUnclaimed: [rewardsAlcx, rewardsSushi],
     poolTokenAddress: lpAddress,
     tvl: [reserve._reserve0, reserve._reserve1],

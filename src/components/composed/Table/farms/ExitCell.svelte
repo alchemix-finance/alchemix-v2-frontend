@@ -1,8 +1,6 @@
 <script>
-  import getContract from '../../../../helpers/getContract';
   import Button from '../../../elements/Button.svelte';
   import getUserGas from '../../../../helpers/getUserGas';
-  import { getProvider } from '../../../../helpers/walletManager';
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
   import { contractWrapper, externalContractWrapper } from '@helpers/contractWrapper';
   import { signer } from '@stores/v2/derived';
@@ -12,8 +10,9 @@
     castToSushiFarmType,
     FarmTypes,
   } from '@stores/v2/types';
-  import { utils } from 'ethers';
+  import { BigNumber, utils } from 'ethers';
   import { addressStore } from '@stores/v2/alcxStore';
+  import { fetchCrvFarmByUuid, fetchInternalFarmByUuid, fetchSushiFarmByUuid } from '@stores/v2/asyncMethods';
 
   export let farmType;
   export let farm;
@@ -22,24 +21,31 @@
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 
     try {
-      setPendingWallet();
-      let tx;
-
       if (farmType === FarmTypes.INTERNAL) {
         const castedFarm = castToInternalFarmType(farm);
 
         const { instance } = contractWrapper('StakingPools', $signer);
-
-        tx = await instance.exit(castedFarm.poolId, {
+        setPendingWallet();
+        const tx = await instance.exit(castedFarm.poolId, {
           gasPrice: gas,
+        });
+        setPendingTx();
+        await tx.wait().then((transaction) => {
+          setSuccessTx(transaction.hash);
+          fetchInternalFarmByUuid(castedFarm.uuid, [$signer]);
         });
       } else if (farmType === FarmTypes.SUSHI) {
         const castedFarm = castToSushiFarmType(farm);
 
-        const { instance } = contractWrapper('SushiMasterchefV2', $signer);
-
-        tx = await instance.emergencyWithdraw(0, $addressStore, {
+        const { instance } = externalContractWrapper('SushiMasterchefV2', $signer);
+        setPendingWallet();
+        const tx = await instance.emergencyWithdraw(0, $addressStore, {
           gasPrice: gas,
+        });
+        setPendingTx();
+        await tx.wait().then((transaction) => {
+          setSuccessTx(transaction.hash);
+          fetchSushiFarmByUuid(castedFarm.uuid, [$signer]);
         });
       } else if (farmType === FarmTypes.CRV) {
         const castedFarm = castToCrvFarmType(farm);
@@ -48,29 +54,46 @@
           'CurveGaugeDeposit',
           $signer,
         );
-
-        tx = await crvGaugeInstance.withdraw(castedFarm.userDeposit, {
+        setPendingWallet();
+        const tx = await crvGaugeInstance.withdraw(castedFarm.userDeposit, {
           gasPrice: gas,
         });
+        setPendingTx();
+        await tx.wait().then((transaction) => {
+          setSuccessTx(transaction.hash);
+          fetchCrvFarmByUuid(castedFarm.uuid, [$signer]);
+        });
       }
-
-      setPendingTx();
-
-      await tx.wait().then((transaction) => {
-        setSuccessTx(transaction.transactionHash);
-      });
     } catch (e) {
       setError(e.message);
-      console.debug(e);
+      console.error(e);
     }
+  };
+
+  const checkButtonState = (farm) => {
+    if (Array.isArray(farm.userDeposit)) {
+      console.log(farm);
+      return (
+        farm.userDeposit.filter((elm) => elm.gt(BigNumber.from(0))).length > 0 ||
+        farm.userUnclaimed.filter((elm) => elm.gt(BigNumber.from(0))).length > 0
+      );
+    }
+
+    return (
+      BigNumber.from(farm.userDeposit).gt(BigNumber.from(0)) ||
+      farm.userUnclaimed.filter((elm) => elm.gt(BigNumber.from(0))).length > 0
+    );
   };
 </script>
 
-<Button
-  borderColor="red4"
-  backgroundColor="red2"
-  hoverColor="red3"
-  label="Exit"
-  solid="{false}"
-  on:clicked="{() => exitPool()}"
-/>
+{#if farm}
+  <Button
+    borderColor="red4"
+    backgroundColor="red2"
+    hoverColor="red3"
+    label="Exit"
+    solid="{false}"
+    disabled="{!checkButtonState(farm)}"
+    on:clicked="{() => exitPool()}"
+  />
+{/if}
