@@ -149,8 +149,8 @@
       row: {
         col2: {
           CellComponent: FarmNameCell,
-          farmName: vaultTokenData.symbol,
-          farmSubtitle: 'Yearn ' + underlyingTokenData.symbol,
+          farmName: 'Yearn ' + underlyingTokenData.symbol,
+          farmSubtitle: underlyingTokenData.symbol + ' + ' + vaultTokenData.symbol,
           farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
           tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
           colSize: 3,
@@ -159,6 +159,12 @@
         deposited: {
           CellComponent: CurrencyCell,
           value: depositValue,
+          token: {
+            balance: vault.balance,
+            perShare: vault.yieldPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: vaultTokenData.symbol,
+          },
           colSize: 2,
         },
         limit: {
@@ -170,6 +176,12 @@
         col3: {
           CellComponent: CurrencyCell,
           value: tvlValue,
+          token: {
+            balance: vault.tvl,
+            perShare: vault.yieldPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: vaultTokenData.symbol,
+          },
           colSize: 2,
         },
         col4: {
