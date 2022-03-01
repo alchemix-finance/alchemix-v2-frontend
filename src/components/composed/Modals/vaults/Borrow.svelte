@@ -105,6 +105,7 @@
     }
   }
 
+  $: console.log($vaultsAggregatedDebt[0].toString(), $vaultsStore, defaultSelectedVault);
   $: availAmount = calculateAvailableAmount($vaultsAggregatedDebt, $vaultsStore, defaultSelectedVault);
   $: maxDebtAmount = getMaxDebt($vaultsAggregatedDebt, defaultSelectedVault);
 

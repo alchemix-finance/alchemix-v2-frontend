@@ -148,12 +148,18 @@
     }
   };
 
-  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _openDebtAmount) {
+  function getWithdrawButtonState(
+    _underlyingWithdrawAmount,
+    _yieldWithdrawAmount,
+    _openDebtAmount,
+    _decimals,
+  ) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
 
     const globalCover = toShares($vaultsAggregatedBalances[vault.type].toString(), 18, vault.yieldPerShare)
       .div(BigNumber.from(10).pow(18))
-      .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+      .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
+      .add(utils.parseUnits(utils.formatUnits(1, _decimals), _decimals));
 
     const freeCover = globalCover
       .sub(_openDebtAmount.div(BigNumber.from(10).pow(18)))
@@ -205,11 +211,13 @@
     const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
 
     const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
+
+    const roundingBalancer = utils.parseUnits(utils.formatUnits(1, _tokenData.decimals), _tokenData.decimals);
     const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
-    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
+    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18).add(roundingBalancer);
 
     return maxAmountAvailable
-      ? utils.formatUnits(shareToAmount, _tokenData.decimals)
+      ? utils.formatUnits(shareToAmount.add(roundingBalancer), _tokenData.decimals)
       : utils.formatUnits(
           normalizedShares.sub(debtToCover).gt(BigNumber.from(0))
             ? normalizeAmount(normalizedShares.sub(debtToCover), 18, _tokenData.decimals)
@@ -262,6 +270,7 @@
     underlyingWithdrawAmountShares,
     yieldWithdrawAmountShares,
     debt,
+    underlyingTokenData.decimals,
   );
 </script>
 

@@ -9,10 +9,15 @@
 <div class="flex flex-col">
   <div class="flex flex-row">
     <div class="mr-11 w-60">
-      <img src="images/icons/ALCX_Std_logo.svg" class="w-max mb-5" alt="The Alchemix logo" />
+      <img
+        src="images/icons/ALCX_Std_logo.svg"
+        class="h-9 mb-5"
+        style="filter:saturate(0);"
+        alt="The Alchemix logo"
+      />
 
-      <p class="text-sm mb-3">&copy; {copyrightYear()} {$_('alchemix_labs')}</p>
-      <p class="text-sm mb-3 text-justify">
+      <p class="text-sm mb-3 opacity-50">&copy; {copyrightYear()} {$_('alchemix_labs')}</p>
+      <p class="text-sm mb-3 text-justify opacity-50">
         {$_('footer_disclaimer')}
       </p>
     </div>
@@ -167,12 +172,12 @@
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
           <a href="https://zapper.fi/" target="_blank">
-            <img src="images/integrations/zapper.png" class="w-60" alt="The logo of Zapper" />
+            <img src="images/integrations/zapper_black.svg" class="w-60" alt="The logo of Zapper" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
           <a href="https://snapshot.org/" target="_blank">
-            <img src="images/integrations/snapshot.png" class="w-60" alt="The logo of Snapshot" />
+            <img src="images/integrations/snapshot.svg" class="w-60" alt="The logo of Snapshot" />
           </a>
         </li>
       </ul>
