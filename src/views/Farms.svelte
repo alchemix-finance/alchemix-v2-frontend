@@ -25,7 +25,7 @@
   import account from '@stores/account';
   import walletBalance from '../stores/walletBalance';
   import global from '../stores/global';
-  import { addressStore, farmsStore } from '@stores/v2/alcxStore';
+  import { addressStore, balancesStore, farmsStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
@@ -415,6 +415,42 @@
           }
         })();
 
+        const apy = (() => {
+          if (
+            farm.type === FarmTypes.INTERNAL &&
+            InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon !== 'saddle'
+          ) {
+            const internalFarm = castToInternalFarmType(farm.body);
+
+            const _fRewardRate = parseFloat(utils.formatEther(internalFarm.rewardRate));
+            const _fTotalPoolDeposits = parseFloat(utils.formatEther(internalFarm.tvl));
+            const _fRewardsPerWeek = _fRewardRate * 45000;
+
+            const _fApr = ((_fRewardsPerWeek * 52) / _fTotalPoolDeposits) * 100;
+
+            return (((1 + _fApr / 100 / 100) ** 100 - 1) * 100).toFixed(3);
+          } else if (
+            farm.type === FarmTypes.INTERNAL &&
+            InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
+          ) {
+            const internalFarm = castToInternalFarmType(farm.body);
+
+            const _fRewardRate = parseFloat(utils.formatEther(internalFarm.rewardRate));
+            const _fTotalPoolDeposits = parseFloat(utils.formatEther(internalFarm.tvl));
+
+            const _fWethPrice = getPrice('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
+            const _fTokenprice = getPrice('0xdbdb4d16eda451d0503b854cf79d55697f90c8df');
+
+            const _fApr =
+              ((_fRewardRate * 45000 * 52 * _fTokenprice) /
+                (parseFloat(_fTotalPoolDeposits) * parseFloat(_fWethPrice))) *
+              100;
+
+            return _fApr.toFixed(3);
+          }
+          return 'N/A';
+        })();
+
         return {
           col0: {
             CellComponent: ExpandRowCell,
@@ -445,7 +481,7 @@
             colSize: 3,
           },
           col4: {
-            value: 'N/A',
+            value: apy > 0 ? apy + '%' : 'NaN',
             colSize: 1,
           },
           col5: {
@@ -511,9 +547,7 @@
     loadingVaults = false;
   };
 
-  $: console.log($farmsStore);
-
-  $: if ($addressStore) {
+  $: if ($addressStore && $global.tokenPrices) {
     onInitialize();
   }
 </script>
