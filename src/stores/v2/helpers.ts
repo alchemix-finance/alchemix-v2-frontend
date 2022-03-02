@@ -177,6 +177,7 @@ export async function fetchDataForSushiFarm(
   const lpTokenInstance = erc20Contract(lpAddress, signer);
 
   const tokenSymbol = await lpTokenInstance.symbol();
+  const lpTotalSupply = await lpTokenInstance.totalSupply();
 
   const tokenBalance = await lpTokenInstance.balanceOf(accountAddress);
 
@@ -211,7 +212,9 @@ export async function fetchDataForSushiFarm(
     tokenBalance: tokenBalance,
     totalDeposit: totalDeposit,
     tokenAddress: masterchefAddress,
+    slpTotalSupply: lpTotalSupply,
     isActive: alcxPerBlock.add(sushiPerBlock).gt(BigNumber.from(0)),
+    rewardRates: [alcxPerBlock, sushiPerBlock],
     userDeposit: userDeposit.amount,
     userUnclaimed: [rewardsAlcx, rewardsSushi],
     poolTokenAddress: lpAddress,

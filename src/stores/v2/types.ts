@@ -38,6 +38,8 @@ export interface SushiFarmType extends GenericFarmType {
   totalDeposit: ethers.BigNumber;
   underlyingAddresses: string[];
   poolTokenAddress: string;
+  rewardRates: ethers.BigNumber[];
+  slpTotalSupply: ethers.BigNumber;
 }
 
 export interface CurveFarmType extends GenericFarmType {

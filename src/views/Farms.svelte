@@ -170,184 +170,19 @@
     return $global.tokenPrices.find((entry) => entry.address.toUpperCase() === token.toUpperCase())?.price;
   };
 
-  // let loading = true;
-  // const renderFarms = async () => {
-  //   if (loading) {
-  //     $stakingPools.allPools.forEach((pool) => {
-  //       const userToken = $walletBalance.tokens.find((item) => item.address === pool.token);
-  //       if (pool.poolConfig && pool.reward !== '0.0') {
-  //         let expandedProps;
-  //         let rewards;
-  //         let component;
-  //         let tvl;
-  //         switch (pool.type) {
-  //           case 'sushi':
-  //             expandedProps = {
-  //               token: {
-  //                 balance: pool.slpBalance,
-  //                 symbol: 'SLP',
-  //               },
-  //               stakedBalance: pool.userDeposit,
-  //               unclaimedAlcx: pool.rewardsAlcx,
-  //               unclaimedSushi: pool.rewardsSushi,
-  //               slpBalance: pool.slpBalance,
-  //             };
-  //             rewards = [
-  //               {
-  //                 iconName: 'alchemix',
-  //                 tokenName: 'ALCX',
-  //               },
-  //               {
-  //                 iconName: 'sushi',
-  //                 tokenName: 'SUSHI',
-  //               },
-  //             ];
-  //             component = ExpandedSushiFarm;
-  //             const price0 = getPrice(pool.underlying0);
-  //             const price1 = getPrice(pool.underlying1);
-  //             const value0 = parseFloat(utils.formatEther(pool.reserve._reserve0)) * price0;
-  //             const value1 = parseFloat(utils.formatEther(pool.reserve._reserve1)) * price1;
-  //             tvl = value0 + value1;
-  //             break;
-  //           case 'crv':
-  //             expandedProps = {
-  //               token: {
-  //                 balance: pool.slpBalance,
-  //                 symbol: pool.poolConfig.title,
-  //               },
-  //               stakedBalance: pool.userDeposit,
-  //               unclaimedAlcx: pool.rewardsAlcx,
-  //               unclaimedCrv: pool.rewardsCrv,
-  //               slpBalance: pool.slpSupply,
-  //             };
-  //             rewards = [
-  //               {
-  //                 iconName: 'alchemix',
-  //                 tokenName: 'ALCX',
-  //               },
-  //               {
-  //                 iconName: 'crv',
-  //                 tokenName: 'CRV',
-  //               },
-  //             ];
-  //             component = ExpandedCrvFarm;
-  //             tvl = utils.formatEther(
-  //               pool.totalSupply.mul(pool.virtualPrice).div(BigNumber.from(10).pow(18)),
-  //             );
-  //             break;
-  //           case 'internal':
-  //           default:
-  //             expandedProps = {
-  //               poolId: pool.poolId,
-  //               token: userToken,
-  //               stakedBalance: pool.userDeposit,
-  //               unclaimedRewards: pool.userUnclaimed,
-  //               reward: pool.rewardToken,
-  //             };
-  //             rewards = [
-  //               {
-  //                 iconName: 'alchemix',
-  //                 tokenName: 'ALCX',
-  //               },
-  //             ];
-  //             component = ExpandedFarm;
-  //             // @lord forgive me for I'm about to sin
-  //             const price = getPrice(
-  //               pool.poolConfig.tokenIcon === 'saddle'
-  //                 ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-  //                 : pool.token,
-  //             );
-  //             tvl = parseFloat(utils.formatEther(pool.tvl)) * price;
-  //             break;
-  //         }
-  //         const payload = {
-  //           col0: {
-  //             CellComponent: ExpandRowCell,
-  //             expandedRow: {
-  //               ExpandedRowComponent: component,
-  //             },
-  //             ...expandedProps,
-  //             colSize: 1,
-  //           },
-  //           col1: {
-  //             CellComponent: FarmNameCell,
-  //             farmName: pool.poolConfig.title,
-  //             farmSubtitle: pool.poolConfig.subtitle,
-  //             farmIcon: pool.poolConfig.farmIcon,
-  //             tokenIcon: pool.poolConfig.tokenIcon,
-  //             colSize: 3,
-  //             alignment: 'justify-self-start',
-  //           },
-  //           col2: {
-  //             CellComponent: CurrencyCell,
-  //             value: tvl,
-  //             colSize: 2,
-  //           },
-  //           col3: {
-  //             CellComponent: RewardCell,
-  //             rewards: rewards,
-  //             colSize: 3,
-  //           },
-  //           col4: {
-  //             value: 'N/A',
-  //             colSize: 1,
-  //           },
-  //           col5: {
-  //             CellComponent: ActionsCell,
-  //             label: $_('table.manage'),
-  //             expandedRow: {
-  //               ExpandedRowComponent: component,
-  //             },
-  //             ...expandedProps,
-  //             colSize: 3,
-  //           },
-  //         };
-  //         rowsActive.push(payload);
-  //       } else if (pool.poolConfig && pool.reward === '0.0') {
-  //         const payload = {
-  //           col1: {
-  //             CellComponent: FarmNameCell,
-  //             tokenIcon: pool.poolConfig.tokenIcon,
-  //             farmIcon: pool.poolConfig.farmIcon,
-  //             farmName: pool.poolConfig.title,
-  //             farmSubtitle: pool.poolConfig.subtitle,
-  //             colSize: 7,
-  //             alignment: 'justify-self-start',
-  //           },
-  //           col2: {
-  //             CellComponent: StakedCell,
-  //             amount: pool.userDeposit,
-  //             tokenSymbol: pool.tokenSymbol,
-  //             colSize: 4,
-  //           },
-  //           col3: {
-  //             CellComponent: ClaimableCell,
-  //             rewardAmount: pool.userUnclaimed,
-  //             rewardToken: pool.rewardToken,
-  //             colSize: 4,
-  //           },
-  //           col4: {
-  //             CellComponent: ExitCell,
-  //             poolId: pool.poolId,
-  //             colSize: 5,
-  //           },
-  //         };
-  //         rowsRetired.push(payload);
-  //       }
-  //       if (pool.poolId + 1 === parseInt($stakingPools.pools, 10)) {
-  //         loading = false;
-  //       }
-  //     });
-  //   }
-  // };
-  //
-  // $: if (!$account.loadingFarmsConfigurations && !$account.loadingWalletBalance) renderFarms();
-
   const filterFuncs = {
     [filterTypes.ACTIVE]: (value) => value.body.isActive,
     [filterTypes.RETIRED]: (value) => !value.body.isActive,
     [filterTypes.EXTERNAL]: (value) => false,
   };
+
+  function calculateSushiTVL(farm) {
+    const price0 = getPrice(farm.underlyingAddresses[0]);
+    const price1 = getPrice(farm.underlyingAddresses[1]);
+    const value0 = parseFloat(utils.formatEther(farm.tvl[0])) * price0;
+    const value1 = parseFloat(utils.formatEther(farm.tvl[1])) * price1;
+    return value0 + value1;
+  }
 
   $: filteredRows = $farmsStore
     .filter(
@@ -383,11 +218,7 @@
           } else if (farm.type === FarmTypes.SUSHI) {
             const sushiFarm = castToSushiFarmType(farm.body);
 
-            const price0 = getPrice(sushiFarm.underlyingAddresses[0]);
-            const price1 = getPrice(sushiFarm.underlyingAddresses[1]);
-            const value0 = parseFloat(utils.formatEther(sushiFarm.tvl[0])) * price0;
-            const value1 = parseFloat(utils.formatEther(sushiFarm.tvl[1])) * price1;
-            return value0 + value1;
+            return calculateSushiTVL(sushiFarm);
           } else if (farm.type === FarmTypes.CRV) {
             return utils.formatEther(farm.body.tvl);
           }
@@ -447,6 +278,23 @@
               100;
 
             return _fApr.toFixed(3);
+          } else if (farm.type === FarmTypes.SUSHI) {
+            const _farm = castToSushiFarmType(farm.body);
+
+            const [alcxRewards, sushiRewards] = _farm.rewardRates;
+            const [wethReserves, alcxReserves] = _farm.tvl;
+
+            const price0 = getPrice(_farm.underlyingAddresses[0]);
+            const price1 = getPrice(_farm.underlyingAddresses[1]);
+
+            const alcxRewardsPerWeek = parseFloat(utils.formatEther(alcxRewards)) * 45000;
+            const sushiRewardsPerWeek = parseFloat(utils.formatEther(sushiRewards)) * 45000;
+
+            const slpTVL = calculateSushiTVL(_farm);
+
+            const slpPrice = slpTVL / parseFloat(utils.formatEther(_farm.slpTotalSupply));
+
+            return 0;
           }
           return 'N/A';
         })();
