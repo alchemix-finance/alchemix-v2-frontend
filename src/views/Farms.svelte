@@ -1,6 +1,5 @@
 <script>
-  import { utils, BigNumber } from 'ethers';
-  import { onMount } from 'svelte';
+  import { utils } from 'ethers';
   import { _ } from 'svelte-i18n';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
   import PageHeader from '../components/elements/PageHeader.svelte';
@@ -20,12 +19,9 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import StakedCell from '@components/composed/Table/farms/StakedCell';
   import ClaimableCell from '@components/composed/Table/farms/ClaimableCell';
-  import stakingPools from '../stores/stakingPools';
   import { BarLoader } from 'svelte-loading-spinners';
-  import account from '@stores/account';
-  import walletBalance from '../stores/walletBalance';
   import global from '../stores/global';
-  import { addressStore, balancesStore, farmsStore } from '@stores/v2/alcxStore';
+  import { addressStore, farmsStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
@@ -140,28 +136,6 @@
     window.open(url, '_blank');
   };
 
-  const toggleButtons = {
-    farmSelect: {
-      active: true,
-      retired: false,
-      external: false,
-    },
-  };
-
-  const buttonToggler = (selector, key) => {
-    Object.keys(toggleButtons[selector]).forEach((entry) => {
-      if (toggleButtons[selector][entry] !== key) {
-        toggleButtons[selector][entry] = false;
-      }
-    });
-    toggleButtons[selector][key] = true;
-  };
-
-  // @dev logic for controlling the filtered views
-  const vaultFilter = (filter) => {
-    const selector = ['farmSelect', 'modeSelect', 'stratSelect'];
-    buttonToggler(selector[filter.id], filter.filter);
-  };
   /*
    * @param token the address of the token
    * @returns the token price from zapper's price api
