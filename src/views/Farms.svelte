@@ -1,5 +1,4 @@
 <script>
-  import { utils } from 'ethers';
   import { _ } from 'svelte-i18n';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
   import PageHeader from '../components/elements/PageHeader.svelte';
@@ -25,12 +24,7 @@
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
-  import {
-    castToCrvFarmType,
-    castToInternalFarmType,
-    castToSushiFarmType,
-    FarmTypes,
-  } from '@stores/v2/types';
+  import { FarmTypes } from '@stores/v2/types';
   import { InternalFarmAdapter } from '@stores/v2/adapters/InternalFarmAdapter';
   import { SushiFarmAdapter } from '@stores/v2/adapters/SushiFarmAdapter';
   import { CRVFarmAdapter } from '@stores/v2/adapters/CRVFarmAdapter';
@@ -139,27 +133,11 @@
     window.open(url, '_blank');
   };
 
-  /*
-   * @param token the address of the token
-   * @returns the token price from zapper's price api
-   * */
-  const getPrice = (token) => {
-    return $global.tokenPrices.find((entry) => entry.address.toUpperCase() === token.toUpperCase())?.price;
-  };
-
   const filterFuncs = {
     [filterTypes.ACTIVE]: (value) => value.body.isActive,
     [filterTypes.RETIRED]: (value) => !value.body.isActive,
     [filterTypes.EXTERNAL]: (value) => false,
   };
-
-  function calculateSushiTVL(farm) {
-    const price0 = getPrice(farm.underlyingAddresses[0]);
-    const price1 = getPrice(farm.underlyingAddresses[1]);
-    const value0 = parseFloat(utils.formatEther(farm.tvl[0])) * price0;
-    const value1 = parseFloat(utils.formatEther(farm.tvl[1])) * price1;
-    return value0 + value1;
-  }
 
   const registeredFarmAdapters = {
     [FarmTypes.INTERNAL]: InternalFarmAdapter,
