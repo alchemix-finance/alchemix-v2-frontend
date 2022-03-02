@@ -31,6 +31,9 @@
     castToSushiFarmType,
     FarmTypes,
   } from '@stores/v2/types';
+  import { InternalFarmAdapter } from '@stores/v2/adapters/InternalFarmAdapter';
+  import { SushiFarmAdapter } from '@stores/v2/adapters/SushiFarmAdapter';
+  import { CRVFarmAdapter } from '@stores/v2/adapters/CRVFarmAdapter';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,
@@ -158,6 +161,18 @@
     return value0 + value1;
   }
 
+  const registeredFarmAdapters = {
+    [FarmTypes.INTERNAL]: InternalFarmAdapter,
+    [FarmTypes.SUSHI]: SushiFarmAdapter,
+    [FarmTypes.CRV]: CRVFarmAdapter,
+  };
+
+  const registeredFarmComponents = {
+    [FarmTypes.INTERNAL]: ExpandedFarm,
+    [FarmTypes.SUSHI]: ExpandedSushiFarm,
+    [FarmTypes.CRV]: ExpandedCrvFarm,
+  };
+
   $: filteredRows = $farmsStore
     .filter(
       (val) =>
@@ -172,114 +187,15 @@
           : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
       if (farm.body.isActive) {
-        //TODO: Wait for the price to be fetched
-
-        const price = (() => {
-          if (farm.type === FarmTypes.INTERNAL) {
-            return getPrice(
-              InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
-                ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-                : farm.body.tokenAddress,
-            );
-          }
-
-          return 0;
-        })();
-
-        const tvl = (() => {
-          if (farm.type === FarmTypes.INTERNAL) {
-            return parseFloat(utils.formatEther(farm.body.tvl)) * price;
-          } else if (farm.type === FarmTypes.SUSHI) {
-            const sushiFarm = castToSushiFarmType(farm.body);
-
-            return calculateSushiTVL(sushiFarm);
-          } else if (farm.type === FarmTypes.CRV) {
-            return utils.formatEther(farm.body.tvl);
-          }
-
-          return 0;
-        })();
-
-        const expandedComponent = (() => {
-          if (farm.type === FarmTypes.INTERNAL) {
-            return ExpandedFarm;
-          } else if (farm.type === FarmTypes.SUSHI) {
-            return ExpandedSushiFarm;
-          } else if (farm.type === FarmTypes.CRV) {
-            return ExpandedCrvFarm;
-          }
-        })();
-
-        const farmData = (() => {
-          if (farm.type === FarmTypes.INTERNAL) {
-            return castToInternalFarmType(farm.body);
-          } else if (farm.type === FarmTypes.SUSHI) {
-            return castToSushiFarmType(farm.body);
-          } else if (farm.type === FarmTypes.CRV) {
-            return castToCrvFarmType(farm.body);
-          }
-        })();
-
-        const apy = (() => {
-          if (
-            farm.type === FarmTypes.INTERNAL &&
-            InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon !== 'saddle'
-          ) {
-            const internalFarm = castToInternalFarmType(farm.body);
-
-            const _fRewardRate = parseFloat(utils.formatEther(internalFarm.rewardRate));
-            const _fTotalPoolDeposits = parseFloat(utils.formatEther(internalFarm.tvl));
-            const _fRewardsPerWeek = _fRewardRate * 45000;
-
-            const _fApr = ((_fRewardsPerWeek * 52) / _fTotalPoolDeposits) * 100;
-
-            return (((1 + _fApr / 100 / 100) ** 100 - 1) * 100).toFixed(3);
-          } else if (
-            farm.type === FarmTypes.INTERNAL &&
-            InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
-          ) {
-            const internalFarm = castToInternalFarmType(farm.body);
-
-            const _fRewardRate = parseFloat(utils.formatEther(internalFarm.rewardRate));
-            const _fTotalPoolDeposits = parseFloat(utils.formatEther(internalFarm.tvl));
-
-            const _fWethPrice = getPrice('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
-            const _fTokenprice = getPrice('0xdbdb4d16eda451d0503b854cf79d55697f90c8df');
-
-            const _fApr =
-              ((_fRewardRate * 45000 * 52 * _fTokenprice) /
-                (parseFloat(_fTotalPoolDeposits) * parseFloat(_fWethPrice))) *
-              100;
-
-            return _fApr.toFixed(3);
-          } else if (farm.type === FarmTypes.SUSHI) {
-            const _farm = castToSushiFarmType(farm.body);
-
-            const [alcxRewards, sushiRewards] = _farm.rewardRates;
-            const [wethReserves, alcxReserves] = _farm.tvl;
-
-            const price0 = getPrice(_farm.underlyingAddresses[0]);
-            const price1 = getPrice(_farm.underlyingAddresses[1]);
-
-            const alcxRewardsPerWeek = parseFloat(utils.formatEther(alcxRewards)) * 45000;
-            const sushiRewardsPerWeek = parseFloat(utils.formatEther(sushiRewards)) * 45000;
-
-            const slpTVL = calculateSushiTVL(_farm);
-
-            const slpPrice = slpTVL / parseFloat(utils.formatEther(_farm.slpTotalSupply));
-
-            return 0;
-          }
-          return 'N/A';
-        })();
+        const adapter = registeredFarmAdapters[farm.type];
 
         return {
           col0: {
             CellComponent: ExpandRowCell,
             expandedRow: {
-              ExpandedRowComponent: expandedComponent,
+              ExpandedRowComponent: registeredFarmComponents[farm.type],
             },
-            farm: farmData,
+            farm: adapter.getFarm(),
             farmType: farm.type,
             colSize: 1,
           },
@@ -294,7 +210,7 @@
           },
           col2: {
             CellComponent: CurrencyCell,
-            value: tvl,
+            value: adapter.getTvl(),
             colSize: 2,
           },
           col3: {
@@ -303,18 +219,18 @@
             colSize: 3,
           },
           col4: {
-            value: apy > 0 ? apy + '%' : 'NaN',
+            value: adapter.getApy() > 0 ? adapter.getApy() + '%' : 'NaN',
             colSize: 1,
           },
           col5: {
             CellComponent: ActionsCell,
             label: $_('table.manage'),
             expandedRow: {
-              ExpandedRowComponent: expandedComponent,
+              ExpandedRowComponent: registeredFarmComponents[farm.type],
             },
-            poolId: farmData.poolId,
+            poolId: adapter.getFarm().poolId,
             farmType: farm.type,
-            farm: farmData,
+            farm: adapter.getFarm(),
             colSize: 3,
           },
         };
