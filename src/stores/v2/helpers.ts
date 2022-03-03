@@ -119,9 +119,12 @@ export function calculateVaultDebt(
   _underlyingDecimals: number,
   _debtRatio: BigNumber,
 ) {
+  const scalar = (decimals) => BigNumber.from(10).pow(decimals);
   return (
     _vaultBalance
-      .div(_debtRatio.div(BigNumber.from(10).pow(18)).mul(BigNumber.from(10).pow(_underlyingDecimals)))
+      .mul(scalar(18))
+      .div(scalar(_underlyingDecimals))
+      .div(_debtRatio.div(BigNumber.from(10).pow(18)))
       .mul(_underlyingPerShare)
       .div(BigNumber.from(10).pow(_underlyingDecimals)) ?? BigNumber.from(0)
   );
@@ -136,5 +139,6 @@ export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]
 }
 
 export function normalizeAmount(_amount: BigNumber, _decimalsFrom: number, _decimalsTo: number) {
+  console.log(_amount.toString(), _decimalsFrom, _decimalsTo);
   return utils.parseUnits(utils.formatUnits(_amount, _decimalsFrom), _decimalsTo);
 }

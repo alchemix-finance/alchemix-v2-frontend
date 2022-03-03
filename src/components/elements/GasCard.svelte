@@ -1,13 +1,15 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { createEventDispatcher } from 'svelte';
+  import settings from '@stores/settings';
+
   export let description = 'standard';
   export let gasFee = {
     maxFeePerGas: 0,
     baseFeePerGas: 0,
     maxPriorityFeePerGas: 0,
   };
-  export let cardColor = 'lightgrey20';
+  export let cardColor = $settings.invertColors ? 'lightgrey20inverse' : 'lightgrey20';
   export let isActive = false;
   export let compactView = false;
 

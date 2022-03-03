@@ -161,9 +161,9 @@
           value: depositValue,
           token: {
             balance: vault.balance,
-            perShare: vault.yieldPerShare,
+            perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
-            symbol: vaultTokenData.symbol,
+            symbol: underlyingTokenData.symbol,
           },
           colSize: 2,
         },
@@ -178,9 +178,9 @@
           value: tvlValue,
           token: {
             balance: vault.tvl,
-            perShare: vault.yieldPerShare,
+            perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
-            symbol: vaultTokenData.symbol,
+            symbol: underlyingTokenData.symbol,
           },
           colSize: 2,
         },

@@ -40,12 +40,15 @@
   closeOnMount="{$toastConfig.closeOnMount}"
   forceCloseToast="{$toastConfig.forceClose}"
 />
-
 <div class="relative flex items-center justify-between">
   <div class="flex-1 flex items-center">
-    <Link to="{$account.signer ? '/accounts' : '/'}">
+    <Link to="/">
       <div class="flex-shrink-0 flex items-center">
-        <img src="images/icons/ALCX_Std_logo.svg" class="h-11" alt="The Alchemix logo" />
+        <img
+          src="images/icons/ALCX_Std_logo.svg"
+          class="h-11 {$settings.invertColors ? 'invertIcons' : ''}"
+          alt="The Alchemix logo"
+        />
       </div>
     </Link>
   </div>
@@ -56,7 +59,9 @@
     <Dropdown>
       <div
         slot="label"
-        class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
+        class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+          ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+          : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
       >
         <svg
           stroke="currentColor"
@@ -105,7 +110,9 @@
         py-1
         text-opacity-50
         hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
+        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+          ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+          : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +134,9 @@
       <ul slot="options" class="w-full">
         {#each $global.allCurrencies as currency}
           <li
-            class="cursor-pointer h-8 hover:bg-grey10 border-t border-grey10"
+            class="cursor-pointer h-8 border-t {$settings.invertColors
+              ? 'hover:bg-grey10inverse border-grey10inverse'
+              : 'hover:bg-grey10 border-grey10'}"
             on:click="{() => setCurrency(currency)}"
           >
             <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
@@ -146,7 +155,9 @@
         items-center
         text-opacity-50
         hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1"
+        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+          ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+          : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
         slot="label"
       >
         <svg
@@ -171,16 +182,28 @@
         <p>▾</p>
       </div>
       <ul slot="options" class="w-40">
-        <li class="cursor-pointer hover:bg-grey10 h-8" on:click="{goToSettings}">
+        <li
+          class="cursor-pointer h-8 {$settings.invertColors
+            ? 'hover:bg-grey10inverse border-grey10inverse'
+            : 'hover:bg-grey10 border-grey10'}"
+          on:click="{goToSettings}"
+        >
           <p class="text-center">{$_('settings')}</p>
         </li>
         <li
-          class="cursor-pointer hover:bg-grey10 h-8 border-b border-t border-grey10"
+          class="cursor-pointer h-8 border-t {$settings.invertColors
+            ? 'hover:bg-grey10inverse border-grey10inverse'
+            : 'hover:bg-grey10 border-grey10'}"
           on:click="{() => goToHelp()}"
         >
           <p class="text-center">{$_('help')}</p>
         </li>
-        <li class="cursor-pointer h-8 hover:bg-grey10" on:click="{$account.signer ? disconnect : connect}">
+        <li
+          class="cursor-pointer h-8 {$settings.invertColors
+            ? 'hover:bg-grey10inverse border-grey10inverse'
+            : 'hover:bg-grey10 border-grey10'}"
+          on:click="{$account.signer ? disconnect : connect}"
+        >
           <p class="text-center">
             {$account.signer ? $_('disconnect') : $_('connect')}
           </p>

@@ -69,7 +69,7 @@ export const vaultsAggregatedDebt = derived([vaultsStore, balancesStore], ([$vau
       ...debts,
       [Number(vaultTypeKey)]: vaultBody.reduce((_prevVal, _currentVault) => {
         const underlyingTokenData = getTokenDataFromBalances(_currentVault.underlyingAddress, [$balances]);
-
+        console.log(underlyingTokenData);
         const debt = calculateVaultDebt(
           _currentVault.balance,
           _currentVault.underlyingPerShare,

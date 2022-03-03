@@ -59,15 +59,17 @@
     await toggleTokenEnabled(VaultTypes.alUSD, token, newStatus, [$signer]).then(() => {
       tokenList.length = 0;
       initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
+      initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
     });
   };
 
   const toggleTransmuterStatus = async (transmuter, newState) => {
     const contract = getContract(`TransmuterV2_${transmuter}`);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     try {
       await contract.setPause(newState, {
-        gasPrice: gas,
+        gasPrice,
       });
     } catch (e) {
       setError(e.data ? await e.data.message : e.message);
@@ -78,10 +80,11 @@
   const toggleAlchemistStatus = async (altoken, alchemist, newState) => {
     const contract = getContract(altoken);
     const targetAlchemist = await getAddress(`AlchemistV2_${alchemist}`);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     try {
       await contract.pauseAlchemist(targetAlchemist, newState, {
-        gasPrice: gas,
+        gasPrice,
       });
     } catch (e) {
       setError(e.data ? await e.data.message : e.message);
@@ -90,6 +93,7 @@
   };
 
   $: initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
+  $: initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
 
   onMount(() => {
     if (!$sentinelStore) {

@@ -32,7 +32,8 @@
 
   const deposit = async () => {
     const amountToWei = utils.parseEther(depositAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     const allowance = await getTokenAllowance(token.address, $account.address, contract.address, amountToWei);
     if (depositAmount > token.balance) {
       setError($_('toast.error_deposit_amount'));
@@ -44,7 +45,7 @@
         }
         setPendingWallet();
         const tx = await contract.deposit(poolId, amountToWei, {
-          gasPrice: gas,
+          gasPrice,
         });
         setPendingTx();
         await provider.once(tx.hash, (transaction) => {
@@ -59,7 +60,8 @@
 
   const withdraw = async () => {
     const amountToWei = utils.parseEther(withdrawAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     if (withdrawAmount > stakedBalance) {
       setError($_('toast.error_withdraw_amount'));
     } else {
@@ -67,7 +69,7 @@
         let tx;
         setPendingWallet();
         tx = await contract.withdraw(poolId, amountToWei, {
-          gasPrice: gas,
+          gasPrice,
         });
         setPendingTx();
         await provider.once(tx.hash, (transaction) => {
@@ -81,12 +83,13 @@
   };
 
   const claim = async () => {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     try {
       let tx;
       setPendingWallet();
       tx = await contract.claim(poolId, {
-        gasPrice: gas,
+        gasPrice,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {

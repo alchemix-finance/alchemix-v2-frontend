@@ -20,7 +20,7 @@
   let borrowAmount = 0;
   let exportAndTransfer = false;
   let targetWallet;
-  let rng;
+  let rng = false;
   let targetWalletVerified = false;
 
   const setExportAndTransfer = () => {
@@ -32,7 +32,7 @@
       targetWalletVerified = true;
     } else {
       targetWalletVerified = false;
-      rng = Math.floor(Math.random() * 100000);
+      rng = false;
     }
   };
 
@@ -76,7 +76,7 @@
       return BigNumber.from(0);
     }
     return utils
-      .parseUnits(_aggregatedDebtStore[_selectedVault].toString(), 18)
+      .parseUnits(utils.formatUnits(_aggregatedDebtStore[_selectedVault], 18), 18)
       .sub(_vaultsStore[_selectedVault].debt.debt);
   }
 
@@ -97,7 +97,7 @@
         error: false,
       };
     } catch {
-      rng = Math.floor(Math.random() * 100000);
+      rng = false;
       return {
         address: undefined,
         error: true,
@@ -105,9 +105,11 @@
     }
   }
 
-  $: console.log($vaultsAggregatedDebt[0].toString(), $vaultsStore, defaultSelectedVault);
+  $: console.log($vaultsAggregatedDebt[1].toString(), $vaultsStore, defaultSelectedVault);
+  $: console.log($vaultsStore);
   $: availAmount = calculateAvailableAmount($vaultsAggregatedDebt, $vaultsStore, defaultSelectedVault);
   $: maxDebtAmount = getMaxDebt($vaultsAggregatedDebt, defaultSelectedVault);
+  $: console.log(maxDebtAmount.toString());
 
   $: borrowAmountBN = utils.parseEther(`${borrowAmount}` || `0`);
 
@@ -208,7 +210,7 @@
           {/if}
           <ToggleSwitch
             label="{$_('modals.transfer_disclaimer')}"
-            on:toggleChange="{() => verifyAddress(addressData.error)}"
+            on:toggleChange="{() => checkIfAddressIsValid(targetWallet)}"
             forceState="{rng}"
           />
         </div>

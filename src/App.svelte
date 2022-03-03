@@ -6,6 +6,7 @@
   import Modal from '@components/elements/Modal.svelte';
   import StateManager from '@components/composed/StateManager.svelte';
   import network from '@stores/network';
+  import settings from '@stores/settings';
 
   // middleware
   import { getFiatRates, getGasPrices, getTokenPrices } from '@middleware/zapper';
@@ -39,8 +40,12 @@
 
   function gasPriceUpdater() {
     gasTimer = window.setTimeout(async () => {
-      await getGasPrices();
-      if (gasTimer !== 'stopped') gasPriceUpdater();
+      try {
+        await getGasPrices();
+        if (gasTimer !== 'stopped') gasPriceUpdater();
+      } catch (e) {
+        console.log('Error fetching gas prices from zapper', e);
+      }
     }, 10000);
   }
 
@@ -60,46 +65,73 @@
   });
 </script>
 
-<svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
+<style>
+  .regularBg {
+    background: linear-gradient(171.08deg, #010101 -11.16%, #141921 6.1%, #0a0d11 49.05%, #000000 93.22%)
+      no-repeat fixed;
+    color: #f5f5f5;
+  }
 
-<StateManager>
-  <Modal>
-    <Router url="{url}">
-      <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
-        <div class="col-span-12 bg-grey30 pl-8 pt-5 pb-5 border-grey5 border-b">
-          <HeaderBar />
-        </div>
-        {#if $network.id === 1}
-          <Emergency />
-        {/if}
-        <div class="col-span-12 flex">
-          <div class="pl-8 pr-9 pt-8 w-96 sm:hidden xl:block">
-            <SideBar />
+  .inverseBg {
+    background: linear-gradient(171.08deg, #fefefe -11.16%, #ebe6de 6.1%, #f5f2ee 49.05%, #fff 93.22%)
+      no-repeat fixed;
+    color: #0a0a0a;
+  }
+</style>
+
+<svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
+<div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'}">
+  <StateManager>
+    <Modal>
+      <Router url="{url}">
+        <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
+          <div
+            class="col-span-12 pl-8 pt-5 pb-5 {$settings.invertColors
+              ? 'bg-grey30inverse border-grey5inverse'
+              : 'bg-grey30 border-grey5'} border-b"
+          >
+            <HeaderBar />
           </div>
-          <div class="border-l border-grey5 w-full sm:hidden xl:block">
-            {#if walletChecked}
-              <Route path="/accounts" component="{Accounts}" />
-              <Route path="/vaults" component="{Vaults}" />
-              <Route path="/transmuter" component="{Transmuter}" />
-              <Route path="/farms" component="{Farms}" />
-              <Route path="/governance" component="{Governance}" />
-              <Route path="/settings" component="{Settings}" />
-              <Route path="/" component="{Landing}" />
-              <Route path="/*" component="{Error}" />
-              <Route path="/sentinel" component="{Sentinel}" />
-            {/if}
+          {#if $network.id === 1}
+            <Emergency />
+          {/if}
+          <div class="col-span-12 flex">
+            <div class="pl-8 pr-9 pt-8 w-96 sm:hidden xl:block">
+              <SideBar />
+            </div>
+            <div
+              class="border-l {$settings.invertColors
+                ? 'border-grey5inverse'
+                : 'border-grey5'} w-full sm:hidden xl:block"
+            >
+              {#if walletChecked}
+                <Route path="/accounts" component="{Accounts}" />
+                <Route path="/vaults" component="{Vaults}" />
+                <Route path="/transmuter" component="{Transmuter}" />
+                <Route path="/farms" component="{Farms}" />
+                <Route path="/governance" component="{Governance}" />
+                <Route path="/settings" component="{Settings}" />
+                <Route path="/" component="{Landing}" />
+                <Route path="/*" component="{Error}" />
+                <Route path="/sentinel" component="{Sentinel}" />
+              {/if}
+            </div>
+          </div>
+          <div class="sm:block xl:hidden col-span-12">
+            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
+            <p class="text-center mb-12">
+              {$_('small_screen.message')}
+            </p>
+          </div>
+          <div
+            class="col-span-12 pl-8 py-12 border-t {$settings.invertColors
+              ? 'border-grey5inverse'
+              : 'border-grey5'}"
+          >
+            <Footer />
           </div>
         </div>
-        <div class="sm:block xl:hidden col-span-12">
-          <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
-          <p class="text-center mb-12">
-            {$_('small_screen.message')}
-          </p>
-        </div>
-        <div class="col-span-12 pl-8 py-12 border-t border-grey5">
-          <Footer />
-        </div>
-      </div>
-    </Router>
-  </Modal>
-</StateManager>
+      </Router>
+    </Modal>
+  </StateManager>
+</div>
