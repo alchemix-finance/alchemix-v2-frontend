@@ -165,7 +165,7 @@
           : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
       if (farm.body.isActive) {
-        const adapter = registeredFarmAdapters[farm.type];
+        const adapter = new registeredFarmAdapters[farm.type](farm.body, $global.tokenPrices);
 
         return {
           col0: {
