@@ -19,7 +19,7 @@
   import StakedCell from '@components/composed/Table/farms/StakedCell';
   import ClaimableCell from '@components/composed/Table/farms/ClaimableCell';
   import { BarLoader } from 'svelte-loading-spinners';
-  import global from '../stores/global';
+  import tokenPrices from '@stores/tokenPrices';
   import { addressStore, farmsStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
@@ -151,7 +151,7 @@
     [FarmTypes.CRV]: ExpandedCrvFarm,
   };
 
-  const renderRows = (farmsStore, tokenPrices, currentFilter) => {
+  const renderRows = (farmsStore, _tokenPrices, currentFilter) => {
     return farmsStore
       .filter(
         (val) =>
@@ -166,7 +166,7 @@
             : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
         if (farm.body.isActive) {
-          const adapter = new registeredFarmAdapters[farm.type](farm.body, tokenPrices);
+          const adapter = new registeredFarmAdapters[farm.type](farm.body, _tokenPrices);
 
           return {
             col0: {
@@ -253,7 +253,7 @@
       });
   };
 
-  $: filteredRows = renderRows($farmsStore, $global.tokenPrices, currentFilter);
+  $: filteredRows = renderRows($farmsStore, $tokenPrices, currentFilter);
 
   let loadingVaults = true;
 
@@ -267,8 +267,7 @@
     loadingVaults = false;
   };
 
-  $: if ($addressStore && $global.tokenPrices) {
-    console.log('triggered farm init');
+  $: if ($addressStore && $tokenPrices.length > 0) {
     onInitialize();
   }
 </script>

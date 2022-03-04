@@ -2,11 +2,17 @@
 
 import axios from 'axios';
 import global from '../stores/global';
+import tokenPrices from '@stores/tokenPrices';
 
 let _global;
+let _tokenPrices;
 
 global.subscribe((val) => {
   _global = val;
+});
+
+tokenPrices.subscribe((val) => {
+  _tokenPrices = val;
 });
 
 /*
@@ -43,7 +49,9 @@ export async function getTokenPrices() {
   await axios(connector('prices'))
     .then((result) => {
       _global.tokenPrices = result.data;
+      _tokenPrices = result.data;
       global.set({ ..._global });
+      tokenPrices.set([..._tokenPrices]);
     })
     .catch((error) => {
       console.error(error);
