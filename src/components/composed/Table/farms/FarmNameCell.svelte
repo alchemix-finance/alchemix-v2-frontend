@@ -11,7 +11,7 @@
   <div class="relative">
     <img src="images/icons/{farmIcon || defaultIcon}" alt="{farmName}" class="h-12 w-12" />
     {#if tokenIcon}
-      <img src="images/icons/{tokenIcon}.png" alt="{farmName}" class="h-9 w-9 absolute left-6 top-6" />
+      <img src="images/icons/{tokenIcon}.svg" alt="{farmName}" class="h-9 w-9 absolute left-6 top-6" />
     {/if}
   </div>
   <div>

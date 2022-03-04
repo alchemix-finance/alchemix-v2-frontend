@@ -45,6 +45,13 @@ export const poolLookup = [
     tokenIcon: undefined,
   },
   {
+    address: '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',
+    title: 'alETH',
+    subtitle: 'Alchemix alETH',
+    farmIcon: 'aleth_med.svg',
+    tokenIcon: undefined,
+  },
+  {
     address: '0xdbdb4d16eda451d0503b854cf79d55697f90c8df',
     title: 'ALCX',
     subtitle: 'Alchemix ALCX',

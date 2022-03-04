@@ -8,6 +8,7 @@
   import AvatarWithIndicator from '../elements/AvatarWithIndicator.svelte';
   import account from '@stores/account';
   import network from '@stores/network';
+  import settings from '@stores/settings';
 
   let indicatorColor;
   let balanceCollapsed = true;
@@ -140,7 +141,10 @@
       </div>
     {/if}
     {#if !balanceCollapsed}
-      <div class="mt-2 py-2 px-4 bg-grey15 rounded" transition:slide>
+      <div
+        class="mt-2 py-2 px-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'} rounded"
+        transition:slide
+      >
         <WalletBalance />
       </div>
     {/if}

@@ -16,13 +16,14 @@ export async function toggleTokenEnabled(
       VaultConstants[vaultType].alchemistContractSelector,
       signerStore,
     );
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     const selector = (await alchemistInstance.isSupportedUnderlyingToken(tokenAddress))
       ? 'setUnderlyingTokenEnabled'
       : 'setYieldTokenEnabled';
     setPendingWallet();
     const tx = (await alchemistInstance[selector](tokenAddress, newState, {
-      gasPrice: gas,
+      gasPrice,
     })) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {

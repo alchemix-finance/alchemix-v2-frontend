@@ -8,10 +8,16 @@
   import global from '../stores/global';
   import settings from '../stores/settings';
   import account from '@stores/account';
-  import { setCurrency, setLanguage, setGas, setVerbose } from '@helpers/userSettings';
+  import { setCurrency, setLanguage, setGas, setVerbose, setInvert } from '@helpers/userSettings';
   import { connect } from '@helpers/walletManager';
+  import ToggleSwitch from '../components/elements/ToggleSwitch.svelte';
 
   const debugging = Boolean(parseInt(process.env.DEBUG_MODE));
+
+  const switchColorScheme = (event) => {
+    setInvert(event.detail.value);
+    location.reload();
+  };
 </script>
 
 <ViewContainer>
@@ -27,7 +33,7 @@
     <span class="ml-4">{$_('settings')}</span>
   </div>
   <BorderContainer>
-    <div class="bg-grey10 rounded p-8">
+    <div class="{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} rounded p-8">
       {#if debugging}
         <div class="mb-4">
           <p class="opacity-50 mb-3">Developer</p>
@@ -37,20 +43,26 @@
               <Dropdown>
                 <div
                   slot="label"
-                  class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1"
+                  class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+                    ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+                    : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
                 >
                   <p class="mr-3 w-full text-center">{$settings.verboseConsole}</p>
                   <p>▾</p>
                 </div>
                 <ul class="w-full" slot="options">
                   <li
-                    class="cursor-pointer border-b border-grey10 h-8 px-3 py-1 hover:bg-grey10"
+                    class="cursor-pointer border-b h-8 px-3 py-1 {$settings.invertColors
+                      ? 'border-grey10inverse hover:bg-grey10inverse'
+                      : 'border-grey10 hover:bg-grey10'}"
                     on:click="{() => setVerbose(false)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">False</p>
                   </li>
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10 w-full"
+                    class="cursor-pointer h-8 px-3 py-1 {$settings.invertColors
+                      ? 'border-grey10inverse hover:bg-grey10inverse'
+                      : 'border-grey10 hover:bg-grey10'} w-full"
                     on:click="{() => setVerbose(true)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">True</p>
@@ -69,7 +81,9 @@
             <Dropdown>
               <div
                 slot="label"
-                class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1"
+                class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+                  ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+                  : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
               >
                 <p class="mr-3 w-full text-center">
                   {$settings.baseCurrency?.symbol}
@@ -79,10 +93,11 @@
               <ul slot="options" class="w-full">
                 {#each $global.allCurrencies as currency, index}
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10 {index + 1 ===
-                    $global.allCurrencies.length
+                    class="cursor-pointer h-8 px-3 py-1 {$settings.invertColors
+                      ? 'hover:bg-grey10inverse'
+                      : 'hover:bg-grey10'} {index + 1 === $global.allCurrencies.length
                       ? ''
-                      : 'border-b border-grey10'}"
+                      : `border-b ${$settings.invertColors ? 'border-grey10inverse' : 'border-grey10'}`}"
                     on:click="{() => setCurrency(currency)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
@@ -100,7 +115,9 @@
             <Dropdown>
               <div
                 slot="label"
-                class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1"
+                class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+                  ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+                  : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
               >
                 <p class="mr-3 w-full text-center">
                   {$settings.userLanguage?.name}
@@ -110,10 +127,11 @@
               <ul slot="options" class="w-full">
                 {#each $global.languages as language, index}
                   <li
-                    class="cursor-pointer h-8 px-3 py-1 hover:bg-grey10 {index + 1 ===
-                    $global.languages.length
+                    class="cursor-pointer h-8 px-3 py-1 {$settings.invertColors
+                      ? 'hover:bg-grey10inverse'
+                      : 'hover:bg-grey10'} {index + 1 === $global.languages.length
                       ? ''
-                      : 'border-b border-grey10'}"
+                      : `border-b ${$settings.invertColors ? 'border-grey10inverse' : 'border-grey10'}`}"
                     on:click="{() => setLanguage(language)}"
                   >
                     <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
@@ -123,6 +141,21 @@
                 {/each}
               </ul>
             </Dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <p class="opacity-50 mb-3">Theme</p>
+        <div class="grid grid-cols-3 mb-3">
+          <p>Colorscheme</p>
+          <div>
+            <ToggleSwitch
+              label="Nigredo"
+              secondLabel="Albedo"
+              forceState="{$settings.invertColors}"
+              on:toggleChange="{(event) => switchColorScheme(event)}"
+            />
           </div>
         </div>
       </div>

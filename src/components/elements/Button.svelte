@@ -1,13 +1,14 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import settings from '@stores/settings';
 
   export let label;
   export let disabled = false;
-  export let borderColor = 'grey5';
-  export let backgroundColor = 'grey10';
-  export let hoverColor = 'grey1';
-  export let textColor = 'white2';
-  export let textColorInactive = 'lightgrey20';
+  export let borderColor = $settings.invertColors ? 'grey5inverse' : 'grey5';
+  export let backgroundColor = $settings.invertColors ? 'grey10inverse' : 'grey10';
+  export let hoverColor = $settings.invertColors ? 'grey1inverse' : 'grey1';
+  export let textColor = $settings.invertColors ? 'white2inverse' : 'white2';
+  export let textColorInactive = $settings.invertColors ? 'lightgrey20inverse' : 'lightgrey20';
   export let solid = true;
   export let borderSize = '1';
   export let uppercase = false;

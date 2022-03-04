@@ -113,6 +113,6 @@ export async function sendVote(voteData) {
     return true;
   } catch (e) {
     console.trace(e);
-    return false;
+    return e;
   }
 }

@@ -1,4 +1,5 @@
 <script>
+  import settings from '@stores/settings';
   import * as jdenticon from 'jdenticon';
 
   export let hash;
@@ -12,6 +13,8 @@
     {@html pfp}
   </div>
   <div
-    class="absolute border-2 border-grey10 -bottom-0.5 -right-0.5 rounded-full w-2.5 h-2.5 bg-{bgColor}"
+    class="absolute border-2 {$settings.invertColors
+      ? 'border-grey10inverse'
+      : 'border-grey10'} -bottom-0.5 -right-0.5 rounded-full w-2.5 h-2.5 bg-{bgColor}"
   ></div>
 </div>

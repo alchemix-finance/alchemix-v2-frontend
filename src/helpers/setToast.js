@@ -12,6 +12,15 @@ export function closeToast() {
   toastConfig.set({ ...toastConfig });
 }
 
+export function setPendingGas() {
+  _toastConfig.kind = 'pending';
+  _toastConfig.title = getItl('toast.pending');
+  _toastConfig.subtitle = getItl('toast.pending_gas');
+  _toastConfig.closeOnMount = false;
+  _toastConfig.visible = true;
+  toastConfig.set({ ..._toastConfig });
+}
+
 export function setPendingWallet() {
   _toastConfig.kind = 'pending';
   _toastConfig.title = getItl('toast.pending');
@@ -97,5 +106,16 @@ export function setSuccessVote() {
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
   _toastConfig.closeTimeout = 2000;
+  toastConfig.set({ ..._toastConfig });
+}
+
+export function setRejectedVote() {
+  _toastConfig.kind = 'error';
+  _toastConfig.title = getItl('toast.error');
+  _toastConfig.subtitle = getItl('toast.vote_rejected');
+  _toastConfig.closeOnMount = true;
+  _toastConfig.spinner = false;
+  _toastConfig.visible = true;
+  _toastConfig.closeTimeout = 4000;
   toastConfig.set({ ..._toastConfig });
 }

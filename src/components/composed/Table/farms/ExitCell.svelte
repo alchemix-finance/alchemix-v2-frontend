@@ -1,4 +1,5 @@
 <script>
+
   import Button from '../../../elements/Button.svelte';
   import getUserGas from '../../../../helpers/getUserGas';
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
@@ -13,6 +14,8 @@
   import { BigNumber, utils } from 'ethers';
   import { addressStore } from '@stores/v2/alcxStore';
   import { fetchCrvFarmByUuid, fetchInternalFarmByUuid, fetchSushiFarmByUuid } from '@stores/v2/asyncMethods';
+  import settings from '@stores/settings';
+
 
   export let farmType;
   export let farm;
@@ -21,6 +24,7 @@
     const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
 
     try {
+
       if (farmType === FarmTypes.INTERNAL) {
         const castedFarm = castToInternalFarmType(farm);
 
@@ -64,6 +68,7 @@
           fetchCrvFarmByUuid(castedFarm.uuid, [$signer]);
         });
       }
+
     } catch (e) {
       setError(e.message);
       console.error(e);
@@ -89,7 +94,7 @@
 {#if farm}
   <Button
     borderColor="red4"
-    backgroundColor="red2"
+    backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
     hoverColor="red3"
     label="Exit"
     solid="{false}"

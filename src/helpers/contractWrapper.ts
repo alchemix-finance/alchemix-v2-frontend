@@ -31,8 +31,8 @@ export const externalContractWrapper = (selector: string, signer: ethers.Signer,
   await contract.approve(spender, amount || amountInfinite);
 };
 
- * 
-*/
+ *
+ */
 
 export const erc20Contract = (address: string, signer: ethers.Signer) => {
   const _contract = new ethers.Contract(address, genericAbi, signer);

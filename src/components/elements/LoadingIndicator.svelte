@@ -3,6 +3,7 @@
   import { onMount, onDestroy } from 'svelte';
   import * as LottiePlayer from '@lottiefiles/lottie-player';
   import backgroundLoading from '../../stores/backgroundLoading';
+  import settings from '@stores/settings';
 
   let startStamp;
   let timer;
@@ -36,7 +37,9 @@
 {#if showRefresh}
   <div class="inline-block relative w-full" on:click="{refresh}">
     <div
-      class="h-8 px-3 py-1 flex items-center text-opacity-50 select-none cursor-pointer font-alcxTitles text-xs uppercase rounded border border-red4 text-white2 bg-red2 hover:bg-red4 hover:text-opacity-100"
+      class="h-8 px-3 py-1 flex items-center text-opacity-50 select-none cursor-pointer font-alcxTitles text-xs uppercase rounded border border-red4 {$settings.invertColors
+        ? 'text-white2inverse bg-red5'
+        : 'text-white2 bg-red2'} hover:bg-red3 hover:text-opacity-100"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +61,9 @@
 {/if}
 <div class="inline-block relative w-full">
   <div
-    class="h-8 px-3 py-1 flex items-center text-opacity-50 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border border-grey5 text-white2 bg-grey10 hover:bg-grey1 hover:text-opacity-100"
+    class="h-8 px-3 py-1 flex items-center text-opacity-50 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+      ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+      : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'} hover:text-opacity-100"
   >
     <lottie-player
       src="images/lotties/AlchemixSpinning.json"

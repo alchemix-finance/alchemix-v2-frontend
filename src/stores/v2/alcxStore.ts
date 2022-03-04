@@ -19,6 +19,7 @@ export type BodyVaultType = {
   underlyingPerShare: ethers.BigNumber;
   tvl: ethers.BigNumber;
   apy: number;
+  useGateway: boolean;
 };
 
 export interface TokensType {
@@ -48,6 +49,12 @@ export interface TransmuterType {
   unexchangedBalanceBN: ethers.BigNumber;
 }
 
+export interface AdapterType {
+  type: VaultTypes;
+  contractSelector: string;
+  price: ethers.BigNumber;
+}
+
 export interface TransmutersType {
   [key: number]: {
     transmuters: TransmuterType[];
@@ -65,6 +72,7 @@ export const balancesStore = writable<BalanceType[]>([]);
 export const tokensStore = writable<TokensType>({});
 export const vaultsStore = writable<VaultsType>({});
 export const transmutersStore = writable<TransmutersType>({});
+export const adaptersStore = writable<AdaptersType>({});
 export const sentinelStore = writable<boolean>(undefined);
 export const controllerStore = writable<[]>([]);
 

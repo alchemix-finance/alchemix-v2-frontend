@@ -53,7 +53,8 @@
     "intro_subtitle_2": "Your only debt is time",
     "button_label": "Get your first Self-Repaying Loan",
     "learn_more": "Learn more",
-    "short_explainer": "By borrowing a synthetic version of the asset you deposit you'll avoid the risk of liquidation. Defi innovation on a whole new level, Alchemix is the first same-asset loan product in DeFi. Using your collateral we earn yield on your behalf to pay off your loan automagically!",
+    "short_explainer": "By borrowing a synthetic version of the asset you deposit you'll avoid the risk of liquidation. Defi innovation on a whole new level, Alchemix is the first same-asset loan product in DeFi.",
+    "short_explainer_end": "Using your collateral we earn yield on your behalf to pay off your loan automagically!",
     "path_headline": "Choose your path",
     "path_subtitle": "A multi-functional account for all your financial needs",
     "leverage_headline": "Leverage your assets",
@@ -126,7 +127,7 @@
     "debt": "Debt",
     "interest": "Interest",
     "total_deposit": "Total Deposit",
-    "aggregate_apy": "Aggregate APY"
+    "aggregate_apy": "Average APY"
   },
   "table": {
     "strategy": "Strategy",
@@ -153,6 +154,7 @@
     "ipfs": "IPFS",
     "no_strategies": "You don't have any active strategies.",
     "all_strategies": "You are using all available strategies.",
+    "no_strategies_avail": "No strategies are available at this moment.",
     "your_strategies_select": "Your Strategies",
     "all_strategies_select": "All Strategies",
     "unused_strategies_select": "Unused Strategies",
@@ -182,6 +184,7 @@
     "welcome_back": "Welcome back",
     "pending": "Pending",
     "pending_sign": "Sign transaction in wallet",
+    "pending_gas": "Fetching gas price",
     "pending_confirm": "Confirming transaction",
     "success": "Success",
     "tx_confirmed": "Transaction was confirmed",
@@ -189,6 +192,7 @@
     "init_data": "Initializing Data",
     "registering_vote": "Registering Vote on Snapshot",
     "vote_registered": "Vote was registered",
+    "vote_rejected": "User Rejected Metamask Signature",
     "currency_updated": "Currency updated",
     "using": "Using",
     "as_default": "as default",
@@ -214,6 +218,15 @@
     "transfer_loan": "Transfer loan to a different wallet",
     "target_wallet": "Target Wallet",
     "transfer_error": "The provided address is not valid. Please check the input.",
-    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan"
+    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan",
+    "slippage_below_safe": "Slippage tolerance very low, transaction might revert.",
+    "slippage_above_max": "Slippage higher than maximum possible amount.",
+    "slippage_above_safe": "Slippage tolerance very high, loss of funds might occur."
+  },
+  "metrics": {
+    "total_deposit": "Total Deposit",
+    "open_debt": "Open Debt",
+    "open_credit": "Open Credit",
+    "global_tvl": "Global TVL"
   }
 }

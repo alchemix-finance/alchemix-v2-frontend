@@ -1,5 +1,4 @@
 <script>
-  import { utils } from 'ethers';
   import { sentinelStore, tokensStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { VaultTypes } from '@stores/v2/types';
@@ -9,11 +8,12 @@
   import { fetchTokenEnabledStatus } from '@stores/v2/asyncMethods';
   import { getTokenName } from '@helpers/getTokenData';
   import getContract, { getAddress } from '@helpers/getContract';
-  import getUserGas from '@helpers/getUserGas';
+  import { gasResolver } from '@helpers/getUserGas';
   import { setError } from '@helpers/setToast';
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import settings from '@stores/settings';
 
   let tokenList = [];
 
@@ -59,15 +59,16 @@
     await toggleTokenEnabled(VaultTypes.alUSD, token, newStatus, [$signer]).then(() => {
       tokenList.length = 0;
       initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
+      initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
     });
   };
 
   const toggleTransmuterStatus = async (transmuter, newState) => {
     const contract = getContract(`TransmuterV2_${transmuter}`);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = gasResolver();
     try {
       await contract.setPause(newState, {
-        gasPrice: gas,
+        gasPrice,
       });
     } catch (e) {
       setError(e.data ? await e.data.message : e.message);
@@ -78,10 +79,10 @@
   const toggleAlchemistStatus = async (altoken, alchemist, newState) => {
     const contract = getContract(altoken);
     const targetAlchemist = await getAddress(`AlchemistV2_${alchemist}`);
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = gasResolver();
     try {
       await contract.pauseAlchemist(targetAlchemist, newState, {
-        gasPrice: gas,
+        gasPrice,
       });
     } catch (e) {
       setError(e.data ? await e.data.message : e.message);
@@ -90,6 +91,7 @@
   };
 
   $: initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
+  $: initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
 
   onMount(() => {
     if (!$sentinelStore) {
@@ -108,9 +110,16 @@
   <div class="w-full flex flex-col space-y-4">
     <ContainerWithHeader canToggle="{true}" isVisible="{false}">
       <p class="inline-block self-center" slot="header">Alchemists</p>
-      <div slot="body" class="p-4 bg-grey15 flex flex-col space-y-4">
+      <div
+        slot="body"
+        class="p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'} flex flex-col space-y-4"
+      >
         {#each alTokenList as token}
-          <div class="w-full flex flex-row justify-between rounded p-2 hover:bg-lightgrey20 transition-all">
+          <div
+            class="w-full flex flex-row justify-between rounded p-2 hover:{$settings.invertColors
+              ? 'bg-lightgrey20inverse'
+              : 'bg-lightgrey20'} transition-all"
+          >
             <div class="flex flex-col w-max self-center">
               <p class="text-sm">Token</p>
               <p>{token.name}</p>
@@ -121,8 +130,8 @@
             </div>
             <button
               class="w-80 rounded border py-2 px-4 self-center transition-all {!token.isPaused
-                ? 'border-red1 bg-red2 hover:bg-red3'
-                : 'border-green1 bg-black2 hover:bg-green2'}"
+                ? `border-red1 ${$settings.invertColors ? 'bg-red5' : 'bg-red2'} hover:bg-red3`
+                : `border-green1 ${$settings.invertColors ? 'bg-green7' : 'bg-black2'} hover:bg-green2`}"
               on:click="{() => toggleAlchemistStatus(token.token, token.alchemist, !token.isPaused)}"
               >{token.isPaused ? 'Resume' : 'Pause'} {token.name}
             </button>
@@ -133,9 +142,16 @@
 
     <ContainerWithHeader canToggle="{true}" isVisible="{false}">
       <p class="inline-block self-center" slot="header">Transmuters</p>
-      <div slot="body" class="p-4 bg-grey15 flex flex-col space-y-4">
+      <div
+        slot="body"
+        class="p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'} flex flex-col space-y-4"
+      >
         {#each transmuterList as transmuter}
-          <div class="w-full flex flex-row justify-between rounded p-2 hover:bg-lightgrey20 transition-all">
+          <div
+            class="w-full flex flex-row justify-between rounded p-2 hover:{$settings.invertColors
+              ? 'bg-lightgrey20inverse'
+              : 'bg-lightgrey20'} transition-all"
+          >
             <div class="flex flex-col w-max self-center">
               <p class="text-sm">Transmuter</p>
               <p>{transmuter.name}</p>
@@ -146,8 +162,8 @@
             </div>
             <button
               class="w-80 rounded border py-2 px-4 self-center transition-all {!transmuter.isPaused
-                ? 'border-red1 bg-red2 hover:bg-red3'
-                : 'border-green1 bg-black2 hover:bg-green2'}"
+                ? `border-red1 ${$settings.invertColors ? 'bg-red5' : 'bg-red2'} hover:bg-red3`
+                : `border-green1 ${$settings.invertColors ? 'bg-green7' : 'bg-black2'} hover:bg-green2`}"
               on:click="{() => toggleTransmuterStatus(transmuter.name, !transmuter.isPaused)}"
               >{transmuter.isPaused ? 'Resume' : 'Pause'} {transmuter.name} Transmuter
             </button>
@@ -158,9 +174,16 @@
 
     <ContainerWithHeader canToggle="{true}" isVisible="{false}">
       <p class="inline-block self-center" slot="header">Tokens</p>
-      <div slot="body" class="p-4 bg-grey15 flex flex-col space-y-4">
+      <div
+        slot="body"
+        class="p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'} flex flex-col space-y-4"
+      >
         {#each tokenList as token}
-          <div class="w-full flex flex-row justify-between rounded p-2 hover:bg-lightgrey20 transition-all">
+          <div
+            class="w-full flex flex-row justify-between rounded p-2 hover:{$settings.invertColors
+              ? 'bg-lightgrey20inverse'
+              : 'bg-lightgrey20'} transition-all"
+          >
             <div class="flex flex-col w-max self-center">
               <p class="text-sm">{token.name}</p>
               <p class="text-lg font-alcxMono">{token.address}</p>
@@ -175,8 +198,8 @@
             </div>
             <button
               class="w-80 rounded border py-2 px-4 self-center transition-all {token.isEnabled
-                ? 'border-red1 bg-red2 hover:bg-red3'
-                : 'border-green1 bg-black2 hover:bg-green2'}"
+                ? `border-red1 ${$settings.invertColors ? 'bg-red5' : 'bg-red2'} hover:bg-red3`
+                : `border-green1 ${$settings.invertColors ? 'bg-green7' : 'bg-black2'} hover:bg-green2`}"
               on:click="{() => toggleTokenStatus(token.address, !token.isEnabled)}"
               >{token.isEnabled ? 'Pause' : 'Resume'} {token.name}
             </button>
