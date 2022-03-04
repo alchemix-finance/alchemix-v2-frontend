@@ -140,7 +140,6 @@ export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]
 }
 
 export function normalizeAmount(_amount: BigNumber, _decimalsFrom: number, _decimalsTo: number) {
-  console.log(_amount.toString(), _decimalsFrom, _decimalsTo);
   return utils.parseUnits(utils.formatUnits(_amount, _decimalsFrom), _decimalsTo);
 }
 

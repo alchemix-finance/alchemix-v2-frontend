@@ -22,7 +22,6 @@
 
   $: checkboxState, broadcastValue();
   $: forceState, updateState(forceState);
-  $: console.log('force', forceState);
 </script>
 
 <style>
