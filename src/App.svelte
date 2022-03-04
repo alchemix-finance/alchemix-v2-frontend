@@ -80,7 +80,7 @@
 </style>
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
-<div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'}">
+<div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'} min-h-screen">
   <StateManager>
     <Modal>
       <Router url="{url}">
