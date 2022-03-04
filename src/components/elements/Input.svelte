@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+
   export let value;
   export let inputFilter = (filter) => true;
   let _value;

@@ -12,6 +12,7 @@
   import { signer } from '@stores/v2/derived';
   import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
   import { modalReset } from '@stores/modal';
+  import settings from '@stores/settings';
 
   export let selectedVaultsType;
 
@@ -135,7 +136,9 @@
       {#if selectedVaultsType.length > 1}
         <select
           id="selectVaultType"
-          class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+          class="cursor-pointer border {$settings.invertColors
+            ? 'border-grey5inverse bg-grey1inverse'
+            : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
           bind:value="{currentSelectedVaultType}"
         >
           {#each selectedVaultsType as vaultType}
@@ -145,7 +148,9 @@
       {/if}
       <select
         id="selectUnderlying"
-        class="cursor-pointer border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-24"
+        class="cursor-pointer border {$settings.invertColors
+          ? 'border-grey5inverse bg-grey1inverse'
+          : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
         bind:value="{currentSelectedUnderlyingToken}"
       >
         {#each tokensForVaultType as token, index}
@@ -162,13 +167,19 @@
       )}
       {tokensForVaultType[currentSelectedUnderlyingToken].symbol}
     </label>
-    <div class="flex bg-grey3 rounded border border-grey3">
+    <div
+      class="flex rounded border {$settings.invertColors
+        ? 'bg-grey3inverse border-grey3inverse'
+        : 'bg-grey3 border-grey3'}"
+    >
       <div class="w-full">
         <InputNumber
           id="repayInput"
           placeholder="~0.00 {tokensForVaultType[currentSelectedUnderlyingToken].symbol}"
           bind:value="{inputRepayAmount}"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+            ? 'bg-grey3inverse'
+            : 'bg-grey3'}"
         />
       </div>
       <div class="flex flex-col">
@@ -176,8 +187,8 @@
           label="MAX"
           width="w-full"
           fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
           borderSize="0"
           height="h-10"
           on:clicked="{() => setInputMax(tokensForVaultType[currentSelectedUnderlyingToken], debtAmount)}"
@@ -186,8 +197,8 @@
           label="CLEAR"
           width="w-max"
           fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
           borderSize="0"
           height="h-10"
           on:clicked="{() => (inputRepayAmount = '')}"
@@ -202,7 +213,7 @@
     <Button
       label="{$_('actions.repay')}"
       borderColor="green4"
-      backgroundColor="black1"
+      backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"

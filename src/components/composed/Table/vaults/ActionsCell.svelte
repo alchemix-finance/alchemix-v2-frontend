@@ -3,6 +3,7 @@
   import Button from '@components/elements/Button.svelte';
   import Deposit from '@components/composed/Modals/vaults/Deposit.svelte';
   import Withdraw from '@components/composed/Modals/vaults/Withdraw.svelte';
+  import settings from '@stores/settings';
 
   import { showModal } from '@stores/modal';
 
@@ -26,7 +27,7 @@
   <Button
     label="{$_('actions.deposit')}"
     borderColor="green4"
-    backgroundColor="black1"
+    backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
     hoverColor="green4"
     on:clicked="{openDeposit}"
   />
@@ -34,8 +35,8 @@
   <Button
     label="{$_('actions.withdraw')}"
     borderColor="red4"
-    backgroundColor="red2"
-    hoverColor="red4"
+    backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
+    hoverColor="red3"
     solid="{false}"
     on:clicked="{openWithdraw}"
   />
