@@ -151,105 +151,109 @@
     [FarmTypes.CRV]: ExpandedCrvFarm,
   };
 
-  $: filteredRows = $farmsStore
-    .filter(
-      (val) =>
-        InternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined ||
-        ExternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined,
-    )
-    .filter(filterFuncs[currentFilter])
-    .map((farm) => {
-      const farmMetadata =
-        farm.type === FarmTypes.INTERNAL
-          ? InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()]
-          : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
+  const renderRows = (farmsStore, globalStore, currentFilter) => {
+    return farmsStore
+      .filter(
+        (val) =>
+          InternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined ||
+          ExternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined,
+      )
+      .filter(filterFuncs[currentFilter])
+      .map((farm) => {
+        const farmMetadata =
+          farm.type === FarmTypes.INTERNAL
+            ? InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()]
+            : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
-      if (farm.body.isActive) {
-        const adapter = new registeredFarmAdapters[farm.type](farm.body, $global.tokenPrices);
+        if (farm.body.isActive) {
+          const adapter = new registeredFarmAdapters[farm.type](farm.body, globalStore.tokenPrices);
 
-        return {
-          col0: {
-            CellComponent: ExpandRowCell,
-            expandedRow: {
-              ExpandedRowComponent: registeredFarmComponents[farm.type],
+          return {
+            col0: {
+              CellComponent: ExpandRowCell,
+              expandedRow: {
+                ExpandedRowComponent: registeredFarmComponents[farm.type],
+              },
+              farm: adapter.getFarm(),
+              farmType: farm.type,
+              colSize: 1,
             },
-            farm: adapter.getFarm(),
-            farmType: farm.type,
-            colSize: 1,
-          },
-          col1: {
-            CellComponent: FarmNameCell,
-            farmName: farmMetadata.title,
-            farmSubtitle: farmMetadata.subtitle,
-            farmIcon: farmMetadata.farmIcon,
-            tokenIcon: farmMetadata.tokenIcon,
-            colSize: 3,
-            alignment: 'justify-self-start',
-          },
-          col2: {
-            CellComponent: CurrencyCell,
-            value: adapter.getTvl(),
-            colSize: 2,
-          },
-          col3: {
-            CellComponent: RewardCell,
-            rewards: farm.body.rewards,
-            colSize: 3,
-          },
-          col4: {
-            value: adapter.getApy() > 0 ? adapter.getApy() + '%' : 'NaN',
-            colSize: 1,
-          },
-          col5: {
-            CellComponent: ActionsCell,
-            label: $_('table.manage'),
-            expandedRow: {
-              ExpandedRowComponent: registeredFarmComponents[farm.type],
+            col1: {
+              CellComponent: FarmNameCell,
+              farmName: farmMetadata.title,
+              farmSubtitle: farmMetadata.subtitle,
+              farmIcon: farmMetadata.farmIcon,
+              tokenIcon: farmMetadata.tokenIcon,
+              colSize: 3,
+              alignment: 'justify-self-start',
             },
-            poolId: adapter.getFarm().poolId,
-            farmType: farm.type,
-            farm: adapter.getFarm(),
-            colSize: 3,
-          },
-        };
-      } else {
-        return {
-          col1: {
-            CellComponent: FarmNameCell,
-            tokenIcon: farmMetadata.tokenIcon,
-            farmIcon: farmMetadata.farmIcon,
-            farmName: farmMetadata.title,
-            farmSubtitle: farmMetadata.subtitle,
-            colSize: 7,
-            alignment: 'justify-self-start',
-          },
-          col2: {
-            CellComponent: StakedCell,
-            amount: farm.body.userDeposit,
-            tokenSymbol: farm.body.tokenSymbol,
-            colSize: 4,
-          },
-          col3: {
-            CellComponent: ClaimableCell,
-            rewardAmount: `${farm.body.rewards
-              .map((reward, index) => {
-                return `${farm.body.userUnclaimed} ${reward.tokenName} ${
-                  index !== farm.body.rewards.length - 1 ? '+' : ''
-                }`;
-              })
-              .join(' ')}`,
-            rewardToken: '',
-            colSize: 4,
-          },
-          col4: {
-            CellComponent: ExitCell,
-            farmType: farm.type,
-            farm: farm.body,
-            colSize: 5,
-          },
-        };
-      }
-    });
+            col2: {
+              CellComponent: CurrencyCell,
+              value: adapter.getTvl(),
+              colSize: 2,
+            },
+            col3: {
+              CellComponent: RewardCell,
+              rewards: farm.body.rewards,
+              colSize: 3,
+            },
+            col4: {
+              value: adapter.getApy() > 0 ? adapter.getApy() + '%' : 'NaN',
+              colSize: 1,
+            },
+            col5: {
+              CellComponent: ActionsCell,
+              label: $_('table.manage'),
+              expandedRow: {
+                ExpandedRowComponent: registeredFarmComponents[farm.type],
+              },
+              poolId: adapter.getFarm().poolId,
+              farmType: farm.type,
+              farm: adapter.getFarm(),
+              colSize: 3,
+            },
+          };
+        } else {
+          return {
+            col1: {
+              CellComponent: FarmNameCell,
+              tokenIcon: farmMetadata.tokenIcon,
+              farmIcon: farmMetadata.farmIcon,
+              farmName: farmMetadata.title,
+              farmSubtitle: farmMetadata.subtitle,
+              colSize: 7,
+              alignment: 'justify-self-start',
+            },
+            col2: {
+              CellComponent: StakedCell,
+              amount: farm.body.userDeposit,
+              tokenSymbol: farm.body.tokenSymbol,
+              colSize: 4,
+            },
+            col3: {
+              CellComponent: ClaimableCell,
+              rewardAmount: `${farm.body.rewards
+                .map((reward, index) => {
+                  return `${farm.body.userUnclaimed} ${reward.tokenName} ${
+                    index !== farm.body.rewards.length - 1 ? '+' : ''
+                  }`;
+                })
+                .join(' ')}`,
+              rewardToken: '',
+              colSize: 4,
+            },
+            col4: {
+              CellComponent: ExitCell,
+              farmType: farm.type,
+              farm: farm.body,
+              colSize: 5,
+            },
+          };
+        }
+      });
+  };
+
+  $: filteredRows = renderRows($farmsStore, $global, currentFilter);
 
   let loadingVaults = true;
 

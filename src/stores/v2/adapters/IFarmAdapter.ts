@@ -3,7 +3,7 @@ import { GenericFarmType } from '@stores/v2/types';
 export abstract class IFarmAdapter {
   genericFarm: GenericFarmType;
 
-  priceStore: any;
+  priceStore: any = [];
 
   protected constructor(farm: GenericFarmType, priceStore: any) {
     this.genericFarm = farm;
@@ -11,7 +11,15 @@ export abstract class IFarmAdapter {
   }
 
   getPrice(tokenAddress: string) {
-    return this.priceStore.find((entry) => `${entry}`.toLowerCase() === `${tokenAddress}`.toLowerCase());
+    if (!this.priceStore) {
+      console.error('!PriceStore undefined');
+
+      return 0;
+    }
+
+    return this.priceStore.find(
+      (entry) => `${entry.address}`.toLowerCase() === `${tokenAddress}`.toLowerCase(),
+    )?.price;
   }
 
   abstract getApy();
