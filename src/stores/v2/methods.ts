@@ -1,3 +1,14 @@
+
+import {
+  BalanceType,
+  BodyVaultType,
+  farmsStore,
+  FarmStoreType,
+  transmutersStore,
+  TransmuterType,
+} from '@stores/v2/alcxStore';
+import { ethers, providers } from 'ethers';
+import { VaultTypes } from '@stores/v2/types';
 import {
   BalanceType,
   BodyVaultType,
@@ -29,7 +40,10 @@ export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
   balancesStore.update((_prevStore) => {
-    const index = _prevStore.findIndex((bal) => bal.address === balanceAddress);
+    console.log(_prevStore);
+    const index = _prevStore.findIndex(
+      (bal) => `${bal.address}`.toLowerCase() === `${balanceAddress}`.toLowerCase(),
+    );
     if (index !== -1) {
       _prevStore[index].balance = balanceAmount;
     }
@@ -151,6 +165,30 @@ export const updateTransmuterByAddress = (
     );
     if (index !== -1) {
       _store[vaultType].transmuters[index] = transmuter;
+    }
+
+    return _store;
+  });
+
+export const updateAllFarms = (farms: FarmStoreType[]) =>
+  farmsStore.update((_store) => {
+    farms.forEach((farm) => {
+      const isAlreadyExists = _store.some((val) => val.body.tokenAddress === farm.body.tokenAddress);
+
+      if (!isAlreadyExists) {
+        _store.push(farm);
+      }
+    });
+
+    return _store;
+  });
+
+export const updateFarmByUuid = (uuid: string, farm: FarmStoreType) =>
+  farmsStore.update((_store) => {
+    const index = _store.findIndex((value) => value.body.uuid === uuid);
+
+    if (index !== -1) {
+      _store[index] = farm;
     }
 
     return _store;

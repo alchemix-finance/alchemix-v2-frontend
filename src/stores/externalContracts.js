@@ -6,6 +6,7 @@ const genericAbi = [
   'function decimals() view returns (uint8)',
   'function approve(address, uint) nonpayable returns (bool)',
   'function allowance(address, address) view returns (uint)',
+  'function totalSupply() view returns (uint256)',
 ];
 
 // const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));

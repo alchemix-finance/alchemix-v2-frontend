@@ -104,7 +104,8 @@
     "svelte-eventbus": "^0.1.1",
     "svelte-i18n": "^3.3.9",
     "svelte-routing": "^1.6.0",
-    "tailwindcss": "^2.1.1"
+    "tailwindcss": "^2.1.1",
+    "uuid": "^8.3.2"
   },
   "browserslist": [
     "defaults"

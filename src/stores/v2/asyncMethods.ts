@@ -1,5 +1,8 @@
 import {
+  fetchDataForCrvFarm,
   fetchDataForETH,
+  fetchDataForInternalFarm,
+  fetchDataForSushiFarm,
   fetchDataForToken,
   fetchDataForTransmuter,
   fetchDataForVault,
@@ -8,21 +11,22 @@ import {
 } from '@stores/v2/helpers';
 import {
   updateAllBalances,
+  updateAllFarms,
   updateAllTokens,
+  updateAllTransmuters,
   updateAllVaultBody,
+  updateFarmByUuid,
   updateOneBalance,
+  updateSentinelRole,
+  updateTransmuterByAddress,
   updateVaultByAddress,
   updateVaultDebt,
-  updateVaultRatio,
-  updateSentinelRole,
   updateVaultDebtTokenAddress,
-  updateAllTransmuters,
-  updateTransmuterByAddress,
-  updateAllAdapters,
+  updateVaultRatio,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
-import { TransmuterConstants, VaultConstants, AdapterConstants } from '@stores/v2/constants';
-import { VaultTypes } from '@stores/v2/types';
+import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
+import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
 
@@ -201,6 +205,111 @@ export async function fetchTransmuterBySelector(
 
   return fetchDataForTransmuterPromise.then((_transmuter) => {
     updateTransmuterByAddress(vaultType, _transmuter.transmuterAddress, _transmuter);
+  });
+}
+
+export async function fetchInternalFarms([signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchInternalFarms]: signer is undefined`);
+    return Promise.reject(`[fetchInternalFarms]: signer is undefined`);
+  }
+
+  const poolCount = await contractWrapper('StakingPools', signer).instance.poolCount();
+
+  const promises = [];
+
+  for (let i = 0; i < poolCount.toNumber(); i++) {
+    promises.push(fetchDataForInternalFarm(i, [signer]));
+  }
+
+  return Promise.all([...promises]).then((data) => {
+    updateAllFarms(
+      data.map((_data) => {
+        return {
+          type: FarmTypes.INTERNAL,
+          body: _data,
+        };
+      }),
+    );
+  });
+}
+
+export async function fetchSushiFarm([signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchSushiFarm]: signer is undefined`);
+    return Promise.reject(`[fetchSushiFarm]: signer is undefined`);
+  }
+
+  return fetchDataForSushiFarm('SushiLP', 'SushiMasterchefV2', 'SushiOnsenRewarder', [signer]).then(
+    (farmData) => {
+      updateAllFarms([
+        {
+          type: FarmTypes.SUSHI,
+          body: farmData,
+        },
+      ]);
+    },
+  );
+}
+
+export async function fetchCrvFarm([signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchCrvFarm]: signer is undefined`);
+    return Promise.reject(`[fetchCrvFarm]: signer is undefined`);
+  }
+
+  return fetchDataForCrvFarm('CurveGaugeMetapool', 'CurveGaugeDeposit', 'CurveGaugeRewards', [signer]).then(
+    (farmData) => {
+      updateAllFarms([
+        {
+          type: FarmTypes.CRV,
+          body: farmData,
+        },
+      ]);
+    },
+  );
+}
+
+export async function fetchCrvFarmByUuid(uuid: string, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchCrvFarmByUuid]: signer is undefined`);
+    return Promise.reject(`[fetchCrvFarmByUuid]: signer is undefined`);
+  }
+
+  return fetchDataForCrvFarm('CurveGaugeMetapool', 'CurveGaugeDeposit', 'CurveGaugeRewards', [signer]).then(
+    (farmData) => {
+      updateFarmByUuid(uuid, {
+        type: FarmTypes.CRV,
+        body: farmData,
+      });
+    },
+  );
+}
+
+export async function fetchSushiFarmByUuid(uuid: string, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchSushiFarm]: signer is undefined`);
+    return Promise.reject(`[fetchSushiFarm]: signer is undefined`);
+  }
+
+  return fetchDataForSushiFarm('SushiLP', 'SushiMasterchefV2', 'SushiOnsenRewarder', [signer]).then(
+    (farmData) => {
+      updateFarmByUuid(uuid, {
+        type: FarmTypes.SUSHI,
+        body: farmData,
+      });
+    },
+  );
+}
+
+export async function fetchInternalFarmByUuid(uuid: string, poolId: number, [signer]: [ethers.Signer]) {
+  if (!signer) {
+    console.error(`[fetchInternalFarmByAddress]: signer is undefined`);
+    return Promise.reject(`[fetchInternalFarmByAddress]: signer is undefined`);
+  }
+
+  await fetchDataForInternalFarm(poolId, [signer]).then((data) => {
+    updateFarmByUuid(uuid, { type: FarmTypes.INTERNAL, body: data });
   });
 }
 

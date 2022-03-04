@@ -2,122 +2,108 @@
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
-  import { getExternalContract } from '@helpers/getContract';
-  import getUserGas from '@helpers/getUserGas';
-  import { getProvider } from '@helpers/walletManager';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
-  import account from '@stores/account';
+  import { setError, setPendingApproval, setPendingTx, setPendingWallet } from '@helpers/setToast';
   import Button from '@components/elements/Button.svelte';
   import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+  import { erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
+  import { signer } from '@stores/v2/derived';
+  import getUserGas from '@helpers/getUserGas';
+  import { addressStore } from '@stores/v2/alcxStore';
 
-  export let token;
-  export let stakedBalance;
-  export let unclaimedAlcx;
-  export let unclaimedCrv;
-  export let slpBalance;
+  export let farm;
+  export let farmType;
 
-  let depositAmount;
-  let withdrawAmount;
+  let inputDepositAmount = 0;
+  let inputWithdrawAmount = 0;
 
-  const crvGauge = getExternalContract('CurveGaugeDeposit');
-  const provider = getProvider();
-
-  const setMaxDeposit = () => {
-    depositAmount = utils.formatEther(token.balance);
+  const checkButtonState = (inputAmount, balance) => {
+    return inputAmount.gt(0) && balance.lte(inputAmount) && balance.gt(BigNumber.from(0));
   };
-  const clearDeposit = () => {
-    depositAmount = '';
+
+  const useBigNumberForInput = (inputValue) => {
+    if (inputValue === 0 || inputValue === '') {
+      return BigNumber.from(0);
+    }
+
+    return utils.parseEther(`${inputValue}`);
   };
-  const deposit = async () => {
-    const depositToWei = utils.parseEther(depositAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    if (depositToWei.gt(token.balance)) {
-      setError($_('toast.error_deposit_amount'));
-    } else {
-      try {
-        setPendingWallet();
-        const tx = await crvGauge.deposit(depositToWei, {
-          gasPrice: gas,
-        });
-        setPendingTx();
-        await provider.once(tx.hash, (transaction) => {
-          setSuccessTx(transaction.transactionHash);
-        });
-        clearDeposit();
-      } catch (e) {
-        setError(e.message);
-        console.debug(e);
+
+  $: depositAmountBN = useBigNumberForInput(inputDepositAmount);
+  $: withdrawAmountBN = useBigNumberForInput(inputWithdrawAmount);
+
+  const { instance: crvGaugeInstance, address: crvGaugeAddress } = externalContractWrapper(
+    'CurveGaugeDeposit',
+    $signer,
+  );
+
+  const deposit = async (inputAmount) => {
+    try {
+      const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+
+      const lpTokenInstance = erc20Contract(farm.lpTokenAddress, signer);
+
+      const allowance = await lpTokenInstance.allowanceOf($addressStore, crvGaugeAddress);
+
+      if (allowance.lt(inputAmount)) {
+        setPendingApproval();
+        await lpTokenInstance.approve(crvGaugeAddress);
       }
+
+      setPendingWallet();
+      const tx = await crvGaugeInstance.deposit(inputAmount, { gasPrice: gas });
+      setPendingTx();
+
+      return await tx.wait().then(() => {});
+    } catch (error) {
+      setError(error.message);
+      console.debug(error);
     }
   };
 
-  const setMaxWithdraw = () => {
-    withdrawAmount = utils.formatEther(stakedBalance);
-  };
-  const clearWithdraw = () => {
-    withdrawAmount = '';
-  };
-  const withdraw = async () => {
-    const withdrawToWei = utils.parseEther(withdrawAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-    if (withdrawToWei.gt(stakedBalance)) {
-      setError($_('toast.error_withdraw_amount'));
-    } else {
-      try {
-        setPendingWallet();
-        const tx = await crvGauge.withdraw(withdrawToWei, {
-          gasPrice: gas,
-        });
-        setPendingTx();
-        await provider.once(tx.hash, (transaction) => {
-          setSuccessTx(transaction.transactionHash);
-        });
-        clearWithdraw();
-      } catch (e) {
-        setError(e.message);
-        console.debug(e);
-      }
+  const withdraw = async (inputAmount) => {
+    try {
+      const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+
+      setPendingWallet();
+      const tx = await crvGaugeInstance.withdraw(inputAmount, { gasPrice: gas });
+      setPendingTx();
+
+      return await tx.wait().then(() => {});
+    } catch (error) {
+      setError(error.message);
+      console.debug(error);
     }
   };
 
   const claim = async () => {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
     try {
+      const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
       setPendingWallet();
-      const tx = await crvGauge.claim_rewards($account.address, $account.address, {
+      const tx = await crvGaugeInstance.claim_rewards($addressStore, $addressStore, {
         gasPrice: gas,
       });
       setPendingTx();
-      await provider.once(tx.hash, (transaction) => {
-        setSuccessTx(transaction.transactionHash);
-      });
-    } catch (e) {
-      setError(e.message);
-      console.debug(e);
+
+      return await tx.wait().then(() => {});
+    } catch (error) {
+      setError(error.message);
+      console.debug(error);
     }
   };
-
-  $: canClaim =
-    parseFloat(utils.formatEther(unclaimedAlcx)) + parseFloat(utils.formatEther(unclaimedCrv)) > 0;
-  $: canWithdraw =
-    !!withdrawAmount && parseFloat(withdrawAmount) !== 0 && stakedBalance.gt(BigNumber.from(0));
-  $: canDeposit = !!depositAmount && parseFloat(depositAmount) !== 0 && token.balance > 0;
-  $: unclaimedAlcxFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedAlcx))).toFixed(4);
-  $: unclaimedCrvFormatted = Math.floor(parseFloat(utils.formatEther(unclaimedCrv))).toFixed(4);
 </script>
 
 <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
   <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10">
-      {$_('available')}: {token.balance}
-      {token.symbol}
+      {$_('available')}: {utils.formatEther(farm.tokenBalance)}
+      {farm.tokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <InputNumber
           id="borrowInput"
-          placeholder="~0.00 {token.symbol}"
-          bind:value="{depositAmount}"
+          placeholder="~0.00 {farm.tokenSymbol}"
+          bind:value="{inputDepositAmount}"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
         />
       </div>
@@ -130,7 +116,7 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => setMaxDeposit()}"
+          on:clicked="{() => (inputDepositAmount = utils.formatEther(farm.tokenBalance))}"
         />
         <Button
           label="CLEAR"
@@ -140,7 +126,7 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => clearDeposit()}"
+          on:clicked="{() => (inputDepositAmount = '')}"
         />
       </div>
     </div>
@@ -152,22 +138,22 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!canDeposit}"
-      on:clicked="{() => deposit()}"
+      disabled="{!checkButtonState(depositAmountBN, farm.tokenBalance)}"
+      on:clicked="{() => deposit(depositAmountBN)}"
     />
   </div>
 
   <div class="p-4 flex flex-col space-y-4">
     <label for="withdrawInput" class="text-sm text-lightgrey10">
-      {$_('available')}: {stakedBalance.toString()}
-      {token.symbol}
+      {$_('available')}: {utils.formatEther(farm.userDeposit)}
+      {farm.tokenSymbol}
     </label>
     <div class="flex bg-grey3 rounded border border-grey3">
       <div class="w-full">
         <InputNumber
           id="withdrawInput"
-          placeholder="~0.00 {token.symbol}"
-          bind:value="{withdrawAmount}"
+          placeholder="~0.00 {farm.tokenSymbol}"
+          bind:value="{inputWithdrawAmount}"
           class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
         />
       </div>
@@ -180,7 +166,7 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => setMaxWithdraw()}"
+          on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit))}"
         />
         <Button
           label="CLEAR"
@@ -190,7 +176,7 @@
           backgroundColor="grey3"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => clearWithdraw()}"
+          on:clicked="{() => (inputWithdrawAmount = '')}"
         />
       </div>
     </div>
@@ -202,8 +188,8 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!canWithdraw}"
-      on:clicked="{() => withdraw()}"
+      disabled="{!checkButtonState(withdrawAmountBN, farm.userDeposit)}"
+      on:clicked="{() => withdraw(withdrawAmountBN)}"
     />
   </div>
   <div class="p-4 flex flex-col space-y-4">
@@ -212,12 +198,12 @@
       <div class="w-full flex flex-row">
         <div class="w-full rounded appearance-none text-xl text-right h-full py-3 px-14 bg-grey3">
           <p>
-            {unclaimedAlcxFormatted}
-            ALCX
+            {utils.formatEther(farm.userUnclaimed[0])}
+            {farm.rewards[0].tokenName}
           </p>
           <p class="mb-0">
-            {unclaimedCrvFormatted}
-            CRV
+            {utils.formatEther(farm.userUnclaimed[1])}
+            {farm.rewards[1].tokenName}
           </p>
         </div>
       </div>
@@ -230,7 +216,8 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!canClaim}"
+      disabled="{!farm.userUnclaimed[0].gt(BigNumber.from(0)) ||
+        !farm.userUnclaimed[1].gt(BigNumber.from(0))}"
       on:clicked="{() => claim()}"
     />
   </div>
