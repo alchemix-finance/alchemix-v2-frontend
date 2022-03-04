@@ -151,7 +151,7 @@
     [FarmTypes.CRV]: ExpandedCrvFarm,
   };
 
-  const renderRows = (farmsStore, globalStore, currentFilter) => {
+  const renderRows = (farmsStore, tokenPrices, currentFilter) => {
     return farmsStore
       .filter(
         (val) =>
@@ -166,7 +166,7 @@
             : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
         if (farm.body.isActive) {
-          const adapter = new registeredFarmAdapters[farm.type](farm.body, globalStore.tokenPrices);
+          const adapter = new registeredFarmAdapters[farm.type](farm.body, tokenPrices);
 
           return {
             col0: {
@@ -253,7 +253,7 @@
       });
   };
 
-  $: filteredRows = renderRows($farmsStore, $global, currentFilter);
+  $: filteredRows = renderRows($farmsStore, $global.tokenPrices, currentFilter);
 
   let loadingVaults = true;
 
