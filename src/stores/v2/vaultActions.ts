@@ -422,16 +422,14 @@ export async function mint(
 
     const gasPrice = await gasResolver();
 
+    setPendingWallet();
     const tx = (await alchemistInstance.mint(amountToBorrow, userAddress, {
       gasPrice,
     })) as ContractTransaction;
-
-    console.log('not finished tx:', tx);
+    setPendingTx();
 
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);
-
-      console.log('finished tx:', tx);
 
       return {
         typeOfVault,
