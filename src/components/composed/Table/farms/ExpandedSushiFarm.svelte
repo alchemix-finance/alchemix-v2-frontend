@@ -110,7 +110,7 @@
   };
 
   const checkButtonState = (inputAmount, balance) => {
-    return inputAmount.gt(0) && balance.lte(inputAmount) && balance.gt(BigNumber.from(0));
+    return inputAmount.gt(0) && inputAmount.lte(balance) && balance.gt(BigNumber.from(0));
   };
 </script>
 
