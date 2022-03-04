@@ -6,7 +6,7 @@
   {#each rewards as reward, i}
     <span>
       <img
-        src="images/icons/{reward.iconName}.png"
+        src="images/icons/{reward.iconName}.svg"
         alt="{reward.tokenName}"
         class="h-7 w-7 inline-block mr-1"
       />

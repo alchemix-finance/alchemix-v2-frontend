@@ -268,6 +268,7 @@
   };
 
   $: if ($addressStore && $global.tokenPrices) {
+    console.log('triggered farm init');
     onInitialize();
   }
 </script>

@@ -170,7 +170,7 @@
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
-            on:clicked="{() => (inputDepositAmount = utils.formatEther(tokenInfo.balance))}"
+            on:clicked="{() => (inputDepositAmount = utils.formatEther(tokenInfo.balance || 0))}"
           />
           <Button
             label="CLEAR"
@@ -225,7 +225,7 @@
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
-            on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit))}"
+            on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit || 0))}"
           />
           <Button
             label="CLEAR"
