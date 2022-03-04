@@ -4,8 +4,10 @@ Used, for eg., when hovering on an icon
 For a dropdown that opens on hover see /DropdownOnClick
 -->
 <script>
-  export let borderColor = 'grey5';
-  export let backgroundColor = 'grey15';
+  import settings from '@stores/settings';
+
+  export let borderColor = $settings.invertColors ? 'grey5inverse' : 'grey5';
+  export let backgroundColor = $settings.invertColors ? 'grey15inverse' : 'grey15';
   export let borderSize = '1';
 </script>
 

@@ -1,9 +1,10 @@
 <script>
+  import { utils } from 'ethers';
   import getContract from '../../../../helpers/getContract';
   import Button from '../../../elements/Button.svelte';
   import getUserGas from '../../../../helpers/getUserGas';
-  import { getProvider } from '../../../../helpers/walletManager';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
+  import { getProvider } from '@helpers/walletManager';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
 
   export let poolId;
 
@@ -12,10 +13,11 @@
 
   const exitPool = async () => {
     try {
-      let tx;
+      const gas = await getUserGas();
+      const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
       setPendingWallet();
-      tx = await contract.exit(poolId, {
-        gasPrice: getUserGas(),
+      const tx = await contract.exit(poolId, {
+        gasPrice,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {

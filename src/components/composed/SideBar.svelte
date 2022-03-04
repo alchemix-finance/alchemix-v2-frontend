@@ -5,6 +5,7 @@
   import Wallet from './Wallet.svelte';
   import { routerGuard } from '@helpers/routerGuard';
   import { sentinelStore } from '@stores/v2/alcxStore';
+  import settings from '@stores/settings';
 
   const sidebarSetup = [
     {
@@ -68,12 +69,15 @@
     <li
       class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(1) ===
       `${sidebarItem.path}`
-        ? 'bg-grey10 opacity-100'
-        : 'opacity-40'} hover:bg-grey10 hover:opacity-100"
+        ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
+        : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
       on:click="{() => routerGuard(sidebarItem.path)}"
     >
       <span>{$_(sidebarItem.label)}</span>
-      <img src="images/icons/{sidebarItem.icon}" class="w-6 h-6" />
+      <img
+        src="images/icons/{sidebarItem.icon}"
+        class="w-6 h-6 {$settings.invertColors ? 'invertIcons' : ''}"
+      />
     </li>
   {/each}
   {#each sidebarSetup.filter((key) => key.label === 'sentinel') as sidebarItem}
@@ -82,12 +86,15 @@
         class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(
           1,
         ) === `${sidebarItem.path}`
-          ? 'bg-grey10 opacity-100'
-          : 'opacity-40'} hover:bg-grey10 hover:opacity-100"
+          ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
+          : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
         on:click="{() => routerGuard(sidebarItem.path)}"
       >
         <span>{$_(sidebarItem.label)}</span>
-        <img src="images/icons/{sidebarItem.icon}" class="w-6 h-6" />
+        <img
+          src="images/icons/{sidebarItem.icon}"
+          class="w-6 h-6 {$settings.invertColors ? 'invertIcons' : ''}"
+        />
       </li>
     {/if}
   {/each}

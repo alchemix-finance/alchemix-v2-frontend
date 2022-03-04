@@ -12,6 +12,15 @@ export function closeToast() {
   toastConfig.set({ ...toastConfig });
 }
 
+export function setPendingGas() {
+  _toastConfig.kind = 'pending';
+  _toastConfig.title = getItl('toast.pending');
+  _toastConfig.subtitle = getItl('toast.pending_gas');
+  _toastConfig.closeOnMount = false;
+  _toastConfig.visible = true;
+  toastConfig.set({ ..._toastConfig });
+}
+
 export function setPendingWallet() {
   _toastConfig.kind = 'pending';
   _toastConfig.title = getItl('toast.pending');

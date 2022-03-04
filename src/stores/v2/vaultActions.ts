@@ -1,8 +1,8 @@
 import { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '../../helpers/contractWrapper';
-import { Signer, BigNumber, utils, ethers, ContractTransaction } from 'ethers';
+import { Signer, BigNumber, ethers, ContractTransaction } from 'ethers';
 import { VaultConstants } from './constants';
-import getUserGas from '@helpers/getUserGas';
+import { gasResolver } from '@helpers/getUserGas';
 import {
   setPendingWallet,
   setPendingTx,
@@ -25,7 +25,7 @@ export async function deposit(
     );
 
     // The way you get the gas needs to be moved in a dependency property
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
 
     if (BigNumber.from(allowance).lt(amountYield)) {
@@ -36,7 +36,7 @@ export async function deposit(
     setPendingWallet();
 
     const tx = (await alchemistInstance.deposit(tokenAddress, amountYield, userAddressStore, {
-      gasPrice: gas,
+      gasPrice,
     })) as ethers.ContractTransaction;
 
     setPendingTx();
@@ -73,8 +73,7 @@ export async function depositUnderlying(
       signerStore,
     );
 
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
-
+    const gasPrice = await gasResolver();
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
 
     if (!useGateway) {
@@ -90,7 +89,7 @@ export async function depositUnderlying(
         userAddressStore,
         minimumAmountOut,
         {
-          gasPrice: gas,
+          gasPrice,
         },
       )) as ethers.ContractTransaction;
 
@@ -119,7 +118,7 @@ export async function depositUnderlying(
         userAddressStore,
         minimumAmountOut,
         {
-          gasPrice: gas,
+          gasPrice,
           value: amountYield,
         },
       )) as ethers.ContractTransaction;
@@ -169,7 +168,7 @@ export async function multicallDeposit(
       alchemistAddress,
     );
 
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
 
     if (BigNumber.from(yieldTokenAllowance).lt(amountYield)) {
       setPendingApproval();
@@ -198,7 +197,7 @@ export async function multicallDeposit(
     setPendingWallet();
 
     const tx = (await alchemistInstance.multicall(dataPackage, {
-      gasPrice: gas,
+      gasPrice,
     })) as ethers.ContractTransaction;
 
     setPendingTx();
@@ -228,10 +227,10 @@ export async function withdraw(
       signerStore,
     );
 
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
     setPendingWallet();
     const tx = (await alchemistInstance.withdraw(yieldTokenAddress, yieldAmount, accountAddress, {
-      gasPrice: gas,
+      gasPrice,
     })) as ethers.ContractTransaction;
 
     return await tx.wait().then((transaction) => {
@@ -261,7 +260,7 @@ export async function withdrawUnderlying(
   useGateway = false,
 ) {
   try {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
@@ -270,14 +269,21 @@ export async function withdrawUnderlying(
 
     if (!useGateway) {
       setPendingWallet();
-
+      const temp = await alchemistInstance.positions(accountAddress, yieldTokenAddress);
+      console.log(temp.shares.toString());
+      console.log(
+        yieldTokenAddress,
+        amountUnderlying.toString(),
+        accountAddress,
+        minimumAmountOut.toString(),
+      );
       const tx = (await alchemistInstance.withdrawUnderlying(
         yieldTokenAddress,
         amountUnderlying,
         accountAddress,
         minimumAmountOut,
         {
-          gasPrice: gas,
+          gasPrice,
         },
       )) as ethers.ContractTransaction;
 
@@ -310,7 +316,7 @@ export async function withdrawUnderlying(
       if (!canWithdraw) {
         setPendingApproval();
         await alchemistInstance.approveWithdraw(gatewayAddress, yieldTokenAddress, amountUnderlying, {
-          gasPrice: gas,
+          gasPrice,
         });
       }
       setPendingWallet();
@@ -322,7 +328,7 @@ export async function withdrawUnderlying(
         accountAddress,
         minimumAmountOut,
         {
-          gasPrice: gas,
+          gasPrice,
         },
       )) as ethers.ContractTransaction;
 
@@ -341,7 +347,7 @@ export async function withdrawUnderlying(
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/withdraw]: ${error}`);
-    throw Error(error);
+    throw Error(error.data);
   }
 }
 
@@ -357,7 +363,7 @@ export async function multicallWithdraw(
   minimumAmountOut: BigNumber,
 ) {
   try {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
     const { instance: alchemistInstance, fragment: alchemistInterface } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
@@ -381,7 +387,7 @@ export async function multicallWithdraw(
     setPendingWallet();
 
     const tx = (await alchemistInstance.multicall(txPackage, {
-      gasPrice: gas,
+      gasPrice,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -414,10 +420,10 @@ export async function mint(
       signerStore,
     );
 
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
 
     const tx = (await alchemistInstance.mint(amountToBorrow, userAddress, {
-      gasPrice: gas,
+      gasPrice,
     })) as ContractTransaction;
 
     console.log('not finished tx:', tx);
@@ -445,7 +451,7 @@ export async function burn(
   [signerStore, addressStore]: [Signer, string],
 ) {
   try {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
     const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
 
     const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
@@ -460,7 +466,7 @@ export async function burn(
     }
 
     const tx = (await alchemistInstance.burn(amountToBurn, addressStore, {
-      gasPrice: gas,
+      gasPrice,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -487,7 +493,7 @@ export async function repay(
   [signerStore, addressStore]: [Signer, string],
 ) {
   try {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
 
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
@@ -497,7 +503,7 @@ export async function repay(
     setPendingWallet();
 
     const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore, {
-      gasPrice: gas,
+      gasPrice,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -526,7 +532,7 @@ export async function liquidate(
   minimumAmountOut: BigNumber,
 ) {
   try {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gasPrice = await gasResolver();
 
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
@@ -536,7 +542,7 @@ export async function liquidate(
     setPendingWallet();
 
     const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, minimumAmountOut, {
-      gasPrice: gas,
+      gasPrice,
     })) as ContractTransaction;
 
     setPendingTx();

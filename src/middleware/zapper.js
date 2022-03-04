@@ -11,15 +11,17 @@ global.subscribe((val) => {
 
 /*
  * @dev generates connection payload for axios requests
- * @params endpoint the zapper endpoint as per their documentation
+ * @param endpoint the zapper endpoint as per their documentation
+ * @param timeout optional parameter to limit request retries
  * */
-function connector(endpoint) {
+function connector(endpoint, timeout) {
   return {
     url: `https://api.zapper.fi/v1/${endpoint}?api_key=${process.env.ZAPPER_KEY}&eip1559=true&network=ethereum`,
     method: 'GET',
     headers: {
       Authorization: process.env.ZAPPER_KEY,
     },
+    timeout: timeout || 0,
   };
 }
 
@@ -32,6 +34,7 @@ export async function getFiatRates() {
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }
 
@@ -44,12 +47,13 @@ export async function getTokenPrices() {
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }
 
 // @dev retrieves three levels of current gas prices
-export async function getGasPrices() {
-  await axios(connector('gas-price'))
+export async function getGasPrices(timeout) {
+  await axios(connector('gas-price', timeout || 0))
     .then((result) => {
       _global.gasPrices = {
         standard: result.data.standard,
@@ -60,5 +64,6 @@ export async function getGasPrices() {
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }

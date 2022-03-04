@@ -38,7 +38,8 @@
   };
   const deposit = async () => {
     const depositToWei = utils.parseEther(depositAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     const allowance = await getTokenAllowance(
       token.address,
       $account.address,
@@ -55,7 +56,7 @@
         }
         setPendingWallet();
         const tx = await mcv2contract.deposit(0, depositToWei, $account.address, {
-          gasPrice: gas,
+          gasPrice,
         });
         setPendingTx();
         await provider.once(tx.hash, (transaction) => {
@@ -77,14 +78,15 @@
   };
   const withdraw = async () => {
     const withdrawToWei = utils.parseEther(withdrawAmount.toString());
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     if (withdrawToWei.gt(stakedBalance.amount)) {
       setError($_('toast.error_withdraw_amount'));
     } else {
       try {
         setPendingWallet();
         const tx = await mcv2contract.withdrawAndHarvest(0, withdrawToWei, $account.address, {
-          gasPrice: gas,
+          gasPrice,
         });
         setPendingTx();
         await provider.once(tx.hash, (transaction) => {
@@ -99,11 +101,12 @@
   };
 
   const claim = async () => {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await getUserGas();
+    const gasPrice = utils.parseUnits(gas.toString(), 'gwei');
     try {
       setPendingWallet();
       const tx = await mcv2contract.harvest(0, $account.address, {
-        gasPrice: gas,
+        gasPrice,
       });
       setPendingTx();
       await provider.once(tx.hash, (transaction) => {

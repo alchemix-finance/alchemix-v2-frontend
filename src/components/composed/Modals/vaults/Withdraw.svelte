@@ -52,7 +52,19 @@
   const toShares = (amount, decimals, sharePrice) => {
     if (amount && decimals && sharePrice) {
       const scalar = BigNumber.from(10).pow(decimals);
-      return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
+
+      const amountToShares = utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice);
+      console.log(
+        vault.balance.sub(amountToShares).eq(BigNumber.from('1'))
+          ? amountToShares.add(roundingBalancer).toString()
+          : amountToShares.toString(),
+      );
+      // return vault.balance.sub(amountToShares).eq(BigNumber.from('1')) ? vault.balance : amountToShares;
+      return vault.balance
+        .sub(utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice))
+        .eq(BigNumber.from('1'))
+        ? vault.balance
+        : utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice);
     } else {
       return BigNumber.from(0);
     }
@@ -110,6 +122,11 @@
       (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
       underlyingWithdrawAmountShares.gt(BigNumber.from(0))
     ) {
+      console.log(
+        'withdraw underlying payload',
+        minimumOut.toString(),
+        underlyingWithdrawAmountShares.toString(),
+      );
       withdrawUnderlying(
         vault.type,
         vault.address,
@@ -155,6 +172,11 @@
     _decimals,
   ) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
+    console.log(
+      _underlyingWithdrawAmount.toString(),
+      _yieldWithdrawAmount.toString(),
+      sharesWithdrawAmount.toString(),
+    );
 
     const globalCover = toShares($vaultsAggregatedBalances[vault.type].toString(), 18, vault.yieldPerShare)
       .div(BigNumber.from(10).pow(18))
@@ -190,7 +212,9 @@
     _yieldWithdrawAmount,
     _underlyingTokenData,
   ) {
-    const _remainingBalanceBN = _vault.balance.sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount));
+    const _remainingBalanceBN = _vault.balance
+      .sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount))
+      .sub(roundingBalancer);
 
     return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
   }
@@ -202,25 +226,48 @@
     _vault,
     pricePerShare,
   ) {
+    console.log(
+      'aggregated vault balance in shares',
+      _coveredDebtAmount.toString(),
+      'open debt in token balance',
+      _openDebtAmount.toString(),
+      'token data',
+      _tokenData,
+      'vault',
+      _vault,
+      'price per share',
+      pricePerShare.toString(),
+    );
     const scalar = (decimals) => BigNumber.from(10).pow(decimals);
     const ratio = $vaultsStore[vault.type].ratio.div(scalar(18));
     const normalizeBalance = utils.parseUnits(utils.formatUnits(_vault.balance, _tokenData.decimals), 18);
     const requiredCover = _openDebtAmount.mul(ratio);
-    const freeDeposits = _coveredDebtAmount.sub(requiredCover);
+    console.log('required cover', requiredCover.toString());
+    const freeDeposits = _coveredDebtAmount.sub(requiredCover.div(pricePerShare));
     const maxAmount = freeDeposits.sub(normalizeBalance);
     const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
+    console.log(normalizeBalance.toString(), freeDeposits.toString(), maxAmount.toString());
 
     const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
 
-    const roundingBalancer = utils.parseUnits(utils.formatUnits(1, _tokenData.decimals), _tokenData.decimals);
     const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
-    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18).add(roundingBalancer);
+    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
+    console.log(
+      'share to amount',
+      shareToAmount.toString(),
+      'normalized shares',
+      normalizedShares.toString(),
+      'debt to cover',
+      debtToCover.toString(),
+      'decimals',
+      _tokenData.decimals,
+    );
 
     return maxAmountAvailable
-      ? utils.formatUnits(shareToAmount.add(roundingBalancer), _tokenData.decimals)
+      ? utils.formatUnits(shareToAmount, _tokenData.decimals)
       : utils.formatUnits(
-          normalizedShares.sub(debtToCover).gt(BigNumber.from(0))
-            ? normalizeAmount(normalizedShares.sub(debtToCover), 18, _tokenData.decimals)
+          normalizedShares.sub(requiredCover).gt(BigNumber.from(0))
+            ? shareToAmount.sub(requiredCover)
             : BigNumber.from(0),
           _tokenData.decimals,
         );
@@ -232,14 +279,11 @@
 
   $: cDebt = initializeCoveredDebt(vault, $vaultsAggregatedBalances[vault.type], underlyingTokenData);
 
-  $: yieldWithdrawAmountShares = toShares(
-    `${yieldWithdrawAmount}`,
-    yieldTokenData.decimals,
-    vault.yieldPerShare,
-  );
+  $: yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldTokenData.decimals, vault.yieldPerShare);
+  $: console.log(underlyingWithdrawAmount, underlyingTokenData.decimals, vault.underlyingPerShare.toString());
 
   $: underlyingWithdrawAmountShares = toShares(
-    `${underlyingWithdrawAmount}`,
+    underlyingWithdrawAmount,
     underlyingTokenData.decimals,
     vault.underlyingPerShare,
   );
@@ -250,6 +294,11 @@
     .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
     .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
+  $: roundingBalancer = utils.parseUnits(
+    utils.formatUnits(1, underlyingTokenData.decimals),
+    underlyingTokenData.decimals,
+  );
+
   $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
     cDebt,
     debt,
@@ -257,12 +306,13 @@
     vault,
     vault.underlyingPerShare,
   );
+  $: console.log(maxWithdrawAmountForUnderlying.toString());
 
   $: maxWithdrawAmountForYield = utils.formatUnits(
     utils
       .parseUnits(maxWithdrawAmountForUnderlying, yieldTokenData.decimals)
-      .div(vault.underlyingPerShare)
-      .mul(vault.yieldPerShare),
+      .mul(vault.yieldPerShare)
+      .div(vault.underlyingPerShare),
     yieldTokenData.decimals,
   );
 

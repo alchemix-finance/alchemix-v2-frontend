@@ -7,9 +7,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: linear-gradient(171.08deg, #010101 -11.16%, #141921 6.1%, #0A0D11 49.05%, #000000 93.22%) no-repeat fixed;
-  color: #f5f5f5;
+.invertIcons {
+  /*filter: invert(100%) grayscale(40%) saturate(40%);*/
+  /*filter: saturate(60%) grayscale(20%);*/
+  filter: invert(100%);
 }
 
 input {

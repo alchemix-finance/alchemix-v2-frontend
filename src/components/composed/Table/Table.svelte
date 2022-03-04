@@ -1,5 +1,6 @@
 <script>
   import { getColumnWidth, SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+  import settings from '@stores/settings';
 
   import TableBodyRow from './TableBodyRow.svelte';
   import TableHeaderCell from './TableHeaderCell.svelte';
@@ -78,7 +79,11 @@
 </script>
 
 <table class="w-full">
-  <thead class="flex justify-items-center items-center bg-grey15 h-16">
+  <thead
+    class="flex justify-items-center items-center {$settings.invertColors
+      ? 'bg-grey15inverse'
+      : 'bg-grey15'} h-16"
+  >
     {#each headerGroups as headerGroup}
       <tr class="{getColumnWidth(headerGroup.colSize)} flex justify-center">
         {#each headerGroup.headers as header}

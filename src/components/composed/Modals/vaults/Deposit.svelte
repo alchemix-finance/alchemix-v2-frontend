@@ -42,7 +42,6 @@
       .div(adapterPrice);
     const subTokens = yieldTokens.mul(BigNumber.from(maximumLoss)).div(100000);
     const underlyingMinimumIn = yieldTokens.sub(subTokens);
-    console.log(_underlyingDeposit.toString(), underlyingMinimumIn.toString());
 
     if (_yieldDeposit.gt(0) && _underlyingDeposit.gt(0)) {
       await multicallDeposit(
