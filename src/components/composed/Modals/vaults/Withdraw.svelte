@@ -55,11 +55,6 @@
       const scalar = BigNumber.from(10).pow(decimals);
 
       const amountToShares = utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice);
-      console.log(
-        vault.balance.sub(amountToShares).eq(BigNumber.from('1'))
-          ? amountToShares.add(roundingBalancer).toString()
-          : amountToShares.toString(),
-      );
       // return vault.balance.sub(amountToShares).eq(BigNumber.from('1')) ? vault.balance : amountToShares;
       return vault.balance
         .sub(utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice))
@@ -123,11 +118,6 @@
       (yieldWithdrawAmountShares.eq(BigNumber.from(0)) || !!!yieldWithdrawAmountShares) &&
       underlyingWithdrawAmountShares.gt(BigNumber.from(0))
     ) {
-      console.log(
-        'withdraw underlying payload',
-        minimumOut.toString(),
-        underlyingWithdrawAmountShares.toString(),
-      );
       withdrawUnderlying(
         vault.type,
         vault.address,
@@ -173,11 +163,6 @@
     _decimals,
   ) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
-    console.log(
-      _underlyingWithdrawAmount.toString(),
-      _yieldWithdrawAmount.toString(),
-      sharesWithdrawAmount.toString(),
-    );
 
     const globalCover = toShares($vaultsAggregatedBalances[vault.type].toString(), 18, vault.yieldPerShare)
       .div(BigNumber.from(10).pow(18))
@@ -227,42 +212,18 @@
     _vault,
     pricePerShare,
   ) {
-    console.log(
-      'aggregated vault balance in shares',
-      _coveredDebtAmount.toString(),
-      'open debt in token balance',
-      _openDebtAmount.toString(),
-      'token data',
-      _tokenData,
-      'vault',
-      _vault,
-      'price per share',
-      pricePerShare.toString(),
-    );
     const scalar = (decimals) => BigNumber.from(10).pow(decimals);
     const ratio = $vaultsStore[vault.type].ratio.div(scalar(18));
     const normalizeBalance = utils.parseUnits(utils.formatUnits(_vault.balance, _tokenData.decimals), 18);
     const requiredCover = _openDebtAmount.mul(ratio);
-    console.log('required cover', requiredCover.toString());
     const freeDeposits = _coveredDebtAmount.sub(requiredCover.div(pricePerShare));
     const maxAmount = freeDeposits.sub(normalizeBalance);
     const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
-    console.log(normalizeBalance.toString(), freeDeposits.toString(), maxAmount.toString());
 
     const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
 
     const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
     const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
-    console.log(
-      'share to amount',
-      shareToAmount.toString(),
-      'normalized shares',
-      normalizedShares.toString(),
-      'debt to cover',
-      debtToCover.toString(),
-      'decimals',
-      _tokenData.decimals,
-    );
 
     return maxAmountAvailable
       ? utils.formatUnits(shareToAmount, _tokenData.decimals)
@@ -281,7 +242,6 @@
   $: cDebt = initializeCoveredDebt(vault, $vaultsAggregatedBalances[vault.type], underlyingTokenData);
 
   $: yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldTokenData.decimals, vault.yieldPerShare);
-  $: console.log(underlyingWithdrawAmount, underlyingTokenData.decimals, vault.underlyingPerShare.toString());
 
   $: underlyingWithdrawAmountShares = toShares(
     underlyingWithdrawAmount,
@@ -307,7 +267,6 @@
     vault,
     vault.underlyingPerShare,
   );
-  $: console.log(maxWithdrawAmountForUnderlying.toString());
 
   $: maxWithdrawAmountForYield = utils.formatUnits(
     utils

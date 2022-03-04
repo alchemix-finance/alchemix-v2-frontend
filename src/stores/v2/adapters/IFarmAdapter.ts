@@ -23,6 +23,8 @@ export abstract class IFarmAdapter {
   }
 
   abstract getApy();
+
   abstract getTvl();
+
   abstract getFarm();
 }

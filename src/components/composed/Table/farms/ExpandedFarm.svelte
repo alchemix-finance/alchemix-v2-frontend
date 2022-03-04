@@ -3,7 +3,8 @@
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
   import Button from '../../../elements/Button.svelte';
-  import getUserGas from '../../../../helpers/getUserGas';
+  import { gasResolver } from '@helpers/getUserGas';
+  import settings from '@stores/settings';
 
   import {
     setPendingWallet,
@@ -27,7 +28,7 @@
 
   const deposit = async (depositBN) => {
     try {
-      const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+      const gas = await gasResolver();
       const tokenContract = erc20Contract(farm.tokenAddress, $signer);
 
       const allowance = await tokenContract.allowanceOf($addressStore, stakingAddress);
@@ -59,7 +60,7 @@
 
   const withdraw = async (withdrawBN) => {
     try {
-      const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+      const gas = await gasResolver();
 
       setPendingWallet();
 
@@ -85,7 +86,7 @@
 
   const claim = async () => {
     try {
-      const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+      const gas = await gasResolver();
       setPendingWallet();
 
       const tx = await stakingInstance.claim(farm.poolId, {
@@ -134,19 +135,30 @@
 </script>
 
 {#if farm}
-  <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+  <div
+    class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b {$settings.invertColors
+      ? 'border-grey10inverse'
+      : 'border-grey10'}"
+    transition:slide
+  >
     <div class="p-4 flex flex-col space-y-4">
       <label for="borrowInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatEther(tokenInfo.balance)}
         {farm.tokenSymbol}
       </label>
-      <div class="flex bg-grey3 rounded border border-grey3">
+      <div
+        class="flex rounded border {$settings.invertColors
+          ? 'border-grey3inverse bg-grey3inverse'
+          : 'border-grey3 bg-grey3'}"
+      >
         <div class="w-full">
           <InputNumber
             id="borrowInput"
             placeholder="~0.00 {farm.tokenSymbol}"
             bind:value="{inputDepositAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'}"
           />
         </div>
         <div class="flex flex-col">
@@ -154,18 +166,18 @@
             label="MAX"
             width="w-full"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
-            on:clicked="{() => (inputDepositAmount = utils.formatEther(tokenInfo.balance))}"
+            on:clicked="{() => (inputDepositAmount = utils.formatEther(tokenInfo.balance || 0))}"
           />
           <Button
             label="CLEAR"
             width="w-max"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() => (inputDepositAmount = '')}"
@@ -176,7 +188,7 @@
         label="{$_('actions.deposit')}"
         borderSize="1"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
@@ -189,13 +201,19 @@
         {$_('available')}: {utils.formatEther(farm.userDeposit)}
         {farm.tokenSymbol}
       </label>
-      <div class="flex bg-grey3 rounded border border-grey3">
+      <div
+        class="flex rounded border {$settings.invertColors
+          ? 'bg-grey3inverse border-grey3inverse'
+          : 'bg-grey3 border-grey3'}"
+      >
         <div class="w-full">
           <InputNumber
             id="withdrawInput"
             placeholder="~0.00 {farm.tokenSymbol}"
             bind:value="{inputWithdrawAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'}"
           />
         </div>
         <div class="flex flex-col">
@@ -203,18 +221,18 @@
             label="MAX"
             width="w-full"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
-            on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit))}"
+            on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit || 0))}"
           />
           <Button
             label="CLEAR"
             width="w-max"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() => (inputWithdrawAmount = '')}"
@@ -225,7 +243,7 @@
         label="{$_('actions.withdraw')}"
         borderSize="1"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
@@ -236,9 +254,17 @@
 
     <div class="p-4 flex flex-col space-y-4">
       <label for="borrowInput" class="text-sm text-lightgrey10"> {$_('table.rewards')}: </label>
-      <div class="flex bg-grey3 rounded border border-grey3">
+      <div
+        class="flex rounded border {$settings.invertColors
+          ? 'bg-grey3inverse border-grey3inverse'
+          : 'bg-grey3 border-grey3'}"
+      >
         <div class="w-full">
-          <div class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 bg-grey3">
+          <div
+            class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'}"
+          >
             {utils.formatEther(farm.userUnclaimed[0])}
             {farm.rewards[0].tokenName}
           </div>
@@ -248,7 +274,7 @@
         label="{$_('actions.claim')}"
         borderSize="1"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
