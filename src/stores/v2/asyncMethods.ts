@@ -23,9 +23,10 @@ import {
   updateVaultDebt,
   updateVaultDebtTokenAddress,
   updateVaultRatio,
+  updateAllAdapters,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
-import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
+import { TransmuterConstants, VaultConstants, AdapterConstants } from '@stores/v2/constants';
 import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';

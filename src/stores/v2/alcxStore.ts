@@ -66,6 +66,12 @@ export interface FarmStoreType {
   body: any;
 }
 
+export interface AdaptersType {
+  [key: number]: {
+    adapters: AdapterType[];
+  };
+}
+
 export const addressStore = writable<string>(undefined);
 export const providerStore = writable<providers.Web3Provider>(undefined);
 export const balancesStore = writable<BalanceType[]>([]);

@@ -1,9 +1,10 @@
 import { BigNumber, ethers, utils } from 'ethers';
 import { contractWrapper, erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
-import { BalanceType, BodyVaultType, TransmuterType } from '@stores/v2/alcxStore';
+import { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
 import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 import { v4 as uuidv4 } from 'uuid';
+import { VaultTypesInfos } from './constants';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);

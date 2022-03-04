@@ -1,1 +1,18 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320"><defs><style>.cls-1,.cls-2{fill:none;stroke:#f5c09a;stroke-linecap:round;stroke-linejoin:round;}.cls-1{stroke-width:11.66px;}.cls-2{stroke-width:10.69px;}</style></defs><circle class="cls-1" cx="160" cy="159.71" r="148.19"/><line class="cls-1" x1="160" y1="202.59" x2="160" y2="307.91"/><line class="cls-1" x1="160" y1="11.52" x2="160" y2="42.74"/><polyline class="cls-2" points="160 202.59 59.02 122.67 160 42.74 260.99 122.67 215.89 158.36"/><polyline class="cls-2" points="245.47 209.6 260.99 197.32 260.99 122.67"/><polyline class="cls-2" points="59.02 122.67 59.02 197.32 160 277.25 205.56 241.19"/><polyline class="cls-2" points="76.73 211.34 59.49 241.19 114.44 241.19"/><polyline class="cls-2" points="161.94 241.19 260.51 241.19 160 67.11 107.46 158.1"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 320 320" style="enable-background:new 0 0 320 320;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#10151B;stroke:#F5C09A;stroke-width:11.66;stroke-linecap:round;stroke-linejoin:round;}
+	.st1{fill:none;stroke:#F5C09A;stroke-width:11.66;stroke-linecap:round;stroke-linejoin:round;}
+	.st2{fill:none;stroke:#F5C09A;stroke-width:10.69;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<circle class="st0" cx="160" cy="159.7" r="148.2"/>
+<line class="st1" x1="160" y1="202.6" x2="160" y2="307.9"/>
+<line class="st1" x1="160" y1="11.5" x2="160" y2="42.7"/>
+<polyline class="st2" points="160,202.6 59,122.7 160,42.7 261,122.7 215.9,158.4 "/>
+<polyline class="st2" points="245.5,209.6 261,197.3 261,122.7 "/>
+<polyline class="st2" points="59,122.7 59,197.3 160,277.2 205.6,241.2 "/>
+<polyline class="st2" points="76.7,211.3 59.5,241.2 114.4,241.2 "/>
+<polyline class="st2" points="161.9,241.2 260.5,241.2 160,67.1 107.5,158.1 "/>
+</svg>
