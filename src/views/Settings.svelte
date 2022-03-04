@@ -151,8 +151,8 @@
           <p>Colorscheme</p>
           <div>
             <ToggleSwitch
-              label="Dakin"
-              secondLabel="Mashriq"
+              label="Nigredo"
+              secondLabel="Albedo"
               forceState="{$settings.invertColors}"
               on:toggleChange="{(event) => switchColorScheme(event)}"
             />
