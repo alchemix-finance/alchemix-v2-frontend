@@ -96,7 +96,9 @@
     <div class="text-center text-5xl font-alcxTitles leading-tight font-medium mt-12">
       <span
         style="color: transparent"
-        class="bg-clip-text bg-gradient-to-br from-orange4 via-lightbronze1 to-orange4"
+        class="bg-clip-text bg-gradient-to-br {$settings.invertColors
+          ? 'from-bronze4 via-bronze3 to-bronze4'
+          : 'from-orange4 via-lightbronze1 to-orange4'}"
       >
         {$_('landing.intro_title')}
       </span>
@@ -123,7 +125,9 @@
         on:click="{() => routerGuard('accounts')}"
       >
         <span class="flex flex-row space-x-4 self-center content-center h-max text-orange4">
-          <span class="self-center text-white2">{$_('landing.button_label')}</span>
+          <span class="self-center {$settings.invertColors ? 'text-white2inverse' : 'text-white2'}"
+            >{$_('landing.button_label')}</span
+          >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-8 w-8 self-center"
@@ -169,7 +173,7 @@
       <p class="text-center font-alcxTitles text-3xl opacity-75">{$_('landing.path_headline')}</p>
       <p class="text-center text-lg opacity-75">{$_('landing.path_subtitle')}</p>
       <img
-        class="w-3/4 self-center"
+        class="w-3/4 self-center {$settings.invertColors ? 'filter invert' : ''}"
         src="/images/landing-page/diagram.svg"
         alt="A diagram depicting the possibilities of Alchemix"
       />
@@ -178,11 +182,19 @@
       >
     </div>
 
-    <div class="w-full border-t border-b border-grey5 flex flex-col space-y-4 py-8">
+    <div
+      class="w-full border-t border-b {$settings.invertColors
+        ? 'border-grey5inverse'
+        : 'border-grey5'} flex flex-col space-y-4 py-8"
+    >
       <p class="text-center font-alcxTitles text-3xl opacity-75">{$_('landing.leverage_headline')}</p>
       <div class="flex flex-row space-x-4 justify-center">
         {#each assets as asset}
-          <div class="flex flex-row space-x-4 w-max border border-grey1 bg-grey15 p-4 rounded-lg">
+          <div
+            class="flex flex-row space-x-4 w-max border {$settings.invertColors
+              ? 'border-grey1inverse bg-grey15inverse'
+              : 'border-grey1 bg-grey15'} p-4 rounded-lg"
+          >
             <img src="/images/icons/{asset.name.toLowerCase()}.svg" class="w-16" alt="{asset.name} Logo" />
             <div>
               <p>{asset.name}</p>
@@ -202,7 +214,11 @@
     <div class="w-full flex flex-col space-y-4">
       <p class="text-center font-alcxTitles text-3xl opacity-75">{$_('landing.benefits_headline')}</p>
       <div class="flex flex-row w-full">
-        <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
+        <div
+          class="flex-1 p-4 pb-16 border {$settings.invertColors
+            ? 'border-grey1inverse bg-grey15inverse'
+            : 'border-grey1 bg-grey15'} flex flex-col space-y-4 relative"
+        >
           <p class="text-2xl font-light font-alcxTitles text-orange4">
             {$_('landing.benefit_leverage_title')}
           </p>
@@ -212,7 +228,11 @@
             class="text-center absolute bottom-4 inset-x-0 underline">{$_('landing.learn_more')}</a
           >
         </div>
-        <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
+        <div
+          class="flex-1 p-4 pb-16 border {$settings.invertColors
+            ? 'border-grey1inverse bg-grey15inverse'
+            : 'border-grey1 bg-grey15'} flex flex-col space-y-4 relative"
+        >
           <p class="text-2xl font-light font-alcxTitles text-orange4">{$_('landing.benefit_range_title')}</p>
           <p class="font-light text-lg opacity-75">{$_('landing.benefit_range_blurb')}</p>
           <a
@@ -220,7 +240,11 @@
             class="absolute bottom-4 inset-x-0 text-center underline">{$_('landing.learn_more')}</a
           >
         </div>
-        <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
+        <div
+          class="flex-1 p-4 pb-16 border {$settings.invertColors
+            ? 'border-grey1inverse bg-grey15inverse'
+            : 'border-grey1 bg-grey15'} flex flex-col space-y-4 relative"
+        >
           <p class="text-2xl font-light font-alcxTitles text-orange4">
             {$_('landing.benefit_liquidations_title')}
           </p>
@@ -230,7 +254,11 @@
             class="text-center absolute inset-x-0 bottom-4 underline">{$_('landing.learn_more')}</a
           >
         </div>
-        <div class="flex-1 p-4 pb-16 border border-grey1 bg-grey15 flex flex-col space-y-4 relative">
+        <div
+          class="flex-1 p-4 pb-16 border {$settings.invertColors
+            ? 'border-grey1inverse bg-grey15inverse'
+            : 'border-grey1 bg-grey15'} flex flex-col space-y-4 relative"
+        >
           <p class="text-2xl font-light font-alcxTitles text-orange4">
             {$_('landing.benefit_flexible_title')}
           </p>
@@ -260,7 +288,9 @@
         on:click="{() => routerGuard('accounts')}"
       >
         <span class="flex flex-row space-x-4 self-center content-center h-max text-orange4">
-          <span class="self-center text-white2">{$_('landing.button_label')}</span>
+          <span class="self-center {$settings.invertColors ? 'text-white2inverse' : 'text-white2'}"
+            >{$_('landing.button_label')}</span
+          >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-8 w-8 self-center"

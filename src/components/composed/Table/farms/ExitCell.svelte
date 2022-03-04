@@ -5,6 +5,7 @@
   import getUserGas from '../../../../helpers/getUserGas';
   import { getProvider } from '@helpers/walletManager';
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
+  import settings from '@stores/settings';
 
   export let poolId;
 
@@ -32,7 +33,7 @@
 
 <Button
   borderColor="red4"
-  backgroundColor="red2"
+  backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
   hoverColor="red3"
   label="Exit"
   solid="{false}"

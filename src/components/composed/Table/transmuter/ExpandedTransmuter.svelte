@@ -9,6 +9,7 @@
   import { claim, deposit, withdraw } from '@stores/v2/transmuterActions';
   import { signer } from '@stores/v2/derived';
   import { fetchBalanceByAddress, fetchTransmuterBySelector } from '@stores/v2/asyncMethods';
+  import settings from '@stores/settings';
 
   export let transmuterData;
 
@@ -94,19 +95,30 @@
 </script>
 
 {#if transmuterData}
-  <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide>
+  <div
+    class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b {$settings.invertColors
+      ? 'border-grey10inverse'
+      : 'border-grey10'}"
+    transition:slide
+  >
     <div class="p-4 flex flex-col space-y-4">
       <label for="depositInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatUnits(synthTokenData.balance, synthTokenData.decimals)}
         {synthTokenData.symbol}
       </label>
-      <div class="flex bg-grey3 rounded border border-grey3">
+      <div
+        class="flex rounded border {$settings.invertColors
+          ? 'bg-grey3inverse border-grey3inverse'
+          : 'bg-grey3 border-grey3'}"
+      >
         <div class="w-full">
           <InputNumber
             id="depositInput"
             placeholder="~0.00 {synthTokenData.symbol}"
             bind:value="{inputDepositAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'}"
           />
         </div>
         <div class="flex flex-col">
@@ -114,8 +126,8 @@
             label="MAX"
             width="w-full"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() =>
@@ -125,8 +137,8 @@
             label="CLEAR"
             width="w-max"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() => (inputDepositAmount = '')}"
@@ -137,7 +149,7 @@
         label="{$_('actions.deposit')}"
         borderSize="1"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
@@ -153,13 +165,19 @@
         )}
         {synthTokenData.symbol}
       </label>
-      <div class="flex bg-grey3 rounded border border-grey3">
+      <div
+        class="flex rounded border {$settings.invertColors
+          ? 'bg-grey3inverse border-grey3inverse'
+          : 'bg-grey3 border-grey3'}"
+      >
         <div class="w-full">
           <InputNumber
             id="withdrawInput"
             placeholder="~0.00 {synthTokenData.symbol}"
             bind:value="{inputWithdrawAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'}"
           />
         </div>
         <div class="flex flex-col">
@@ -167,8 +185,8 @@
             label="MAX"
             width="w-full"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() =>
@@ -181,8 +199,8 @@
             label="CLEAR"
             width="w-max"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() => (inputWithdrawAmount = '')}"
@@ -193,7 +211,7 @@
         label="{$_('actions.withdraw')}"
         borderSize="1"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"
@@ -214,13 +232,19 @@
         )}
         {underlyingTokenData.symbol}
       </label>
-      <div class="flex bg-grey3 rounded border border-grey3">
+      <div
+        class="flex rounded border {$settings.invertColors
+          ? 'bg-grey3inverse border-grey3inverse'
+          : 'bg-grey3 border-grey3'}"
+      >
         <div class="w-full">
           <InputNumber
             id="claimInput"
             placeholder="~0.00 {underlyingTokenData.symbol}"
             bind:value="{inputClaimAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3"
+            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'}"
           />
         </div>
         <div class="flex flex-col">
@@ -228,8 +252,8 @@
             label="MAX"
             width="w-full"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() =>
@@ -242,8 +266,8 @@
             label="CLEAR"
             width="w-max"
             fontSize="text-xs"
-            textColor="lightgrey10"
-            backgroundColor="grey3"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
             height="h-10"
             on:clicked="{() => (inputClaimAmount = '')}"
@@ -254,7 +278,7 @@
         label="{$_('actions.claim')}"
         borderSize="1"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         fontSize="text-md"

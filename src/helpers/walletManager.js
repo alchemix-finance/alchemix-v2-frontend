@@ -64,6 +64,7 @@ let initDone = false;
 // @dev prepare list of supported wallets according to
 // https://docs.blocknative.com/onboard#wallet-modules
 const wallets = [
+  { walletName: 'tally', preferred: true },
   { walletName: 'metamask', preferred: true },
   {
     walletName: 'walletConnect',

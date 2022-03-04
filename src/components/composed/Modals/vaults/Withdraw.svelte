@@ -22,6 +22,7 @@
   import { getTokenDataFromBalances, normalizeAmount } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
+  import settings from '@stores/settings';
 
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
 
@@ -355,8 +356,12 @@
               {yieldTokenData.symbol}
             </label>
             <div
-              class="flex bg-grey3 rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
+              class="flex {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'} rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
                 ? 'border-red3'
+                : $settings.invertColors
+                ? 'border-grey3inverse'
                 : 'border-grey3'}"
             >
               <div class="w-full">
@@ -364,9 +369,12 @@
                   id="yieldInput"
                   bind:value="{yieldWithdrawAmount}"
                   placeholder="~0.00 {yieldTokenData.symbol}"
-                  class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
-                  parseFloat(maxWithdrawAmountForYield)
+                  class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+                    ? 'bg-grey3inverse'
+                    : 'bg-grey3'} {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
                     ? 'text-red3'
+                    : $settings.invertColors
+                    ? 'text-lightgrey5inverse'
                     : 'text-lightgrey5'}"
                 />
               </div>
@@ -375,8 +383,8 @@
                   label="MAX"
                   width="w-full"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => setMaxYield(maxWithdrawAmountForYield)}"
@@ -385,8 +393,8 @@
                   label="CLEAR"
                   width="w-max"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => clearYield()}"
@@ -401,9 +409,13 @@
             {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}
           </label>
           <div
-            class="flex bg-grey3 rounded border {underlyingWithdrawAmount >
+            class="flex {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'} rounded border {underlyingWithdrawAmount >
             parseFloat(maxWithdrawAmountForUnderlying)
               ? 'border-red3'
+              : $settings.invertColors
+              ? 'border-grey3inverse'
               : 'border-grey3'}"
           >
             <div class="w-full">
@@ -411,9 +423,12 @@
                 id="underlyingInput"
                 bind:value="{underlyingWithdrawAmount}"
                 placeholder="~0.00 {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}"
-                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdrawAmount >
-                parseFloat(maxWithdrawAmountForUnderlying)
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+                  ? 'bg-grey3inverse'
+                  : 'bg-grey3'} {underlyingWithdrawAmount > parseFloat(maxWithdrawAmountForUnderlying)
                   ? 'text-red3'
+                  : $settings.invertColors
+                  ? 'text-lightgrey5inverse'
                   : 'text-lightgrey5'}"
               />
             </div>
@@ -422,8 +437,8 @@
                 label="MAX"
                 width="w-full"
                 fontSize="text-xs"
-                textColor="lightgrey10"
-                backgroundColor="grey3"
+                textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                 borderSize="0"
                 height="h-10"
                 on:clicked="{() => setMaxUnderlying(maxWithdrawAmountForUnderlying)}"
@@ -432,8 +447,8 @@
                 label="CLEAR"
                 width="w-max"
                 fontSize="text-xs"
-                textColor="lightgrey10"
-                backgroundColor="grey3"
+                textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                 borderSize="0"
                 height="h-10"
                 on:clicked="{() => clearUnderlying()}"
@@ -462,8 +477,8 @@
       <Button
         label="{$_('actions.withdraw')}"
         borderColor="red4"
-        backgroundColor="red2"
-        hoverColor="red4"
+        backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
+        hoverColor="red3"
         height="h-12"
         borderSize="1"
         fontSize="text-md"

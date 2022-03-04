@@ -23,8 +23,8 @@
 
 <div
   class="rounded border border-{isActive ? cardColor : 'lightgrey20'} py-4 px-6 {isActive
-    ? ''
-    : 'cursor-pointer hover:bg-grey1'} w-full"
+    ? `${$settings.invertColors ? 'bg-grey1inverse' : 'bg-grey1'}`
+    : `cursor-pointer hover:${$settings.invertColors ? 'bg-grey1inverse' : 'bg-grey1'}`} w-full"
   on:click="{eventCheck}"
 >
   <div class="flex flex-row justify-between mb-3">

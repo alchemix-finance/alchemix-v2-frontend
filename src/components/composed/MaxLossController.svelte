@@ -4,6 +4,7 @@
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import InputNumber from '@components/elements/inputs/InputNumber';
   import Button from '@components/elements/Button';
+  import settings from '@stores/settings';
 
   export let maxLoss;
 
@@ -43,7 +44,7 @@
 
 <div class="flex flex-col space-y-2 w-full">
   <div class="flex flex-row w-full">
-    <p class="flex-auto text-lightgrey10 text-sm">
+    <p class="flex-auto {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'} text-sm">
       {$_('max_slippage')}:
     </p>
     <ToggleSwitch
@@ -54,12 +55,13 @@
 
   {#if useCustomAmount}
     <div
-      class="flex bg-grey3 rounded border {maximumLossInput > maximumLossInputPref.max
+      class="flex {$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'} rounded border {maximumLossInput >
+      maximumLossInputPref.max
         ? 'border-red3'
         : (maximumLossInput && maximumLossInput < maximumLossInputPref.safeMin) ||
           maximumLossInput >= maximumLossInputPref.saneMax
         ? 'text-orange1'
-        : 'border-grey3'}"
+        : `${$settings.invertColors ? 'border-grey3inverse' : 'border-grey3'}`}"
       transition:slide|local
     >
       <div class="w-full">
@@ -67,8 +69,9 @@
           id="underlyingInput"
           bind:value="{maximumLossInput}"
           placeholder="0-100%"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {maximumLossInput >
-          maximumLossInputPref.max
+          class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+            ? 'bg-grey3inverse'
+            : 'bg-grey3'} {maximumLossInput > maximumLossInputPref.max
             ? 'text-red3'
             : maximumLossInput < maximumLossInputPref.safeMin ||
               maximumLossInput >= maximumLossInputPref.saneMax
@@ -81,8 +84,8 @@
           label="MAX"
           width="w-full"
           fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
           borderSize="0"
           height="h-10"
           on:clicked="{() => {
@@ -93,8 +96,8 @@
           label="CLEAR"
           width="w-max"
           fontSize="text-xs"
-          textColor="lightgrey10"
-          backgroundColor="grey3"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
           borderSize="0"
           height="h-10"
           on:clicked="{() => {
@@ -120,9 +123,11 @@
   {:else}
     <div class="flex flex-row w-full text-lg" transition:slide|local>
       <button
-        class="border border-grey5 rounded-l w-full {currentPreset === typeOfLosses['0.3']
-          ? 'bg-grey3'
-          : 'hover:bg-grey10'}"
+        class="border {$settings.invertColors
+          ? 'border-grey5inverse'
+          : 'border-grey5'} rounded-l w-full {currentPreset === typeOfLosses['0.3']
+          ? `${$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'}`
+          : `${$settings.invertColors ? 'hover:bg-grey10inverse' : 'hover:bg-grey10'}`}"
         on:click="{() => (currentPreset = typeOfLosses['0.3'])}"
       >
         <p
@@ -134,9 +139,11 @@
         </p>
       </button>
       <button
-        class="border-t border-b border-grey5 w-full {currentPreset === typeOfLosses['0.5']
-          ? 'bg-grey3'
-          : 'hover:bg-grey10'}"
+        class="border-t border-b {$settings.invertColors
+          ? 'border-grey5inverse'
+          : 'border-grey5'} w-full {currentPreset === typeOfLosses['0.5']
+          ? `${$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'}`
+          : `${$settings.invertColors ? 'hover:bg-grey10inverse' : 'hover:bg-grey10'}`}"
         on:click="{() => (currentPreset = typeOfLosses['0.5'])}"
       >
         <p
@@ -148,9 +155,11 @@
         </p>
       </button>
       <button
-        class="border border-grey5 rounded-r w-full {currentPreset === typeOfLosses['1']
-          ? 'bg-grey3'
-          : 'hover:bg-grey10'}"
+        class="border {$settings.invertColors
+          ? 'border-grey5inverse'
+          : 'border-grey5'} rounded-r w-full {currentPreset === typeOfLosses['1']
+          ? `${$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'}`
+          : `${$settings.invertColors ? 'hover:bg-grey10inverse' : 'hover:bg-grey10'}`}"
         on:click="{() => (currentPreset = typeOfLosses['1'])}"
       >
         <p
