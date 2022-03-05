@@ -19,7 +19,7 @@
     on:click="{onClickBackground}"
     class="fixed inset-0 {$settings.invertColors
       ? 'bg-grey30inverse'
-      : 'bg-grey30'} bg-opacity-50 filter drop-shadow-xl backdrop-filter backdrop-blur z-20 flex justify-center items-center"
+      : 'bg-grey30'} bg-opacity-50 firefox:bg-opacity-50 filter drop-shadow-xl backdrop-filter firefox:backdrop-filter backdrop-blur firefox:backdrop-blur z-20 flex justify-center items-center"
     transition:fade
     on:outrostart="{onOutroStart}"
   >

@@ -22,10 +22,13 @@
     'bg-bronze3': true,
     'border-bronze1': true,
     'bg-opacity-30': true,
+    'firefox:bg-opacity-30': true,
     filter: true,
     'drop-shadow-xl': true,
     'backdrop-filter': true,
+    'firefox:backdrop-filter': true,
     'backdrop-blur': true,
+    'firefox:backdrop-blur': true,
   };
 
   const successProps = {
@@ -37,10 +40,13 @@
     'bg-green7': true,
     'border-green2': true,
     'bg-opacity-30': true,
+    'firefox:bg-opacity-30': true,
     filter: true,
     'drop-shadow-xl': true,
     'backdrop-filter': true,
+    'firefox:backdrop-filter': true,
     'backdrop-blur': true,
+    'firefox:backdrop-blur': true,
   };
 
   const errorProps = {
@@ -52,10 +58,13 @@
     'bg-red5': true,
     'border-red3': true,
     'bg-opacity-30': true,
+    'firefox:bg-opacity-30': true,
     filter: true,
     'drop-shadow-xl': true,
     'backdrop-filter': true,
+    'firefox:backdrop-filter': true,
     'backdrop-blur': true,
+    'firefox:backdrop-blur': true,
   };
 
   export let kind;
