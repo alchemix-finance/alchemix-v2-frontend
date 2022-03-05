@@ -115,9 +115,10 @@
     .reduce((prev, curr) => prev + curr);
   $: debtLimit = aggregate.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr);
   $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
+  $: userApy = aggregate.filter((val) => val.depositValue !== 0);
   $: vaultApy =
-    aggregate.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
-    aggregate.map((val) => val.vaultApy).length;
+    userApy.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
+    userApy.map((val) => val.vaultApy).length;
   $: totalWithdraw = totalDeposit - lockedDeposit;
   $: totalInterest = aggregate.map((val) => val.vaultInterest).reduce((prev, curr) => prev + curr);
   $: fiatDeposit = new Intl.NumberFormat($settings.userLanguage.locale, {
