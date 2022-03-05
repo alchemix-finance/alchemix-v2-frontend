@@ -1,8 +1,7 @@
 <script>
-
   import Button from '../../../elements/Button.svelte';
-  import getUserGas from '../../../../helpers/getUserGas';
-  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '../../../../helpers/setToast';
+  import { gasResolver } from '@helpers/getUserGas';
+  import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
   import { contractWrapper, externalContractWrapper } from '@helpers/contractWrapper';
   import { signer } from '@stores/v2/derived';
   import {
@@ -16,15 +15,13 @@
   import { fetchCrvFarmByUuid, fetchInternalFarmByUuid, fetchSushiFarmByUuid } from '@stores/v2/asyncMethods';
   import settings from '@stores/settings';
 
-
   export let farmType;
   export let farm;
 
   const exitPool = async () => {
-    const gas = utils.parseUnits(getUserGas().toString(), 'gwei');
+    const gas = await gasResolver();
 
     try {
-
       if (farmType === FarmTypes.INTERNAL) {
         const castedFarm = castToInternalFarmType(farm);
 
@@ -68,7 +65,6 @@
           fetchCrvFarmByUuid(castedFarm.uuid, [$signer]);
         });
       }
-
     } catch (e) {
       setError(e.message);
       console.error(e);
