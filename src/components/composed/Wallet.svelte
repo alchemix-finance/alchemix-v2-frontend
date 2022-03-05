@@ -22,7 +22,7 @@
    * @returns the formatted address
    * */
   const resolveAddress = (address) => {
-    return $account.ens || `${address.slice(0, 12)}...${address.slice(-11, -1)}`;
+    return $account.ens || `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   /*
