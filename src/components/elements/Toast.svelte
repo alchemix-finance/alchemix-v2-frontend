@@ -74,7 +74,9 @@
   export let showSpinner = true;
 
   export let showOpenButton = true;
-  export let onClickOpen = () => {};
+  export let onClickOpen = () => {
+    window.open(`https://etherscan.io/tx/${$toastConfig.etherscanUrl}`, '_blank');
+  };
 
   export let showCloseButton = true;
   export let closeTimeoutMs = 10000;
@@ -113,7 +115,7 @@
 
 {#if isOpen}
   <div class="fixed z-20 w-full pointer-events-none">
-    <div class="sticky mx-auto max-w-max" transition:fly="{{ y: -8, duration: 400 }}">
+    <div class="sticky mx-auto max-w-max pointer-events-auto" transition:fly="{{ y: -8, duration: 400 }}">
       <div
         class="{cn(
           'rounded-md border p-3 font-normal font-alcxTitles text-opacity-80',

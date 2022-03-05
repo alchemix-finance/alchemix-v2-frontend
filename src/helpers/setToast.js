@@ -56,6 +56,7 @@ export function setSuccessTx(hash) {
   _toastConfig.title = getItl('toast.success');
   _toastConfig.subtitle = getItl('toast.tx_confirmed');
   _toastConfig.closeOnMount = true;
+  _toastConfig.showOpenButton = true;
   _toastConfig.etherscanUrl = hash;
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
@@ -68,6 +69,7 @@ export function setError(message) {
   _toastConfig.title = getItl('toast.error');
   _toastConfig.subtitle = message;
   _toastConfig.closeOnMount = true;
+  _toastConfig.showOpenButton = false;
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
   _toastConfig.closeTimeout = 4000;

@@ -33,7 +33,7 @@
         setPendingTx();
         await tx.wait().then((transaction) => {
           setSuccessTx(transaction.hash);
-          fetchInternalFarmByUuid(castedFarm.uuid, [$signer]);
+          fetchInternalFarmByUuid(castedFarm.uuid, castedFarm.poolId, [$signer]);
         });
       } else if (farmType === FarmTypes.SUSHI) {
         const castedFarm = castToSushiFarmType(farm);
