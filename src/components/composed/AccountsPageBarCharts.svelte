@@ -222,8 +222,8 @@
             if (value === 0) return value;
 
             if ([0, floorDebt, floorDeposit].includes(value)) {
-              if (between(floorDebt, value - 50, value + 50)) return fiatDebtLimit;
-              if (between(floorDeposit, value - 50, value + 50)) return fiatDeposit;
+              if (between(floorDebt, value - 5, value + 5)) return fiatDebtLimit;
+              if (between(floorDeposit, value - 5, value + 5)) return fiatDeposit;
             }
 
             return undefined;
@@ -248,8 +248,8 @@
             const roundDebt = Math.round(debtLimit);
             const roundDeposit = Math.round(totalDeposit);
             return [roundDebt, roundDeposit].reduce((prev, curr) => {
-              if (between(context.tick.value, roundDebt - 50, roundDebt + 50)) return GREEN;
-              if (between(context.tick.value, roundDeposit - 50, roundDeposit + 50)) return ORANGE;
+              if (between(context.tick.value, roundDebt - 5, roundDebt + 5)) return GREEN;
+              if (between(context.tick.value, roundDeposit - 5, roundDeposit + 5)) return ORANGE;
               return undefined;
             });
           },

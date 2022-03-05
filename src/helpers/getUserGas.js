@@ -33,13 +33,13 @@ export default async function getUserGas(timeout) {
 export async function gasResolver() {
   setPendingGas();
   const provider = ethers.getDefaultProvider();
+  const gastimate = await provider.getGasPrice();
   let gas;
   try {
     const temp = await getUserGas(1500);
     gas = utils.parseUnits(temp.toString(), 'gwei');
   } catch (e) {
     console.info('[helpers/getUserGas]: Fetching gas price failed, resorting to provider', e);
-    gas = await provider.getGasPrice();
   }
-  return gas;
+  return gastimate.gt(gas) ? gastimate : gas;
 }
