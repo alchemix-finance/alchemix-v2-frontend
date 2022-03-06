@@ -217,19 +217,45 @@
     const normalizeBalance = utils.parseUnits(utils.formatUnits(_vault.balance, _tokenData.decimals), 18);
     const requiredCover = _openDebtAmount.mul(ratio);
     const freeDeposits = _coveredDebtAmount.sub(requiredCover.div(pricePerShare));
-    const maxAmount = freeDeposits.sub(normalizeBalance);
+    const vaultCovered = normalizeBalance.sub(requiredCover);
+    const maxAmount = freeDeposits.mul(pricePerShare).div(scalar(_tokenData.decimals));
     const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
+    const vaultAvailable = vaultCovered.gt(BigNumber.from(0));
 
     const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
 
     const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
     const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
+    // const maxAmountAvailable = normalizedShares.sub(debtToCover).gt(BigNumber.from(0));
+
+    console.table([
+      {
+        title: 'covered debt amount -> amount of tokens deposited',
+        value: _coveredDebtAmount.toString(),
+      },
+      {
+        title: 'open debt amount -> amount of debt taken',
+        value: _openDebtAmount.toString(),
+      },
+      {
+        title: 'shares in this vault',
+        value: normalizeBalance.toString(),
+      },
+      {
+        title: 'amount covered by this vault',
+        value: vaultCovered.toString(),
+      },
+      {
+        title: 'free amount in total',
+        value: maxAmount.toString(),
+      },
+    ]);
 
     return maxAmountAvailable
       ? utils.formatUnits(shareToAmount, _tokenData.decimals)
       : utils.formatUnits(
-          normalizedShares.sub(requiredCover).gt(BigNumber.from(0))
-            ? shareToAmount.sub(requiredCover)
+          normalizedShares.sub(debtToCover).gt(BigNumber.from(0))
+            ? shareToAmount.sub(debtToCover)
             : BigNumber.from(0),
           _tokenData.decimals,
         );
