@@ -79,10 +79,11 @@
 </script>
 
 <table class="w-full">
-
-  <thead class="flex justify-items-center items-center {$settings.invertColors
+  <thead
+    class="flex justify-items-center items-center {$settings.invertColors
       ? 'bg-grey15inverse'
-      : 'bg-grey15'} h-16">
+      : 'bg-grey15'} h-16"
+  >
     {#if headerGroups.length > 0}
       {#each headerGroups as headerGroup}
         <tr class="{getColumnWidth(headerGroup.colSize)} flex justify-center">
@@ -96,7 +97,6 @@
         </tr>
       {/each}
     {/if}
-
   </thead>
 
   <tbody>
