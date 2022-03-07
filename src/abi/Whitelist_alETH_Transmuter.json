@@ -315,58 +315,7 @@
         "type": "t_bool"
       }
     ],
-    "types": {
-      "t_address": {
-        "encoding": "inplace",
-        "label": "address",
-        "numberOfBytes": "20"
-      },
-      "t_array(t_address)dyn_storage": {
-        "base": "t_address",
-        "encoding": "dynamic_array",
-        "label": "address[]",
-        "numberOfBytes": "32"
-      },
-      "t_bool": {
-        "encoding": "inplace",
-        "label": "bool",
-        "numberOfBytes": "1"
-      },
-      "t_mapping(t_address,t_uint256)": {
-        "encoding": "mapping",
-        "key": "t_address",
-        "label": "mapping(address => uint256)",
-        "numberOfBytes": "32",
-        "value": "t_uint256"
-      },
-      "t_struct(AddressSet)18506_storage": {
-        "encoding": "inplace",
-        "label": "struct Sets.AddressSet",
-        "members": [
-          {
-            "astId": 18501,
-            "contract": "contracts/utils/Whitelist.sol:Whitelist",
-            "label": "values",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_array(t_address)dyn_storage"
-          },
-          {
-            "astId": 18505,
-            "contract": "contracts/utils/Whitelist.sol:Whitelist",
-            "label": "indexes",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_mapping(t_address,t_uint256)"
-          }
-        ],
-        "numberOfBytes": "64"
-      },
-      "t_uint256": {
-        "encoding": "inplace",
-        "label": "uint256",
-        "numberOfBytes": "32"
-      }
-    }
-  }
+
+    "address": "0xF22a13DfE72bD221f9C57aC2a186121D021e07a0"
+
 }

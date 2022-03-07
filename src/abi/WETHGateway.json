@@ -300,12 +300,7 @@
         "type": "t_address"
       }
     ],
-    "types": {
-      "t_address": {
-        "encoding": "inplace",
-        "label": "address",
-        "numberOfBytes": "20"
-      }
-    }
-  }
+
+    "address": "0x1c3EceA3c6c0e20Da3a972DDF89fB339E28CbAB4"
+
 }
