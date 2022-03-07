@@ -86,13 +86,13 @@ export const poolLookup = [
     farmIcon: undefined,
     tokenIcon: 'crv',
   },
-  // {
-  //   address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
-  //   title: 'tALCX',
-  //   subtitle: 'Tokemak',
-  //   farmIcon: undefined,
-  //   tokenIcon: 'talcx',
-  // },
+  {
+    address: '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84',
+    title: 'tALCX',
+    subtitle: 'Tokemak',
+    farmIcon: undefined,
+    tokenIcon: 'talcx',
+  },
 ];
 
 export default stakingPools;
