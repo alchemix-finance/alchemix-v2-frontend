@@ -117,6 +117,7 @@
 
   $: currentRowsOnCurrentStrategyType = currentVaultsBasedOnStrategyType.map((vault, index) => {
     const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
+    const debtTokenData = getTokenDataFromBalances(vault.debtToken, [$balancesStore]);
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
     const tokenPrice = $global.tokenPrices.find(
       (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
@@ -170,6 +171,12 @@
         limit: {
           CellComponent: CurrencyCell,
           value: debtValue,
+          token: {
+            balance: vaultDebt.div(BigNumber.from(10).pow(16)),
+            perShare: 1,
+            decimals: 1,
+            symbol: debtTokenData.symbol || '',
+          },
           prefix: '+',
           colSize: 2,
         },

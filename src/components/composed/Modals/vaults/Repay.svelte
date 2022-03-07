@@ -205,7 +205,7 @@
         />
       </div>
     </div>
-    <div class="w-full text-sm text-lightgrey10">
+    <div class="w-full text-sm text-lightgrey10 hidden">
       {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
         remainingDebtAmount,
       )}

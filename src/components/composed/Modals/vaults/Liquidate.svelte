@@ -45,16 +45,8 @@
         getTokenDataFromBalances(vault.address, [$balancesStore]).address.toLowerCase() ===
         yieldTokenData.address.toLowerCase(),
     )[0];
-    console.log(vaultData);
     const underlyingTokenData = getTokenDataFromBalances(vaultData.underlyingAddress, [$balancesStore]);
-    console.log(underlyingTokenData);
-    console.log($adaptersStore[vaultType].adapters);
-    console.log(
-      $adaptersStore[vaultType].adapters.filter(
-        (adapter) =>
-          adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
-      ),
-    );
+
     const adapterPrice = $adaptersStore[vaultType].adapters.filter(
       (adapter) =>
         adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
@@ -62,10 +54,8 @@
     const adapterYieldAmount = amount
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
       .div(adapterPrice);
-    console.log(amount.toString(), adapterYieldAmount.toString());
     const subTokens = adapterYieldAmount.mul(BigNumber.from(maximumLoss)).div(100000);
     const minimumOut = adapterYieldAmount.sub(subTokens);
-    console.log(minimumOut.toString());
 
     await liquidate(
       yieldTokenData.address,
@@ -174,8 +164,6 @@
 
   $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
 
-  $: console.log(`debt: ${$vaultsStore[selectedVaultType].debt[0]}`);
-
   $: debtAmount = $vaultsStore[selectedVaultType].debt[0] || BigNumber.from(0);
 
   $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
@@ -272,7 +260,7 @@
     <div class="w-full">
       <MaxLossController bind:maxLoss="{maximumLoss}" />
     </div>
-    <div class="w-full text-sm text-lightgrey10">
+    <div class="w-full text-sm text-lightgrey10 hidden">
       {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
         remainingDebtAmount,
       )} <br />

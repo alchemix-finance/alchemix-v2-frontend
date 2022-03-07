@@ -31,7 +31,6 @@ export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
   balancesStore.update((_prevStore) => {
-    console.log(_prevStore);
     const index = _prevStore.findIndex(
       (bal) => `${bal.address}`.toLowerCase() === `${balanceAddress}`.toLowerCase(),
     );

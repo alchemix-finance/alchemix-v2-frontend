@@ -105,8 +105,6 @@ export async function getOpenProposals() {
 
 export async function sendVote(voteData) {
   if (debugging) console.log(_account.signer);
-  // TODO check if supplied choice is valid for provided proposal
-  // TODO callback to directly reflect a success/failure of voting on the governance page
   try {
     await client.vote(_account.signer.provider, _account.address, space, voteData);
     await getVotesForAddress();

@@ -352,7 +352,7 @@
         <MaxLossController bind:maxLoss="{maximumLoss}" />
       </div>
 
-      <div class="my-4 text-sm text-lightgrey10">
+      <div class="my-4 text-sm text-lightgrey10 hidden">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData.decimals)}
         -> {totalDep}<br />
         {$_('modals.borrow_limit')}: {startDebtLimit} ->

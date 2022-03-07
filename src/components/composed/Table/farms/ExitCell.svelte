@@ -73,7 +73,6 @@
 
   const checkButtonState = (farm) => {
     if (Array.isArray(farm.userDeposit)) {
-      console.log(farm);
       return (
         farm.userDeposit.some((elm) => elm.gt(BigNumber.from(0))) ||
         farm.userUnclaimed.some((elm) => elm.gt(BigNumber.from(0)))

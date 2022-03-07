@@ -20,6 +20,7 @@ export type BodyVaultType = {
   tvl: ethers.BigNumber;
   apy: number;
   useGateway: boolean;
+  debtToken: string;
 };
 
 export interface TokensType {

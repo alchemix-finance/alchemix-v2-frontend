@@ -117,9 +117,7 @@ export async function updateAlusdAggregate() {
   const contract = getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
   const newDebt = parseFloat(utils.formatEther(rawDebt.debt.toString()));
-  console.log('debt old v new', _aggregate.totalDebt, newDebt);
   if (newDebt !== _aggregate.totalDebt) {
-    console.log('updating aggregate debt');
     _aggregate.totalDebt = newDebt;
     aggregate.set({ ..._aggregate });
   }

@@ -55,6 +55,7 @@ export async function fetchDataForVault(
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
   const apy = await getVaultApy(tokenAddress);
   const useGateway = VaultTypesInfos[vaultType].useGateway;
+  const debtToken = await contractInstance.debtToken();
 
   return {
     type: vaultType,
@@ -66,6 +67,7 @@ export async function fetchDataForVault(
     underlyingPerShare: underlyingPerShare,
     apy,
     useGateway,
+    debtToken,
   };
 }
 

@@ -38,7 +38,6 @@
   let withdrawEth = false;
   $: useGateway = vault.useGateway;
   $: foo = $vaultsAggregatedCoveredDebt;
-  $: console.log(utils.formatEther(foo[0]), utils.formatEther(foo[1]));
 
   function switchWithdrawType() {
     withdrawEth = !withdrawEth;
@@ -214,9 +213,6 @@
       .sub(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))))
       .mul(scalar(BigNumber.from(18).sub(_decimals)))
       .div(ratio);
-    console.log(maxWithdrawAmount.toString(), _openDebtAmount.toString(), vaultCover.toString());
-
-    console.log(maxWithdrawAmount.lt(BigNumber.from(0)));
 
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
     const debtCovered = utils.formatUnits(
@@ -308,7 +304,7 @@
         {#if !withdrawEth}
           <div class="w-full">
             <label for="yieldInput" class="text-sm text-lightgrey10">
-              {$_('available')}: ~{maxWithdrawAmountForYield}
+              {$_('available')}: {maxWithdrawAmountForYield}
               {yieldTokenData.symbol}
             </label>
             <div
@@ -361,7 +357,7 @@
         {/if}
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
-            {$_('available')}: ~{maxWithdrawAmountForUnderlying}
+            {$_('available')}: {maxWithdrawAmountForUnderlying}
             {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}
           </label>
           <div
@@ -416,7 +412,7 @@
       <div class="my-4">
         <MaxLossController bind:maxLoss="{maximumLoss}" />
       </div>
-      <div class="my-4 text-sm text-lightgrey10">
+      <div class="my-4 text-sm text-lightgrey10 hidden">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
         -> {calculateRemainingBalance(
           vault,
