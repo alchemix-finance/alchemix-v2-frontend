@@ -106,11 +106,8 @@
     }
   }
 
-  $: console.log($vaultsAggregatedDebt[1].toString(), $vaultsStore, defaultSelectedVault);
-  $: console.log($vaultsStore);
   $: availAmount = calculateAvailableAmount($vaultsAggregatedDebt, $vaultsStore, defaultSelectedVault);
   $: maxDebtAmount = getMaxDebt($vaultsAggregatedDebt, defaultSelectedVault);
-  $: console.log(maxDebtAmount.toString());
 
   $: borrowAmountBN = utils.parseEther(`${borrowAmount}` || `0`);
 

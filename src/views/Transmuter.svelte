@@ -101,7 +101,7 @@
           (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
         )?.price;
 
-        const nameAlias = TransmuterNameAliases[`${underlyingTokenData.symbol}`.toLowerCase()];
+        const nameAlias = TransmuterNameAliases[`${underlyingTokenData?.symbol}`.toLowerCase()] || '';
 
         const totalDeposited = _transmuterData.exchangedBalanceBN.add(_transmuterData.unexchangedBalanceBN);
         const depositValue = calculateBalanceValue(totalDeposited, tokenPrice);
@@ -119,26 +119,44 @@
           },
           col2: {
             CellComponent: FarmNameCell,
-            farmIcon: synthTokenData.symbol.toLowerCase() + '_med.svg',
-            tokenIcon: underlyingTokenData.symbol.toLowerCase(),
+            farmIcon: (synthTokenData?.symbol.toLowerCase() || '') + '_med.svg',
+            tokenIcon: underlyingTokenData?.symbol.toLowerCase() || '',
             farmName: nameAlias,
-            farmSubtitle: synthTokenData.symbol + '-' + underlyingTokenData.symbol,
+            farmSubtitle: (synthTokenData?.symbol || '') + '-' + (underlyingTokenData?.symbol || ''),
             colSize: 2,
             alignment: 'justify-self-start',
           },
           col3: {
             CellComponent: CurrencyCell,
             value: depositValue,
+            token: {
+              balance: totalDeposited.mul(BigNumber.from(10).pow(18)),
+              symbol: synthTokenData?.symbol || '',
+              perShare: 1,
+              decimals: 18,
+            },
             colSize: 2,
           },
           col4: {
             CellComponent: CurrencyCell,
             value: withdrawValue,
+            token: {
+              balance: _transmuterData.unexchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+              symbol: synthTokenData?.symbol || '',
+              perShare: 1,
+              decimals: 18,
+            },
             colSize: 2,
           },
           col6: {
             CellComponent: CurrencyCell,
             value: claimValue,
+            token: {
+              balance: _transmuterData.exchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+              symbol: underlyingTokenData?.symbol || '',
+              perShare: 1,
+              decimals: underlyingTokenData?.decimals || 18,
+            },
             colSize: 2,
           },
           col5: {
