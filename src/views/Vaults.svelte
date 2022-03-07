@@ -117,6 +117,7 @@
 
   $: currentRowsOnCurrentStrategyType = currentVaultsBasedOnStrategyType.map((vault, index) => {
     const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
+    const debtTokenData = getTokenDataFromBalances(vault.debtToken, [$balancesStore]);
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
     const tokenPrice = $global.tokenPrices.find(
       (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
@@ -149,8 +150,8 @@
       row: {
         col2: {
           CellComponent: FarmNameCell,
-          farmName: vaultTokenData.symbol,
-          farmSubtitle: 'Yearn ' + underlyingTokenData.symbol,
+          farmName: 'Yearn ' + underlyingTokenData.symbol,
+          farmSubtitle: underlyingTokenData.symbol + ' + ' + vaultTokenData.symbol,
           farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
           tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
           colSize: 3,
@@ -159,17 +160,35 @@
         deposited: {
           CellComponent: CurrencyCell,
           value: depositValue,
+          token: {
+            balance: vault.balance,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
+          },
           colSize: 2,
         },
         limit: {
           CellComponent: CurrencyCell,
           value: debtValue,
+          token: {
+            balance: vaultDebt.div(BigNumber.from(10).pow(16)),
+            perShare: 1,
+            decimals: 1,
+            symbol: debtTokenData.symbol || '',
+          },
           prefix: '+',
           colSize: 2,
         },
         col3: {
           CellComponent: CurrencyCell,
           value: tvlValue,
+          token: {
+            balance: vault.tvl,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
+          },
           colSize: 2,
         },
         col4: {
@@ -287,7 +306,7 @@
       {#if showMetrics}
         <ContainerWithHeader>
           <div slot="header" class="py-4 px-6">
-            <Metrics />
+            <Metrics vaults="{currentVaultsBasedOnType}" />
           </div>
         </ContainerWithHeader>
       {:else}

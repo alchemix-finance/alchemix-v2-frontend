@@ -1,6 +1,7 @@
 <script>
   import { slide } from 'svelte/transition';
   import Button from './Button.svelte';
+  import settings from '@stores/settings';
 
   export let canToggle = false;
   export let isVisible = true;
@@ -13,9 +14,13 @@
   $: isVisible, (contentVisible = isVisible);
 </script>
 
-<div class="w-full rounded border border-grey10 bg-grey15 relative">
+<div
+  class="w-full rounded border {$settings.invertColors
+    ? 'border-grey10inverse bg-grey15inverse'
+    : 'border-grey10 bg-grey15'} relative"
+>
   {#if $$slots.header}
-    <div class="bg-grey10 w-full">
+    <div class="{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} w-full">
       {#if canToggle}
         <div class="py-4 px-6 text-sm flex justify-between">
           <slot name="header" />

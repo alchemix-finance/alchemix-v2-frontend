@@ -30,6 +30,15 @@ export function setVerbose(state) {
 }
 
 /*
+ * @dev stores the new boolean for color schemes
+ * @param state the new setting
+ * */
+export function setInvert(state) {
+  _settings.invertColors = state;
+  if (settings.invertColors !== _settings.invertColors) settings.set({ ..._settings });
+}
+
+/*
  * @dev stores the new base currency and conversion rates in state
  * @param currency the currency object for the new base currency
  * */

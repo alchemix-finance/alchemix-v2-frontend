@@ -1,13 +1,15 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { createEventDispatcher } from 'svelte';
+  import settings from '@stores/settings';
+
   export let description = 'standard';
   export let gasFee = {
     maxFeePerGas: 0,
     baseFeePerGas: 0,
     maxPriorityFeePerGas: 0,
   };
-  export let cardColor = 'lightgrey20';
+  export let cardColor = $settings.invertColors ? 'lightgrey20inverse' : 'lightgrey20';
   export let isActive = false;
   export let compactView = false;
 
@@ -21,8 +23,8 @@
 
 <div
   class="rounded border border-{isActive ? cardColor : 'lightgrey20'} py-4 px-6 {isActive
-    ? ''
-    : 'cursor-pointer hover:bg-grey1'} w-full"
+    ? `${$settings.invertColors ? 'bg-grey1inverse' : 'bg-grey1'}`
+    : `cursor-pointer hover:${$settings.invertColors ? 'bg-grey1inverse' : 'bg-grey1'}`} w-full"
   on:click="{eventCheck}"
 >
   <div class="flex flex-row justify-between mb-3">

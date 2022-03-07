@@ -1,11 +1,12 @@
 <script>
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
-  import { sendVote } from '../../../../middleware/snapshot';
-  import governance from '../../../../stores/governance';
-  import { setPendingVote, setSuccessVote, setError, setRejectedVote } from '../../../../helpers/setToast';
+  import { sendVote } from '@middleware/snapshot';
+  import governance from '@stores/governance';
+  import settings from '@stores/settings';
+  import { setPendingVote, setSuccessVote, setError, setRejectedVote } from '@helpers/setToast';
   import Button from '../../../elements/Button.svelte';
-  import { getProvider } from '../../../../helpers/walletManager';
+  import { getProvider } from '@helpers/walletManager';
 
   export let expandedRow = {};
   let value = '';
@@ -46,7 +47,7 @@
       if (!link.match('^https?://')) {
         link = 'https://' + link;
       }
-      return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="underline text-orange3">${url}</a>`;
+      return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="underline text-bronze3">${url}</a>`;
     });
   };
 
@@ -58,21 +59,31 @@
   $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === proposal.id));
 </script>
 
-<div class="p-4 border-b border-grey10" transition:slide|local>
+<div
+  class="p-4 border-b {$settings.invertColors ? 'border-grey10inverse' : 'border-grey10'}"
+  transition:slide|local
+>
   <div class="flex flex-row space-x-4">
-    <div class="w-full bg-grey10 rounded p-4">
+    <div class="w-full {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} rounded p-4">
       <p class="mb-3 opacity-50">{$_('governance_page.description')}</p>
       <p class="text-justify whitespace-pre-wrap w-full">
         {@html replaceUrl()}
       </p>
     </div>
-    <div class="flex flex-col min-w-max bg-grey10 rounded p-4">
+    <div
+      class="flex flex-col min-w-max {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} rounded p-4"
+    >
       <p class="mb-3 opacity-50">
         {$_('governance_page.choose')}
       </p>
       <div id="selection" class="mb-6 w-auto">
         {#if proposal.state !== 'closed' && !vote}
-          <select bind:value class="border border-grey5 bg-grey1 h-8 rounded p-1 text-xs block w-full mb-3">
+          <select
+            bind:value
+            class="border {$settings.invertColors
+              ? 'border-grey5inverse bg-grey1inverse'
+              : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-full mb-3"
+          >
             <option value="null" selected disabled>
               {$_('governance_page.selectChoice')}
             </option>

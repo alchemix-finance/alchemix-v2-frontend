@@ -1,6 +1,7 @@
 <script>
   import { fly } from 'svelte/transition';
   import toastConfig from '../../stores/toast.js';
+  import settings from '@stores/settings';
   import cn from 'classnames';
   import { Circle } from 'svelte-loading-spinners';
 
@@ -17,14 +18,53 @@
     'border-bronze1': true,
   };
 
+  const pendingPropsLight = {
+    'bg-bronze3': true,
+    'border-bronze1': true,
+    'bg-opacity-30': true,
+    'firefox:bg-opacity-30': true,
+    filter: true,
+    'drop-shadow-xl': true,
+    'backdrop-filter': true,
+    'firefox:backdrop-filter': true,
+    'backdrop-blur': true,
+    'firefox:backdrop-blur': true,
+  };
+
   const successProps = {
-    'bg-black1': true,
+    'bg-black2': true,
     'border-green2': true,
+  };
+
+  const successPropsLight = {
+    'bg-green7': true,
+    'border-green2': true,
+    'bg-opacity-30': true,
+    'firefox:bg-opacity-30': true,
+    filter: true,
+    'drop-shadow-xl': true,
+    'backdrop-filter': true,
+    'firefox:backdrop-filter': true,
+    'backdrop-blur': true,
+    'firefox:backdrop-blur': true,
   };
 
   const errorProps = {
     'bg-red2': true,
     'border-red3': true,
+  };
+
+  const errorPropsLight = {
+    'bg-red5': true,
+    'border-red3': true,
+    'bg-opacity-30': true,
+    'firefox:bg-opacity-30': true,
+    filter: true,
+    'drop-shadow-xl': true,
+    'backdrop-filter': true,
+    'firefox:backdrop-filter': true,
+    'backdrop-blur': true,
+    'firefox:backdrop-blur': true,
   };
 
   export let kind;
@@ -34,7 +74,9 @@
   export let showSpinner = true;
 
   export let showOpenButton = true;
-  export let onClickOpen = () => {};
+  export let onClickOpen = () => {
+    window.open(`https://etherscan.io/tx/${$toastConfig.etherscanUrl}`, '_blank');
+  };
 
   export let showCloseButton = true;
   export let closeTimeoutMs = 10000;
@@ -73,14 +115,14 @@
 
 {#if isOpen}
   <div class="fixed z-20 w-full pointer-events-none">
-    <div class="sticky mx-auto max-w-max" transition:fly="{{ y: -8, duration: 400 }}">
+    <div class="sticky mx-auto max-w-max pointer-events-auto" transition:fly="{{ y: -8, duration: 400 }}">
       <div
         class="{cn(
           'rounded-md border p-3 font-normal font-alcxTitles text-opacity-80',
           {
-            [TOAST_KINDS.SUCCESS]: successProps,
-            [TOAST_KINDS.ERROR]: errorProps,
-            [TOAST_KINDS.PENDING]: pendingProps,
+            [TOAST_KINDS.SUCCESS]: $settings.invertColors ? successPropsLight : successProps,
+            [TOAST_KINDS.ERROR]: $settings.invertColors ? errorPropsLight : errorProps,
+            [TOAST_KINDS.PENDING]: $settings.invertColors ? pendingPropsLight : pendingProps,
           }[kind],
         )}"
       >
@@ -97,7 +139,7 @@
           >
             {#if showSpinner}
               <div class="absolute">
-                <Circle color="white" size="32" />
+                <Circle color="#F5C59F" size="32" />
               </div>
             {/if}
             <img src="images/alchemix_logo.png" alt="Alchemix loader" class="w-5 h-5" />

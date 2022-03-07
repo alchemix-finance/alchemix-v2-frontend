@@ -1,10 +1,11 @@
 <script>
+  import settings from '@stores/settings';
   import { slide } from 'svelte/transition';
 </script>
 
 <div transition:slide>
   {#if $$slots.head}
-    <div class="p-8 border-b border-grey5">
+    <div class="p-8 border-b {$settings.invertColors ? 'border-grey5inverse' : 'border-grey5'}">
       <div class="container mx-auto">
         <slot name="head" />
       </div>

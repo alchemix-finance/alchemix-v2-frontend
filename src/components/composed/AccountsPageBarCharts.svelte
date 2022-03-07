@@ -115,9 +115,10 @@
     .reduce((prev, curr) => prev + curr);
   $: debtLimit = aggregate.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr);
   $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
+  $: userApy = aggregate.filter((val) => val.depositValue !== 0);
   $: vaultApy =
-    aggregate.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
-    aggregate.map((val) => val.vaultApy).length;
+    userApy.map((val) => val.vaultApy).reduce((prev, curr) => prev + curr) /
+    userApy.map((val) => val.vaultApy).length;
   $: totalWithdraw = totalDeposit - lockedDeposit;
   $: totalInterest = aggregate.map((val) => val.vaultInterest).reduce((prev, curr) => prev + curr);
   $: fiatDeposit = new Intl.NumberFormat($settings.userLanguage.locale, {
@@ -215,11 +216,28 @@
           callback: function (value) {
             // this iterates over _all_ ticks and should return ticks that match 0, debtLimit and totalDeposit
             // it also generates the labels on the y axis and creates a callback for each label
-            const floorDebt = Math.round(debtLimit);
-            const floorDeposit = Math.round(totalDeposit);
+
+            const floorDebt = Math.floor(debtLimit);
+            const floorDeposit = Math.floor(totalDeposit);
+
             if (value === 0) return value;
-            if (between(floorDebt, value - 50, value + 50)) return fiatDebtLimit;
-            if (between(floorDeposit, value - 50, value + 50)) return fiatDeposit;
+
+            // sometimes creates duplicate entries that'll overlap, needs some better fixing
+            if (
+              [
+                0,
+                ...Array(10)
+                  .fill(floorDebt - 5)
+                  .map((x, y) => x + y),
+                ...Array(10)
+                  .fill(floorDeposit - 5)
+                  .map((x, y) => x + y),
+              ].includes(value)
+            ) {
+              if (between(floorDebt, value - 5, value + 5)) return fiatDebtLimit;
+              if (between(floorDeposit, value - 5, value + 5)) return fiatDeposit;
+            }
+
             return undefined;
           },
 
@@ -242,8 +260,8 @@
             const roundDebt = Math.round(debtLimit);
             const roundDeposit = Math.round(totalDeposit);
             return [roundDebt, roundDeposit].reduce((prev, curr) => {
-              if (between(context.tick.value, roundDebt - 50, roundDebt + 50)) return GREEN;
-              if (between(context.tick.value, roundDeposit - 50, roundDeposit + 50)) return ORANGE;
+              if (between(context.tick.value, roundDebt - 5, roundDebt + 5)) return GREEN;
+              if (between(context.tick.value, roundDeposit - 5, roundDeposit + 5)) return ORANGE;
               return undefined;
             });
           },

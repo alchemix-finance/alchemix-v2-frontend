@@ -10,7 +10,7 @@
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
   import { addressStore, vaultsStore, balancesStore, adaptersStore } from 'src/stores/v2/alcxStore';
-  import { signer, vaultsAggregatedBalances } from 'src/stores/v2/derived';
+  import { signer, vaultsAggregatedBalances, vaultsAggregatedCoveredDebt } from 'src/stores/v2/derived';
   import {
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
@@ -22,6 +22,7 @@
   import { getTokenDataFromBalances, normalizeAmount } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
+  import settings from '@stores/settings';
 
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
 
@@ -36,6 +37,7 @@
 
   let withdrawEth = false;
   $: useGateway = vault.useGateway;
+  $: foo = $vaultsAggregatedCoveredDebt;
 
   function switchWithdrawType() {
     withdrawEth = !withdrawEth;
@@ -52,7 +54,14 @@
   const toShares = (amount, decimals, sharePrice) => {
     if (amount && decimals && sharePrice) {
       const scalar = BigNumber.from(10).pow(decimals);
-      return utils.parseUnits(amount, decimals).mul(scalar).div(sharePrice);
+
+      const amountToShares = utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice);
+      // return vault.balance.sub(amountToShares).eq(BigNumber.from('1')) ? vault.balance : amountToShares;
+      return vault.balance
+        .sub(utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice))
+        .eq(BigNumber.from('1'))
+        ? vault.balance
+        : utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice);
     } else {
       return BigNumber.from(0);
     }
@@ -148,21 +157,15 @@
     }
   };
 
-  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _openDebtAmount) {
+  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
 
-    const globalCover = toShares($vaultsAggregatedBalances[vault.type].toString(), 18, vault.yieldPerShare)
-      .div(BigNumber.from(10).pow(18))
-      .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
-
-    const freeCover = globalCover
-      .sub(_openDebtAmount.div(BigNumber.from(10).pow(18)))
-      .mul($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+    const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
 
     return (
       sharesWithdrawAmount.gt(BigNumber.from(0)) &&
       sharesWithdrawAmount.lte(vault.balance) &&
-      sharesWithdrawAmount.lte(freeCover)
+      sharesWithdrawAmount.lte(maxAmountToShares)
     );
   }
 
@@ -172,19 +175,15 @@
     }
   }
 
-  function initializeCoveredDebt(_vault, _aggregatedBalances, _underlyingTokenData) {
-    if (_aggregatedBalances) {
-      return _aggregatedBalances;
-    }
-  }
-
   function calculateRemainingBalance(
     _vault,
     _underlyingWithdrawAmount,
     _yieldWithdrawAmount,
     _underlyingTokenData,
   ) {
-    const _remainingBalanceBN = _vault.balance.sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount));
+    const _remainingBalanceBN = _vault.balance
+      .sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount))
+      .sub(roundingBalancer);
 
     return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
   }
@@ -192,46 +191,52 @@
   function calculateMaxWithdrawAmount(
     _coveredDebtAmount,
     _openDebtAmount,
-    _tokenData,
+    _decimals,
     _vault,
-    pricePerShare,
+    _pricePerShare,
+    _ratio,
   ) {
     const scalar = (decimals) => BigNumber.from(10).pow(decimals);
-    const ratio = $vaultsStore[vault.type].ratio.div(scalar(18));
-    const normalizeBalance = utils.parseUnits(utils.formatUnits(_vault.balance, _tokenData.decimals), 18);
+    const ratio = _ratio.div(scalar(18));
+    // how many underlying tokens are needed to cover a user's debt
     const requiredCover = _openDebtAmount.mul(ratio);
-    const freeDeposits = _coveredDebtAmount.sub(requiredCover);
-    const maxAmount = freeDeposits.sub(normalizeBalance);
-    const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
+    // remaining underlying token deposits that could be withdrawn
+    const freeCover = _coveredDebtAmount.sub(requiredCover);
+    // amount of debt tokens covered by this vault
+    const vaultCover = _vault.balance
+      .mul(_pricePerShare)
+      .div(scalar(_decimals))
+      .mul(scalar(BigNumber.from(18).sub(_decimals)));
+    // amount of tokens available for withdrawal
+    const maxWithdrawAmount = vaultCover
+      .div(scalar(BigNumber.from(18).sub(_decimals)))
+      .sub(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))))
+      .mul(scalar(BigNumber.from(18).sub(_decimals)))
+      .div(ratio);
 
-    const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
-    const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
-    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
+    const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
+    const debtCovered = utils.formatUnits(
+      maxWithdrawAmount.div(scalar(BigNumber.from(18).sub(_decimals))),
+      _decimals,
+    );
 
-    return maxAmountAvailable
-      ? utils.formatUnits(shareToAmount, _tokenData.decimals)
-      : utils.formatUnits(
-          normalizedShares.sub(debtToCover).gt(BigNumber.from(0))
-            ? normalizeAmount(normalizedShares.sub(debtToCover), 18, _tokenData.decimals)
-            : BigNumber.from(0),
-          _tokenData.decimals,
-        );
+    return _openDebtAmount.gt(BigNumber.from(0))
+      ? maxWithdrawAmount.lt(BigNumber.from(0))
+        ? maxAmount
+        : debtCovered
+      : maxAmount;
   }
 
   $: yieldTokenData = initializeTokenDataForAddress(vault.address);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
 
-  $: cDebt = initializeCoveredDebt(vault, $vaultsAggregatedBalances[vault.type], underlyingTokenData);
+  $: cDebt = $vaultsAggregatedCoveredDebt[vault.type];
 
-  $: yieldWithdrawAmountShares = toShares(
-    `${yieldWithdrawAmount}`,
-    yieldTokenData.decimals,
-    vault.yieldPerShare,
-  );
+  $: yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldTokenData.decimals, vault.yieldPerShare);
 
   $: underlyingWithdrawAmountShares = toShares(
-    `${underlyingWithdrawAmount}`,
+    underlyingWithdrawAmount,
     underlyingTokenData.decimals,
     vault.underlyingPerShare,
   );
@@ -242,26 +247,33 @@
     .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
     .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
+  $: roundingBalancer = utils.parseUnits(
+    utils.formatUnits(1, underlyingTokenData.decimals),
+    underlyingTokenData.decimals,
+  );
+
   $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
     cDebt,
     debt,
-    underlyingTokenData,
+    underlyingTokenData.decimals,
     vault,
     vault.underlyingPerShare,
+    $vaultsStore[vault.type].ratio,
   );
 
   $: maxWithdrawAmountForYield = utils.formatUnits(
     utils
-      .parseUnits(maxWithdrawAmountForUnderlying, yieldTokenData.decimals)
+      .parseUnits(maxWithdrawAmountForUnderlying, 18)
       .div(vault.underlyingPerShare)
-      .mul(vault.yieldPerShare),
+      .mul(vault.yieldPerShare)
+      .div(BigNumber.from(10).pow(BigNumber.from(18).sub(yieldTokenData.decimals))),
     yieldTokenData.decimals,
   );
 
   $: withdrawButtonState = getWithdrawButtonState(
     underlyingWithdrawAmountShares,
     yieldWithdrawAmountShares,
-    debt,
+    underlyingTokenData.decimals,
   );
 </script>
 
@@ -292,12 +304,16 @@
         {#if !withdrawEth}
           <div class="w-full">
             <label for="yieldInput" class="text-sm text-lightgrey10">
-              {$_('available')}: ~{maxWithdrawAmountForYield}
+              {$_('available')}: {maxWithdrawAmountForYield}
               {yieldTokenData.symbol}
             </label>
             <div
-              class="flex bg-grey3 rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
+              class="flex {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'} rounded border {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
                 ? 'border-red3'
+                : $settings.invertColors
+                ? 'border-grey3inverse'
                 : 'border-grey3'}"
             >
               <div class="w-full">
@@ -305,9 +321,12 @@
                   id="yieldInput"
                   bind:value="{yieldWithdrawAmount}"
                   placeholder="~0.00 {yieldTokenData.symbol}"
-                  class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldWithdrawAmount >
-                  parseFloat(maxWithdrawAmountForYield)
+                  class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+                    ? 'bg-grey3inverse'
+                    : 'bg-grey3'} {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
                     ? 'text-red3'
+                    : $settings.invertColors
+                    ? 'text-lightgrey5inverse'
                     : 'text-lightgrey5'}"
                 />
               </div>
@@ -316,8 +335,8 @@
                   label="MAX"
                   width="w-full"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => setMaxYield(maxWithdrawAmountForYield)}"
@@ -326,8 +345,8 @@
                   label="CLEAR"
                   width="w-max"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => clearYield()}"
@@ -338,13 +357,17 @@
         {/if}
         <div class="w-full">
           <label for="underlyingInput" class="text-sm text-lightgrey10">
-            {$_('available')}: ~{maxWithdrawAmountForUnderlying}
+            {$_('available')}: {maxWithdrawAmountForUnderlying}
             {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}
           </label>
           <div
-            class="flex bg-grey3 rounded border {underlyingWithdrawAmount >
+            class="flex {$settings.invertColors
+              ? 'bg-grey3inverse'
+              : 'bg-grey3'} rounded border {underlyingWithdrawAmount >
             parseFloat(maxWithdrawAmountForUnderlying)
               ? 'border-red3'
+              : $settings.invertColors
+              ? 'border-grey3inverse'
               : 'border-grey3'}"
           >
             <div class="w-full">
@@ -352,9 +375,12 @@
                 id="underlyingInput"
                 bind:value="{underlyingWithdrawAmount}"
                 placeholder="~0.00 {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}"
-                class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingWithdrawAmount >
-                parseFloat(maxWithdrawAmountForUnderlying)
+                class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+                  ? 'bg-grey3inverse'
+                  : 'bg-grey3'} {underlyingWithdrawAmount > parseFloat(maxWithdrawAmountForUnderlying)
                   ? 'text-red3'
+                  : $settings.invertColors
+                  ? 'text-lightgrey5inverse'
                   : 'text-lightgrey5'}"
               />
             </div>
@@ -363,8 +389,8 @@
                 label="MAX"
                 width="w-full"
                 fontSize="text-xs"
-                textColor="lightgrey10"
-                backgroundColor="grey3"
+                textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                 borderSize="0"
                 height="h-10"
                 on:clicked="{() => setMaxUnderlying(maxWithdrawAmountForUnderlying)}"
@@ -373,8 +399,8 @@
                 label="CLEAR"
                 width="w-max"
                 fontSize="text-xs"
-                textColor="lightgrey10"
-                backgroundColor="grey3"
+                textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                 borderSize="0"
                 height="h-10"
                 on:clicked="{() => clearUnderlying()}"
@@ -386,7 +412,7 @@
       <div class="my-4">
         <MaxLossController bind:maxLoss="{maximumLoss}" />
       </div>
-      <div class="my-4 text-sm text-lightgrey10">
+      <div class="my-4 text-sm text-lightgrey10 hidden">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
         -> {calculateRemainingBalance(
           vault,
@@ -403,8 +429,8 @@
       <Button
         label="{$_('actions.withdraw')}"
         borderColor="red4"
-        backgroundColor="red2"
-        hoverColor="red4"
+        backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
+        hoverColor="red3"
         height="h-12"
         borderSize="1"
         fontSize="text-md"

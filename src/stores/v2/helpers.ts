@@ -1,9 +1,10 @@
 import { BigNumber, ethers, utils } from 'ethers';
-import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
+import { contractWrapper, erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
-import { VaultTypes } from './types';
+import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
-import { VaultTypesInfos } from '@stores/v2/constants';
+import { v4 as uuidv4 } from 'uuid';
+import { VaultTypesInfos } from './constants';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -54,6 +55,7 @@ export async function fetchDataForVault(
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
   const apy = await getVaultApy(tokenAddress);
   const useGateway = VaultTypesInfos[vaultType].useGateway;
+  const debtToken = await contractInstance.debtToken();
 
   return {
     type: vaultType,
@@ -65,6 +67,7 @@ export async function fetchDataForVault(
     underlyingPerShare: underlyingPerShare,
     apy,
     useGateway,
+    debtToken,
   };
 }
 
@@ -119,9 +122,12 @@ export function calculateVaultDebt(
   _underlyingDecimals: number,
   _debtRatio: BigNumber,
 ) {
+  const scalar = (decimals) => BigNumber.from(10).pow(decimals);
   return (
     _vaultBalance
-      .div(_debtRatio.div(BigNumber.from(10).pow(18)).mul(BigNumber.from(10).pow(_underlyingDecimals)))
+      .mul(scalar(18))
+      .div(scalar(_underlyingDecimals))
+      .div(_debtRatio.div(BigNumber.from(10).pow(18)))
       .mul(_underlyingPerShare)
       .div(BigNumber.from(10).pow(_underlyingDecimals)) ?? BigNumber.from(0)
   );
@@ -137,4 +143,162 @@ export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]
 
 export function normalizeAmount(_amount: BigNumber, _decimalsFrom: number, _decimalsTo: number) {
   return utils.parseUnits(utils.formatUnits(_amount, _decimalsFrom), _decimalsTo);
+}
+
+export async function fetchDataForInternalFarm(
+  poolId: number,
+  [signer]: [ethers.Signer],
+): Promise<InternalFarmType> {
+  const { instance: stakingInstance } = contractWrapper('StakingPools', signer);
+  const accountAddress = await signer.getAddress();
+
+  const tokenAddress = await stakingInstance.getPoolToken(poolId);
+  const tokenContract = erc20Contract(tokenAddress, signer);
+
+  const tokenSymbol = await tokenContract.symbol();
+  const userDeposit = await stakingInstance.getStakeTotalDeposited(accountAddress, poolId);
+
+  const rewardRate = await stakingInstance.getPoolRewardRate(poolId);
+  const uUnclaimed = await stakingInstance.getStakeTotalUnclaimed(accountAddress, poolId);
+
+  const tvl = await stakingInstance.getPoolTotalDeposited(poolId);
+
+  return {
+    uuid: uuidv4(),
+    tokenAddress,
+    rewards: [
+      {
+        iconName: 'alchemix',
+        tokenName: 'ALCX',
+      },
+    ],
+    tokenSymbol,
+    userDeposit,
+    isActive: rewardRate.gt(BigNumber.from(0)),
+    rewardRate,
+    rewardToken: 'ALCX',
+    userUnclaimed: [uUnclaimed],
+    tvl,
+    poolId,
+  };
+}
+
+export async function fetchDataForSushiFarm(
+  lpContractSelector: string,
+  masterchefContractSelector: string,
+  onsenContractSelector: string,
+  [signer]: [ethers.Signer],
+): Promise<SushiFarmType> {
+  const { instance: lpInstance, address: lpAddress } = externalContractWrapper(lpContractSelector, signer);
+  const { instance: onsenInstance } = externalContractWrapper(onsenContractSelector, signer);
+  const { instance: masterchefInstance, address: masterchefAddress } = externalContractWrapper(
+    masterchefContractSelector,
+    signer,
+  );
+
+  const accountAddress = await signer.getAddress();
+
+  const lpTokenInstance = erc20Contract(lpAddress, signer);
+
+  const tokenSymbol = await lpTokenInstance.symbol();
+  const lpTotalSupply = await lpTokenInstance.totalSupply();
+
+  const tokenBalance = await lpTokenInstance.balanceOf(accountAddress);
+
+  const rewardsSushi = await masterchefInstance.pendingSushi(0, accountAddress);
+  const rewardsAlcx = await onsenInstance.pendingToken(0, accountAddress);
+
+  const userDeposit = await masterchefInstance.userInfo(0, accountAddress);
+  const totalDeposit = await lpInstance.balanceOf(masterchefAddress);
+
+  const alcxPerBlock = await onsenInstance.tokenPerBlock();
+  const sushiPerBlock = await masterchefInstance.sushiPerBlock();
+
+  const underlying0 = await lpInstance.token0();
+  const underlying1 = await lpInstance.token1();
+
+  const reserve = await lpInstance.getReserves();
+
+  return {
+    uuid: uuidv4(),
+    rewards: [
+      {
+        iconName: 'alchemix',
+        tokenName: 'ALCX',
+      },
+      {
+        iconName: 'sushi',
+        tokenName: 'SUSHI',
+      },
+    ],
+    underlyingAddresses: [underlying0, underlying1],
+    tokenSymbol,
+    tokenBalance: tokenBalance,
+    totalDeposit: totalDeposit,
+    tokenAddress: masterchefAddress,
+    slpTotalSupply: lpTotalSupply,
+    isActive: alcxPerBlock.add(sushiPerBlock).gt(BigNumber.from(0)),
+    rewardRates: [alcxPerBlock, sushiPerBlock],
+    userDeposit: userDeposit.amount,
+    userUnclaimed: [rewardsAlcx, rewardsSushi],
+    poolTokenAddress: lpAddress,
+    tvl: [reserve._reserve0, reserve._reserve1],
+  };
+}
+
+export async function fetchDataForCrvFarm(
+  metapoolContractSelector: string,
+  depositContractSelector: string,
+  rewardsContractSelector: string,
+  [signer]: [ethers.Signer],
+): Promise<CurveFarmType> {
+  const { instance: metapoolGaugeInstance, address: metapoolAddress } = externalContractWrapper(
+    metapoolContractSelector,
+    signer,
+  );
+  const { instance: depositGaugeInstance } = externalContractWrapper(depositContractSelector, signer);
+  const { instance: rewardsGaugeInstance } = externalContractWrapper(rewardsContractSelector, signer);
+
+  const accountAddress = await signer.getAddress();
+
+  const lpToken = await depositGaugeInstance.lp_token();
+
+  const lpTokenInstance = erc20Contract(lpToken, signer);
+
+  const userDeposit = await depositGaugeInstance.balanceOf(accountAddress);
+
+  // const rewardRateAlcx = await rewardsGaugeInstance.rewardRate();
+
+  const totalSupply = await depositGaugeInstance.totalSupply();
+  const virtualPrice = await metapoolGaugeInstance.get_virtual_price();
+
+  const rewardToken = await rewardsGaugeInstance.rewardsToken();
+  const crvToken = await depositGaugeInstance.crv_token();
+
+  const tokenBalance = await lpTokenInstance.balanceOf(accountAddress);
+
+  const rewardsCrv = await depositGaugeInstance.claimable_reward(accountAddress, crvToken);
+  const rewardsAlcx = await depositGaugeInstance.claimable_reward(accountAddress, rewardToken);
+
+  return {
+    uuid: uuidv4(),
+    tokenAddress: metapoolAddress,
+    tokenBalance,
+    userDeposit,
+    tokenSymbol: await lpTokenInstance.symbol(),
+    isActive: false,
+    lpTokenAddress: lpToken,
+    tvl: totalSupply.mul(virtualPrice).div(BigNumber.from(10).pow(18)),
+    userUnclaimed: [rewardsAlcx, rewardsCrv],
+    rewards: [
+      {
+        iconName: 'alchemix',
+        tokenName: 'ALCX',
+      },
+      {
+        iconName: 'crv',
+        tokenName: 'CRV',
+      },
+    ],
+  };
 }

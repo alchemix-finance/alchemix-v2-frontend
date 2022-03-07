@@ -1,5 +1,5 @@
 <script>
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -17,13 +17,13 @@
   import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
   import { addressStore, balancesStore, transmutersStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { transmutersLoading } from '@stores/v2/loadingStores';
-  import { onMount } from 'svelte';
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
   import global from '@stores/global';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
+
+  let transmutersLoading = true;
 
   const columns = [
     {
@@ -74,84 +74,118 @@
     return parseFloat(utils.formatEther(_tokenAmount)) * _price;
   }
 
-  $: currentTransmutersBasedOnType =
-    Object.keys($transmutersStore)
-      .map((vTypeId) => {
-        if ($currentTransmuterCategories.includes(parseInt(vTypeId))) {
-          return $transmutersStore[parseInt(vTypeId)].transmuters;
-        }
-      })
+  const renderTransmuters = (transmutersStore, currentTransmuterType, balancesStore) => {
+    if (!transmutersStore || !balancesStore) {
+      return [];
+    }
+
+    return Object.keys(transmutersStore)
+      .map(
+        (vaultId) =>
+          currentTransmuterType.includes(parseInt(vaultId)) &&
+          transmutersStore[parseInt(vaultId)].transmuters,
+      )
       .filter((elm) => elm !== undefined)
-      .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
+      .reduce((acc, value) => acc.concat(value), [])
+      .map((_transmuterData) => {
+        if (!_transmuterData) {
+          return {};
+        }
 
-  $: currentRowsForSelectedType = currentTransmutersBasedOnType.map((_transmuterData) => {
-    const synthTokenData = getTokenDataFromBalances(_transmuterData.synthAddress, [$balancesStore]);
-    const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
-      $balancesStore,
-    ]);
-    const tokenPrice = $global.tokenPrices.find(
-      (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
-    )?.price;
+        const synthTokenData = getTokenDataFromBalances(_transmuterData.synthAddress, [balancesStore]);
+        const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
+          balancesStore,
+        ]);
 
-    const nameAlias = TransmuterNameAliases[`${underlyingTokenData.symbol}`.toLowerCase()];
+        const tokenPrice = $global.tokenPrices.find(
+          (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
+        )?.price;
 
-    const totalDeposited = _transmuterData.exchangedBalanceBN.add(_transmuterData.unexchangedBalanceBN);
-    const depositValue = calculateBalanceValue(totalDeposited, tokenPrice);
-    const withdrawValue = calculateBalanceValue(_transmuterData.unexchangedBalanceBN, tokenPrice);
-    const claimValue = calculateBalanceValue(_transmuterData.exchangedBalanceBN, tokenPrice);
+        const nameAlias = TransmuterNameAliases[`${underlyingTokenData?.symbol}`.toLowerCase()] || '';
 
-    return {
-      col1: {
-        CellComponent: ExpandRowCell,
-        expandedRow: {
-          ExpandedRowComponent: ExpandedTransmuter,
-        },
-        transmuterData: _transmuterData,
-        colSize: 1,
-      },
-      col2: {
-        CellComponent: FarmNameCell,
-        farmIcon: synthTokenData.symbol.toLowerCase() + '_med.svg',
-        tokenIcon: underlyingTokenData.symbol.toLowerCase(),
-        farmName: nameAlias,
-        farmSubtitle: synthTokenData.symbol + '-' + underlyingTokenData.symbol,
-        colSize: 2,
-        alignment: 'justify-self-start',
-      },
-      col3: {
-        CellComponent: CurrencyCell,
-        value: depositValue,
-        colSize: 2,
-      },
-      col4: {
-        CellComponent: CurrencyCell,
-        value: withdrawValue,
-        colSize: 2,
-      },
-      col6: {
-        CellComponent: CurrencyCell,
-        value: claimValue,
-        colSize: 2,
-      },
-      col5: {
-        value: '455%',
-        colSize: 2,
-      },
-    };
-  });
+        const totalDeposited = _transmuterData.exchangedBalanceBN.add(_transmuterData.unexchangedBalanceBN);
+        const depositValue = calculateBalanceValue(totalDeposited, tokenPrice);
+        const withdrawValue = calculateBalanceValue(_transmuterData.unexchangedBalanceBN, tokenPrice);
+        const claimValue = calculateBalanceValue(_transmuterData.exchangedBalanceBN, tokenPrice);
 
-  const onInitialize = async () => {
-    transmutersLoading.set(true);
-
-    await fetchTransmutersForVaultType(VaultTypes.alUSD, [$signer, $addressStore]);
-    await fetchTransmutersForVaultType(VaultTypes.alETH, [$signer, $addressStore]);
-
-    transmutersLoading.set(false);
+        return {
+          col1: {
+            CellComponent: ExpandRowCell,
+            expandedRow: {
+              ExpandedRowComponent: ExpandedTransmuter,
+            },
+            transmuterData: _transmuterData,
+            colSize: 1,
+          },
+          col2: {
+            CellComponent: FarmNameCell,
+            farmIcon: (synthTokenData?.symbol.toLowerCase() || '') + '_med.svg',
+            tokenIcon: underlyingTokenData?.symbol.toLowerCase() || '',
+            farmName: nameAlias,
+            farmSubtitle: (synthTokenData?.symbol || '') + '-' + (underlyingTokenData?.symbol || ''),
+            colSize: 2,
+            alignment: 'justify-self-start',
+          },
+          col3: {
+            CellComponent: CurrencyCell,
+            value: depositValue,
+            token: {
+              balance: totalDeposited.mul(BigNumber.from(10).pow(18)),
+              symbol: synthTokenData?.symbol || '',
+              perShare: 1,
+              decimals: 18,
+            },
+            colSize: 2,
+          },
+          col4: {
+            CellComponent: CurrencyCell,
+            value: withdrawValue,
+            token: {
+              balance: _transmuterData.unexchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+              symbol: synthTokenData?.symbol || '',
+              perShare: 1,
+              decimals: 18,
+            },
+            colSize: 2,
+          },
+          col6: {
+            CellComponent: CurrencyCell,
+            value: claimValue,
+            token: {
+              balance: _transmuterData.exchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+              symbol: underlyingTokenData?.symbol || '',
+              perShare: 1,
+              decimals: underlyingTokenData?.decimals || 18,
+            },
+            colSize: 2,
+          },
+          col5: {
+            value: '455%',
+            colSize: 2,
+          },
+        };
+      });
   };
 
-  $: if ($addressStore !== undefined) {
-    onInitialize();
-  }
+  $: currentRowsForSelectedType = !transmutersLoading
+    ? renderTransmuters($transmutersStore, $currentTransmuterCategories, $balancesStore)
+    : [];
+
+  const onInitialize = async (addressStore, balancesStore, signer) => {
+    if (!addressStore || !balancesStore || !signer) {
+      transmutersLoading = true;
+      return;
+    }
+
+    Promise.all([
+      fetchTransmutersForVaultType(VaultTypes.alUSD, [signer, addressStore]),
+      fetchTransmutersForVaultType(VaultTypes.alETH, [signer, addressStore]),
+    ]).then(() => {
+      transmutersLoading = false;
+    });
+  };
+
+  $: onInitialize($addressStore, $balancesStore, $signer);
 </script>
 
 <ViewContainer>
@@ -221,7 +255,7 @@
         {/each}
       </div>
       <div slot="body">
-        {#if $transmutersLoading}
+        {#if transmutersLoading}
           <div class="flex justify-center my-4">
             <BarLoader color="#F5C59F" />
           </div>

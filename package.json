@@ -77,7 +77,7 @@
     "assert": "^2.0.0",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
-    "bnc-onboard": "^1.23.0",
+    "bnc-onboard": "^1.38.0",
     "buffer": "^6.0.3",
     "chart.js": "^3.5.0",
     "classnames": "^2.3.1",
@@ -104,7 +104,8 @@
     "svelte-eventbus": "^0.1.1",
     "svelte-i18n": "^3.3.9",
     "svelte-routing": "^1.6.0",
-    "tailwindcss": "^2.1.1"
+    "tailwindcss": "^2.1.1",
+    "uuid": "^8.3.2"
   },
   "browserslist": [
     "defaults"

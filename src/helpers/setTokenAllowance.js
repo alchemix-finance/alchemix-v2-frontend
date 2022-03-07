@@ -9,7 +9,6 @@ account.subscribe((val) => {
 });
 
 const setTokenAllowance = async (token, spender, amount) => {
-  console.log('setting allowance', token, spender);
   const amountInfinite = ethers.constants.MaxUint256;
   const contract = new ethers.Contract(token, genericAbi, _account.signer);
   await contract.approve(spender, amount || amountInfinite);

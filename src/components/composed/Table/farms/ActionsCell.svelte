@@ -8,6 +8,9 @@
   export let label;
   export let isExpanded = false;
 
+  export let farm;
+  export let farmType;
+
   const handleClick = () => {
     isExpanded = !isExpanded;
     onExpand(row.rowId);
@@ -17,5 +20,5 @@
 <div class="flex justify-between space-x-2">
   <Button label="{label}" selected="{isExpanded}" on:clicked="{() => handleClick(0)}" />
 
-  <ExitCell poolId="{poolId}" />
+  <ExitCell farm="{farm}" farmType="{farmType}" />
 </div>

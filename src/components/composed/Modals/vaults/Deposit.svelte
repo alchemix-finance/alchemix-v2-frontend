@@ -17,6 +17,7 @@
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { modalReset } from '@stores/modal';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
+  import settings from '@stores/settings';
 
   export let borrowLimit;
 
@@ -42,7 +43,6 @@
       .div(adapterPrice);
     const subTokens = yieldTokens.mul(BigNumber.from(maximumLoss)).div(100000);
     const underlyingMinimumIn = yieldTokens.sub(subTokens);
-    console.log(_underlyingDeposit.toString(), underlyingMinimumIn.toString());
 
     if (_yieldDeposit.gt(0) && _underlyingDeposit.gt(0)) {
       await multicallDeposit(
@@ -227,19 +227,23 @@
               {yieldTokenData.symbol}
             </label>
             <div
-              class="flex bg-grey3 rounded border {yieldDepositBN.gt(yieldTokenData.balance)
+              class="flex {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'} rounded border {yieldDepositBN.gt(yieldTokenData.balance)
                 ? 'border-red3'
-                : 'border-grey3'}"
+                : `${$settings.invertColors ? 'border-grey3inverse' : 'border-grey3'}`}"
             >
               <div class="w-full">
                 <InputNumber
                   id="yieldInput"
                   bind:value="{yieldDeposit}"
                   placeholder="~0.00 {yieldTokenData.symbol}"
-                  class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {yieldDepositBN.gt(
-                    yieldTokenData.balance,
-                  )
+                  class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+                    ? 'bg-grey3inverse'
+                    : 'bg-grey3'} {yieldDepositBN.gt(yieldTokenData.balance)
                     ? 'text-red3'
+                    : $settings.invertColors
+                    ? 'text-lightgrey5inverse'
                     : 'text-lightgrey5'}"
                 />
               </div>
@@ -248,8 +252,8 @@
                   label="MAX"
                   width="w-full"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => {
@@ -260,8 +264,8 @@
                   label="CLEAR"
                   width="w-max"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => {
@@ -281,10 +285,14 @@
               {depositEth ? ethData.symbol : underlyingTokenData.symbol}
             </label>
             <div
-              class="flex bg-grey3 rounded border {underlyingDepositBN.gt(
+              class="flex {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'} rounded border {underlyingDepositBN.gt(
                 depositEth ? ethData.balance : underlyingTokenData.balance,
               )
                 ? 'border-red3'
+                : $settings.invertColors
+                ? 'border-grey3inverse'
                 : 'border-grey3'}"
             >
               <div class="w-full">
@@ -292,10 +300,14 @@
                   id="underlyingInput"
                   bind:value="{underlyingDeposit}"
                   placeholder="~0.00 {depositEth ? ethData.symbol : underlyingTokenData.symbol}"
-                  class="w-full rounded appearance-none text-xl text-right h-full p-4 bg-grey3 {underlyingDepositBN.gt(
+                  class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+                    ? 'bg-grey3inverse'
+                    : 'bg-grey3'} {underlyingDepositBN.gt(
                     depositEth ? ethData.balance : underlyingTokenData.balance,
                   )
                     ? 'text-red3'
+                    : $settings.invertColors
+                    ? 'text-lightgrey5inverse'
                     : 'text-lightgrey5'}"
                 />
               </div>
@@ -304,8 +316,8 @@
                   label="MAX"
                   width="w-full"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => {
@@ -318,8 +330,8 @@
                   label="CLEAR"
                   width="w-max"
                   fontSize="text-xs"
-                  textColor="lightgrey10"
-                  backgroundColor="grey3"
+                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                   borderSize="0"
                   height="h-10"
                   on:clicked="{() => {
@@ -340,7 +352,7 @@
         <MaxLossController bind:maxLoss="{maximumLoss}" />
       </div>
 
-      <div class="my-4 text-sm text-lightgrey10">
+      <div class="my-4 text-sm text-lightgrey10 hidden">
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData.decimals)}
         -> {totalDep}<br />
         {$_('modals.borrow_limit')}: {startDebtLimit} ->
@@ -350,7 +362,7 @@
       <Button
         label="{$_('actions.deposit')}"
         borderColor="green4"
-        backgroundColor="black1"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
         height="h-12"
         borderSize="1"

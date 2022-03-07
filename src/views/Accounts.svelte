@@ -17,6 +17,7 @@
   import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from '@stores/v2/helpers';
   import global from '@stores/global';
+  import settings from '@stores/settings';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import { vaultsLoading } from '@stores/v2/loadingStores';
@@ -132,11 +133,23 @@
         deposited: {
           CellComponent: CurrencyCell,
           value: depositValue,
+          token: {
+            balance: vault.balance,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
+          },
           colSize: 2,
         },
         col3: {
           CellComponent: CurrencyCell,
           value: tvlValue,
+          token: {
+            balance: vault.tvl,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
+          },
           colSize: 2,
         },
         col4: {
@@ -179,7 +192,7 @@
     <div class="w-full mb-8">
       <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}">
         <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>
-        <div slot="body" class="px-4 pb-4 bg-grey15">
+        <div slot="body" class="px-4 pb-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
           <AccountsPageBarCharts vaults="{currentVaultsBasedOnStrategyType}" />
         </div>
       </ContainerWithHeader>

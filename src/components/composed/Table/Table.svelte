@@ -1,5 +1,6 @@
 <script>
   import { getColumnWidth, SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+  import settings from '@stores/settings';
 
   import TableBodyRow from './TableBodyRow.svelte';
   import TableHeaderCell from './TableHeaderCell.svelte';
@@ -40,14 +41,14 @@
 
   // headerGroups are groups of header
   // TODO: support multiple headers like on https://codesandbox.io/s/github/tannerlinsley/react-table/tree/master/examples/sorting?file=/src/App.js:0-65
-  const headerGroups = columns.map((col) => ({
+  $: headerGroups = columns.map((col) => ({
     colSize: col.colSize,
     headers: [{ value: col.value, ...col }],
   }));
 
   // parse provided row data to internal data structure
   // let sortedRows;
-  let tableRows = rows.map((row, i) => ({
+  $: tableRows = rows.map((row, i) => ({
     cells: Object.keys(row).map((columnId) => ({
       columnId,
       ...row[columnId],
@@ -78,21 +79,31 @@
 </script>
 
 <table class="w-full">
-  <thead class="flex justify-items-center items-center bg-grey15 h-16">
-    {#each headerGroups as headerGroup}
-      <tr class="{getColumnWidth(headerGroup.colSize)} flex justify-center">
-        {#each headerGroup.headers as header}
-          <th>
-            <TableHeaderCell header="{header}" onClickSortBy="{sortBy}" sortOrder="{sortOrder}" />
-          </th>
-        {/each}
-      </tr>
-    {/each}
+  <thead
+    class="flex justify-items-center items-center {$settings.invertColors
+      ? 'bg-grey15inverse'
+      : 'bg-grey15'} h-16"
+  >
+    {#if headerGroups.length > 0}
+      {#each headerGroups as headerGroup}
+        <tr class="{getColumnWidth(headerGroup.colSize)} flex justify-center">
+          {#if headerGroup.headers.length > 0}
+            {#each headerGroup.headers as header}
+              <th>
+                <TableHeaderCell header="{header}" onClickSortBy="{sortBy}" sortOrder="{sortOrder}" />
+              </th>
+            {/each}
+          {/if}
+        </tr>
+      {/each}
+    {/if}
   </thead>
 
   <tbody>
-    {#each sortedRows as row, index}
-      <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" />
-    {/each}
+    {#if sortedRows.length > 0}
+      {#each sortedRows as row, index}
+        <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" />
+      {/each}
+    {/if}
   </tbody>
 </table>
