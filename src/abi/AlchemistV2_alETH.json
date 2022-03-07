@@ -1,5 +1,4 @@
 {
-
     "abi": [
         {
             "inputs": [],
@@ -413,7 +412,7 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "maximumLoss",
+                    "name": "minimumAmountOut",
                     "type": "uint256"
                 },
                 {
@@ -2116,6 +2115,19 @@
         },
         {
             "inputs": [],
+            "name": "version",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "whitelist",
             "outputs": [
                 {
@@ -2293,6 +2305,5 @@
             "type": "function"
         }
     ],
-    "address": "0x1af66e9B2F19081179d097C081d8Df198B7aaF7E"
-
+    "address": "0x86b0C02977d7e3670fC258C4F30d18C06fc30B90"
 }
