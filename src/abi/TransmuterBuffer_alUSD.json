@@ -777,19 +777,6 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "version",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -855,5 +842,5 @@
             "type": "function"
         }
     ],
-    "address": "0x2083DB9A1C977A5CB34BfaB828a1FFDCC6050D36"
+    "address": "0x77394f217b491C4E8056923155f48D1188C81EEC"
 }
