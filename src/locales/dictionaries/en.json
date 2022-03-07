@@ -225,8 +225,8 @@
   },
   "metrics": {
     "total_deposit": "Total Deposit",
-    "open_debt": "Open Debt",
-    "open_credit": "Open Credit",
+    "open_debt": "Current Debt",
+    "open_credit": "Available Credit",
     "global_tvl": "Global TVL"
   }
 }
