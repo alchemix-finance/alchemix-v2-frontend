@@ -141,7 +141,9 @@
       : 'border-grey10'}"
     transition:slide
   >
-    <div class="p-4 flex flex-col space-y-4">
+    <div
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+    >
       <label for="borrowInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatEther(tokenInfo.balance)}
         {farm.tokenSymbol}
@@ -196,7 +198,9 @@
         on:clicked="{() => deposit(inputDepositBN)}"
       />
     </div>
-    <div class="p-4 flex flex-col space-y-4">
+    <div
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+    >
       <label for="withdrawInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatEther(farm.userDeposit)}
         {farm.tokenSymbol}
@@ -252,7 +256,9 @@
       />
     </div>
 
-    <div class="p-4 flex flex-col space-y-4">
+    <div
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+    >
       <label for="borrowInput" class="text-sm text-lightgrey10"> {$_('table.rewards')}: </label>
       <div
         class="flex rounded border {$settings.invertColors

@@ -101,7 +101,9 @@
       : 'border-grey10'}"
     transition:slide
   >
-    <div class="p-4 flex flex-col space-y-4">
+    <div
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+    >
       <label for="depositInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatUnits(synthTokenData.balance, synthTokenData.decimals)}
         {synthTokenData.symbol}
@@ -157,7 +159,9 @@
         on:clicked="{() => onDepositButton(synthTokenData.address, inputDepositBN, synthTokenData.decimals)}"
       />
     </div>
-    <div class="p-4 flex flex-col space-y-4">
+    <div
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+    >
       <label for="withdrawInput" class="text-sm text-lightgrey10">
         {$_('table.withdrawable')}: {utils.formatUnits(
           transmuterData.unexchangedBalanceBN,
@@ -224,7 +228,9 @@
           onWithdrawButton(synthTokenData.address, inputWithdrawBN, synthTokenData.decimals)}"
       />
     </div>
-    <div class="p-4 flex flex-col space-y-4">
+    <div
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+    >
       <label for="claimInput" class="text-sm text-lightgrey10">
         {$_('expanded.transmuted')}: {utils.formatUnits(
           transmuterData.exchangedBalanceBN,

@@ -1,5 +1,5 @@
 <script>
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
@@ -121,16 +121,34 @@
       col3: {
         CellComponent: CurrencyCell,
         value: depositValue,
+        token: {
+          balance: totalDeposited.mul(BigNumber.from(10).pow(18)),
+          perShare: 1,
+          decimals: 18,
+          symbol: synthTokenData.symbol,
+        },
         colSize: 2,
       },
       col4: {
         CellComponent: CurrencyCell,
         value: withdrawValue,
+        token: {
+          balance: _transmuterData.unexchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+          perShare: 1,
+          decimals: 18,
+          symbol: synthTokenData.symbol,
+        },
         colSize: 2,
       },
       col6: {
         CellComponent: CurrencyCell,
         value: claimValue,
+        token: {
+          balance: _transmuterData.exchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+          perShare: 1,
+          decimals: underlyingTokenData.decimals,
+          symbol: underlyingTokenData.symbol,
+        },
         colSize: 2,
       },
       col5: {

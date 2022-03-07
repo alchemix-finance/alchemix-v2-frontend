@@ -10,7 +10,7 @@
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
   import { addressStore, vaultsStore, balancesStore, adaptersStore } from 'src/stores/v2/alcxStore';
-  import { signer, vaultsAggregatedBalances } from 'src/stores/v2/derived';
+  import { signer, vaultsAggregatedBalances, vaultsAggregatedCoveredDebt } from 'src/stores/v2/derived';
   import {
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
@@ -37,6 +37,8 @@
 
   let withdrawEth = false;
   $: useGateway = vault.useGateway;
+  $: foo = $vaultsAggregatedCoveredDebt;
+  $: console.log(utils.formatEther(foo[0]), utils.formatEther(foo[1]));
 
   function switchWithdrawType() {
     withdrawEth = !withdrawEth;
@@ -156,39 +158,21 @@
     }
   };
 
-  function getWithdrawButtonState(
-    _underlyingWithdrawAmount,
-    _yieldWithdrawAmount,
-    _openDebtAmount,
-    _decimals,
-  ) {
+  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
 
-    const globalCover = toShares($vaultsAggregatedBalances[vault.type].toString(), 18, vault.yieldPerShare)
-      .div(BigNumber.from(10).pow(18))
-      .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
-      .add(utils.parseUnits(utils.formatUnits(1, _decimals), _decimals));
-
-    const freeCover = globalCover
-      .sub(_openDebtAmount.div(BigNumber.from(10).pow(18)))
-      .mul($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+    const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
 
     return (
       sharesWithdrawAmount.gt(BigNumber.from(0)) &&
       sharesWithdrawAmount.lte(vault.balance) &&
-      sharesWithdrawAmount.lte(freeCover)
+      sharesWithdrawAmount.lte(maxAmountToShares)
     );
   }
 
   function initializeTokenDataForAddress(address) {
     if (vault) {
       return getTokenDataFromBalances(address, [$balancesStore]);
-    }
-  }
-
-  function initializeCoveredDebt(_vault, _aggregatedBalances, _underlyingTokenData) {
-    if (_aggregatedBalances) {
-      return _aggregatedBalances;
     }
   }
 
@@ -208,64 +192,50 @@
   function calculateMaxWithdrawAmount(
     _coveredDebtAmount,
     _openDebtAmount,
-    _tokenData,
+    _decimals,
     _vault,
-    pricePerShare,
+    _pricePerShare,
+    _ratio,
   ) {
     const scalar = (decimals) => BigNumber.from(10).pow(decimals);
-    const ratio = $vaultsStore[vault.type].ratio.div(scalar(18));
-    const normalizeBalance = utils.parseUnits(utils.formatUnits(_vault.balance, _tokenData.decimals), 18);
+    const ratio = _ratio.div(scalar(18));
+    // how many underlying tokens are needed to cover a user's debt
     const requiredCover = _openDebtAmount.mul(ratio);
-    const freeDeposits = _coveredDebtAmount.sub(requiredCover.div(pricePerShare));
-    const vaultCovered = normalizeBalance.sub(requiredCover);
-    const maxAmount = freeDeposits.mul(pricePerShare).div(scalar(_tokenData.decimals));
-    const maxAmountAvailable = maxAmount.gt(BigNumber.from(0));
-    const vaultAvailable = vaultCovered.gt(BigNumber.from(0));
+    // remaining underlying token deposits that could be withdrawn
+    const freeCover = _coveredDebtAmount.sub(requiredCover);
+    // amount of debt tokens covered by this vault
+    const vaultCover = _vault.balance
+      .mul(_pricePerShare)
+      .div(scalar(_decimals))
+      .mul(scalar(BigNumber.from(18).sub(_decimals)));
+    // amount of tokens available for withdrawal
+    const maxWithdrawAmount = vaultCover
+      .div(scalar(BigNumber.from(18).sub(_decimals)))
+      .sub(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))))
+      .mul(scalar(BigNumber.from(18).sub(_decimals)))
+      .div(ratio);
+    console.log(maxWithdrawAmount.toString(), _openDebtAmount.toString(), vaultCover.toString());
 
-    const shareToAmount = _vault.balance.mul(pricePerShare).div(scalar(_tokenData.decimals));
+    console.log(maxWithdrawAmount.lt(BigNumber.from(0)));
 
-    const debtToCover = _openDebtAmount.div(BigNumber.from(10).pow(18)).mul($vaultsStore[vault.type].ratio);
-    const normalizedShares = normalizeAmount(shareToAmount, _tokenData.decimals, 18);
-    // const maxAmountAvailable = normalizedShares.sub(debtToCover).gt(BigNumber.from(0));
+    const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
+    const debtCovered = utils.formatUnits(
+      maxWithdrawAmount.div(scalar(BigNumber.from(18).sub(_decimals))),
+      _decimals,
+    );
 
-    console.table([
-      {
-        title: 'covered debt amount -> amount of tokens deposited',
-        value: _coveredDebtAmount.toString(),
-      },
-      {
-        title: 'open debt amount -> amount of debt taken',
-        value: _openDebtAmount.toString(),
-      },
-      {
-        title: 'shares in this vault',
-        value: normalizeBalance.toString(),
-      },
-      {
-        title: 'amount covered by this vault',
-        value: vaultCovered.toString(),
-      },
-      {
-        title: 'free amount in total',
-        value: maxAmount.toString(),
-      },
-    ]);
-
-    return maxAmountAvailable
-      ? utils.formatUnits(shareToAmount, _tokenData.decimals)
-      : utils.formatUnits(
-          normalizedShares.sub(debtToCover).gt(BigNumber.from(0))
-            ? shareToAmount.sub(debtToCover)
-            : BigNumber.from(0),
-          _tokenData.decimals,
-        );
+    return _openDebtAmount.gt(BigNumber.from(0))
+      ? maxWithdrawAmount.lt(BigNumber.from(0))
+        ? maxAmount
+        : debtCovered
+      : maxAmount;
   }
 
   $: yieldTokenData = initializeTokenDataForAddress(vault.address);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
 
-  $: cDebt = initializeCoveredDebt(vault, $vaultsAggregatedBalances[vault.type], underlyingTokenData);
+  $: cDebt = $vaultsAggregatedCoveredDebt[vault.type];
 
   $: yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldTokenData.decimals, vault.yieldPerShare);
 
@@ -289,23 +259,24 @@
   $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
     cDebt,
     debt,
-    underlyingTokenData,
+    underlyingTokenData.decimals,
     vault,
     vault.underlyingPerShare,
+    $vaultsStore[vault.type].ratio,
   );
 
   $: maxWithdrawAmountForYield = utils.formatUnits(
     utils
-      .parseUnits(maxWithdrawAmountForUnderlying, yieldTokenData.decimals)
+      .parseUnits(maxWithdrawAmountForUnderlying, 18)
+      .div(vault.underlyingPerShare)
       .mul(vault.yieldPerShare)
-      .div(vault.underlyingPerShare),
+      .div(BigNumber.from(10).pow(BigNumber.from(18).sub(yieldTokenData.decimals))),
     yieldTokenData.decimals,
   );
 
   $: withdrawButtonState = getWithdrawButtonState(
     underlyingWithdrawAmountShares,
     yieldWithdrawAmountShares,
-    debt,
     underlyingTokenData.decimals,
   );
 </script>

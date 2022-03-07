@@ -133,11 +133,23 @@
         deposited: {
           CellComponent: CurrencyCell,
           value: depositValue,
+          token: {
+            balance: vault.balance,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
+          },
           colSize: 2,
         },
         col3: {
           CellComponent: CurrencyCell,
           value: tvlValue,
+          token: {
+            balance: vault.tvl,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
+          },
           colSize: 2,
         },
         col4: {
