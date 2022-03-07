@@ -53,6 +53,33 @@ export const vaultsAggregatedBalances = derived([vaultsStore, balancesStore], ([
   return balances;
 });
 
+// @dev turns shares of each token into a value that's comparable to debt tokens
+export const vaultsAggregatedCoveredDebt = derived([vaultsStore, balancesStore], ([$vaults, $balances]) => {
+  if (!$vaults) {
+    return undefined;
+  }
+
+  let balances = {};
+
+  Object.keys($vaults).forEach((vaultTypeKey) => {
+    const { vaultBody } = $vaults[Number(vaultTypeKey)];
+    let initialVal = BigNumber.from(0);
+    balances = {
+      ...balances,
+      [Number(vaultTypeKey)]: vaultBody.reduce((_prevVault, _currentVault) => {
+        const underlyingTokenData = getTokenDataFromBalances(_currentVault.underlyingAddress, [$balances]);
+        const normalizedAmount = _currentVault.balance
+          .mul(_currentVault.underlyingPerShare)
+          .div(BigNumber.from(10).pow(underlyingTokenData.decimals))
+          .mul(BigNumber.from(10).pow(BigNumber.from(18).sub(underlyingTokenData.decimals)));
+
+        return _prevVault.add(normalizedAmount);
+      }, initialVal),
+    };
+  });
+  return balances;
+});
+
 export const vaultsAggregatedDebt = derived([vaultsStore, balancesStore], ([$vaults, $balances]) => {
   if (!$vaults) {
     return undefined;

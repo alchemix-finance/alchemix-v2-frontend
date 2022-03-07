@@ -1,5 +1,5 @@
 <script>
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
   import ViewContainer from '../components/elements/ViewContainer.svelte';

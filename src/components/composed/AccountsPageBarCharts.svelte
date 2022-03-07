@@ -222,7 +222,18 @@
 
             if (value === 0) return value;
 
-            if ([0, floorDebt, floorDeposit].includes(value)) {
+            // sometimes creates duplicate entries that'll overlap, needs some better fixing
+            if (
+              [
+                0,
+                ...Array(10)
+                  .fill(floorDebt - 5)
+                  .map((x, y) => x + y),
+                ...Array(10)
+                  .fill(floorDeposit - 5)
+                  .map((x, y) => x + y),
+              ].includes(value)
+            ) {
               if (between(floorDebt, value - 5, value + 5)) return fiatDebtLimit;
               if (between(floorDeposit, value - 5, value + 5)) return fiatDeposit;
             }
