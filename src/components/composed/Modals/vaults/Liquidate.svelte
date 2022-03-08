@@ -53,15 +53,15 @@
     )[0].price;
 
     const adapterYieldAmount = amount
-      .div(BigNumber.from(10).pow(18))
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
+      .div(BigNumber.from(10).pow(18))
       .div(adapterPrice);
     const subTokens = adapterYieldAmount.mul(BigNumber.from(maximumLoss)).div(100000);
     const minimumOut = adapterYieldAmount.sub(subTokens);
 
     await liquidate(
       yieldTokenData.address,
-      amount.div(BigNumber.from(10).pow(18)).mul(BigNumber.from(10).pow(underlyingTokenData.decimals)),
+      amount.mul(BigNumber.from(10).pow(underlyingTokenData.decimals)).div(BigNumber.from(10).pow(18)),
       vaultType,
       BigNumber.from(maximumLoss),
       [$signer],
