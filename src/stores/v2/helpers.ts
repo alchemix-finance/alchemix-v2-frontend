@@ -125,11 +125,10 @@ export function calculateVaultDebt(
   const scalar = (decimals) => BigNumber.from(10).pow(decimals);
   return (
     _vaultBalance
-      .mul(scalar(18))
-      .div(scalar(_underlyingDecimals))
-      .div(_debtRatio.div(BigNumber.from(10).pow(18)))
+      .div(_debtRatio.div(scalar(18)))
       .mul(_underlyingPerShare)
-      .div(BigNumber.from(10).pow(_underlyingDecimals)) ?? BigNumber.from(0)
+      .div(scalar(_underlyingDecimals))
+      .mul(scalar(BigNumber.from(18).sub(_underlyingDecimals))) ?? BigNumber.from(0)
   );
 }
 
