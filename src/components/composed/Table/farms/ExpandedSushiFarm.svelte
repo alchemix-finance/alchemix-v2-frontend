@@ -234,7 +234,7 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!checkButtonState(withdrawAmountBN, farm.userDeposit.amount)}"
+      disabled="{!checkButtonState(withdrawAmountBN, farm.userDeposit)}"
       on:clicked="{() => withdraw(withdrawAmountBN)}"
     />
   </div>
