@@ -23,9 +23,12 @@
   {#if $$slots.header}
     <div class="{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} w-full">
       {#if canToggle}
-        <div class="py-4 px-6 text-sm flex justify-between">
+        <div
+          class="py-4 px-6 text-sm flex justify-between cursor-pointer"
+          on:click="{() => (disableButton ? null : toggleVisibility())}"
+        >
           <slot name="header" />
-          <Button width="w-max" label="" on:clicked="{() => toggleVisibility()}" disabled="{disableButton}">
+          <Button width="w-max" label="" disabled="{disableButton}">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               slot="rightSlot"
