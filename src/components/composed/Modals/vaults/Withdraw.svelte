@@ -269,8 +269,8 @@
   $: maxWithdrawAmountForYield = utils.formatUnits(
     utils
       .parseUnits(maxWithdrawAmountForUnderlying, 18)
-      .div(vault.underlyingPerShare)
       .mul(vault.yieldPerShare)
+      .div(vault.underlyingPerShare)
       .div(BigNumber.from(10).pow(BigNumber.from(18).sub(yieldTokenData.decimals))),
     yieldTokenData.decimals,
   );
