@@ -412,7 +412,7 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "minimumAmountOut",
+                    "name": "maximumLoss",
                     "type": "uint256"
                 },
                 {
@@ -2115,19 +2115,6 @@
         },
         {
             "inputs": [],
-            "name": "version",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
             "name": "whitelist",
             "outputs": [
                 {
@@ -2305,5 +2292,5 @@
             "type": "function"
         }
     ],
-    "address": "0x0c65A4aC04BcF985A73C394E1F26665e4f640C4C"
+    "address": "0x062Bf725dC4cDF947aa79Ca2aaCCD4F385b13b5c"
 }

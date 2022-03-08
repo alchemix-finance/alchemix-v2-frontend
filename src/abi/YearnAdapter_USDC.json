@@ -43,6 +43,22 @@
             "type": "error"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minimumAmountOut",
+                    "type": "uint256"
+                }
+            ],
+            "name": "SlippageExceeded",
+            "type": "error"
+        },
+        {
             "inputs": [],
             "name": "price",
             "outputs": [
@@ -92,6 +108,11 @@
                     "internalType": "address",
                     "name": "recipient",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minimumAmountOut",
+                    "type": "uint256"
                 }
             ],
             "name": "unwrap",
@@ -116,6 +137,11 @@
                     "internalType": "address",
                     "name": "recipient",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "minimumAmountOut",
+                    "type": "uint256"
                 }
             ],
             "name": "wrap",
@@ -130,5 +156,5 @@
             "type": "function"
         }
     ],
-    "address": "0xae749518D8cb6286Ed39720Aa149aF8De5A177Ae"
+    "address": "0xB7bdD251E62A034b2A606F23F0E9D60AaCaB52Fe"
 }
