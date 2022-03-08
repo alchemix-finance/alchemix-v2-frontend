@@ -10,8 +10,8 @@ export class SushiFarmAdapter extends IFarmAdapter {
 
     const _fTokenPriceSushi = this.getPrice('0x6b3595068778dd592e39a122f4f5a5cf09c90fe2');
 
-    const _fSushiPerWeek = parseFloat(utils.formatEther(rewardRates[0])) * 45000;
-    const _fALCXPerWeek = parseFloat(utils.formatEther(rewardRates[1])) * 45000;
+    const _fSushiPerWeek = parseFloat(utils.formatEther(rewardRates[1])) * 45000;
+    const _fALCXPerWeek = parseFloat(utils.formatEther(rewardRates[0])) * 45000;
 
     const _fTotalSupply = parseFloat(utils.formatEther(slpTotalSupply));
     const _fTotalDeposit = parseFloat(utils.formatEther(totalDeposit));

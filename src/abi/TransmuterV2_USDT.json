@@ -638,19 +638,6 @@
         },
         {
             "inputs": [],
-            "name": "version",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
             "name": "whitelist",
             "outputs": [
                 {
@@ -681,5 +668,5 @@
             "type": "function"
         }
     ],
-    "address": "0xD60ec8d4Fa10A9502d7175fb3d2548884954ab9B"
+    "address": "0x6FB0fE574C04aBAEd21ebC1FD39FEE19C4d1F72c"
 }

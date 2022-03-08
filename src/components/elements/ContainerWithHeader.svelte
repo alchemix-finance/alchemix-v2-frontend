@@ -5,6 +5,7 @@
 
   export let canToggle = false;
   export let isVisible = true;
+  export let disableButton = false;
   let contentVisible = true;
 
   const toggleVisibility = () => {
@@ -24,7 +25,7 @@
       {#if canToggle}
         <div class="py-4 px-6 text-sm flex justify-between">
           <slot name="header" />
-          <Button width="w-max" label="" on:clicked="{() => toggleVisibility()}">
+          <Button width="w-max" label="" on:clicked="{() => toggleVisibility()}" disabled="{disableButton}">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               slot="rightSlot"

@@ -39,6 +39,7 @@ export async function gasResolver() {
     gas = await getUserGas(1500);
   } catch (e) {
     console.info('[helpers/getUserGas]: Fetching gas price failed, resorting to provider', e);
+    return gastimate;
   }
   return gastimate.maxFeePerGas.gt(gas.maxFeePerGas) ? gastimate : gas;
 }

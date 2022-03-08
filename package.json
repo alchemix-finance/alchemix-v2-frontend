@@ -4,6 +4,7 @@
   "license": "ISC",
   "scripts": {
     "abi": "bash ./scripts/updateAbi.sh",
+    "abi:main": "bash ./scripts/mainnetAbi.sh",
     "abi:win": "powershell ./scripts/updateAbi.ps1",
     "makeEnv": "bash ./scripts/makeEnv.sh",
     "build": "cross-env NODE_ENV=production webpack",
@@ -11,6 +12,7 @@
     "dev:noabi": "yarn format && webpack serve --port 5005",
     "dev": "yarn abi && yarn format && webpack serve --port 5005",
     "dev:win": "yarn abi:win && yarn format && webpack serve --port 5005",
+    "dev:main": "yarn abi:main && yarn format && webpack serve --port 5005",
     "format": "yarn run prettier && yarn run lint",
     "lint": "yarn run eslint ./src/ --ext .js,.ts,.svelte",
     "prettier": "npx prettier --write src/**/*.{js,svelte,ts,html} --write public/*.html --no-error-on-unmatched-pattern",

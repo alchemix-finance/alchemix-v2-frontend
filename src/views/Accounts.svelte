@@ -190,7 +190,7 @@
     <!--    </div>-->
 
     <div class="w-full mb-8">
-      <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}">
+      <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}" disableButton="{!hasStrategies}">
         <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>
         <div slot="body" class="px-4 pb-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
           <AccountsPageBarCharts vaults="{currentVaultsBasedOnStrategyType}" />
