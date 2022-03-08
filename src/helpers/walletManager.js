@@ -4,7 +4,6 @@ import Onboard from 'bnc-onboard';
 import account from '@stores/account';
 import toastConfig from '../stores/toast';
 import network from '../stores/network';
-import initData from './initData';
 import { uninitData } from './uninitData';
 import getItl from './getItl';
 import { updateAddress, updateProvider } from '@stores/v2/methods';
@@ -48,18 +47,6 @@ network.subscribe((val) => {
 account.subscribe((val) => {
   _account = val;
 });
-
-/*
- * @dev evaluates if current network is supported
- * @param networkId the network to evaluate
- * @returns boolean
- * */
-const supportedNetwork = (networkId) => {
-  const targetNetwork = debugging ? testnetId : mainnetId;
-  return targetNetwork === networkId;
-};
-
-let initDone = false;
 
 // @dev prepare list of supported wallets according to
 // https://docs.blocknative.com/onboard#wallet-modules
@@ -111,7 +98,6 @@ const onboard = Onboard({
       _network.id = result;
       network.set({ ..._network });
       if (debugging) console.log('network changed to', result);
-      if (network && !initDone && supportedNetwork(_network.id)) await initData();
     },
   },
   walletSelect: { wallets },
@@ -142,10 +128,6 @@ async function connect(preselect) {
       _account.ens = ens;
       _account.signer = signer;
       account.set({ ..._account });
-      if (supportedNetwork(_network.id)) {
-        initDone = true;
-        await initData();
-      }
     });
   } catch (error) {
     console.error(error);
