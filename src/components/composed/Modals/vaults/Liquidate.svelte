@@ -61,7 +61,7 @@
 
     await liquidate(
       yieldTokenData.address,
-      amount,
+      amount.div(BigNumber.from(10).pow(18)).mul(BigNumber.from(10).pow(underlyingTokenData.decimals)),
       vaultType,
       BigNumber.from(maximumLoss),
       [$signer],
