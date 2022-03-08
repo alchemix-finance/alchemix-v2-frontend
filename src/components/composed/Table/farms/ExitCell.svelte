@@ -19,7 +19,7 @@
   export let farm;
 
   const exitPool = async () => {
-    const gas = await gasResolver();
+    const gasPrice = await gasResolver();
 
     try {
       if (farmType === FarmTypes.INTERNAL) {
@@ -28,7 +28,8 @@
         const { instance } = contractWrapper('StakingPools', $signer);
         setPendingWallet();
         const tx = await instance.exit(castedFarm.poolId, {
-          gasPrice: gas,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         });
         setPendingTx();
         await tx.wait().then((transaction) => {
@@ -41,7 +42,8 @@
         const { instance } = externalContractWrapper('SushiMasterchefV2', $signer);
         setPendingWallet();
         const tx = await instance.emergencyWithdraw(0, $addressStore, {
-          gasPrice: gas,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         });
         setPendingTx();
         await tx.wait().then((transaction) => {
@@ -57,7 +59,8 @@
         );
         setPendingWallet();
         const tx = await crvGaugeInstance.withdraw(castedFarm.userDeposit, {
-          gasPrice: gas,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         });
         setPendingTx();
         await tx.wait().then((transaction) => {

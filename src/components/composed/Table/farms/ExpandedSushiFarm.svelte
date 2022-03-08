@@ -41,7 +41,7 @@
 
   const deposit = async (amount) => {
     try {
-      const gas = await gasResolver();
+      const gasPrice = await gasResolver();
       const tokenContract = erc20Contract(farm.poolTokenAddress, $signer);
 
       const allowance = await tokenContract.allowanceOf($addressStore, masterchefAddress);
@@ -52,7 +52,8 @@
       }
       setPendingWallet();
       const tx = await masterchefInstance.deposit(0, amount, $addressStore, {
-        gasPrice: gas,
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
       setPendingTx();
 
@@ -68,7 +69,7 @@
   const withdraw = async (amount) => {
     try {
       const tokenContract = erc20Contract(farm.poolTokenAddress, $signer);
-      const gas = await gasResolver();
+      const gasPrice = await gasResolver();
       const allowance = await tokenContract.allowanceOf($addressStore, masterchefAddress);
 
       if (allowance.lt(amount)) {
@@ -77,7 +78,8 @@
       }
       setPendingWallet();
       const tx = await masterchefInstance.withdrawAndHarvest(0, amount, $addressStore, {
-        gasPrice: gas,
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
       setPendingTx();
 
@@ -92,11 +94,12 @@
 
   const claim = async () => {
     try {
-      const gas = await gasResolver();
+      const gasPrice = await gasResolver();
 
       setPendingWallet();
       const tx = await masterchefInstance.harvest(0, $addressStore, {
-        gasPrice: gas,
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
       setPendingTx();
 

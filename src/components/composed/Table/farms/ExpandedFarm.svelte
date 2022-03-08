@@ -28,7 +28,7 @@
 
   const deposit = async (depositBN) => {
     try {
-      const gas = await gasResolver();
+      const gasPrice = await gasResolver();
       const tokenContract = erc20Contract(farm.tokenAddress, $signer);
 
       const allowance = await tokenContract.allowanceOf($addressStore, stakingAddress);
@@ -40,7 +40,8 @@
 
       setPendingWallet();
       const tx = await stakingInstance.deposit(farm.poolId, depositBN, {
-        gasPrice: gas,
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
       setPendingTx();
 
@@ -60,12 +61,13 @@
 
   const withdraw = async (withdrawBN) => {
     try {
-      const gas = await gasResolver();
+      const gasPrice = await gasResolver();
 
       setPendingWallet();
 
       const tx = await stakingInstance.withdraw(farm.poolId, withdrawBN, {
-        gasPrice: gas,
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
 
       setPendingTx();
@@ -86,11 +88,12 @@
 
   const claim = async () => {
     try {
-      const gas = await gasResolver();
+      const gasPrice = await gasResolver();
       setPendingWallet();
 
       const tx = await stakingInstance.claim(farm.poolId, {
-        gasPrice: gas,
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
 
       await tx.wait().then((transaction) => {

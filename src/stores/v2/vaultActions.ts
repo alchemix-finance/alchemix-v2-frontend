@@ -36,7 +36,8 @@ export async function deposit(
     setPendingWallet();
 
     const tx = (await alchemistInstance.deposit(tokenAddress, amountYield, userAddressStore, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ethers.ContractTransaction;
 
     setPendingTx();
@@ -89,7 +90,8 @@ export async function depositUnderlying(
         userAddressStore,
         minimumAmountOut,
         {
-          gasPrice,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         },
       )) as ethers.ContractTransaction;
 
@@ -118,7 +120,8 @@ export async function depositUnderlying(
         userAddressStore,
         minimumAmountOut,
         {
-          gasPrice,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
           value: amountYield,
         },
       )) as ethers.ContractTransaction;
@@ -197,7 +200,8 @@ export async function multicallDeposit(
     setPendingWallet();
 
     const tx = (await alchemistInstance.multicall(dataPackage, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ethers.ContractTransaction;
 
     setPendingTx();
@@ -230,7 +234,8 @@ export async function withdraw(
     const gasPrice = await gasResolver();
     setPendingWallet();
     const tx = (await alchemistInstance.withdraw(yieldTokenAddress, yieldAmount, accountAddress, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ethers.ContractTransaction;
 
     return await tx.wait().then((transaction) => {
@@ -283,7 +288,8 @@ export async function withdrawUnderlying(
         accountAddress,
         minimumAmountOut,
         {
-          gasPrice,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         },
       )) as ethers.ContractTransaction;
 
@@ -316,7 +322,8 @@ export async function withdrawUnderlying(
       if (!canWithdraw) {
         setPendingApproval();
         await alchemistInstance.approveWithdraw(gatewayAddress, yieldTokenAddress, amountUnderlying, {
-          gasPrice,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         });
       }
       setPendingWallet();
@@ -328,7 +335,8 @@ export async function withdrawUnderlying(
         accountAddress,
         minimumAmountOut,
         {
-          gasPrice,
+          maxFeePerGas: gasPrice.maxFeePerGas,
+          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
         },
       )) as ethers.ContractTransaction;
 
@@ -387,7 +395,8 @@ export async function multicallWithdraw(
     setPendingWallet();
 
     const tx = (await alchemistInstance.multicall(txPackage, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -424,7 +433,8 @@ export async function mint(
 
     setPendingWallet();
     const tx = (await alchemistInstance.mint(amountToBorrow, userAddress, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
     setPendingTx();
 
@@ -464,7 +474,8 @@ export async function burn(
     }
 
     const tx = (await alchemistInstance.burn(amountToBurn, addressStore, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -501,7 +512,8 @@ export async function repay(
     setPendingWallet();
 
     const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -540,7 +552,8 @@ export async function liquidate(
     setPendingWallet();
 
     const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, minimumAmountOut, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
