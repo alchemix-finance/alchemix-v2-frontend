@@ -30,7 +30,8 @@ export async function deposit(
 
     if (BigNumber.from(allowance).lt(amountYield)) {
       setPendingApproval();
-      await erc20Instance.approve(alchemistAddress);
+      const sendApe = (await erc20Instance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      return await sendApe.wait();
     }
 
     setPendingWallet();
@@ -80,7 +81,8 @@ export async function depositUnderlying(
     if (!useGateway) {
       if (BigNumber.from(allowance).lt(amountYield)) {
         setPendingApproval();
-        await erc20Instance.approve(alchemistAddress);
+        const sendApe = (await erc20Instance.approve(alchemistAddress)) as ethers.ContractTransaction;
+        return await sendApe.wait();
       }
 
       setPendingWallet();
@@ -175,12 +177,14 @@ export async function multicallDeposit(
 
     if (BigNumber.from(yieldTokenAllowance).lt(amountYield)) {
       setPendingApproval();
-      await yieldTokenInstance.approve(alchemistAddress);
+      const sendApe = (await yieldTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      return await sendApe.wait()
     }
 
     if (BigNumber.from(underlyingTokenAllowance).lt(amountUnderlying)) {
       setPendingApproval();
-      await underlyingTokenInstance.approve(alchemistAddress);
+      const sendApe = (await underlyingTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      return await sendApe.wait();
     }
 
     const deposit = alchemistInterface.encodeFunctionData('deposit', [
@@ -294,7 +298,6 @@ export async function withdrawUnderlying(
       )) as ethers.ContractTransaction;
 
       setPendingTx();
-
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
 
@@ -354,7 +357,7 @@ export async function withdrawUnderlying(
     }
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
-    console.error(`[vaultActions/withdraw]: ${error}`);
+    console.trace(`[vaultActions/withdraw]: ${error}`);
     throw Error(error.data);
   }
 }
@@ -470,7 +473,8 @@ export async function burn(
     const burnAllowanceAmount = await underlyingTokenInstance.allowanceOf(addressStore, alchemistAddress);
     setPendingWallet();
     if (amountToBurn.gt(burnAllowanceAmount)) {
-      await underlyingTokenInstance.approve(alchemistAddress);
+      const sendApe = (await underlyingTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      return await sendApe.wait();
     }
 
     const tx = (await alchemistInstance.burn(amountToBurn, addressStore, {
