@@ -27,7 +27,9 @@
 <div class="flex flex-col items-center">
   {#if token}
     <p>
-      {parseFloat(tokenFormatted) === 0 ? tokenFormatted : parseFloat(tokenFormatted).toFixed(2)}
+      {#if prefix}{prefix}{/if}{parseFloat(tokenFormatted) === 0
+        ? tokenFormatted
+        : parseFloat(tokenFormatted).toFixed(2)}
       {token.symbol}
     </p>{/if}
   <p class="{token ? 'text-sm text-lightgrey10' : ''}">
