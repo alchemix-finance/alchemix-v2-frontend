@@ -219,17 +219,16 @@
       maxWithdrawAmount.div(scalar(BigNumber.from(18).sub(_decimals))).div(ratio),
       _decimals,
     );
-    const freeCoverAmount = utils.formatUnits(
-      freeCover.div(scalar(BigNumber.from(18).sub(_decimals))),
-      _decimals,
-    );
+    const freeCoverAmount = freeCover.lt(BigNumber.from(0))
+      ? '0'
+      : utils.formatUnits(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
 
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
-        ? maxWithdrawAmount.lt(BigNumber.from(0))
+        ? maxWithdrawAmount.lte(BigNumber.from(0))
           ? maxAmount
           : freeCoverAmount
-        : debtCovered
+        : freeCoverAmount
       : '0';
   }
 
