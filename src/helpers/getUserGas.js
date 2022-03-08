@@ -1,4 +1,4 @@
-import { utils, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import settings from '../stores/settings';
 import global from '../stores/global';
 import { getGasPrices } from '../middleware/zapper';
