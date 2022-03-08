@@ -1,4 +1,11 @@
-<div class="col-span-12 border-bt border-2 border-orange2 bg-orange1">
+<script>
+  let showEmergency = true;
+</script>
+
+<div
+  class="col-span-12 border-bt border-2 border-orange2 bg-orange1 {showEmergency ? '' : 'hidden'}"
+  on:click="{() => (showEmergency = false)}"
+>
   <div class="w-full text-grey15 flex flex-row justify-center space-x-4">
     <div class="relative w-6 h-6 self-center">
       <svg
