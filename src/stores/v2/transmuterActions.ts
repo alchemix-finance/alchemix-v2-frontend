@@ -34,7 +34,8 @@ export async function deposit(
     setPendingWallet();
 
     const tx = (await transmuterInstance.deposit(amountToDeposit, addressStore, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -61,7 +62,8 @@ export async function withdraw(
     setPendingWallet();
 
     const tx = (await transmuterInstance.withdraw(amountToWithdraw, addressStore, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
@@ -88,7 +90,8 @@ export async function claim(
     setPendingWallet();
 
     const tx = (await transmuterInstance.claim(amountToClaim, addressStore, {
-      gasPrice,
+      maxFeePerGas: gasPrice.maxFeePerGas,
+      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
     })) as ContractTransaction;
 
     setPendingTx();
