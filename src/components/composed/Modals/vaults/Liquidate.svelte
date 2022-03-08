@@ -51,7 +51,9 @@
       (adapter) =>
         adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
     )[0].price;
+
     const adapterYieldAmount = amount
+      .div(BigNumber.from(10).pow(18))
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
       .div(adapterPrice);
     const subTokens = adapterYieldAmount.mul(BigNumber.from(maximumLoss)).div(100000);
