@@ -28,7 +28,8 @@ export async function deposit(
 
     if (amountToDeposit.gt(allowance)) {
       setPendingApproval();
-      await tokenInstance.approve(transmuterAddress);
+      const sendApe = (await tokenInstance.approve(transmuterAddress)) as ethers.ContractTransaction;
+      await sendApe.wait();
     }
 
     setPendingWallet();
