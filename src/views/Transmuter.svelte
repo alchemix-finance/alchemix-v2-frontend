@@ -152,7 +152,9 @@
             CellComponent: CurrencyCell,
             value: claimValue,
             token: {
-              balance: _transmuterData.exchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+              balance: _transmuterData.exchangedBalanceBN.div(
+                BigNumber.from(10).pow(underlyingTokenData?.decimals || 18),
+              ),
               symbol: underlyingTokenData?.symbol || '',
               perShare: 1,
               decimals: underlyingTokenData?.decimals || 18,
