@@ -20,13 +20,13 @@
    * */
   const getSource = async (filename) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('HEAD', `/images/token-icons/${filename}.png`);
+    xhr.open('HEAD', `/images/token-icons/${filename}.svg`);
     xhr.responseType = 'blob';
     xhr.send();
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 404) {
-        if (xhr.response && xhr.response.type === 'image/png')
-          tokenIcon = `/images/token-icons/${filename + '.png'}`;
+        if (xhr.response && xhr.response.type === 'image/svg+xml')
+          tokenIcon = `/images/token-icons/${filename + '.svg'}`;
       }
     };
   };

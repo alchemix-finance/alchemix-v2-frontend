@@ -40,11 +40,7 @@
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a
-            href="https://alchemix-finance.gitbook.io/alchemix-finance/"
-            class="flex space-x-4"
-            target="_blank"
-          >
+          <a href="https://alchemix-finance.gitbook.io/v2/" class="flex space-x-4" target="_blank">
             <svg
               class="w-5 h-5"
               fill="currentColor"

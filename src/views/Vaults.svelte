@@ -20,7 +20,7 @@
   import { showModal, modalReset } from '@stores/modal';
   import global from '@stores/global';
 
-  import { balancesStore, vaultsStore, VaultsType } from '@stores/v2/alcxStore';
+  import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
@@ -142,8 +142,9 @@
       underlyingTokenData.decimals,
       $vaultsStore[vault.type].ratio,
     );
+
     const vaultApy = Math.round(vault.apy * 10000) / 100;
-    const ratio = $vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18));
+    const vaultDebtDisplay = vaultDebt.div(BigNumber.from(10).pow(16));
 
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
@@ -172,7 +173,7 @@
           CellComponent: CurrencyCell,
           value: debtValue,
           token: {
-            balance: vaultDebt.div(BigNumber.from(10).pow(16)),
+            balance: vaultDebtDisplay,
             perShare: 1,
             decimals: 1,
             symbol: debtTokenData.symbol || '',

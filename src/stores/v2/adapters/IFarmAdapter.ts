@@ -16,7 +16,6 @@ export abstract class IFarmAdapter {
 
       return 0;
     }
-
     return this.priceStore.find(
       (entry) => `${entry.address}`.toLowerCase() === `${tokenAddress}`.toLowerCase(),
     )?.price;

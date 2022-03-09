@@ -20,7 +20,7 @@
   }
 
   const goToHelp = () => {
-    window.open('https://alchemix-finance.gitbook.io/alchemix-finance/', '_blank');
+    window.open('https://alchemix-finance.gitbook.io/v2/', '_blank');
   };
 
   const userGas = (selector) => {
