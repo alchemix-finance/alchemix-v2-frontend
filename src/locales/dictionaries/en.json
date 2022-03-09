@@ -82,6 +82,7 @@
     "loading": "Fetching Data...",
     "openAllOnSnapshot": "View all proposals on Snapshot",
     "openOnSnapshot": "View proposal on Snapshot",
+    "openOnForum": "View all Discussions",
     "noOpenVotes": "There are no open proposals at the moment.",
     "noTranslation": "The results are fetched through external APIs and are not translated from their original language.",
     "description": "Description",
