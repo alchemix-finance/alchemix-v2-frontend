@@ -61,7 +61,7 @@
       <Button
         borderSize="1"
         label="{resolveAddress($account.address)}"
-        uppercase="{true}"
+        uppercase="{false}"
         height="h-10"
         on:clicked="{openEtherscan}"
       >

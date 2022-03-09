@@ -1,5 +1,6 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
   import { globalHistory } from 'svelte-routing/src/history';
   import { _ } from 'svelte-i18n';
   import Wallet from './Wallet.svelte';
@@ -89,6 +90,7 @@
           ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
           : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
         on:click="{() => routerGuard(sidebarItem.path)}"
+        transition:fade|local
       >
         <span>{$_(sidebarItem.label)}</span>
         <img

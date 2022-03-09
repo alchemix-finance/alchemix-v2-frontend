@@ -1,5 +1,5 @@
 import { VaultTypes } from './types';
-import { erc20Contract, contractWrapper } from '../../helpers/contractWrapper';
+import { erc20Contract, contractWrapper } from '@helpers/contractWrapper';
 import { Signer, BigNumber, ethers, ContractTransaction } from 'ethers';
 import { VaultConstants } from './constants';
 import { gasResolver } from '@helpers/getUserGas';
