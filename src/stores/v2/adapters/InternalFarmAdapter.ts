@@ -34,10 +34,14 @@ export class InternalFarmAdapter extends IFarmAdapter {
   getTvl() {
     const { tvl, tokenAddress } = this.getFarm();
 
+    enum TokenOverride {
+      SADDLE = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      TOKEMAK = '0xdbdb4d16eda451d0503b854cf79d55697f90c8df',
+    }
+
+    const lookupValue = InternalFarmsMetadata[`${tokenAddress}`.toLowerCase()].tokenIcon?.toUpperCase();
     const _tokenPrice = this.getPrice(
-      InternalFarmsMetadata[`${tokenAddress}`.toLowerCase()].tokenIcon === 'saddle'
-        ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-        : tokenAddress,
+      Object.keys(TokenOverride).includes(lookupValue) ? TokenOverride[`${lookupValue}`] : tokenAddress,
     );
 
     return parseFloat(utils.formatEther(tvl || tvl[0])) * _tokenPrice;

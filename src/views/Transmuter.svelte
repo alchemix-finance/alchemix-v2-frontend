@@ -107,7 +107,7 @@
         const depositValue = calculateBalanceValue(totalDeposited, tokenPrice);
         const withdrawValue = calculateBalanceValue(_transmuterData.unexchangedBalanceBN, tokenPrice);
         const claimValue = calculateBalanceValue(_transmuterData.exchangedBalanceBN, tokenPrice);
-        console.log(_transmuterData.exchangedBalanceBN.toString());
+
         return {
           col1: {
             CellComponent: ExpandRowCell,

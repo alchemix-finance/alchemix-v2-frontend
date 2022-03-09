@@ -50,9 +50,9 @@ export const InternalFarmsMetadata = {
     farmIcon: 'alusd_med.svg',
     tokenIcon: 'crv',
   },
-  '0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84': {
+  '0xd3b5d9a561c293fb42b446fe7e237daa9bf9aa84': {
     title: 'tALCX',
-    subtitle: 'Alchemix tALCX Pool',
+    subtitle: 'Alchemix tALCX',
     farmIcon: 'alchemix.svg',
     tokenIcon: 'tokemak',
   },
