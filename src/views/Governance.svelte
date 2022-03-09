@@ -21,6 +21,9 @@
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
   };
+  const openDiscussions = () => {
+    window.open('https://forum.alchemix.fi/public/t/aip', '_blank');
+  };
 
   /*
    * @dev transforms snapshot's block notation to human readable date
@@ -156,14 +159,24 @@
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
         <p class="inline-block self-center">{$_('governance_page.proposals')}</p>
 
-        <Button
-          label="{$_('governance_page.openAllOnSnapshot')}"
-          borderSize="1"
-          height="h-8"
-          width="w-max"
-          fontSize="text-md"
-          on:clicked="{() => openAllOnSnapshot()}"
-        />
+        <div>
+          <Button
+            label="{$_('governance_page.openOnForum')}"
+            borderSize="1"
+            height="h-8"
+            width="w-max"
+            fontSize="text-md"
+            on:clicked="{() => openDiscussions()}"
+          />
+          <Button
+            label="{$_('governance_page.openAllOnSnapshot')}"
+            borderSize="1"
+            height="h-8"
+            width="w-max"
+            fontSize="text-md"
+            on:clicked="{() => openAllOnSnapshot()}"
+          />
+        </div>
       </div>
 
       <div slot="body">

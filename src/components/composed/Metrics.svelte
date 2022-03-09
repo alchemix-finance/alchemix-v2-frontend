@@ -5,6 +5,7 @@
   import settings from '@stores/settings';
   import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader';
 
   export let vaults;
 
@@ -92,44 +93,58 @@
   }).format(parseFloat((tvl * $global.conversionRate).toFixed(2)));
 </script>
 
-<div class="flex font-alcxTitles text-lg tracking-wide justify-between">
-  <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.total_deposit')}</div>
-    <div class="flex">
-      <div class="flex mr-2">
-        {totalDepositFiat}
-      </div>
-      <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
-      <!--        <span class="text-xs mr-1">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>-->
-      <!--        <span> {getPlusOrMinusIndicator(metric.percentChangedIsIncrease)}{metric.percentChanged}%</span>-->
-      <!--      </div>-->
-    </div>
-  </div>
+<div class="w-full flex flex-row space-x-4">
+  <div class="grow w-full">
+    <ContainerWithHeader fullWidth="{true}">
+      <div slot="header" class="py-4 px-6">
+        <div class="flex font-alcxTitles text-lg tracking-wide justify-between">
+          <div class="flex-col">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
+              {$_('metrics.total_deposit')}
+            </div>
+            <div class="flex">
+              <div class="flex mr-2">
+                {totalDepositFiat}
+              </div>
+              <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
+              <!--        <span class="text-xs mr-1">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>-->
+              <!--        <span> {getPlusOrMinusIndicator(metric.percentChangedIsIncrease)}{metric.percentChanged}%</span>-->
+              <!--      </div>-->
+            </div>
+          </div>
 
-  <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.open_debt')}</div>
-    <div class="flex">
-      <div class="flex mr-2">
-        {openDebtFiat}
-      </div>
-    </div>
-  </div>
+          <div class="flex-col">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">{$_('metrics.open_debt')}</div>
+            <div class="flex">
+              <div class="flex mr-2">
+                {openDebtFiat}
+              </div>
+            </div>
+          </div>
 
-  <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.open_credit')}</div>
-    <div class="flex">
-      <div class="flex mr-2">
-        {openCreditFiat}
-      </div>
-    </div>
-  </div>
+          <div class="flex-col">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
+              {$_('metrics.open_credit')}
+            </div>
+            <div class="flex">
+              <div class="flex mr-2">
+                {openCreditFiat}
+              </div>
+            </div>
+          </div>
 
-  <div class="flex-col mr-6">
-    <div class="text-bronze3 mr-2 uppercase text-sm">{$_('metrics.global_tvl')}</div>
-    <div class="flex">
-      <div class="flex mr-2">
-        {tvlFiat}
+          <div class="flex-col pl-6 border-l border-dashed border-bronze3">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
+              {$_('metrics.global_tvl')}
+            </div>
+            <div class="flex">
+              <div class="flex mr-2">
+                {tvlFiat}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </ContainerWithHeader>
   </div>
 </div>

@@ -305,11 +305,7 @@
 
     <div class="w-full mb-8">
       {#if showMetrics}
-        <ContainerWithHeader>
-          <div slot="header" class="py-4 px-6">
-            <Metrics vaults="{currentVaultsBasedOnType}" />
-          </div>
-        </ContainerWithHeader>
+        <Metrics vaults="{currentVaultsBasedOnType}" />
       {:else}
         <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
           <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>

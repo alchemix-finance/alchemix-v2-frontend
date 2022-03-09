@@ -6,6 +6,7 @@
   export let canToggle = false;
   export let isVisible = true;
   export let disableButton = false;
+  export let fullWidth = true;
   let contentVisible = true;
 
   const toggleVisibility = () => {
@@ -16,7 +17,7 @@
 </script>
 
 <div
-  class="w-full rounded border {$settings.invertColors
+  class="{fullWidth ? 'w-full' : 'w-max'} rounded border {$settings.invertColors
     ? 'border-grey10inverse bg-grey15inverse'
     : 'border-grey10 bg-grey15'} relative"
 >
