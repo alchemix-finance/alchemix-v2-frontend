@@ -4,12 +4,14 @@
   import { VaultTypes } from '@stores/v2/types';
   import { onMount } from 'svelte';
   import { routerGuard } from '@helpers/routerGuard';
-  import { toggleTokenEnabled } from '@stores/v2/sentinelActions';
+  import {
+    toggleTokenEnabled,
+    toggleTransmuterStatus,
+    toggleAlchemistStatus,
+  } from '@stores/v2/sentinelActions';
   import { fetchTokenEnabledStatus } from '@stores/v2/asyncMethods';
   import { getTokenName } from '@helpers/getTokenData';
   import getContract, { getAddress } from '@helpers/getContract';
-  import { gasResolver } from '@helpers/getUserGas';
-  import { setError } from '@helpers/setToast';
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
@@ -17,7 +19,12 @@
 
   let tokenList = [];
 
-  const transmuters = ['DAI', 'USDC', 'USDT', 'ETH'];
+  const transmuters = [
+    { token: 'DAI', transmuter: 'alUSD' },
+    { token: 'USDC', transmuter: 'alUSD' },
+    { token: 'USDT', transmuter: 'alUSD' },
+    { token: 'ETH', transmuter: 'alETH' },
+  ];
   let transmuterList = [];
 
   const alTokens = [
@@ -30,7 +37,7 @@
   let alchemistList = [];
 
   const initTokenData = (tokens, vaultType) => {
-    tokens.forEach(async (token) => {
+    tokens?.forEach(async (token) => {
       const isEnabled = await fetchTokenEnabledStatus(VaultTypes[vaultType], token, $signer);
       const name = await getTokenName(token);
       tokenList = [...tokenList, { name, address: token, isEnabled, alchemist: vaultType }];
@@ -39,9 +46,9 @@
 
   const initTransmuters = () => {
     transmuters.forEach(async (transmuter) => {
-      const contract = getContract(`TransmuterV2_${transmuter}`);
+      const contract = getContract(`TransmuterV2_${transmuter.token}`);
       const isPaused = await contract.isPaused();
-      transmuterList = [...transmuterList, { name: transmuter, isPaused }];
+      transmuterList = [...transmuterList, { type: transmuter.transmuter, name: transmuter.token, isPaused }];
     });
   };
 
@@ -55,43 +62,30 @@
     });
   };
 
-  const toggleTokenStatus = async (token, newStatus) => {
-    await toggleTokenEnabled(VaultTypes.alUSD, token, newStatus, [$signer]).then(() => {
+  const toggleTokenStatus = async (alchemist, token, newStatus) => {
+    await toggleTokenEnabled(VaultTypes[alchemist], token, newStatus, [$signer]).then(() => {
       tokenList.length = 0;
       initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
       initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
     });
   };
 
-  const toggleTransmuterStatus = async (transmuter, newState) => {
-    const contract = getContract(`TransmuterV2_${transmuter}`);
-    const gasPrice = gasResolver();
-    try {
-      await contract.setPause(newState, {
-        gasPrice,
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.log(e);
-    }
+  const toggleTransmuter = async (vaultType, tokenName, state) => {
+    await toggleTransmuterStatus(VaultTypes[vaultType], tokenName, state, [$signer]).then(() => {
+      transmuterList.length = 0;
+      initTransmuters();
+    });
   };
 
-  const toggleAlchemistStatus = async (altoken, alchemist, newState) => {
-    const contract = getContract(altoken);
-    const targetAlchemist = await getAddress(`AlchemistV2_${alchemist}`);
-    const gasPrice = gasResolver();
-    try {
-      await contract.pauseAlchemist(targetAlchemist, newState, {
-        gasPrice,
-      });
-    } catch (e) {
-      setError(e.data ? await e.data.message : e.message);
-      console.log(e);
-    }
+  const toggleAlchemist = async (vaultType, state) => {
+    await toggleAlchemistStatus(vaultType, state, [$signer]).then(() => {
+      alTokenList.length = 0;
+      initAlTokens();
+    });
   };
 
-  $: initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
-  $: initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
+  $: initTokenData($tokensStore[0]?.underlyingTokens.concat($tokensStore[0]?.yieldTokens), 'alUSD');
+  $: initTokenData($tokensStore[1]?.underlyingTokens.concat($tokensStore[1]?.yieldTokens), 'alETH');
 
   onMount(() => {
     if (!$sentinelStore) {
@@ -132,7 +126,7 @@
               class="w-80 rounded border py-2 px-4 self-center transition-all {!token.isPaused
                 ? `border-red1 ${$settings.invertColors ? 'bg-red5' : 'bg-red2'} hover:bg-red3`
                 : `border-green1 ${$settings.invertColors ? 'bg-green7' : 'bg-black2'} hover:bg-green2`}"
-              on:click="{() => toggleAlchemistStatus(token.token, token.alchemist, !token.isPaused)}"
+              on:click="{() => toggleAlchemist(token.alchemist, !token.isPaused)}"
               >{token.isPaused ? 'Resume' : 'Pause'} {token.name}
             </button>
           </div>
@@ -164,7 +158,7 @@
               class="w-80 rounded border py-2 px-4 self-center transition-all {!transmuter.isPaused
                 ? `border-red1 ${$settings.invertColors ? 'bg-red5' : 'bg-red2'} hover:bg-red3`
                 : `border-green1 ${$settings.invertColors ? 'bg-green7' : 'bg-black2'} hover:bg-green2`}"
-              on:click="{() => toggleTransmuterStatus(transmuter.name, !transmuter.isPaused)}"
+              on:click="{() => toggleTransmuter(transmuter.type, transmuter.name, !transmuter.isPaused)}"
               >{transmuter.isPaused ? 'Resume' : 'Pause'} {transmuter.name} Transmuter
             </button>
           </div>
@@ -200,7 +194,7 @@
               class="w-80 rounded border py-2 px-4 self-center transition-all {token.isEnabled
                 ? `border-red1 ${$settings.invertColors ? 'bg-red5' : 'bg-red2'} hover:bg-red3`
                 : `border-green1 ${$settings.invertColors ? 'bg-green7' : 'bg-black2'} hover:bg-green2`}"
-              on:click="{() => toggleTokenStatus(token.address, !token.isEnabled)}"
+              on:click="{() => toggleTokenStatus(token.alchemist, token.address, !token.isEnabled)}"
               >{token.isEnabled ? 'Pause' : 'Resume'} {token.name}
             </button>
           </div>
