@@ -23,7 +23,7 @@
     {
       col1: {
         CellComponent: FarmNameCell,
-        farmIcon: 'saddle.png',
+        farmIcon: 'saddle.svg',
         farmName: 'Saddle d4',
         farmSubtitle: $_('farm_page.saddle_text'),
         colSize: 7,
@@ -51,7 +51,7 @@
     {
       col1: {
         CellComponent: FarmNameCell,
-        farmIcon: 'sushi.png',
+        farmIcon: 'sushi.svg',
         farmName: 'alUSD/ETH Onsen',
         farmSubtitle: $_('farm_page.sushi_text'),
         colSize: 7,
@@ -79,7 +79,7 @@
     {
       col1: {
         CellComponent: FarmNameCell,
-        farmIcon: 'mstable.png',
+        farmIcon: 'mstable.svg',
         farmName: 'mStable alUSD Feeder',
         farmSubtitle: $_('farm_page.mstable_text'),
         colSize: 7,

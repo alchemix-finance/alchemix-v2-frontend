@@ -21,6 +21,7 @@
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import { vaultsLoading } from '@stores/v2/loadingStores';
+  import GAlcxWrapper from '@components/composed/GAlcxWrapper.svelte';
 
   let loading = true;
 
@@ -198,7 +199,7 @@
       </ContainerWithHeader>
     </div>
 
-    <div class="w-full mb-8">
+    <div class="w-full mb-8 ">
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 text-sm">{$_('vaults_page.title')}</div>
         <div slot="body">

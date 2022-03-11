@@ -5,6 +5,7 @@
   export let label;
   export let secondLabel;
   export let forceState;
+  export let useColor = true;
 
   let checkboxState = false;
 
@@ -28,6 +29,10 @@
   input:checked ~ .dot {
     transform: translateX(100%);
     background-color: #3eb88e;
+  }
+
+  input:checked ~ .dotGrey {
+    transform: translateX(100%);
   }
 
   input:checked ~ .line {
@@ -57,7 +62,7 @@
         : 'bg-grey5 line'} w-10 h-6 rounded-full"
     ></div>
     <div
-      class="dot absolute left-1 top-1 {$settings.invertColors
+      class="{useColor ? 'dot' : 'dotGrey'} absolute left-1 top-1 {$settings.invertColors
         ? 'bg-lightgrey10inverse'
         : 'bg-lightgrey10'} w-4 h-4 rounded-full transition"
     ></div>
