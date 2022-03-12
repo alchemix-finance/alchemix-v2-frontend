@@ -4,10 +4,12 @@ export const VaultConstants = {
   [VaultTypes.alUSD]: {
     alchemistContractSelector: 'AlchemistV2_alUSD',
     gatewayContractSelector: null,
+    alToken: 'AlToken',
   },
   [VaultTypes.alETH]: {
     alchemistContractSelector: 'AlchemistV2_alETH',
     gatewayContractSelector: 'WETHGateway',
+    alToken: 'AlEth',
   },
 };
 

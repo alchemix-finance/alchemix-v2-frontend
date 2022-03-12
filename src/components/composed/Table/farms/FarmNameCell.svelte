@@ -3,11 +3,12 @@
   export let tokenIcon;
   export let farmName;
   export let farmSubtitle;
+  export let pl = 'pl-8';
 
   const defaultIcon = 'alcx_med.svg';
 </script>
 
-<div class="flex flex-row space-x-8 pl-8">
+<div class="flex flex-row space-x-8 {pl}">
   <div class="relative">
     <img src="images/icons/{farmIcon || defaultIcon}" alt="{farmName}" class="h-12 w-12" />
     {#if tokenIcon}
