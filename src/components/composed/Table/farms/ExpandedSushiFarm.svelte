@@ -2,7 +2,6 @@
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
-  import { gasResolver } from '@helpers/getUserGas';
   import {
     setPendingWallet,
     setPendingApproval,
@@ -41,7 +40,6 @@
 
   const deposit = async (amount) => {
     try {
-      const gasPrice = await gasResolver();
       const tokenContract = erc20Contract(farm.poolTokenAddress, $signer);
 
       const allowance = await tokenContract.allowanceOf($addressStore, masterchefAddress);
@@ -51,10 +49,7 @@
         await tokenContract.approve(farm.tokenAddress, masterchefAddress);
       }
       setPendingWallet();
-      const tx = await masterchefInstance.deposit(0, amount, $addressStore, {
-        maxFeePerGas: gasPrice.maxFeePerGas,
-        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-      });
+      const tx = await masterchefInstance.deposit(0, amount, $addressStore);
       setPendingTx();
 
       await tx.wait().then((transaction) => {
@@ -69,7 +64,6 @@
   const withdraw = async (amount) => {
     try {
       const tokenContract = erc20Contract(farm.poolTokenAddress, $signer);
-      const gasPrice = await gasResolver();
       const allowance = await tokenContract.allowanceOf($addressStore, masterchefAddress);
 
       if (allowance.lt(amount)) {
@@ -77,10 +71,7 @@
         await tokenContract.approve(farm.tokenAddress, masterchefAddress);
       }
       setPendingWallet();
-      const tx = await masterchefInstance.withdrawAndHarvest(0, amount, $addressStore, {
-        maxFeePerGas: gasPrice.maxFeePerGas,
-        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-      });
+      const tx = await masterchefInstance.withdrawAndHarvest(0, amount, $addressStore);
       setPendingTx();
 
       await tx.wait().then((transaction) => {
@@ -94,13 +85,8 @@
 
   const claim = async () => {
     try {
-      const gasPrice = await gasResolver();
-
       setPendingWallet();
-      const tx = await masterchefInstance.harvest(0, $addressStore, {
-        maxFeePerGas: gasPrice.maxFeePerGas,
-        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-      });
+      const tx = await masterchefInstance.harvest(0, $addressStore);
       setPendingTx();
 
       tx.wait().then((transaction) => {

@@ -1,5 +1,4 @@
 import { contractWrapper } from '@helpers/contractWrapper';
-import { gasResolver } from '@helpers/getUserGas';
 import { Signer, ContractTransaction } from 'ethers';
 import { VaultTypes } from './types';
 import { VaultConstants, TransmuterConstants } from './constants';
@@ -17,15 +16,11 @@ export async function toggleTokenEnabled(
       VaultConstants[vaultType].alchemistContractSelector,
       signerStore,
     );
-    const gasPrice = await gasResolver();
     const selector = (await alchemistInstance.isSupportedUnderlyingToken(tokenAddress))
       ? 'setUnderlyingTokenEnabled'
       : 'setYieldTokenEnabled';
     setPendingWallet();
-    const tx = (await alchemistInstance[selector](tokenAddress, newState, {
-      maxFeePerGas: gasPrice.maxFeePerGas,
-      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-    })) as ContractTransaction;
+    const tx = (await alchemistInstance[selector](tokenAddress, newState)) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);
@@ -49,19 +44,14 @@ export async function toggleTransmuterStatus(
   state: boolean,
   [signerStore]: [Signer],
 ) {
-  console.log(vaultType);
   try {
     const transmuters = TransmuterConstants[vaultType].transmuterContractSelectors;
     const { instance: transmuterInstance } = contractWrapper(
       transmuters.find((selector) => selector.includes(tokenName)),
       signerStore,
     );
-    const gasPrice = await gasResolver();
     setPendingWallet();
-    const tx = (await transmuterInstance.setPause(state, {
-      maxFeePerGas: gasPrice.maxFeePerGas,
-      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-    })) as ContractTransaction;
+    const tx = (await transmuterInstance.setPause(state)) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);
@@ -86,12 +76,8 @@ export async function toggleAlchemistStatus(vaultType: VaultTypes, state: boolea
       VaultConstants[VaultTypes[vaultType]].alToken,
       signerStore,
     );
-    const gasPrice = await gasResolver();
     setPendingWallet();
-    const tx = (await alchemistInstance.pauseAlchemist(targetAlchemist, state, {
-      maxFeePerGas: gasPrice.maxFeePerGas,
-      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-    })) as ContractTransaction;
+    const tx = (await alchemistInstance.pauseAlchemist(targetAlchemist, state)) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);

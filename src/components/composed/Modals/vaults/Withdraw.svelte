@@ -208,17 +208,9 @@
       .div(scalar(_decimals))
       .mul(scalar(BigNumber.from(18).sub(_decimals)));
     // amount of tokens available for withdrawal
-    const maxWithdrawAmount = vaultCover
-      .div(scalar(BigNumber.from(18).sub(_decimals)))
-      .sub(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))))
-      .mul(scalar(BigNumber.from(18).sub(_decimals)))
-      .div(ratio);
+    const maxWithdrawAmount = vaultCover.sub(freeCover);
 
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    const debtCovered = utils.formatUnits(
-      maxWithdrawAmount.div(scalar(BigNumber.from(18).sub(_decimals))).div(ratio),
-      _decimals,
-    );
     const freeCoverAmount = freeCover.lt(BigNumber.from(0))
       ? '0'
       : utils.formatUnits(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);

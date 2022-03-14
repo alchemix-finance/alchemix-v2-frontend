@@ -56,14 +56,14 @@
       value: $_('table.claimable'),
       colSize: 2,
     },
-    {
-      columnId: 'col5',
-      CellComponent: HeaderCell,
-      //Don't like this but better than APY for now.
-      //I think this needs a tool tip
-      value: $_('table.maturation_rate'),
-      colSize: 2,
-    },
+    // {
+    //   columnId: 'col5',
+    //   CellComponent: HeaderCell,
+    //   //Don't like this but better than APY for now.
+    //   //I think this needs a tool tip
+    //   value: $_('table.maturation_rate'),
+    //   colSize: 2,
+    // },
   ];
 
   const goTo = (url) => {
@@ -153,7 +153,7 @@
             value: claimValue,
             token: {
               balance: _transmuterData.exchangedBalanceBN.mul(
-                BigNumber.from(10).pow(underlyingTokenData?.decimals || 18),
+                BigNumber.from(10).pow(underlyingTokenData?.decimals),
               ),
               symbol: underlyingTokenData?.symbol || '',
               perShare: 1,
@@ -161,10 +161,10 @@
             },
             colSize: 2,
           },
-          col5: {
-            value: '455%',
-            colSize: 2,
-          },
+          // col5: {
+          //   value: '455%',
+          //   colSize: 2,
+          // },
         };
       });
   };
@@ -198,6 +198,7 @@
       pageSubtitle="{$_('transmuter_page.subtitle')}"
     />
   </div>
+
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
@@ -216,7 +217,6 @@
       </div>
     </ContainerWithHeader>
   </div>
-
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex gap-1">

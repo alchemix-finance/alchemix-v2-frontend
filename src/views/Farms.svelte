@@ -28,6 +28,7 @@
   import { InternalFarmAdapter } from '@stores/v2/adapters/InternalFarmAdapter';
   import { SushiFarmAdapter } from '@stores/v2/adapters/SushiFarmAdapter';
   import { CRVFarmAdapter } from '@stores/v2/adapters/CRVFarmAdapter';
+  import GAlcxWrapper from '@components/composed/GAlcxWrapper';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,
@@ -65,7 +66,7 @@
       {
         columnId: 'col4',
         CellComponent: HeaderCell,
-        value: $_('table.apr'),
+        value: 'APY',
         colSize: 1,
       },
       {
@@ -279,6 +280,10 @@
       pageTitle="{$_('farm_page.title')}"
       pageSubtitle="{$_('farm_page.subtitle')}"
     />
+  </div>
+
+  <div class="w-full mb-8">
+    <GAlcxWrapper />
   </div>
 
   <div class="w-full mb-8">

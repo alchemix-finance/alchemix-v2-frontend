@@ -19,7 +19,7 @@
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
   import global from '@stores/global';
-
+  import settings from '@stores/settings';
   import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
@@ -253,11 +253,11 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    <div class="w-full mb-8 grid grid-cols-2 gap-8">
+    <div class="w-full mb-8 h-10 grid grid-cols-2 gap-8">
       <div class="col-span-1">
         <ContainerWithHeader>
           <div slot="body">
-            <div class=" items-center flex gap-1">
+            <div class=" items-center flex space-x-2 h-10 px-2">
               {#if AllowedVaultTypes.length > 1}
                 <Button
                   label="All Vaults"
@@ -297,9 +297,43 @@
         </ContainerWithHeader>
       </div>
       <div class="col-span-1 flex space-x-4">
-        <Button label="{$_('vaults_page.borrow')}" width="w-full" on:clicked="{openBorrowModal}" />
-        <Button label="{$_('vaults_page.repay')}" width="w-full" on:clicked="{openRepayModal}" />
-        <Button label="{$_('vaults_page.liquidate')}" width="w-full" on:clicked="{openLiquidateModal}" />
+        <Button
+          borderColor="bronze3"
+          textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
+          label="{$_('vaults_page.borrow')}"
+          width="w-full"
+          on:clicked="{openBorrowModal}"
+        >
+          <img
+            slot="leftSlot"
+            src="images/icons/Icon_Borrow.svg"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+          />
+        </Button>
+        <Button
+          borderColor="bronze3"
+          textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
+          label="{$_('vaults_page.repay')}"
+          width="w-full"
+          on:clicked="{openRepayModal}"
+          ><img
+            slot="leftSlot"
+            src="images/icons/Icon_Repay.svg"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+          />
+        </Button>
+        <Button
+          borderColor="bronze3"
+          textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
+          label="{$_('vaults_page.liquidate')}"
+          width="w-full"
+          on:clicked="{openLiquidateModal}"
+          ><img
+            slot="leftSlot"
+            src="images/icons/Icon_Liquidate.svg"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+          />
+        </Button>
       </div>
     </div>
 
