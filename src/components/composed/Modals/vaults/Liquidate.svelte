@@ -43,7 +43,7 @@
     const vaultData = vaults.filter(
       (vault) =>
         getTokenDataFromBalances(vault.address, [$balancesStore]).address.toLowerCase() ===
-        yieldTokenData.address.toLowerCase(),
+        yieldTokenData.yieldAddress.toLowerCase(),
     )[0];
     const underlyingTokenData = getTokenDataFromBalances(vaultData.underlyingAddress, [$balancesStore]);
 
@@ -60,7 +60,7 @@
     const minimumOut = adapterYieldAmount.sub(subTokens);
 
     await liquidate(
-      yieldTokenData.address,
+      yieldTokenData.yieldAddress,
       amount.mul(BigNumber.from(10).pow(underlyingTokenData.decimals)).div(BigNumber.from(10).pow(18)),
       vaultType,
       BigNumber.from(maximumLoss),
@@ -109,6 +109,7 @@
 
         return {
           address: yieldTokenData.address,
+          yieldAddress: bodyVault.address,
           balance: bodyVault.balance,
           symbol: yieldTokenData.symbol,
           decimals: yieldTokenData.decimals,
