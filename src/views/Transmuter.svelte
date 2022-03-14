@@ -56,14 +56,14 @@
       value: $_('table.claimable'),
       colSize: 2,
     },
-    {
-      columnId: 'col5',
-      CellComponent: HeaderCell,
-      //Don't like this but better than APY for now.
-      //I think this needs a tool tip
-      value: $_('table.maturation_rate'),
-      colSize: 2,
-    },
+    // {
+    //   columnId: 'col5',
+    //   CellComponent: HeaderCell,
+    //   //Don't like this but better than APY for now.
+    //   //I think this needs a tool tip
+    //   value: $_('table.maturation_rate'),
+    //   colSize: 2,
+    // },
   ];
 
   const goTo = (url) => {
@@ -161,10 +161,10 @@
             },
             colSize: 2,
           },
-          col5: {
-            value: '455%',
-            colSize: 2,
-          },
+          // col5: {
+          //   value: '455%',
+          //   colSize: 2,
+          // },
         };
       });
   };
