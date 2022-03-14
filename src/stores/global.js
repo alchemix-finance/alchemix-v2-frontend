@@ -62,6 +62,10 @@ const defaults = {
       symbol: 'AUD',
       ticker: '$',
     },
+    {
+      symbol: 'ETH',
+      ticker: 'Ξ',
+    },
   ],
 };
 
