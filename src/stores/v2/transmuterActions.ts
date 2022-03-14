@@ -1,5 +1,4 @@
 import { ContractTransaction, ethers } from 'ethers';
-import { gasResolver } from '@helpers/getUserGas';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import {
   setPendingWallet,
@@ -16,7 +15,6 @@ export async function deposit(
   [signer, addressStore]: [ethers.Signer, string],
 ) {
   try {
-    const gasPrice = await gasResolver();
     const { instance: transmuterInstance, address: transmuterAddress } = contractWrapper(
       transmuterSelector,
       signer,
@@ -34,10 +32,7 @@ export async function deposit(
 
     setPendingWallet();
 
-    const tx = (await transmuterInstance.deposit(amountToDeposit, addressStore, {
-      maxFeePerGas: gasPrice.maxFeePerGas,
-      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-    })) as ContractTransaction;
+    const tx = (await transmuterInstance.deposit(amountToDeposit, addressStore)) as ContractTransaction;
 
     setPendingTx();
 
@@ -57,15 +52,10 @@ export async function withdraw(
   [signer, addressStore]: [ethers.Signer, string],
 ) {
   try {
-    const gasPrice = await gasResolver();
-
     const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer);
     setPendingWallet();
 
-    const tx = (await transmuterInstance.withdraw(amountToWithdraw, addressStore, {
-      maxFeePerGas: gasPrice.maxFeePerGas,
-      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-    })) as ContractTransaction;
+    const tx = (await transmuterInstance.withdraw(amountToWithdraw, addressStore)) as ContractTransaction;
 
     setPendingTx();
 
@@ -85,15 +75,11 @@ export async function claim(
   [signer, addressStore]: [ethers.Signer, string],
 ) {
   try {
-    const gasPrice = await gasResolver();
     const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer);
 
     setPendingWallet();
 
-    const tx = (await transmuterInstance.claim(amountToClaim, addressStore, {
-      maxFeePerGas: gasPrice.maxFeePerGas,
-      maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-    })) as ContractTransaction;
+    const tx = (await transmuterInstance.claim(amountToClaim, addressStore)) as ContractTransaction;
 
     setPendingTx();
 

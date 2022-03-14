@@ -1,6 +1,5 @@
 <script>
   import Button from '../../../elements/Button.svelte';
-  import { gasResolver } from '@helpers/getUserGas';
   import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
   import { contractWrapper, externalContractWrapper } from '@helpers/contractWrapper';
   import { signer } from '@stores/v2/derived';
@@ -19,18 +18,13 @@
   export let farm;
 
   const exitPool = async () => {
-    const gasPrice = await gasResolver();
-
     try {
       if (farmType === FarmTypes.INTERNAL) {
         const castedFarm = castToInternalFarmType(farm);
 
         const { instance } = contractWrapper('StakingPools', $signer);
         setPendingWallet();
-        const tx = await instance.exit(castedFarm.poolId, {
-          maxFeePerGas: gasPrice.maxFeePerGas,
-          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-        });
+        const tx = await instance.exit(castedFarm.poolId);
         setPendingTx();
         await tx.wait().then((transaction) => {
           setSuccessTx(transaction.hash);
@@ -41,10 +35,7 @@
 
         const { instance } = externalContractWrapper('SushiMasterchefV2', $signer);
         setPendingWallet();
-        const tx = await instance.emergencyWithdraw(0, $addressStore, {
-          maxFeePerGas: gasPrice.maxFeePerGas,
-          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-        });
+        const tx = await instance.emergencyWithdraw(0, $addressStore);
         setPendingTx();
         await tx.wait().then((transaction) => {
           setSuccessTx(transaction.hash);
@@ -58,10 +49,7 @@
           $signer,
         );
         setPendingWallet();
-        const tx = await crvGaugeInstance.withdraw(castedFarm.userDeposit, {
-          maxFeePerGas: gasPrice.maxFeePerGas,
-          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-        });
+        const tx = await crvGaugeInstance.withdraw(castedFarm.userDeposit);
         setPendingTx();
         await tx.wait().then((transaction) => {
           setSuccessTx(transaction.hash);
