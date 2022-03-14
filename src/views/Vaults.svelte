@@ -307,7 +307,7 @@
           <img
             slot="leftSlot"
             src="images/icons/Icon_Borrow.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} h-5"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
           />
         </Button>
         <Button
@@ -319,7 +319,7 @@
           ><img
             slot="leftSlot"
             src="images/icons/Icon_Repay.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} h-5"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
           />
         </Button>
         <Button
@@ -331,7 +331,7 @@
           ><img
             slot="leftSlot"
             src="images/icons/Icon_Liquidate.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} h-5"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
           />
         </Button>
       </div>

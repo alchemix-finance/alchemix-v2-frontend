@@ -21,7 +21,6 @@
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import { vaultsLoading } from '@stores/v2/loadingStores';
-  import GAlcxWrapper from '@components/composed/GAlcxWrapper.svelte';
 
   let loading = true;
 

@@ -101,7 +101,7 @@ export async function fetchDataForTransmuter(
   const syntethicTokenAddress = await transmuterInstance.syntheticToken();
   const underlyingTokenAddress = await transmuterInstance.underlyingToken();
   const totalUnexchanged = await transmuterInstance.totalUnexchanged();
-  const exchangedBalance = await transmuterInstance.getExchangedBalance(accountAddress);
+  const exchangedBalance = await transmuterInstance.getClaimableBalance(accountAddress);
   const unexchangedBalance = await transmuterInstance.getUnexchangedBalance(accountAddress);
 
   return {

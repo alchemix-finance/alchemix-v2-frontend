@@ -20,7 +20,6 @@
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
   import global from '@stores/global';
-  import GAlcxWrapper from '@components/composed/GAlcxWrapper';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
@@ -153,9 +152,7 @@
             CellComponent: CurrencyCell,
             value: claimValue,
             token: {
-              balance: _transmuterData.exchangedBalanceBN.mul(
-                BigNumber.from(10).pow(underlyingTokenData?.decimals || 18),
-              ),
+              balance: _transmuterData.exchangedBalanceBN,
               symbol: underlyingTokenData?.symbol || '',
               perShare: 1,
               decimals: underlyingTokenData?.decimals || 18,
@@ -217,9 +214,6 @@
         </Button>
       </div>
     </ContainerWithHeader>
-  </div>
-  <div class="w-full mb-8">
-    <GAlcxWrapper />
   </div>
   <div class="w-full mb-8">
     <ContainerWithHeader>
