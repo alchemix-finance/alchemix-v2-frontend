@@ -3,7 +3,6 @@
   import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
   import Button from '../../../elements/Button.svelte';
-  import { gasResolver } from '@helpers/getUserGas';
   import settings from '@stores/settings';
 
   import {
@@ -28,7 +27,6 @@
 
   const deposit = async (depositBN) => {
     try {
-      const gasPrice = await gasResolver();
       const tokenContract = erc20Contract(farm.tokenAddress, $signer);
 
       const allowance = await tokenContract.allowanceOf($addressStore, stakingAddress);
@@ -39,10 +37,7 @@
       }
 
       setPendingWallet();
-      const tx = await stakingInstance.deposit(farm.poolId, depositBN, {
-        maxFeePerGas: gasPrice.maxFeePerGas,
-        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-      });
+      const tx = await stakingInstance.deposit(farm.poolId, depositBN);
       setPendingTx();
 
       await tx.wait().then((transaction) => {
@@ -61,14 +56,9 @@
 
   const withdraw = async (withdrawBN) => {
     try {
-      const gasPrice = await gasResolver();
-
       setPendingWallet();
 
-      const tx = await stakingInstance.withdraw(farm.poolId, withdrawBN, {
-        maxFeePerGas: gasPrice.maxFeePerGas,
-        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-      });
+      const tx = await stakingInstance.withdraw(farm.poolId, withdrawBN);
 
       setPendingTx();
 
@@ -88,13 +78,9 @@
 
   const claim = async () => {
     try {
-      const gasPrice = await gasResolver();
       setPendingWallet();
 
-      const tx = await stakingInstance.claim(farm.poolId, {
-        maxFeePerGas: gasPrice.maxFeePerGas,
-        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-      });
+      const tx = await stakingInstance.claim(farm.poolId);
 
       await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
