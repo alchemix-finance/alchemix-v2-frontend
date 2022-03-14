@@ -152,9 +152,7 @@
             CellComponent: CurrencyCell,
             value: claimValue,
             token: {
-              balance: _transmuterData.exchangedBalanceBN.mul(
-                BigNumber.from(10).pow(underlyingTokenData?.decimals || 18),
-              ),
+              balance: _transmuterData.exchangedBalanceBN,
               symbol: underlyingTokenData?.symbol || '',
               perShare: 1,
               decimals: underlyingTokenData?.decimals || 18,
@@ -198,6 +196,7 @@
       pageSubtitle="{$_('transmuter_page.subtitle')}"
     />
   </div>
+
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
@@ -216,7 +215,6 @@
       </div>
     </ContainerWithHeader>
   </div>
-
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex gap-1">

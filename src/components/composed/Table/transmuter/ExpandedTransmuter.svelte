@@ -232,10 +232,7 @@
       class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
     >
       <label for="claimInput" class="text-sm text-lightgrey10">
-        {$_('expanded.transmuted')}: {utils.formatUnits(
-          transmuterData.exchangedBalanceBN,
-          underlyingTokenData.decimals,
-        )}
+        {$_('expanded.transmuted')}: {utils.formatUnits(transmuterData.exchangedBalanceBN, 18)}
         {underlyingTokenData.symbol}
       </label>
       <div

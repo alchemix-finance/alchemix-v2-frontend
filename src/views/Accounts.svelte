@@ -198,7 +198,7 @@
       </ContainerWithHeader>
     </div>
 
-    <div class="w-full mb-8">
+    <div class="w-full mb-8 ">
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 text-sm">{$_('vaults_page.title')}</div>
         <div slot="body">

@@ -66,7 +66,6 @@ Use at your own risk.
     await fetchVaultTokens(VaultTypes.alETH, [$signer]);
 
     vaultsLoading.set(true);
-
     await fetchAllBalances([$signer, $fullTokenList]);
 
     await fetchVaultDebt(VaultTypes.alUSD, [$addressStore, $signer]);

@@ -12,32 +12,32 @@
     {
       label: 'my_account',
       path: 'accounts',
-      icon: 'vault_thick.svg',
+      icon: 'vault_med.svg',
     },
     {
       label: 'vaults',
       path: 'vaults',
-      icon: 'yield_thick.svg',
+      icon: 'yield_med.svg',
     },
     {
       label: 'transmuter',
       path: 'transmuter',
-      icon: 'transmuter_thick.svg',
+      icon: 'transmuter_med.svg',
     },
     {
       label: 'farms',
       path: 'farms',
-      icon: 'farm_thick.svg',
+      icon: 'farm_med.svg',
     },
     {
       label: 'governance',
       path: 'governance',
-      icon: 'alcx_thick.svg',
+      icon: 'alcx_med.svg',
     },
     {
       label: 'sentinel',
       path: 'sentinel',
-      icon: 'sentinel_thick.svg',
+      icon: 'sentinel_med.svg',
     },
   ];
 
@@ -77,7 +77,7 @@
       <span>{$_(sidebarItem.label)}</span>
       <img
         src="images/icons/{sidebarItem.icon}"
-        class="w-6 h-6 {$settings.invertColors ? 'invertIcons' : ''}"
+        class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
       />
     </li>
   {/each}
@@ -95,7 +95,7 @@
         <span>{$_(sidebarItem.label)}</span>
         <img
           src="images/icons/{sidebarItem.icon}"
-          class="w-6 h-6 {$settings.invertColors ? 'invertIcons' : ''}"
+          class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
         />
       </li>
     {/if}

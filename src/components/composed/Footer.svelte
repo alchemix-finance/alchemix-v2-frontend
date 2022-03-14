@@ -168,12 +168,12 @@
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
           <a href="https://zapper.fi/" target="_blank">
-            <img src="images/integrations/zapper_black.svg" class="w-60" alt="The logo of Zapper" />
+            <img src="images/integrations/zapper_black.svg" class="w-32" alt="The logo of Zapper" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
           <a href="https://snapshot.org/" target="_blank">
-            <img src="images/integrations/snapshot.svg" class="w-60" alt="The logo of Snapshot" />
+            <img src="images/integrations/snapshot.svg" class="w-32" alt="The logo of Snapshot" />
           </a>
         </li>
       </ul>

@@ -16,6 +16,8 @@ export const stakingPoolsReset = () => {
   stakingPools.set({ ...defaults });
 };
 
+export const additionalTokens = ['0x93Dede06AE3B5590aF1d4c111BC54C3f717E4b35'];
+
 export const externalLookup = [
   {
     // SushiSwap MasterChef V2
