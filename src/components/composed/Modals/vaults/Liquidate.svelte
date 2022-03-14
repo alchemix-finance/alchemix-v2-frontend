@@ -105,7 +105,7 @@
 
     return [
       ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
-        const yieldTokenData = getTokenDataFromBalances(bodyVault.address, [$balancesStore]);
+        const yieldTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
 
         return {
           address: yieldTokenData.address,
@@ -121,7 +121,7 @@
 
   const useCurrentBalance = (yieldTokenData) => {
     return yieldTokenData.balance
-      .mul(yieldTokenData.yieldPerShare)
+      .mul(yieldTokenData.underlyingPerShare)
       .div(BigNumber.from(10).pow(yieldTokenData.decimals));
   };
 
@@ -178,7 +178,8 @@
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.liquidate_debt')}</p>
-    <div class="flex gap-1">
+    <div class="flex gap-2 items-center">
+      <div>Open Debt: {utils.formatEther(debtAmount)}</div>
       {#if selectedVaultsType.length > 1}
         <select
           id="selectVaultType"
