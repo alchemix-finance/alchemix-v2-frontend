@@ -115,6 +115,9 @@ export async function depositUnderlying(
         amountYield,
         userAddressStore,
         minimumAmountOut,
+        {
+          gasLimit: BigNumber.from(300000),
+        },
       )) as ethers.ContractTransaction;
 
       setPendingTx();
