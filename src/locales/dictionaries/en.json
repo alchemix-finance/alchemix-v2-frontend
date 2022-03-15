@@ -235,5 +235,13 @@
     "open_debt": "Current Debt",
     "open_credit": "Available Credit",
     "global_tvl": "Global TVL"
+  },
+  "galcx": {
+    "title": "gALCX Wrapper",
+    "leading": "A liquid ALCX wrapper for single-sided staking.",
+    "p_1": "Wrap your ALCX into gALCX and have your ALCX work for you in the single sided staking pool while staying in control of your gALCX.",
+    "p_2": "Autocompounding increases the amount of ALCX you can unwrap per gALCX.",
+    "galcx_supply": "gALCX Token Supply",
+    "wrapped_alcx": "Wrapped ALCX"
   }
 }
