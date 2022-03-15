@@ -215,7 +215,10 @@
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
     const vaultCoverAmount = vaultCover.lt(BigNumber.from(0))
       ? '0'
-      : utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
+      : utils.formatUnits(
+          vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
+          _decimals,
+        );
 
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
