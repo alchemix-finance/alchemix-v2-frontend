@@ -98,7 +98,7 @@
                 <p>▾</p>
               </div>
               <ul slot="options" class="w-full">
-                {#each $global.languages as language, index}
+                {#each $global.languages?.sort( (a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0), ) as language, index}
                   <li
                     class="cursor-pointer h-8 px-3 py-1 {$settings.invertColors
                       ? 'hover:bg-grey10inverse'
