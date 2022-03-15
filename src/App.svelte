@@ -31,6 +31,7 @@
   import { connect } from '@helpers/walletManager';
 
   export let url = '';
+  const showBanner = false;
 
   // @dev to stop waste API request, stop the gas updates if needed
   let gasTimer;
@@ -92,7 +93,7 @@
           >
             <HeaderBar />
           </div>
-          {#if $network.id === 1}
+          {#if showBanner}
             <Emergency />
           {/if}
           <div class="col-span-12 flex">

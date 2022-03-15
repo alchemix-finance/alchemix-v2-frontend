@@ -123,8 +123,8 @@
       row: {
         col2: {
           CellComponent: FarmNameCell,
-          farmName: vaultTokenData.symbol,
-          farmSubtitle: 'Yearn ' + underlyingTokenData.symbol,
+          farmName: 'Yearn ' + underlyingTokenData.symbol,
+          farmSubtitle: underlyingTokenData.symbol + ' + ' + vaultTokenData.symbol,
           farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
           tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
           colSize: 3,

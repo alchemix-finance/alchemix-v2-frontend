@@ -157,34 +157,35 @@
     </p>
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
-        <div class="flex space-x-4">
-          <Button
-            label="{$_('governance_page.all')}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{true}"
-            solid="{false}"
-            borderSize="0"
-          />
+        <!--        <div class="flex space-x-4">-->
+        <!--          <Button-->
+        <!--            label="{$_('governance_page.all')}"-->
+        <!--            width="w-max"-->
+        <!--            canToggle="{true}"-->
+        <!--            selected="{true}"-->
+        <!--            solid="{false}"-->
+        <!--            borderSize="0"-->
+        <!--          />-->
 
-          <Button
-            label="{$_('governance_page.active')}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{false}"
-            solid="{false}"
-            borderSize="0"
-          />
+        <!--          <Button-->
+        <!--            label="{$_('governance_page.active')}"-->
+        <!--            width="w-max"-->
+        <!--            canToggle="{true}"-->
+        <!--            selected="{false}"-->
+        <!--            solid="{false}"-->
+        <!--            borderSize="0"-->
+        <!--          />-->
 
-          <Button
-            label="{$_('governance_page.closed')}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{false}"
-            solid="{false}"
-            borderSize="0"
-          />
-        </div>
+        <!--          <Button-->
+        <!--            label="{$_('governance_page.closed')}"-->
+        <!--            width="w-max"-->
+        <!--            canToggle="{true}"-->
+        <!--            selected="{false}"-->
+        <!--            solid="{false}"-->
+        <!--            borderSize="0"-->
+        <!--          />-->
+        <!--        </div>-->
+        <p>{$_('governance_page.proposals')}</p>
 
         <div>
           <Button
