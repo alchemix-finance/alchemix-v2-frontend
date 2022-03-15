@@ -144,7 +144,9 @@
     );
 
     const vaultApy = Math.round(vault.apy * 10000) / 100;
-    const vaultDebtDisplay = vaultDebt.div(BigNumber.from(10).pow(16));
+    const vaultDebtDisplay = vault.balance
+      .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
+      .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
@@ -175,7 +177,7 @@
           token: {
             balance: vaultDebtDisplay,
             perShare: 1,
-            decimals: 1,
+            decimals: underlyingTokenData.decimals,
             symbol: debtTokenData.symbol || '',
           },
           prefix: '+',
