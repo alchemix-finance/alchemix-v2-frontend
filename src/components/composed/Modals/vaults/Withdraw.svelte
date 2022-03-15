@@ -199,7 +199,9 @@
     const scalar = (decimals) => BigNumber.from(10).pow(decimals);
     const ratio = _ratio.div(scalar(18));
     // how many underlying tokens are needed to cover a user's debt
-    const requiredCover = _openDebtAmount.mul(ratio);
+    const requiredCover = _openDebtAmount.mul(ratio).lte(BigNumber.from(0))
+      ? BigNumber.from(0)
+      : _openDebtAmount.mul(ratio);
     // remaining underlying token deposits that could be withdrawn
     const freeCover = _coveredDebtAmount.sub(requiredCover);
     // amount of debt tokens covered by this vault (= deposit amount)
@@ -211,16 +213,16 @@
     const maxWithdrawAmount = vaultCover.sub(freeCover);
 
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    const freeCoverAmount = freeCover.lt(BigNumber.from(0))
+    const vaultCoverAmount = vaultCover.lt(BigNumber.from(0))
       ? '0'
-      : utils.formatUnits(freeCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
+      : utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
 
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
         ? maxWithdrawAmount.lte(BigNumber.from(0))
           ? maxAmount
-          : freeCoverAmount
-        : freeCoverAmount
+          : vaultCoverAmount
+        : vaultCoverAmount
       : '0';
   }
 
