@@ -117,7 +117,7 @@ export async function depositUnderlying(
         minimumAmountOut,
         {
           value: amountYield,
-          gasLimit: BigNumber.from(400000),
+          gasLimit: BigNumber.from(500000),
         },
       )) as ethers.ContractTransaction;
 
@@ -309,7 +309,7 @@ export async function withdrawUnderlying(
         accountAddress,
         minimumAmountOut,
         {
-          gasLimit: BigNumber.from(400000),
+          gasLimit: BigNumber.from(500000),
         },
       )) as ethers.ContractTransaction;
 
