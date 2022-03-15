@@ -54,6 +54,7 @@
 
       await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
+        inputDepositAmount = 0;
       });
     } catch (error) {
       setError(error.message);
@@ -76,6 +77,7 @@
 
       await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
+        inputWithdrawAmount = 0;
       });
     } catch (error) {
       setError(error.message);
