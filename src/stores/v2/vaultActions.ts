@@ -307,6 +307,9 @@ export async function withdrawUnderlying(
         amountUnderlying,
         accountAddress,
         minimumAmountOut,
+        {
+          gasLimit: BigNumber.from(300000),
+        },
       )) as ethers.ContractTransaction;
 
       setPendingTx();
