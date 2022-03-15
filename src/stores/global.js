@@ -44,6 +44,46 @@ const defaults = {
       name: 'Spanish',
       locale: 'es',
     },
+    {
+      name: 'Brazilian',
+      locale: 'br',
+    },
+    {
+      name: 'Chook',
+      locale: 'aussie',
+    },
+    {
+      name: 'Dutch',
+      locale: 'nl',
+    },
+    {
+      name: 'French',
+      locale: 'fr',
+    },
+    {
+      name: 'Greek',
+      locale: 'gr',
+    },
+    {
+      name: 'Hungarian',
+      locale: 'hu',
+    },
+    {
+      name: 'Latvian',
+      locale: 'lv',
+    },
+    {
+      name: 'Persian',
+      locale: 'pr',
+    },
+    {
+      name: 'Portuguese',
+      locale: 'pt',
+    },
+    {
+      name: 'Turkish',
+      locale: 'tr',
+    },
   ],
   allCurrencies: [
     {

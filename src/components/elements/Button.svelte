@@ -56,7 +56,7 @@
   disabled="{disabled}"
   on:click="{clickEvent}"
 >
-  <div
+  <span
     class="flex {$$slots.leftSlot && $$slots.rightSlot
       ? 'justify-between items-center'
       : $$slots.leftSlot && !$$slots.rightSlot
@@ -70,5 +70,5 @@
       </p>
     {/if}
     <slot name="rightSlot" />
-  </div>
+  </span>
 </button>
