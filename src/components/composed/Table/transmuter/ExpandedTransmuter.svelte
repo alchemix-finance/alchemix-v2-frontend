@@ -27,6 +27,7 @@
           $addressStore,
         ]),
       ]).then(() => {
+        inputDepositAmount = '';
         console.log(`[onDepositButton/deposit/finish]: Updated!`);
       });
     });
@@ -43,6 +44,7 @@
           $addressStore,
         ]),
       ]).then(() => {
+        inputWithdrawAmount = '';
         console.log(`[onWithdrawButton/withdraw/finish]: Updated!`);
       });
     });
@@ -59,6 +61,7 @@
           $addressStore,
         ]),
       ]).then(() => {
+        inputClaimAmount = '';
         console.log(`[onWithdrawButton/withdraw/finish]: Updated!`);
       });
     });

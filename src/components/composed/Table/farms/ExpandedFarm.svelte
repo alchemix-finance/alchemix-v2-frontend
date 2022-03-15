@@ -46,7 +46,9 @@
         Promise.all([
           fetchInternalFarmByUuid(farm.uuid, farm.poolId, [$signer]),
           fetchBalanceByAddress(farm.tokenAddress, [$signer]),
-        ]);
+        ]).then(() => {
+          inputDepositAmount = '';
+        });
       });
     } catch (error) {
       setError(error.message);
@@ -68,7 +70,9 @@
         Promise.all([
           fetchInternalFarmByUuid(farm.uuid, farm.poolId, [$signer]),
           fetchBalanceByAddress(farm.tokenAddress, [$signer]),
-        ]);
+        ]).then(() => {
+          inputWithdrawAmount = '';
+        });
       });
     } catch (error) {
       setError(error.message);
