@@ -233,6 +233,9 @@
     });
 
   const closeModal = () => modalReset();
+  const goToLegacy = () => {
+    window.open('https://legacy.alchemix.fi/vault', '_blank');
+  };
 </script>
 
 <ViewContainer>
@@ -242,6 +245,12 @@
       pageTitle="{$_('vaults_page.title')}"
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
+  </div>
+  <div slot="message">
+    <div class="flex flex-row space-x-4">
+      <p class="self-center">{$_('vaults_page.legacy_redirect')}</p>
+      <Button label="Go To Legacy UI" width="w-max" on:clicked="{() => goToLegacy()}" />
+    </div>
   </div>
   {#if $vaultsLoading}
     <ContainerWithHeader>

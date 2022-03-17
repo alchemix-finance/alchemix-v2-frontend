@@ -7,39 +7,7 @@
   import { routerGuard } from '@helpers/routerGuard';
   import { sentinelStore } from '@stores/v2/alcxStore';
   import settings from '@stores/settings';
-
-  const sidebarSetup = [
-    {
-      label: 'my_account',
-      path: 'accounts',
-      icon: 'vault_med.svg',
-    },
-    {
-      label: 'vaults',
-      path: 'vaults',
-      icon: 'yield_med.svg',
-    },
-    {
-      label: 'transmuter',
-      path: 'transmuter',
-      icon: 'transmuter_med.svg',
-    },
-    {
-      label: 'farms',
-      path: 'farms',
-      icon: 'farm_med.svg',
-    },
-    {
-      label: 'governance',
-      path: 'governance',
-      icon: 'alcx_med.svg',
-    },
-    {
-      label: 'sentinel',
-      path: 'sentinel',
-      icon: 'sentinel_med.svg',
-    },
-  ];
+  import { sidebarSetup } from '@stores/sidebarSetup';
 
   let pathname = window.location.pathname;
   let unsub;
@@ -66,7 +34,7 @@
   {$_('navigation')}
 </p>
 <ul>
-  {#each sidebarSetup.filter((key) => key.label !== 'sentinel') as sidebarItem}
+  {#each sidebarSetup().filter((key) => key.label !== 'sentinel') as sidebarItem}
     <li
       class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(1) ===
       `${sidebarItem.path}`
@@ -81,7 +49,7 @@
       />
     </li>
   {/each}
-  {#each sidebarSetup.filter((key) => key.label === 'sentinel') as sidebarItem}
+  {#each sidebarSetup().filter((key) => key.label === 'sentinel') as sidebarItem}
     {#if $sentinelStore}
       <li
         class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(

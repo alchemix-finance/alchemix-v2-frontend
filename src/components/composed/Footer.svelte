@@ -1,5 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
+  import { Link } from 'svelte-routing';
 
   const copyrightYear = () => {
     return `2020 - ${new Date().getFullYear()}`;
@@ -7,8 +8,8 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="flex flex-row">
-    <div class="mr-11 w-60">
+  <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-11">
+    <div class="w-60">
       <img
         src="images/icons/ALCX_Std_logo.svg"
         class="h-9 mb-5"
@@ -21,72 +22,33 @@
         {$_('footer_disclaimer')}
       </p>
     </div>
-    <div class="mr-11">
+
+    <div>
       <p class="uppercase text-sm alcxTitle mb-5">{$_('navigation')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
+          <Link to="/">{$_('main_page')}</Link>
+        </li>
+        <li class="opacity-50 hover:opacity-100">
           <a href="https://legacy.alchemix.fi/" class="flex space-x-4" target="_blank">
-            <svg
-              class="h-5 w-5"
-              fill="currentColor"
-              viewBox="-8 0 512 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"
-              ></path>
-            </svg>
             <span>Legacy v1 UI</span>
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
+          <a href="https://github.com/orgs/alchemix-finance/" class="flex space-x-4" target="_blank">
+            <span>{$_('github')}</span>
+          </a>
+        </li>
+        <li class="opacity-50 hover:opacity-100">
           <a href="https://alchemix-finance.gitbook.io/v2/" class="flex space-x-4" target="_blank">
-            <svg
-              class="w-5 h-5"
-              fill="currentColor"
-              role="img"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>GitBook</title>
-              <path
-                d="M10.802 17.77a.703.703 0 11-.002 1.406.703.703 0 01.002-1.406m11.024-4.347a.703.703 0 11.001-1.406.703.703 0 01-.001 1.406m0-2.876a2.176 2.176 0 00-2.174 2.174c0 .233.039.465.115.691l-7.181 3.823a2.165 2.165 0 00-1.784-.937c-.829 0-1.584.475-1.95 1.216l-6.451-3.402c-.682-.358-1.192-1.48-1.138-2.502.028-.533.212-.947.493-1.107.178-.1.392-.092.62.027l.042.023c1.71.9 7.304 3.847 7.54 3.956.363.169.565.237 1.185-.057l11.564-6.014c.17-.064.368-.227.368-.474 0-.342-.354-.477-.355-.477-.658-.315-1.669-.788-2.655-1.25-2.108-.987-4.497-2.105-5.546-2.655-.906-.474-1.635-.074-1.765.006l-.252.125C7.78 6.048 1.46 9.178 1.1 9.397.457 9.789.058 10.57.006 11.539c-.08 1.537.703 3.14 1.824 3.727l6.822 3.518a2.175 2.175 0 002.15 1.862 2.177 2.177 0 002.173-2.14l7.514-4.073c.38.298.853.461 1.337.461A2.176 2.176 0 0024 12.72a2.176 2.176 0 00-2.174-2.174"
-              ></path>
-            </svg>
             <span>{$_('documentation')}</span></a
           >
         </li>
         <li class="opacity-50 hover:opacity-100">
           <a class="flex space-x-4" href="/governance">
-            <svg
-              class="w-5 h-5"
-              fill="currentColor"
-              role="img"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>AMP</title>
-              <path
-                d="M12 0c6.628 0 12 5.373 12 12s-5.372 12-12 12C5.373 24 0 18.627 0 12S5.373 0 12 0zm-.92 19.278l5.034-8.377a.444.444 0 00.097-.268.455.455 0 00-.455-.455l-2.851.004.924-5.468-.927-.003-5.018 8.367s-.1.183-.1.291c0 .251.204.455.455.455l2.831-.004-.901 5.458z"
-              ></path>
-            </svg>
             <span>
-              {$_('governance')}
+              {$_('table.snapshot')}
             </span>
-          </a>
-        </li>
-        <li class="opacity-50 hover:opacity-100">
-          <a href="https://forum.alchemix.fi/public/" class="flex space-x-4" target="_blank">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M20 32C28.8366 32 36 26.6274 36 20C36 13.3726 28.8366 8 20 8C11.1634 8 4 13.3726 4 20C4 22.6842 5.17509 25.1626 7.16049 27.1616C6.35561 29.4537 5.31284 31.1723 4.6499 32.1319C4.4071 32.4834 4.65714 32.9802 5.08289 32.9453C6.78453 32.8058 10.1224 32.3105 12.3741 30.5519C14.6411 31.4754 17.2389 32 20 32Z"
-              ></path>
-              <path
-                d="M22.7843 33.8337C31.4033 32.7928 38 26.9957 38 20.0002C38 19.4632 37.9611 18.9333 37.8855 18.4121C41.5534 20.1003 44 23.136 44 26.6002C44 28.7476 43.0599 30.7303 41.4716 32.3295C42.068 34.0278 42.8276 35.3325 43.3579 36.1259C43.5953 36.481 43.3423 36.9779 42.917 36.9372C41.5041 36.8021 39.0109 36.3773 37.3007 35.0418C35.4872 35.7806 33.4089 36.2002 31.2 36.2002C27.9781 36.2002 25.0343 35.3074 22.7843 33.8337Z"
-              ></path>
-            </svg>
-
-            <span>{$_('forum')}</span>
           </a>
         </li>
       </ul>
@@ -94,6 +56,22 @@
     <div class="mr-11">
       <p class="uppercase text-sm alcxTitle mb-5">{$_('social')}</p>
       <ul class="text-sm space-y-3">
+        <li class="opacity-50 hover:opacity-100">
+          <a href="https://alchemixfi.medium.com/" class="flex space-x-4" target="_blank">
+            <svg
+              class="w-5 h-5"
+              fill="currentColor"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              ><title>Medium</title>
+              <path
+                d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"
+              ></path>
+            </svg>
+            <span>Medium</span>
+          </a>
+        </li>
         <li class="opacity-50 hover:opacity-100">
           <a href="https://discord.com/invite/alchemix" class="flex space-x-4" target="_blank">
             <svg
@@ -108,6 +86,20 @@
               ></path>
             </svg>
             <span>{$_('discord')}</span>
+          </a>
+        </li>
+        <li class="opacity-50 hover:opacity-100">
+          <a href="https://forum.alchemix.fi/public/" class="flex space-x-4" target="_blank">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M20 32C28.8366 32 36 26.6274 36 20C36 13.3726 28.8366 8 20 8C11.1634 8 4 13.3726 4 20C4 22.6842 5.17509 25.1626 7.16049 27.1616C6.35561 29.4537 5.31284 31.1723 4.6499 32.1319C4.4071 32.4834 4.65714 32.9802 5.08289 32.9453C6.78453 32.8058 10.1224 32.3105 12.3741 30.5519C14.6411 31.4754 17.2389 32 20 32Z"
+              ></path>
+              <path
+                d="M22.7843 33.8337C31.4033 32.7928 38 26.9957 38 20.0002C38 19.4632 37.9611 18.9333 37.8855 18.4121C41.5534 20.1003 44 23.136 44 26.6002C44 28.7476 43.0599 30.7303 41.4716 32.3295C42.068 34.0278 42.8276 35.3325 43.3579 36.1259C43.5953 36.481 43.3423 36.9779 42.917 36.9372C41.5041 36.8021 39.0109 36.3773 37.3007 35.0418C35.4872 35.7806 33.4089 36.2002 31.2 36.2002C27.9781 36.2002 25.0343 35.3074 22.7843 33.8337Z"
+              ></path>
+            </svg>
+
+            <span>{$_('forum')}</span>
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
@@ -127,23 +119,7 @@
             <span>{$_('twitter')}</span>
           </a>
         </li>
-        <li class="opacity-50 hover:opacity-100">
-          <a href="https://github.com/orgs/alchemix-finance/" class="flex space-x-4" target="_blank">
-            <svg
-              class="h-5 w-5"
-              fill="currentColor"
-              role="img"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>GitHub</title>
-              <path
-                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-              ></path>
-            </svg>
-            <span>{$_('github')}</span>
-          </a>
-        </li>
+
         <li class="opacity-50 hover:opacity-100">
           <a href="https://alchemixfi.substack.com/" class="flex space-x-4" target="_blank">
             <svg
@@ -163,7 +139,7 @@
         </li>
       </ul>
     </div>
-    <div class="mr-11">
+    <div>
       <p class="uppercase text-sm alcxTitle mb-5">{$_('proudly_using')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">

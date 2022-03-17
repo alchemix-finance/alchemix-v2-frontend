@@ -99,6 +99,10 @@ const defaults = {
       ticker: '¥',
     },
     {
+      symbol: 'GBP',
+      ticker: '£',
+    },
+    {
       symbol: 'AUD',
       ticker: '$',
     },
