@@ -55,24 +55,25 @@ const wallets = [
   { walletName: 'tally', preferred: true },
   {
     walletName: 'walletConnect',
+    preferred: true,
     rpc: {
       [mainnetId]: rpcUrl,
       [testnetId]: testnetRpc,
     },
   },
-  { walletName: 'walletLink', rpcUrl: debugging ? testnetRpc : rpcUrl },
-  { walletName: 'lattice', rpcUrl, appName: 'Alchemix' },
-  {
-    walletName: 'trezor',
-    rpcUrl: debugging ? testnetRpc : rpcUrl,
-    appName: 'Alchemix',
-    email: 'n4n0@mail.alchemix.fi',
-    customNetwork: {
-      name: process.env.LOCAL_NETWORK_NAME,
-      chainId: process.env.LOCAL_NETWORK_ID,
-    },
-  },
-  { walletName: 'ledger', rpcUrl: debugging ? testnetRpc : rpcUrl },
+  { walletName: 'walletLink', preferred: true, rpcUrl: debugging ? testnetRpc : rpcUrl },
+  // { walletName: 'lattice', rpcUrl, appName: 'Alchemix' },
+  // {
+  //   walletName: 'trezor',
+  //   rpcUrl: debugging ? testnetRpc : rpcUrl,
+  //   appName: 'Alchemix',
+  //   email: 'n4n0@mail.alchemix.fi',
+  //   customNetwork: {
+  //     name: process.env.LOCAL_NETWORK_NAME,
+  //     chainId: process.env.LOCAL_NETWORK_ID,
+  //   },
+  // },
+  // { walletName: 'ledger', rpcUrl: debugging ? testnetRpc : rpcUrl },
 ];
 
 // @dev initializes blocknative onboarding

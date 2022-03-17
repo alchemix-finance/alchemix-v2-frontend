@@ -120,7 +120,8 @@
     "subtitle": "Deposit collateral and borrow your future yield right away",
     "borrow": "Borrow",
     "repay": "Repay",
-    "liquidate": "Liquidate"
+    "liquidate": "Liquidate",
+    "legacy_redirect": "Looking for your old deposits?"
   },
   "accounts_page": {
     "title": "My Accounts",
