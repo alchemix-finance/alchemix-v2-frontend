@@ -1,4 +1,5 @@
 <script>
+  import { getDefaultProvider } from 'ethers';
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { connect } from '@helpers/walletManager';
@@ -13,8 +14,10 @@
   let indicatorColor;
   let balanceCollapsed = true;
   let supportedNetwork = true;
+  let isHuman = true;
 
   const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+  const provider = getDefaultProvider();
 
   /*
    * @dev returns ENS or truncates the long address string for better visuals
@@ -34,6 +37,11 @@
     supportedNetwork = networkId === targetNetwork;
   };
 
+  const resolveHuman = async (address) => {
+    const resolved = await provider.getCode(address);
+    isHuman = resolved === '0x';
+  };
+
   /*
    * @dev opens etherscan for the currently logged in wallet
    * */
@@ -46,6 +54,7 @@
   };
 
   $: $network, resolveIndicator($network.id);
+  $: $network, resolveHuman($account.address);
 </script>
 
 <style>
@@ -138,6 +147,45 @@
         </div>
 
         <p>{$_('wrong_network')}!</p>
+      </div>
+    {/if}
+    {#if !isHuman}
+      <div
+        class="mt-2 py-2 px-4 bg-orange1 border border-orange2 rounded text-grey5 flex align-center space-x-4"
+        transition:slide
+      >
+        <div class="relative w-6 h-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 absolute animate-ping"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+        </div>
+
+        <p>{$_('using_contract')}!</p>
       </div>
     {/if}
     {#if !balanceCollapsed}
