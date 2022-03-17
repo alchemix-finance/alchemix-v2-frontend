@@ -1,4 +1,5 @@
 {
+  "main_page": "Introduction",
   "account": "Account",
   "alchemix": "Alchemix",
   "alchemix_labs": "Alchemix Labs",
@@ -41,6 +42,7 @@
   "proudly_using": "Proudly Using",
   "refresh": "Refresh",
   "wrong_network": "Wrong Network",
+  "using_contract": "Contract-Wallets are currently not supported",
   "connect_wallet": "Connect Wallet",
   "available": "Available",
   "custom_amount": "Custom Amount",
@@ -48,6 +50,7 @@
   "sentinel": "Sentinel",
   "wrap": "Wrap",
   "unwrap": "Unwrap",
+  "external": "External",
   "landing": {
     "intro_title": "Alchemix Self-Repaying Loans allow you to leverage a range of tokens without risk of liquidation.",
     "intro_subtitle_0": "Borrow up to 50% of your deposited collateral",
