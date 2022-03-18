@@ -5,7 +5,6 @@
   import { _ } from 'svelte-i18n';
   import Modal from '@components/elements/Modal.svelte';
   import StateManager from '@components/composed/StateManager.svelte';
-  import network from '@stores/network';
   import settings from '@stores/settings';
 
   // middleware
@@ -27,6 +26,7 @@
   import Governance from './views/Governance.svelte';
   import Settings from './views/Settings.svelte';
   import Sentinel from './views/Sentinel.svelte';
+  import { routerGuard } from '@helpers/routerGuard';
 
   import { connect } from '@helpers/walletManager';
 
@@ -58,6 +58,7 @@
   onMount(async () => {
     if (preselect !== null) {
       await connect(preselect);
+      if (location.pathname === '/') routerGuard('accounts');
     }
     walletChecked = true;
     await getGasPrices();

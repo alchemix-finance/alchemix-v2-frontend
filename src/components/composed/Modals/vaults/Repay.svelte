@@ -71,6 +71,7 @@
         symbol: debtTokenData.symbol,
         decimals: debtTokenData.decimals,
         underlyingPerShare: BigNumber.from(1),
+        debtToken: debtTokenData.symbol,
       },
       ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
         const underlyingTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
@@ -81,6 +82,7 @@
           symbol: underlyingTokenData.symbol,
           decimals: underlyingTokenData.decimals,
           underlyingPerShare: bodyVault.underlyingPerShare,
+          debtToken: debtTokenData.symbol,
         };
       }),
     ];
@@ -160,6 +162,12 @@
     </div>
   </div>
   <div slot="body" class="p-4 flex flex-col space-y-4">
+    {#if debtAmount.gt(BigNumber.from(0))}
+      <p class="text-sm">
+        {$_('metrics.open_debt')}: {utils.formatEther(debtAmount)}
+        {tokensForVaultType[currentSelectedUnderlyingToken].debtToken}
+      </p>
+    {/if}
     <label for="repayInput" class="text-sm text-lightgrey10">
       {$_('available')}: {utils.formatUnits(
         tokensForVaultType[currentSelectedUnderlyingToken].balance,
