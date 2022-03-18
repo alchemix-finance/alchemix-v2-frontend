@@ -219,9 +219,9 @@
     <label for="liquidateInput" class="text-sm text-lightgrey10">
       {$_('available')}: ~{utils.formatUnits(
         currentYieldBalance,
-        yieldTokenList[selectedYieldToken]?.decimals || 18,
+        yieldTokenList[selectedYieldToken].decimals,
       )}
-      {yieldTokenList[selectedYieldToken]?.symbol}
+      {yieldTokenList[selectedYieldToken].symbol}
     </label>
     <div
       class="flex rounded border {$settings.invertColors
