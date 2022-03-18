@@ -10,19 +10,30 @@ export async function fetchDataForToken(tokenAddress: string, signer: ethers.Sig
   const tokenContract = erc20Contract(tokenAddress, signer);
 
   const address = await signer.getAddress();
+  try {
+    const name = (await tokenContract.name()) || '';
+    const symbol = (await tokenContract.symbol()) || '';
+    const decimals = (await tokenContract.decimals()) || 18;
+    const balance = (await tokenContract.balanceOf(address)) || 0;
 
-  const name = await tokenContract.name();
-  const symbol = await tokenContract.symbol();
-  const decimals = await tokenContract.decimals();
-  const balance = await tokenContract.balanceOf(address);
+    return {
+      address: tokenAddress,
+      name,
+      symbol,
+      decimals,
+      balance,
+    };
+  } catch (error) {
+    console.error('[fetchDataForToken]:', error);
 
-  return {
-    address: tokenAddress,
-    name,
-    symbol,
-    decimals,
-    balance,
-  };
+    return {
+      address: tokenAddress,
+      name: '',
+      symbol: '',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    };
+  }
 }
 
 export async function fetchDataForETH(signer: ethers.Signer): Promise<BalanceType> {
