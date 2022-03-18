@@ -52,6 +52,12 @@
         colSize: '3',
       },
       {
+        columnId: 'staked',
+        CellComponent: HeaderCell,
+        value: $_('table.staked_token'),
+        colSize: 2,
+      },
+      {
         columnId: 'col2',
         CellComponent: HeaderCell,
         value: $_('table.tvl'),
@@ -187,6 +193,12 @@
               tokenIcon: farmMetadata.tokenIcon,
               colSize: 3,
               alignment: 'justify-self-start',
+            },
+            staked: {
+              CellComponent: StakedCell,
+              amount: farm.body.userDeposit,
+              tokenSymbol: farm.body.tokenSymbol,
+              colSize: 2,
             },
             col2: {
               CellComponent: CurrencyCell,
