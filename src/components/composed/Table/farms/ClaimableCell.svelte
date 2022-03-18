@@ -3,9 +3,13 @@
   export let rewardToken;
 </script>
 
-<div>
-  {rewardAmount}
+<div class="w-full">
+  <p class="text-center">
+    {rewardAmount}
+  </p>
   {#if rewardToken}
-    {rewardToken}
+    <p class="text-center">
+      {rewardToken}
+    </p>
   {/if}
 </div>
