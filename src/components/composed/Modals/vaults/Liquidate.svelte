@@ -103,6 +103,8 @@
       return [];
     }
 
+    const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
+
     return [
       ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
         const yieldTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
@@ -115,6 +117,7 @@
           decimals: yieldTokenData.decimals,
           yieldPerShare: bodyVault.yieldPerShare,
           underlyingPerShare: bodyVault.underlyingPerShare,
+          debtToken: debtTokenData.symbol,
         };
       }),
     ];
@@ -182,9 +185,6 @@
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.liquidate_debt')}</p>
     <div class="flex gap-2 items-center">
-      {#if debtAmount.gt(BigNumber.from(0))}
-        <span>Open Debt: {utils.formatEther(debtAmount)}</span>
-      {/if}
       {#if selectedVaultsType.length > 1}
         <select
           id="selectVaultType"
@@ -216,6 +216,12 @@
     </div>
   </div>
   <div slot="body" class="flex flex-col space-y-4 p-4">
+    {#if debtAmount.gt(BigNumber.from(0))}
+      <p class="text-sm">
+        {$_('metrics.open_debt')}: {utils.formatEther(debtAmount)}
+        {yieldTokenList[selectedYieldToken].debtToken}
+      </p>
+    {/if}
     <label for="liquidateInput" class="text-sm text-lightgrey10">
       {$_('available')}: ~{utils.formatUnits(
         currentYieldBalance,
