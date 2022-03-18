@@ -43,7 +43,7 @@
     const vaultData = vaults.filter(
       (vault) =>
         getTokenDataFromBalances(vault.address, [$balancesStore]).address.toLowerCase() ===
-        yieldTokenData.address.toLowerCase(),
+        yieldTokenData.yieldAddress.toLowerCase(),
     )[0];
     const underlyingTokenData = getTokenDataFromBalances(vaultData.underlyingAddress, [$balancesStore]);
 
@@ -60,7 +60,7 @@
     const minimumOut = adapterYieldAmount.sub(subTokens);
 
     await liquidate(
-      yieldTokenData.address,
+      yieldTokenData.yieldAddress,
       amount.mul(BigNumber.from(10).pow(underlyingTokenData.decimals)).div(BigNumber.from(10).pow(18)),
       vaultType,
       BigNumber.from(maximumLoss),
@@ -105,10 +105,11 @@
 
     return [
       ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
-        const yieldTokenData = getTokenDataFromBalances(bodyVault.address, [$balancesStore]);
+        const yieldTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
 
         return {
           address: yieldTokenData.address,
+          yieldAddress: bodyVault.address,
           balance: bodyVault.balance,
           symbol: yieldTokenData.symbol,
           decimals: yieldTokenData.decimals,
@@ -121,7 +122,7 @@
 
   const useCurrentBalance = (yieldTokenData) => {
     return yieldTokenData.balance
-      .mul(yieldTokenData.yieldPerShare)
+      .mul(yieldTokenData.underlyingPerShare)
       .div(BigNumber.from(10).pow(yieldTokenData.decimals));
   };
 
@@ -166,7 +167,9 @@
 
   $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
 
-  $: debtAmount = $vaultsStore[selectedVaultType].debt[0] || BigNumber.from(0);
+  $: debtAmount = $vaultsStore[selectedVaultType].debt[0].gt(BigNumber.from(0))
+    ? $vaultsStore[selectedVaultType].debt[0]
+    : BigNumber.from(0);
 
   $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
     ? BigNumber.from(0)
@@ -178,7 +181,10 @@
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.liquidate_debt')}</p>
-    <div class="flex gap-1">
+    <div class="flex gap-2 items-center">
+      {#if debtAmount.gt(BigNumber.from(0))}
+        <span>Open Debt: {utils.formatEther(debtAmount)}</span>
+      {/if}
       {#if selectedVaultsType.length > 1}
         <select
           id="selectVaultType"
