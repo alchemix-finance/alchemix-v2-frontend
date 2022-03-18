@@ -167,7 +167,9 @@
 
   $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
 
-  $: debtAmount = $vaultsStore[selectedVaultType].debt[0] || BigNumber.from(0);
+  $: debtAmount = $vaultsStore[selectedVaultType].debt[0].gt(BigNumber.from(0))
+    ? $vaultsStore[selectedVaultType].debt[0]
+    : BigNumber.from(0);
 
   $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
     ? BigNumber.from(0)
@@ -180,7 +182,9 @@
   <div slot="header" class="p-4 text-sm flex items-center justify-between">
     <p class="inline-block">{$_('modals.liquidate_debt')}</p>
     <div class="flex gap-2 items-center">
-      <div>Open Debt: {utils.formatEther(debtAmount)}</div>
+      {#if debtAmount.gt(BigNumber.from(0))}
+        <span>Open Debt: {utils.formatEther(debtAmount)}</span>
+      {/if}
       {#if selectedVaultsType.length > 1}
         <select
           id="selectVaultType"
@@ -215,9 +219,9 @@
     <label for="liquidateInput" class="text-sm text-lightgrey10">
       {$_('available')}: ~{utils.formatUnits(
         currentYieldBalance,
-        yieldTokenList[selectedYieldToken].decimals,
+        yieldTokenList[selectedYieldToken]?.decimals || 18,
       )}
-      {yieldTokenList[selectedYieldToken].symbol}
+      {yieldTokenList[selectedYieldToken]?.symbol}
     </label>
     <div
       class="flex rounded border {$settings.invertColors
