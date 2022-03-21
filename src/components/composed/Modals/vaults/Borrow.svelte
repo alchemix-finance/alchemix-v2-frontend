@@ -116,7 +116,7 @@
 
 <ContainerWithHeader>
   <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="inline-block">{$_('actions.borrow')} {debtTokenInfo.name}</p>
+    <p class="self-center inline-block">{$_('actions.borrow')} {debtTokenInfo.name}</p>
     {#if selectedVaults.length > 1}
       <select
         name="selectToken"

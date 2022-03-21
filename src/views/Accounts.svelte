@@ -21,6 +21,7 @@
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import { vaultsLoading } from '@stores/v2/loadingStores';
+  import YieldCell from '@components/composed/Table/YieldCell.svelte';
 
   let loading = true;
 
@@ -47,7 +48,7 @@
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: $_('table.apy'),
+      value: $_('table.yield'),
       colSize: 2,
     },
   ];
@@ -153,7 +154,9 @@
           colSize: 2,
         },
         col4: {
-          value: vaultApy + '%',
+          CellComponent: YieldCell,
+          yieldRate: vaultApy,
+          yieldType: 'APY',
           colSize: 2,
         },
       },
@@ -176,7 +179,7 @@
       </div>
       <div slot="body">
         <div class="flex justify-center my-4">
-          <BarLoader color="#F5C59F" />
+          <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
         </div>
       </div>
     </ContainerWithHeader>

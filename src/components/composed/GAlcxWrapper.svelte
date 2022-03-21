@@ -99,7 +99,7 @@
   <div slot="body" class="py-4 px-6 flex space-y-8 flex-col">
     {#if $vaultsLoading}
       <div class="flex justify-center my-4">
-        <BarLoader color="#F5C59F" />
+        <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
       </div>
     {:else}
       <div class="flex flex-row space-x-8">
