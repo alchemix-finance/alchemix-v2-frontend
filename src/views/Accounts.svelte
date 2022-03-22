@@ -5,7 +5,6 @@
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import AccountsPageBarCharts from '@components/composed/AccountsPageBarCharts.svelte';
-  import { aggregate } from '@stores/vaults';
   import { BarLoader } from 'svelte-loading-spinners';
   import Table from '@components/composed/Table/Table.svelte';
   import HeaderCell from '@components/composed/Table/HeaderCell.svelte';
@@ -22,6 +21,7 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell.svelte';
+  import LegacyHelper from '@components/composed/LegacyHelper.svelte';
 
   let loading = true;
 
@@ -184,13 +184,9 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    <!--    <div class="w-full mb-8">-->
-    <!--      <ContainerWithHeader>-->
-    <!--        <div slot="header" class="py-4 px-6">-->
-    <!--          <Metrics />-->
-    <!--        </div>-->
-    <!--      </ContainerWithHeader>-->
-    <!--    </div>-->
+    <div class="w-full mb-8">
+      <LegacyHelper />
+    </div>
 
     <div class="w-full mb-8">
       <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}" disableButton="{!hasStrategies}">

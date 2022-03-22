@@ -1,6 +1,6 @@
 import { VaultTypes } from './types';
 import { contractWrapper } from '@helpers/contractWrapper';
-import { Signer, ethers, utils, ContractTransaction } from 'ethers';
+import { Signer, ethers, utils, BigNumber, ContractTransaction } from 'ethers';
 import { VaultConstants } from './constants';
 import { setPendingWallet, setPendingTx, setSuccessTx, setError } from '@helpers/setToast';
 
@@ -56,4 +56,22 @@ export async function withdrawLegacy(
     console.error(`[flashloanActions/withdrawLegacy]: ${error}`);
     throw Error(error);
   }
+}
+
+export async function flashloanDeposit(
+  _vaultType: VaultTypes,
+  _yieldToken: string,
+  _collateralInitial: BigNumber,
+  _slippage: BigNumber,
+  [userAddressStore, signerStore]: [string, Signer],
+) {
+  console.log(
+    _vaultType,
+    _yieldToken,
+    _collateralInitial.toString(),
+    _slippage.toString(),
+    userAddressStore,
+    signerStore,
+  );
+  return true;
 }
