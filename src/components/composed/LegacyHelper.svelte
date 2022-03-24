@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { slide } from 'svelte/transition';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader';
   import settings from '@stores/settings';
@@ -28,7 +28,10 @@
       mode = 1;
       await liquidateLegacy(targetAlchemist, [$addressStore, $signer]);
       mode = 2;
-      await withdrawLegacy(targetAlchemist, [$addressStore, $signer]);
+      await withdrawLegacy(targetAlchemist, [$addressStore, $signer]).then((response) => {
+        console.log(response);
+        collateralInitial = response.data;
+      });
       mode = 3;
     } catch (error) {
       mode = 0;
@@ -38,19 +41,17 @@
 
   const flashloan = async (targetAlchemist) => {
     mode = 4;
-    let yieldToken = 'lel';
     try {
-      console.log(targetAlchemist, yieldToken, collateralInitial, maximumLoss);
       await flashloanDeposit(
         targetAlchemist,
-        yieldToken,
         utils.parseEther(collateralInitial.toString()),
-        utils.parseEther(maximumLoss.toString()),
-        [$addressStore, $signer],
+        utils.parseEther((100 / targetLtv).toString()),
+        BigNumber.from(maximumLoss.toString()).add(BigNumber.from(100000)).div(BigNumber.from(10)),
+        [$signer],
       );
       mode = 5;
     } catch (error) {
-      mode = 0;
+      reset();
       console.log(error);
     }
   };

@@ -47,7 +47,7 @@ export async function withdrawLegacy(
       setPendingTx();
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
-        return true;
+        return payload[_vaultType][0];
       });
     }
     return true;
@@ -60,18 +60,60 @@ export async function withdrawLegacy(
 
 export async function flashloanDeposit(
   _vaultType: VaultTypes,
-  _yieldToken: string,
   _collateralInitial: BigNumber,
+  _targetLTV: BigNumber,
   _slippage: BigNumber,
-  [userAddressStore, signerStore]: [string, Signer],
+  [signerStore]: [Signer],
 ) {
   console.log(
     _vaultType,
-    _yieldToken,
     _collateralInitial.toString(),
+    _targetLTV.toString(),
     _slippage.toString(),
-    userAddressStore,
     signerStore,
   );
-  return true;
+  const collateralTotal = _collateralInitial.mul(utils.parseEther('1').div(_targetLTV));
+  const targetDebt = collateralTotal.sub(_collateralInitial).mul(_slippage).div(1000);
+  const paramLookup = Object.freeze({
+    0: {
+      pool: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+      poolInputIndex: '0',
+      poolOutputIndex: '1',
+      yieldToken: '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
+    },
+    1: {
+      pool: '0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e',
+      poolInputIndex: '1',
+      poolOutputIndex: '0',
+      yieldToken: '0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
+    },
+  });
+  const param = paramLookup[_vaultType];
+  try {
+    const { instance: flashloanInstance } = contractWrapper('autoleverage', signerStore);
+    const { address: alchemistAddress } = contractWrapper(
+      VaultConstants[_vaultType].alchemistContractSelector,
+      signerStore,
+    );
+    setPendingWallet();
+    const tx = (await flashloanInstance.autoleverage(
+      param.pool,
+      param.poolInputIndex,
+      param.poolOutputIndex,
+      alchemistAddress,
+      param.yieldToken,
+      _collateralInitial,
+      collateralTotal,
+      targetDebt,
+    )) as ContractTransaction;
+    setPendingTx();
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return true;
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[flashloanActions/flashloanDeposit]: ${error}`);
+    throw Error(error);
+  }
 }
