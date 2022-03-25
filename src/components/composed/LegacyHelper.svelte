@@ -17,7 +17,7 @@
   let processing = false;
   let collateralInitial = 0;
   let targetLtv = 50;
-  let maximumLoss = 500;
+  let maximumLoss = 1000;
   let alchemist;
   let useCustomValues = false;
 
@@ -46,8 +46,8 @@
         targetAlchemist,
         utils.parseEther(collateralInitial.toString()),
         utils.parseEther((100 / targetLtv).toString()),
-        BigNumber.from(maximumLoss.toString()).add(BigNumber.from(100000)).div(BigNumber.from(10)),
-        [$signer],
+        BigNumber.from(maximumLoss.toString()).add(BigNumber.from(100000)).mul(BigNumber.from(10).pow(13)),
+        [$addressStore, $signer],
       );
       mode = 5;
     } catch (error) {
@@ -323,7 +323,7 @@
             bind:value="{targetLtv}"
           />
         </div>
-        <MaxLossController preset="0.5" bind:maxLoss="{maximumLoss}" />
+        <MaxLossController preset="1" bind:maxLoss="{maximumLoss}" />
       </div>
     {/if}
   </div>
