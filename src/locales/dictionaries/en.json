@@ -172,7 +172,8 @@
     "active_select": "Active",
     "retired_select": "Retired",
     "external_select": "External",
-    "galcx": "gALCX"
+    "galcx": "gALCX",
+    "yield": "Yield"
   },
   "expanded": {
     "credit_limit": "Credit Limit",

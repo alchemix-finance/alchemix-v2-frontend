@@ -26,6 +26,8 @@
   import makeSelectorStore from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
+  import YieldCell from '@components/composed/Table/YieldCell';
+  import LegacyHelper from '@components/composed/LegacyHelper';
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
@@ -60,7 +62,7 @@
     {
       columnId: 'col4',
       CellComponent: HeaderCell,
-      value: $_('table.apy'),
+      value: $_('table.yield'),
       colSize: 2,
     },
     {
@@ -195,7 +197,9 @@
           colSize: 2,
         },
         col4: {
-          value: vaultApy + '%',
+          CellComponent: YieldCell,
+          yieldRate: vaultApy,
+          yieldType: 'APY',
           colSize: 2,
         },
         col5: {
@@ -259,7 +263,7 @@
       </div>
       <div slot="body">
         <div class="flex justify-center my-4">
-          <BarLoader color="#F5C59F" />
+          <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
         </div>
       </div>
     </ContainerWithHeader>
@@ -365,6 +369,10 @@
           </div>
         </ContainerWithHeader>
       {/if}
+    </div>
+
+    <div class="w-full mb-8">
+      <LegacyHelper />
     </div>
 
     <div class="w-full mb-8">

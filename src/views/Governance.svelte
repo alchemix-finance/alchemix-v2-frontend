@@ -239,7 +239,7 @@
       <div slot="body">
         {#if $governance.fetching}
           <div class="flex justify-center my-4">
-            <BarLoader color="#F5C59F" />
+            <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
           </div>
         {:else if $governance.proposals.length > 0}
           <Table rows="{rows}" columns="{columns}" />
