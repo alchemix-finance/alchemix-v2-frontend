@@ -72,7 +72,7 @@ export async function flashloanDeposit(
   [userAddressStore, signerStore]: [string, Signer],
 ) {
   const collateralTotal = _collateralInitial.mul(_targetLTV).div(_slippage);
-  const targetDebt = collateralTotal.sub(_collateralInitial).div(1000);
+  const targetDebt = collateralTotal.sub(_collateralInitial);
   const paramLookup = Object.freeze({
     0: {
       pool: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
