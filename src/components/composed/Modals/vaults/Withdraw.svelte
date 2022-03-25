@@ -284,7 +284,7 @@
     <div slot="header" class="p-4 text-sm flex justify-between">
       <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
       <div>
-        {#if !debt.eq(BigNumber.from(0))}
+        {#if debt.gt(BigNumber.from(0))}
           <p class="inline-block">
             {$_('chart.debt')}: {utils.formatEther(debt)}
             {VaultTypesInfos[vault.type].name} |

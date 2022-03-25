@@ -399,7 +399,9 @@ export async function mint(
     );
 
     setPendingWallet();
-    const tx = (await alchemistInstance.mint(amountToBorrow, userAddress)) as ContractTransaction;
+    const tx = (await alchemistInstance.mint(amountToBorrow, userAddress, {
+      gasLimit: BigNumber.from(500000),
+    })) as ContractTransaction;
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
