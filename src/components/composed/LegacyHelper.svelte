@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import { slide } from 'svelte/transition';
@@ -6,7 +7,7 @@
   import settings from '@stores/settings';
   import Button from '@components/elements/Button';
   import { BarLoader } from 'svelte-loading-spinners';
-  import { liquidateLegacy, withdrawLegacy, flashloanDeposit } from '@stores/v2/flashloanActions';
+  import { limitCheck, liquidateLegacy, withdrawLegacy, flashloanDeposit } from '@stores/v2/flashloanActions';
   import { signer } from '@stores/v2/derived';
   import { addressStore } from '@stores/v2/alcxStore';
   import MaxLossController from '@components/composed/MaxLossController';
@@ -16,10 +17,12 @@
   let mode = 0;
   let processing = false;
   let collateralInitial = 0;
-  let targetLtv = 50;
+  let targetLtv = 95;
   let maximumLoss = 1000;
   let alchemist;
   let useCustomValues = false;
+  let canMigrateAlUSD = false;
+  let canMigrateAlETH = false;
 
   const migration = async (targetAlchemist) => {
     alchemist = targetAlchemist;
@@ -45,8 +48,8 @@
       await flashloanDeposit(
         targetAlchemist,
         utils.parseEther(collateralInitial.toString()),
-        utils.parseEther((100 / targetLtv).toString()),
-        BigNumber.from(maximumLoss.toString()).add(BigNumber.from(100000)).mul(BigNumber.from(10).pow(13)),
+        BigNumber.from(targetLtv.toString()),
+        BigNumber.from(maximumLoss.toString()).add(BigNumber.from(100000)),
         [$addressStore, $signer],
       );
       mode = 5;
@@ -62,9 +65,22 @@
     useCustomValues = false;
     targetLtv = 50;
   };
+
+  onMount(() => {
+    [0, 1].map(async (vault) => {
+      const limits = await limitCheck(vault, [$addressStore, $signer]);
+      if (
+        limits.mintLimit.currentLimit.sub(limits.expectedValue).gte(limits.openDebt) &&
+        limits.openDebt.gt(BigNumber.from(0))
+      ) {
+        if (vault === 0) canMigrateAlUSD = true;
+        if (vault === 1) canMigrateAlETH = true;
+      }
+    });
+  });
 </script>
 
-<ContainerWithHeader canToggle="{true}" isVisible="{true}">
+<ContainerWithHeader canToggle="{true}" isVisible="{canMigrateAlUSD || canMigrateAlETH}">
   <div class="text-sm flex flex-row justify-between" slot="header">
     <p class="self-center">Legacy Migration</p>
   </div>
@@ -229,23 +245,54 @@
           </div>
         </div>
 
-        <div class="w-full flex flex-row space-x-4 justify-between h-12">
-          <Button
-            disabled="{processing}"
-            label="Migrate from Legacy alUSD"
-            borderColor="green4"
-            backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-            hoverColor="green4"
-            on:clicked="{() => migration(0)}"
-          />
-          <Button
-            disabled="{processing}"
-            label="Migrate from Legacy alETH"
-            borderColor="green4"
-            backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-            hoverColor="green4"
-            on:clicked="{() => migration(1)}"
-          />
+        <div
+          class="w-full flex flex-row justify-between h-12"
+          class:space-x-4="{canMigrateAlUSD || canMigrateAlETH}"
+        >
+          <div class:hidden="{!canMigrateAlUSD}" class="w-full">
+            <Button
+              disabled="{!canMigrateAlUSD}"
+              label="Migrate from Legacy alUSD"
+              borderColor="green4"
+              backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+              hoverColor="green4"
+              height="h-12"
+              on:clicked="{() => migration(0)}"
+            />
+          </div>
+          <div class:hidden="{!canMigrateAlETH}" class="w-full">
+            <Button
+              disabled="{!canMigrateAlETH}"
+              label="Migrate from Legacy alETH"
+              borderColor="green4"
+              backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+              hoverColor="green4"
+              height="h-12"
+              on:clicked="{() => migration(1)}"
+            />
+          </div>
+          <div
+            class:hidden="{canMigrateAlUSD || canMigrateAlETH}"
+            class="w-full rounded text-sm border border-green4 {$settings.invertColors
+              ? 'bg-green7 text-white2inverse'
+              : 'bg-black2 text-white2'} flex flex-row justify-center space-x-4 items-center"
+          >
+            <p>No legacy positions detected, you're all good!</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="#42B792"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+              ></path>
+            </svg>
+          </div>
         </div>
       </div>
     {/if}
@@ -259,7 +306,7 @@
         <div class="w-full">
           <p class="mb-4">
             Choose an amount that you want to flashloan into a new V2 position, as well as the desired LTV
-            ratio which is used to determine how much debt to take up with each debt token mint.
+            amount which is used to determine how much debt to take up with each debt token mint.
           </p>
         </div>
         <div class="w-full">
@@ -318,7 +365,7 @@
             class="appearance-none rounded-full cursor-pointer h-2 w-full"
             name="LTV Ratio"
             min="0"
-            max="50"
+            max="95"
             step="5"
             bind:value="{targetLtv}"
           />
