@@ -20,6 +20,7 @@
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
   import global from '@stores/global';
+  import settings from '@stores/settings';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
@@ -259,7 +260,7 @@
       <div slot="body">
         {#if transmutersLoading}
           <div class="flex justify-center my-4">
-            <BarLoader color="#F5C59F" />
+            <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
           </div>
         {:else if currentRowsForSelectedType.length > 0}
           <Table rows="{currentRowsForSelectedType}" columns="{columns}" />

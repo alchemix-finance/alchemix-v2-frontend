@@ -7,6 +7,7 @@
   import settings from '@stores/settings';
 
   export let maxLoss;
+  export let preset = '0.3';
 
   const typeOfLosses = Object.freeze({
     '0.3': 0,
@@ -28,7 +29,7 @@
     saneMax: 5,
   };
 
-  let currentPreset = typeOfLosses['0.3'];
+  let currentPreset = typeOfLosses[preset];
 
   let useCustomAmount = false;
   let maximumLossInput = 0;

@@ -103,10 +103,15 @@
             height="h-8"
             width="w-full"
             fontSize="text-md"
-            borderColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
-            textColor="{proposal.state === 'closed' ? 'red3' : 'green3'}"
-            hoverColor="{proposal.state === 'closed' ? '' : 'darkgreen2'}"
-            backgroundColor="{proposal.state === 'closed' ? '' : 'darkgreen1'}"
+            borderColor="{proposal.state === 'closed' ? 'red4' : 'green4'}"
+            hoverColor="{proposal.state === 'closed' ? '' : 'green4'}"
+            backgroundColor="{proposal.state === 'closed'
+              ? $settings.invertColors
+                ? 'red5'
+                : 'red2'
+              : $settings.invertColors
+              ? 'green7'
+              : 'black2'}"
             noHoverEffect="{proposal.state === 'closed' || vote}"
             on:clicked="{() => initVote()}"
           />

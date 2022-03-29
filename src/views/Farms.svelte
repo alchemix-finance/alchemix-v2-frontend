@@ -29,6 +29,8 @@
   import { SushiFarmAdapter } from '@stores/v2/adapters/SushiFarmAdapter';
   import { CRVFarmAdapter } from '@stores/v2/adapters/CRVFarmAdapter';
   import GAlcxWrapper from '@components/composed/GAlcxWrapper';
+  import YieldCell from '@components/composed/Table/YieldCell';
+  import settings from '@stores/settings';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,
@@ -72,7 +74,7 @@
       {
         columnId: 'col4',
         CellComponent: HeaderCell,
-        value: 'APY',
+        value: $_('table.yield'),
         colSize: 1,
       },
       {
@@ -211,7 +213,9 @@
               colSize: 3,
             },
             col4: {
-              value: adapter.getApy() > 0 ? adapter.getApy() + '%' : 'NaN',
+              CellComponent: YieldCell,
+              yieldRate: adapter.getApy() > 0 ? adapter.getApy() : 'N/A',
+              yieldType: 'APY',
               colSize: 1,
             },
             col5: {
@@ -335,7 +339,7 @@
         {#if currentFilter === filterTypes.ACTIVE}
           {#if loadingVaults}
             <div class="flex justify-center my-4">
-              <BarLoader color="#F5C59F" />
+              <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
             </div>
           {:else}
             <Table columns="{colsDefinition[filterTypes.ACTIVE]}" rows="{filteredRows}" />
@@ -343,7 +347,7 @@
         {:else if currentFilter === filterTypes.RETIRED}
           {#if loadingVaults}
             <div class="flex justify-center my-4">
-              <BarLoader color="#F5C59F" />
+              <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
             </div>
           {:else}
             <Table columns="{colsDefinition[filterTypes.RETIRED]}" rows="{filteredRows}" />
