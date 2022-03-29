@@ -82,11 +82,15 @@ export async function withdrawLegacy(_vaultType: VaultTypes, [userAddress, signe
         0: [deposit.sub(debtDust.mul(2))],
         1: [deposit.sub(debtDust.mul(4)), false],
       };
+      const param = paramLookup[_vaultType];
       const tx = (await alchemistInstance.withdraw(...payload[_vaultType])) as ContractTransaction;
       setPendingTx();
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
-        return payload[_vaultType][0].div(BigNumber.from(10).pow(18));
+        return {
+          withdrawAmount: payload[_vaultType][0],
+          underlyingToken: param.underlyingToken,
+        };
       });
     }
     return true;
@@ -136,6 +140,9 @@ export async function flashloanDeposit(
       _collateralInitial,
       collateralTotal,
       targetDebt,
+      {
+        gasLimit: BigNumber.from(3000000),
+      },
     )) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {

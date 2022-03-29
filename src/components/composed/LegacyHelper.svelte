@@ -14,11 +14,7 @@
   import InputNumber from '@components/elements/inputs/InputNumber';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
-  import {
-    fetchBalanceByAddress,
-    fetchUpdateVaultByAddress,
-    fetchAdaptersForVaultType,
-  } from '@stores/v2/asyncMethods';
+  import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from '@stores/v2/asyncMethods';
 
   let mode = 0;
   let processing = false;
@@ -40,7 +36,8 @@
       await liquidateLegacy(targetAlchemist, [$addressStore, $signer]);
       mode = 2;
       await withdrawLegacy(targetAlchemist, [$addressStore, $signer]).then((response) => {
-        collateralInitial = response.toString();
+        collateralInitial = utils.formatEther(response.withdrawAmount);
+        fetchBalanceByAddress(response.underlyingToken, [$signer]);
       });
       mode = 3;
     } catch (error) {
@@ -61,7 +58,6 @@
       ).then((response) => {
         Promise.all([
           fetchBalanceByAddress(response.underlyingToken, [$signer]),
-          fetchBalanceByAddress(response.alchemistAddress, [$signer]),
           fetchUpdateVaultByAddress(response.vaultType, response.alchemistAddress, [$signer, $addressStore]),
         ]);
       });
@@ -80,7 +76,6 @@
   };
 
   const updateMigrate = (vault, state) => {
-    console.log(vault, state);
     switch (vault) {
       case 1:
         canMigrateAlETH = state;
@@ -99,12 +94,116 @@
         updateMigrate(vault, true);
       }
     });
-    ethData = getTokenDataFromBalancesBySymbol('ETH', [$balancesStore]);
+    ethData = getTokenDataFromBalancesBySymbol('WETH', [$balancesStore]);
     daiData = getTokenDataFromBalancesBySymbol('DAI', [$balancesStore]);
   });
-  $: console.log(canMigrateAlUSD, canMigrateAlETH);
-  $: console.log(canMigrateAlUSD || canMigrateAlETH);
 </script>
+
+<style>
+  input[type='range'].ltv-slider {
+    width: 100%;
+    margin: 5px 0;
+    background-color: transparent;
+    -webkit-appearance: none;
+  }
+
+  input[type='range'].ltv-slider:focus {
+    outline: none;
+  }
+
+  input[type='range'].ltv-slider::-webkit-slider-runnable-track {
+    background: #42b792;
+    border: 0;
+    border-radius: 25px;
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-webkit-slider-thumb {
+    margin-top: -5px;
+    width: 16px;
+    height: 16px;
+    background: #10141a;
+    border: 1px solid #42b792;
+    border-radius: 4px;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+
+  input[type='range'].ltv-slider:focus::-webkit-slider-runnable-track {
+    background: #52c19e;
+  }
+
+  input[type='range'].ltv-slider::-moz-range-track {
+    background: #42b792;
+    border: 0;
+    border-radius: 25px;
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #10141a;
+    border: 1px solid #42b792;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-ms-track {
+    background: transparent;
+    border-color: transparent;
+    border-width: 5px 0;
+    color: transparent;
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-ms-fill-lower {
+    background: #3ba483;
+    border: 0;
+    border-radius: 50px;
+  }
+
+  input[type='range'].ltv-slider::-ms-fill-upper {
+    background: #42b792;
+    border: 0;
+    border-radius: 50px;
+  }
+
+  input[type='range'].ltv-slider::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    background: #10141a;
+    border: 1px solid #42b792;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0px;
+    /*Needed to keep the Edge thumb centred*/
+  }
+
+  input[type='range'].ltv-slider:focus::-ms-fill-lower {
+    background: #42b792;
+  }
+
+  input[type='range'].ltv-slider:focus::-ms-fill-upper {
+    background: #52c19e;
+  }
+
+  /*TODO: Use one of the selectors from https://stackoverflow.com/a/20541859/7077589 and figure out
+  how to remove the virtical space around the range input in IE*/
+  @supports (-ms-ime-align: auto) {
+    /* Pre-Chromium Edge only styles, selector taken from hhttps://stackoverflow.com/a/32202953/7077589 */
+    input[type='range'].ltv-slider {
+      margin: 0;
+      /*Edge starts the margin from the thumb, not the track as other browsers do*/
+    }
+  }
+</style>
 
 <ContainerWithHeader canToggle="{true}" isVisible="{canMigrateAlUSD || canMigrateAlETH}">
   <div class="text-sm flex flex-row justify-between" slot="header">
@@ -390,7 +489,7 @@
           <input
             type="range"
             id="ltvSlider"
-            class="appearance-none rounded-full cursor-pointer h-2 w-full"
+            class="cursor-pointer w-full ltv-slider"
             name="{$_('migration.ltv_ratio')}"
             min="0"
             max="95"
