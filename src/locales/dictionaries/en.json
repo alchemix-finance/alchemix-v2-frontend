@@ -248,5 +248,28 @@
     "p_2": "Autocompounding increases the amount of ALCX you can unwrap per gALCX.",
     "galcx_supply": "gALCX Token Supply",
     "wrapped_alcx": "Wrapped ALCX"
+  },
+  "migration": {
+    "title": "Legacy Migration",
+    "step": "Step",
+    "liquidating": "Liquidating",
+    "withdrawing": "Withdrawing",
+    "migrating": "Migrating",
+    "liq_explain": "First step is to liquidate your outstanding debt, if applicable.",
+    "wit_explain": "Second step withdraws your entire balance from V1.",
+    "mig_explain": "Third step flashloans your new balance into a deposit with 50% LTV ratio.",
+    "toggle_default": "Default Settings",
+    "toggle_custom": "Custom Settings",
+    "flashloan_waiting": "Waiting for other steps...",
+    "flashloan_ready": "Flashloan into V2",
+    "restart": "Restart",
+    "paragraph_1": "To make it as simple as possible to migrate your Legacy vault deposits into V2, Alchemix is providing a migration tool which enables you to transfer your position into V2 while staying as gas-cost efficient as possible.",
+    "paragraph_2": "Your wallet will prompt you a few times to sign transactions that take care of the following steps:",
+    "from_alusd": "Migrate Legacy alUSD position",
+    "from_aleth": "Migrate Legacy alETH position",
+    "no_position": "No legacy positions detected, you're all good!",
+    "cus_explain": "Choose an amount that you want to flashloan into a new V2 position, as well as the desired LTV amount which is used to determine how much debt to take up with each debt token mint.",
+    "target_ltv": "Target LTV",
+    "ltv_ratio": "LTV Ratio"
   }
 }
