@@ -1,8 +1,7 @@
 <script>
-  import account from '@stores/account';
-  import walletBalance from '../../stores/walletBalance';
   import { BarLoader } from 'svelte-loading-spinners';
   import BalanceEntry from '../elements/BalanceEntry.svelte';
+  import settings from '@stores/settings';
 
   import { balancesStore } from '@stores/v2/alcxStore';
   import { BigNumber, ethers } from 'ethers';
@@ -10,7 +9,7 @@
 
 {#if $balancesStore.length <= 0}
   <div class="flex justify-center">
-    <BarLoader color="#F5C59F" />
+    <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
   </div>
 {:else}
   {#each $balancesStore as tokenEntry}

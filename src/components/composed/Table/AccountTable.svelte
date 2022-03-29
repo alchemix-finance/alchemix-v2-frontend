@@ -5,7 +5,7 @@
   import ExpandedRowCard from './SelectStrategyExpandedRow.svelte';
   import HeaderCell from './HeaderCell.svelte';
   import StrategyTitleCell from './StrategyTitleCell.svelte';
-  import APYCell from './APYCell.svelte';
+  import APYCell from './YieldCell.svelte';
   import SelectStrategyCell from './SelectStrategyCell.svelte';
 
   const columns = [

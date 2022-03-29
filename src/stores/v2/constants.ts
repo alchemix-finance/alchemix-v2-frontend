@@ -5,11 +5,13 @@ export const VaultConstants = {
     alchemistContractSelector: 'AlchemistV2_alUSD',
     gatewayContractSelector: null,
     alToken: 'AlToken',
+    legacy: 'Alchemist',
   },
   [VaultTypes.alETH]: {
     alchemistContractSelector: 'AlchemistV2_alETH',
     gatewayContractSelector: 'WETHGateway',
     alToken: 'AlEth',
+    legacy: 'AlchemistEth',
   },
 };
 

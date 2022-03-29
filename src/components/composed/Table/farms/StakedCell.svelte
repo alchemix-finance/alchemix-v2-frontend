@@ -9,7 +9,7 @@
   <p class="text-center">
     {utils.formatEther(amount)}
   </p>
-  <p class="text-center">
+  <p class="text-center text-sm text-lightgrey10">
     {tokenSymbol}
   </p>
 </div>
