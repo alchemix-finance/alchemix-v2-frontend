@@ -86,7 +86,7 @@ export async function withdrawLegacy(_vaultType: VaultTypes, [userAddress, signe
       setPendingTx();
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
-        return payload[_vaultType][0];
+        return payload[_vaultType][0].div(BigNumber.from(10).pow(18));
       });
     }
     return true;
@@ -107,13 +107,6 @@ export async function flashloanDeposit(
   const collateralTotal = _collateralInitial.div(BigNumber.from(100)).mul(_targetLTV).add(_collateralInitial);
   const targetDebt = collateralTotal.sub(_collateralInitial).mul(_slippage).div(BigNumber.from(100000));
   const param = paramLookup[_vaultType];
-  console.log(
-    _targetLTV.toString(),
-    _slippage.toString(),
-    _collateralInitial.toString(),
-    collateralTotal.toString(),
-    targetDebt.toString(),
-  );
   try {
     const underlyingTokenInstance = erc20Contract(param.underlyingToken, signer);
     const { instance: flashloanInstance, address: flashloanAddress } = contractWrapper(param.abi, signer);
@@ -147,7 +140,11 @@ export async function flashloanDeposit(
     setPendingTx();
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);
-      return true;
+      return {
+        underlyingToken: param.underlyingToken,
+        alchemistAddress,
+        vaultType: _vaultType,
+      };
     });
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);

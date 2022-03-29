@@ -9,10 +9,16 @@
   import { BarLoader } from 'svelte-loading-spinners';
   import { limitCheck, liquidateLegacy, withdrawLegacy, flashloanDeposit } from '@stores/v2/flashloanActions';
   import { signer } from '@stores/v2/derived';
-  import { addressStore } from '@stores/v2/alcxStore';
+  import { addressStore, balancesStore } from '@stores/v2/alcxStore';
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '@components/elements/inputs/InputNumber';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
+  import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
+  import {
+    fetchBalanceByAddress,
+    fetchUpdateVaultByAddress,
+    fetchAdaptersForVaultType,
+  } from '@stores/v2/asyncMethods';
 
   let mode = 0;
   let processing = false;
@@ -23,6 +29,8 @@
   let useCustomValues = false;
   let canMigrateAlUSD = false;
   let canMigrateAlETH = false;
+  let ethData;
+  let daiData;
 
   const migration = async (targetAlchemist) => {
     alchemist = targetAlchemist;
@@ -32,8 +40,7 @@
       await liquidateLegacy(targetAlchemist, [$addressStore, $signer]);
       mode = 2;
       await withdrawLegacy(targetAlchemist, [$addressStore, $signer]).then((response) => {
-        console.log(response);
-        collateralInitial = response.data;
+        collateralInitial = response.toString();
       });
       mode = 3;
     } catch (error) {
@@ -51,7 +58,13 @@
         BigNumber.from(targetLtv.toString()),
         BigNumber.from(maximumLoss.toString()).add(BigNumber.from(100000)),
         [$addressStore, $signer],
-      );
+      ).then((response) => {
+        Promise.all([
+          fetchBalanceByAddress(response.underlyingToken, [$signer]),
+          fetchBalanceByAddress(response.alchemistAddress, [$signer]),
+          fetchUpdateVaultByAddress(response.vaultType, response.alchemistAddress, [$signer, $addressStore]),
+        ]);
+      });
       mode = 5;
     } catch (error) {
       reset();
@@ -66,30 +79,43 @@
     targetLtv = 50;
   };
 
+  const updateMigrate = (vault, state) => {
+    console.log(vault, state);
+    switch (vault) {
+      case 1:
+        canMigrateAlETH = state;
+        break;
+      default:
+      case 0:
+        canMigrateAlUSD = state;
+        break;
+    }
+  };
+
   onMount(() => {
     [0, 1].map(async (vault) => {
       const limits = await limitCheck(vault, [$addressStore, $signer]);
-      if (
-        limits.mintLimit.currentLimit.sub(limits.expectedValue).gte(limits.openDebt) &&
-        limits.openDebt.gt(BigNumber.from(0))
-      ) {
-        if (vault === 0) canMigrateAlUSD = true;
-        if (vault === 1) canMigrateAlETH = true;
+      if (limits.mintLimit.currentLimit.gte(limits.openDebt) && limits.openDebt.gt(BigNumber.from(0))) {
+        updateMigrate(vault, true);
       }
     });
+    ethData = getTokenDataFromBalancesBySymbol('ETH', [$balancesStore]);
+    daiData = getTokenDataFromBalancesBySymbol('DAI', [$balancesStore]);
   });
+  $: console.log(canMigrateAlUSD, canMigrateAlETH);
+  $: console.log(canMigrateAlUSD || canMigrateAlETH);
 </script>
 
 <ContainerWithHeader canToggle="{true}" isVisible="{canMigrateAlUSD || canMigrateAlETH}">
   <div class="text-sm flex flex-row justify-between" slot="header">
-    <p class="self-center">Legacy Migration</p>
+    <p class="self-center">{$_('migration.title')}</p>
   </div>
   <div slot="body" class="flex flex-col space-y-4 p-4">
     {#if processing}
       <div class="w-full flex flex-row space-x-4" transition:slide|local>
         <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
           <div class="w-full flex flex-row justify-between items-center">
-            <p class="text-lg">Step 1: Liquidating</p>
+            <p class="text-lg">{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
             {#if mode > 1}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +134,7 @@
             {/if}
           </div>
           <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-            First step is to liquidate your outstanding debt, if applicable.
+            {$_('migration.liq_explain')}
           </p>
           <div class="flex flex-row justify-center items-center h-12">
             <BarLoader
@@ -119,7 +145,7 @@
         </div>
         <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
           <div class="w-full flex flex-row justify-between items-center">
-            <p class="text-lg">Step 2: Withdrawing</p>
+            <p class="text-lg">{$_('migration.step')} 2: {$_('migration.withdrawing')}</p>
             {#if mode > 2}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +164,7 @@
             {/if}
           </div>
           <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-            Second step withdraws your entire balance from V1.
+            {$_('migration.wit_explain')}
           </p>
           <div class="flex flex-row justify-center items-center h-12">
             <BarLoader
@@ -149,7 +175,7 @@
         </div>
         <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
           <div class="w-full flex flex-row justify-between items-center">
-            <p class="text-lg">Step 3: Migrating</p>
+            <p class="text-lg">{$_('migration.step')} 3: {$_('migration.migrating')}</p>
             {#if mode > 4}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -168,14 +194,14 @@
             {/if}
           </div>
           <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-            Third step flashloans your new balance into a deposit with 50% LTV ratio.
+            {$_('migration.mig_explain')}
           </p>
           <div class="flex flex-col space-y-2 justify-center items-center h-12">
             {#if mode < 4}
               <div class="w-full">
                 <ToggleSwitch
-                  label="Default Settings"
-                  secondLabel="Custom Settings"
+                  label="{$_('migration.toggle_default')}"
+                  secondLabel="{$_('migration.toggle_custom')}"
                   useColor="{false}"
                   on:toggleChange="{() => {
                     useCustomValues = !useCustomValues;
@@ -183,7 +209,7 @@
                 />
               </div>
               <Button
-                label="{mode < 3 ? 'Waiting for other steps...' : 'Flashloan into V2'}"
+                label="{mode < 3 ? $_('migration.flashloan_waiting') : $_('migration.flashloan_ready')}"
                 borderColor="green4"
                 backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
                 hoverColor="green4"
@@ -203,7 +229,7 @@
       {#if mode === 5}
         <div class="w-full flex flex-row h-12" transition:slide|loca>
           <Button
-            label="Restart"
+            label="{$_('migration.restart')}"
             borderColor="green4"
             backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
             hoverColor="green4"
@@ -217,30 +243,28 @@
         transition:slide|local
       >
         <p class="mb-4">
-          To make it as simple as possible to migrate your Legacy vault deposits into V2, Alchemix is
-          providing a migration tool which enables you to transfer your position into V2 while staying as
-          gas-cost efficient as possible.
+          {$_('migration.paragraph_1')}
         </p>
         <p class="mb-4">
-          Your wallet will prompt you a few times to sign transactions that take care of the following steps:
+          {$_('migration.paragraph_2')}
         </p>
         <div class="flex flex-row justify-between space-x-4 mb-4">
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-            <p class="text-lg">Step 1: Liquidating</p>
+            <p class="text-lg">{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              First step is to liquidate your outstanding debt, if applicable.
+              {$_('migration.liq_explain')}
             </p>
           </div>
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-            <p class="text-lg">Step 2: Withdrawing</p>
+            <p class="text-lg">{$_('migration.step')} 2: {$_('migration.withdrawing')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Second step withdraws your entire balance from V1.
+              {$_('migration.wit_explain')}
             </p>
           </div>
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-            <p class="text-lg">Step 3: Migrating</p>
+            <p class="text-lg">{$_('migration.step')} 3: {$_('migration.migrating')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Third step flashloans your new balance into a deposit with 50% LTV ratio.
+              {$_('migration.mig_explain')}
             </p>
           </div>
         </div>
@@ -252,7 +276,7 @@
           <div class:hidden="{!canMigrateAlUSD}" class="w-full">
             <Button
               disabled="{!canMigrateAlUSD}"
-              label="Migrate from Legacy alUSD"
+              label="{$_('migration.from_alusd')}"
               borderColor="green4"
               backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
               hoverColor="green4"
@@ -263,7 +287,7 @@
           <div class:hidden="{!canMigrateAlETH}" class="w-full">
             <Button
               disabled="{!canMigrateAlETH}"
-              label="Migrate from Legacy alETH"
+              label="{$_('migration.from_aleth')}"
               borderColor="green4"
               backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
               hoverColor="green4"
@@ -277,7 +301,7 @@
               ? 'bg-green7 text-white2inverse'
               : 'bg-black2 text-white2'} flex flex-row justify-center space-x-4 items-center"
           >
-            <p>No legacy positions detected, you're all good!</p>
+            <p>{$_('migration.no_position')}</p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-6 w-6"
@@ -305,13 +329,14 @@
       >
         <div class="w-full">
           <p class="mb-4">
-            Choose an amount that you want to flashloan into a new V2 position, as well as the desired LTV
-            amount which is used to determine how much debt to take up with each debt token mint.
+            {$_('migration.cus_explain')}
           </p>
         </div>
         <div class="w-full">
           <label for="yieldInput" class="text-sm text-lightgrey10">
-            {$_('available')}: 123123123 DAI
+            {$_('available')}
+            : {utils.formatEther(alchemist === 0 ? daiData.balance : ethData.balance)}
+            {alchemist === 0 ? daiData.symbol : ethData.symbol}
           </label>
           <div
             class="flex {$settings.invertColors
@@ -322,7 +347,7 @@
               <InputNumber
                 id="yieldInput"
                 bind:value="{collateralInitial}"
-                placeholder="~0.00 DAI"
+                placeholder="~0.00 {alchemist === 0 ? daiData.symbol : ethData.symbol}"
                 class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
                   ? 'bg-grey3inverse text-lightgrey5inverse'
                   : 'bg-grey3 text-lightgrey5'}"
@@ -337,6 +362,9 @@
                 backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
                 borderSize="0"
                 height="h-10"
+                on:clicked="{() => {
+                  collateralInitial = utils.formatEther(alchemist === 0 ? daiData.balance : ethData.balance);
+                }}"
               />
               <Button
                 label="CLEAR"
@@ -357,13 +385,13 @@
           <label
             for="ltvSlider"
             class="text-sm w-32 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
-            >Target LTV: {targetLtv}%</label
+            >{$_('migration.target_ltv')}: {targetLtv}%</label
           >
           <input
             type="range"
             id="ltvSlider"
             class="appearance-none rounded-full cursor-pointer h-2 w-full"
-            name="LTV Ratio"
+            name="{$_('migration.ltv_ratio')}"
             min="0"
             max="95"
             step="5"
