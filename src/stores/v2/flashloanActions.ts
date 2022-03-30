@@ -1,6 +1,6 @@
 import { VaultTypes } from './types';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
-import { Signer, ethers, BigNumber, ContractTransaction } from 'ethers';
+import { Signer, BigNumber, ContractTransaction } from 'ethers';
 import { VaultConstants } from './constants';
 import {
   setPendingWallet,
@@ -51,12 +51,11 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
 
 export async function liquidateLegacy(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
   try {
-    const amount = ethers.constants.MaxUint256;
     const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
     const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
     if (debt.gt(BigNumber.from(0))) {
       setPendingWallet();
-      const tx = (await alchemistInstance.liquidate(amount)) as ContractTransaction;
+      const tx = (await alchemistInstance.liquidate(debt)) as ContractTransaction;
       setPendingTx();
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
