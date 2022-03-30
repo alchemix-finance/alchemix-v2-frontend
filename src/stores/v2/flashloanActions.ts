@@ -52,10 +52,12 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
 export async function liquidateLegacy(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
   try {
     const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
-    const debt = await alchemistInstance.getCdpTotalDebt(userAddress).sub(utils.parseUnits('1', 'gwei'));
-    if (debt.gt(BigNumber.from(0))) {
+    const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
+    if (debt.sub(utils.parseUnits('1', 'gwei')).gt(BigNumber.from(0))) {
       setPendingWallet();
-      const tx = (await alchemistInstance.liquidate(debt)) as ContractTransaction;
+      const tx = (await alchemistInstance.liquidate(
+        debt.sub(utils.parseUnits('1', 'gwei')),
+      )) as ContractTransaction;
       setPendingTx();
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
