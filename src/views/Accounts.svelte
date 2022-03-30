@@ -21,7 +21,7 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell.svelte';
-  // import LegacyHelper from '@components/composed/LegacyHelper.svelte';
+  import LegacyHelper from '@components/composed/LegacyHelper.svelte';
 
   let loading = true;
 
@@ -184,9 +184,9 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    <!--    <div class="w-full mb-8">-->
-    <!--      <LegacyHelper />-->
-    <!--    </div>-->
+    <div class="w-full mb-8">
+      <LegacyHelper />
+    </div>
 
     <div class="w-full mb-8">
       <ContainerWithHeader canToggle="{true}" isVisible="{hasStrategies}" disableButton="{!hasStrategies}">

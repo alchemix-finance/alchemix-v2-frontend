@@ -27,7 +27,7 @@
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell';
-  // import LegacyHelper from '@components/composed/LegacyHelper';
+  import LegacyHelper from '@components/composed/LegacyHelper';
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
@@ -371,9 +371,9 @@
       {/if}
     </div>
 
-    <!--    <div class="w-full mb-8">-->
-    <!--      <LegacyHelper />-->
-    <!--    </div>-->
+    <div class="w-full mb-8">
+      <LegacyHelper />
+    </div>
 
     <div class="w-full mb-8">
       <ContainerWithHeader>
