@@ -307,6 +307,7 @@
                   label="{$_('migration.toggle_default')}"
                   secondLabel="{$_('migration.toggle_custom')}"
                   useColor="{false}"
+                  forceState="{useCustomValues}"
                   on:toggleChange="{() => {
                     useCustomValues = !useCustomValues;
                   }}"
