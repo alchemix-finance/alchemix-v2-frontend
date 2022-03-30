@@ -18,7 +18,10 @@
   };
 
   const updateState = (state) => {
-    checkboxState = state;
+    if (state) {
+      checkboxState = state;
+      forceState = undefined;
+    }
   };
 
   $: checkboxState, broadcastValue();

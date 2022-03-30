@@ -53,7 +53,7 @@ export async function liquidateLegacy(_vaultType: VaultTypes, [userAddress, sign
   try {
     const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
     const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
-    if (debt.sub(utils.parseUnits('1', 'gwei')).gt(BigNumber.from(0))) {
+    if (debt.gt(utils.parseUnits('1', 'gwei'))) {
       setPendingWallet();
       const tx = (await alchemistInstance.liquidate(
         debt.sub(utils.parseUnits('1', 'gwei')),
