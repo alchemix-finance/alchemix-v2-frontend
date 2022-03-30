@@ -57,10 +57,12 @@
   on:click="{clickEvent}"
 >
   <span
-    class="flex {$$slots.leftSlot && $$slots.rightSlot
+    class="flex flex-row {$$slots.leftSlot && $$slots.rightSlot
       ? 'justify-between items-center'
       : $$slots.leftSlot && !$$slots.rightSlot
       ? 'justify-start items-center'
+      : !$$slots.leftSlot && $$slots.rightSlot
+      ? 'justify-center items-center space-x-4'
       : 'justify-center'}"
   >
     <slot name="leftSlot" />

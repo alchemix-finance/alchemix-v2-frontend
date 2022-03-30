@@ -257,7 +257,7 @@
     "migrating": "Migrating",
     "liq_explain": "First step is to liquidate your outstanding debt, if applicable.",
     "wit_explain": "Second step withdraws your entire balance from V1.",
-    "mig_explain": "Third step flashloans your new balance into a deposit with 50% LTV ratio.",
+    "mig_explain": "Third step flashloans your new balance into a deposit with 50% LTV ratio and 1.95× leverage.",
     "toggle_default": "Default Settings",
     "toggle_custom": "Custom Settings",
     "flashloan_waiting": "Waiting for other steps...",
@@ -269,7 +269,7 @@
     "from_aleth": "Migrate Legacy alETH position",
     "no_position": "No legacy positions detected, you're all good!",
     "cus_explain": "Choose an amount that you want to flashloan into a new V2 position, as well as the desired LTV amount which is used to determine how much debt to take up with each debt token mint.",
-    "target_ltv": "Target LTV",
+    "target_ltv": "Leverage",
     "ltv_ratio": "LTV Ratio"
   }
 }

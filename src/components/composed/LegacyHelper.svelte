@@ -36,13 +36,15 @@
       await liquidateLegacy(targetAlchemist, [$addressStore, $signer]);
       mode = 2;
       await withdrawLegacy(targetAlchemist, [$addressStore, $signer]).then((response) => {
-        collateralInitial = utils.formatEther(response.withdrawAmount);
-        fetchBalanceByAddress(response.underlyingToken, [$signer]);
+        if (response.withdrawAmount) {
+          collateralInitial = utils.formatEther(response.withdrawAmount);
+          fetchBalanceByAddress(response.underlyingToken, [$signer]);
+        }
       });
       mode = 3;
     } catch (error) {
-      mode = 0;
-      processing = false;
+      reset();
+      console.log(error);
     }
   };
 
@@ -72,10 +74,11 @@
     mode = 0;
     processing = false;
     useCustomValues = false;
-    targetLtv = 50;
+    targetLtv = 95;
   };
 
   const updateMigrate = (vault, state) => {
+    console.log(vault, state);
     switch (vault) {
       case 1:
         canMigrateAlETH = state;
@@ -367,7 +370,6 @@
             </p>
           </div>
         </div>
-
         <div
           class="w-full flex flex-row justify-between h-12"
           class:space-x-4="{canMigrateAlUSD || canMigrateAlETH}"
@@ -396,25 +398,35 @@
           </div>
           <div
             class:hidden="{canMigrateAlUSD || canMigrateAlETH}"
-            class="w-full rounded text-sm border border-green4 {$settings.invertColors
-              ? 'bg-green7 text-white2inverse'
-              : 'bg-black2 text-white2'} flex flex-row justify-center space-x-4 items-center"
+            class="w-full flex flex-row justify-center space-x-4 items-center"
           >
-            <p>{$_('migration.no_position')}</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="#42B792"
-              stroke-width="2"
+            <Button
+              label="{$_('migration.no_position')}"
+              borderColor="green4"
+              backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+              hoverColor="green4"
+              height="h-12"
+              on:clicked="{() => {
+                updateMigrate(0, true);
+                updateMigrate(1, true);
+              }}"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-              ></path>
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#42B792"
+                stroke-width="2"
+                slot="rightSlot"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                ></path>
+              </svg>
+            </Button>
           </div>
         </div>
       </div>
@@ -484,7 +496,7 @@
           <label
             for="ltvSlider"
             class="text-sm w-32 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
-            >{$_('migration.target_ltv')}: {targetLtv}%</label
+            >{$_('migration.target_ltv')}: 1.{targetLtv}×</label
           >
           <input
             type="range"
