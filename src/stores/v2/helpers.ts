@@ -60,28 +60,26 @@ export async function fetchDataForVault(
   accountAddress: string,
 ): Promise<BodyVaultType> {
   // const position = await contract.positions(_account.address, token);
-  if (tokenAddress.toLowerCase() !== '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0'.toLowerCase()) {
-    const position = await contractInstance.positions(accountAddress, tokenAddress);
-    const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
-    const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
-    const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
-    const apy = await getVaultApy(tokenAddress);
-    const useGateway = VaultTypesInfos[vaultType].useGateway;
-    const debtToken = await contractInstance.debtToken();
+  const position = await contractInstance.positions(accountAddress, tokenAddress);
+  const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
+  const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
+  const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
+  const apy = await getVaultApy(tokenAddress);
+  const useGateway = VaultTypesInfos[vaultType].useGateway;
+  const debtToken = await contractInstance.debtToken();
 
-    return {
-      type: vaultType,
-      address: tokenAddress,
-      balance: position.shares,
-      tvl: tokenParams.activeBalance,
-      yieldPerShare: yieldPerShare,
-      underlyingAddress: tokenParams.underlyingToken,
-      underlyingPerShare: underlyingPerShare,
-      apy,
-      useGateway,
-      debtToken,
-    };
-  }
+  return {
+    type: vaultType,
+    address: tokenAddress,
+    balance: position.shares,
+    tvl: tokenParams.activeBalance,
+    yieldPerShare: yieldPerShare,
+    underlyingAddress: tokenParams.underlyingToken,
+    underlyingPerShare: underlyingPerShare,
+    apy,
+    useGateway,
+    debtToken,
+  };
 }
 
 export async function fetchDataForAdapter(
