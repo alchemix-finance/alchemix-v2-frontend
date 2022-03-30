@@ -39,6 +39,8 @@
         if (response.withdrawAmount) {
           collateralInitial = utils.formatEther(response.withdrawAmount);
           fetchBalanceByAddress(response.underlyingToken, [$signer]);
+        } else {
+          useCustomValues = true;
         }
       });
       mode = 3;
