@@ -343,7 +343,8 @@
               </div>
             </div>
           </div>
-        {:else}
+        {/if}
+        {#if (acceptWETH || ethData.balance.lte(BigNumber.from(0)) || underlyingTokenData.balance.lte(BigNumber.from(0))) && yieldTokenData.balance.lte(BigNumber.from(0))}
           <div class="w-full">
             <p class="text-center mx-3 text-red3 opacity-75">No balance available to deposit.</p>
           </div>
