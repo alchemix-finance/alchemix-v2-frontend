@@ -119,7 +119,7 @@
     }
 
     function speakTellings() {
-      var tellings = tellbuf.join('\r\n\t');
+      var tellings = tellbuf.join("\r\n\t");
       tellbuf = [];
       return tellings;
     }
@@ -329,45 +329,45 @@
       busy = 'won';
       switch (n) {
         case 0:
-          c('\tYou take out the amulet and place it in the Magic Amulet Receptacle Device.');
+          c("\tYou take out the amulet and place it in the Magic Amulet Receptacle Device.");
           break;
         case 1:
-          c('\tIt begins to hum.');
+          c("\tIt begins to hum.");
           break;
         case 2:
-          c('\tSparks!');
+          c("\tSparks!");
           break;
         case 3:
-          c('\tA bolt of lightning!');
+          c("\tA bolt of lightning!");
           break;
         case 4:
-          c('\tMagic energy lifts you from the floor...');
+          c("\tMagic energy lifts you from the floor...");
           break;
         case 5:
-          c('\tSuddenly, everything goes dark.');
+          c("\tSuddenly, everything goes dark.");
           break;
         case 6:
           console.log(
-            '%c\t Oh my heavens! You look up and see a new world.',
-            'background: #222; color: #bada55',
+            "%c\t Oh my heavens! You look up and see a new world.",
+            "background: #222; color: #bada55",
           );
           break;
         case 7:
           console.log(
-            '%c\t You realize at once that everything you have experienced is a mere shadow of the true world.',
-            'background: #222; color: #bada55',
+            "%c\t You realize at once that everything you have experienced is a mere shadow of the true world.",
+            "background: #222; color: #bada55",
           );
           break;
         case 8:
           console.log(
             "%c\t You've labored in a phantom world, fleeting and unreal, while the real world of ideas,\r\n\t far more powerful and permanent than your own, was right there all along, hovering above you.",
-            'background: #222; color: #bada55',
+            "background: #222; color: #bada55",
           );
           break;
         case 9:
           console.log(
-            '%c\t You turn to the world above you, and contemplate its majesty.\r\n\t Claim your treasure on discord: 7hr0w84ck5',
-            'background: #222; color: #bada55',
+            "%c\t You turn to the world above you, and contemplate its majesty.\r\n\t Claim your treasure on discord: 7hr0w84ck5",
+            "background: #222; color: #bada55",
           );
           break;
         case 10:
@@ -470,7 +470,7 @@
         stepId = setInterval(function () {
           var line = lines[lineIndex];
           if (typeof line == 'function') line = line();
-          if (line !== null) c('\t' + line.replace(/^\t+/, ''));
+          if (line !== null) c("\t" + line.replace(/^\t+/, ''));
           lineIndex++;
           if (lineIndex == lines.length) clearInterval(stepId);
         }, stepMs);
@@ -488,7 +488,7 @@
     function die(stepMs, lines) {
       busy = 'dead';
       lines.push(function () {
-        console.error('\r\n\t G A M E  O V E R \r\n\t');
+        console.error("\r\n\t G A M E  O V E R \r\n\t");
         init();
         say();
         return speakTellings();
@@ -642,7 +642,7 @@
     }
 
     function cj(o) {
-      tell(JSON.stringify(o, null, '\t').replace(/"|\{(\r\n|\r|\n)\t|\}/g, ''));
+      tell(JSON.stringify(o, null, "\t").replace(/"|\{(\r\n|\r|\n)\t|\}/g, ''));
     }
 
     function replaceLast(x, what, replacement) {
