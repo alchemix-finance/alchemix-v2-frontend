@@ -22,6 +22,7 @@
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell.svelte';
   import LegacyHelper from '@components/composed/LegacyHelper.svelte';
+  import { VaultTypesInfos } from '@stores/v2/constants';
 
   let loading = true;
 
@@ -119,15 +120,58 @@
       $vaultsStore[vault.type].ratio,
     );
     const vaultApy = Math.round(vault.apy * 10000) / 100;
+
+    const metaConfig = VaultTypesInfos[vault.type].metaConfig;
+    const vaultName = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].vaultName + ' ' + vaultTokenData.symbol;
+      } else {
+        return 'Yearn ' + underlyingTokenData.symbol;
+      }
+    };
+
+    const vaultIcon = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return vaultTokenData.symbol;
+      } else {
+        return underlyingTokenData.symbol;
+      }
+    };
+
+    const betaStatus = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].beta;
+      } else {
+        return false;
+      }
+    };
+
+    const rewardType = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].rewardType;
+      } else {
+        return 'APY';
+      }
+    };
+
+    const acceptWETH = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].acceptWETH;
+      } else {
+        return true;
+      }
+    };
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
         col2: {
           CellComponent: FarmNameCell,
-          farmName: 'Yearn ' + underlyingTokenData.symbol,
+          farmName: vaultName(),
           farmSubtitle: underlyingTokenData.symbol + ' + ' + vaultTokenData.symbol,
           farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
-          tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
+          tokenIcon: `${vaultIcon()}`.toLowerCase(),
+          isBeta: betaStatus(),
           colSize: 3,
           alignment: 'justify-self-start',
         },
@@ -136,9 +180,9 @@
           value: depositValue,
           token: {
             balance: vault.balance,
-            perShare: vault.underlyingPerShare,
-            decimals: underlyingTokenData.decimals,
-            symbol: underlyingTokenData.symbol,
+            perShare: acceptWETH() ? vault.underlyingPerShare : vault.yieldPerShare,
+            decimals: acceptWETH() ? underlyingTokenData.decimals : vaultTokenData.decimals,
+            symbol: acceptWETH() ? underlyingTokenData.symbol : vaultTokenData.symbol,
           },
           colSize: 2,
         },
@@ -147,16 +191,16 @@
           value: tvlValue,
           token: {
             balance: vault.tvl,
-            perShare: vault.underlyingPerShare,
-            decimals: underlyingTokenData.decimals,
-            symbol: underlyingTokenData.symbol,
+            perShare: acceptWETH() ? vault.underlyingPerShare : vault.yieldPerShare,
+            decimals: acceptWETH() ? underlyingTokenData.decimals : vaultTokenData.decimals,
+            symbol: acceptWETH() ? underlyingTokenData.symbol : vaultTokenData.symbol,
           },
           colSize: 2,
         },
         col4: {
           CellComponent: YieldCell,
           yieldRate: vaultApy,
-          yieldType: 'APY',
+          yieldType: rewardType(),
           colSize: 2,
         },
       },

@@ -204,7 +204,6 @@
   $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
   $: acceptGateway = metaConfig.acceptGateway;
   $: acceptWETH = metaConfig.acceptWETH;
-  $: console.log(acceptWETH);
 </script>
 
 {#if vault}

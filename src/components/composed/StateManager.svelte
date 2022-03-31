@@ -9,6 +9,7 @@
     fetchVaultDebtTokenAddress,
     fetchVaultRatio,
     fetchVaultTokens,
+    fetchAdaptersForVaultType,
   } from 'src/stores/v2/asyncMethods';
   import { VaultTypes } from 'src/stores/v2/types';
 
@@ -81,7 +82,8 @@ Use at your own risk.
 
     vaultsLoading.set(false);
     await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore]);
-    // await fetchAdaptersForVaultType(VaultTypes.alUSD, [$signer]);
+    await fetchAdaptersForVaultType(VaultTypes.alUSD, [$signer]);
+    await fetchAdaptersForVaultType(VaultTypes.alETH, [$signer]);
   }
 
   $: if ($addressStore !== undefined) {
