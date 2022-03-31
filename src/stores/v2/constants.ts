@@ -49,10 +49,27 @@ export const VaultTypesInfos = {
     name: 'alUSD',
     icon: 'images/icons/alusd_med.svg',
     useGateway: false,
+    metaConfig: {},
   },
   [VaultTypes.alETH]: {
     name: 'alETH',
     icon: 'images/icons/aleth_med.svg',
     useGateway: true,
+    metaConfig: {
+      '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0': {
+        rewardAdapter: 'lido',
+        rewardType: 'APR',
+        vaultName: 'Lido',
+        beta: true,
+        acceptGateway: true,
+      },
+      '0xae78736Cd615f374D3085123A210448E74Fc6393': {
+        rewardAdapter: 'rocketPool',
+        rewardType: 'APR',
+        vaultName: 'Rocket',
+        beta: true,
+        acceptGateway: false,
+      },
+    },
   },
 };

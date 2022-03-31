@@ -3,6 +3,7 @@ import { contractWrapper, erc20Contract, externalContractWrapper } from '@helper
 import { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
 import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
+import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos } from './constants';
 
@@ -52,7 +53,6 @@ export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer) 
   return _tokens.map((token) => fetchDataForToken(token, signer));
 };
 
-// Remove the debt
 export async function fetchDataForVault(
   vaultType: VaultTypes,
   contractInstance: ethers.Contract,
@@ -64,9 +64,14 @@ export async function fetchDataForVault(
   const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
   const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
-  const apy = await getVaultApy(tokenAddress);
   const useGateway = VaultTypesInfos[vaultType].useGateway;
   const debtToken = await contractInstance.debtToken();
+  let apy;
+  if (VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress)) {
+    apy = await rewardAdapter(VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter);
+  } else {
+    apy = await getVaultApy(tokenAddress);
+  }
 
   return {
     type: vaultType,
@@ -80,6 +85,17 @@ export async function fetchDataForVault(
     useGateway,
     debtToken,
   };
+}
+
+async function rewardAdapter(adapter: string) {
+  switch (adapter) {
+    case 'lido':
+      return 420 / 1000;
+    case 'rocketPool':
+      return getRocketApr();
+    default:
+      return 0;
+  }
 }
 
 export async function fetchDataForAdapter(

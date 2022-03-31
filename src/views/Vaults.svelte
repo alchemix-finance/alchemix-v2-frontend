@@ -150,15 +150,49 @@
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
       .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
+    const metaConfig = VaultTypesInfos[vault.type].metaConfig;
+    const vaultName = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].vaultName + ' ' + vaultTokenData.symbol;
+      } else {
+        return 'Yearn ' + underlyingTokenData.symbol;
+      }
+    };
+
+    const vaultIcon = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return vaultTokenData.symbol;
+      } else {
+        return underlyingTokenData.symbol;
+      }
+    };
+
+    const betaStatus = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].beta;
+      } else {
+        return false;
+      }
+    };
+
+    const rewardType = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].rewardType;
+      } else {
+        return 'APY';
+      }
+    };
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
         col2: {
           CellComponent: FarmNameCell,
-          farmName: 'Yearn ' + underlyingTokenData.symbol,
+          farmName: vaultName(),
           farmSubtitle: underlyingTokenData.symbol + ' + ' + vaultTokenData.symbol,
           farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
-          tokenIcon: `${underlyingTokenData.symbol}`.toLowerCase(),
+          tokenIcon: `${vaultIcon()}`.toLowerCase(),
+          isBeta: betaStatus(),
           colSize: 3,
           alignment: 'justify-self-start',
         },
@@ -199,7 +233,7 @@
         col4: {
           CellComponent: YieldCell,
           yieldRate: vaultApy,
-          yieldType: 'APY',
+          yieldType: rewardType(),
           colSize: 2,
         },
         col5: {

@@ -18,6 +18,7 @@
   import { modalReset } from '@stores/modal';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import settings from '@stores/settings';
+  import { VaultTypesInfos } from '@stores/v2/constants';
 
   export let borrowLimit;
 
@@ -117,6 +118,7 @@
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: useGateway = vault.useGateway;
+  $: console.log(vault);
 
   function formatDepositToBN(_deposit, _tokenData) {
     if (_deposit && _tokenData) {
@@ -202,6 +204,8 @@
     !yieldDepositBN.add(underlyingDepositBN).gt(0) ||
     yieldDepositBN.gt(yieldTokenData.balance) ||
     underlyingDepositBN.gt(depositEth ? ethData.balance : underlyingTokenData.balance);
+  $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
+  $: acceptGateway = metaConfig.acceptGateway;
 </script>
 
 {#if vault}
@@ -213,7 +217,7 @@
       </p>
     </div>
     <div slot="body" class="p-4">
-      {#if useGateway}
+      {#if metaConfig ? acceptGateway : useGateway}
         <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
           <span>Deposit Type:</span>
           <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
