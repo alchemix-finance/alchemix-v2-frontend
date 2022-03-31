@@ -92,8 +92,7 @@
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
 
     const adapterPrice = $adaptersStore[vault.type].adapters.filter(
-      (adapter) =>
-        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+      (adapter) => adapter.yieldToken === yieldTokenData.address,
     )[0].price;
 
     const underlyingToYield = underlyingWithdrawAmountShares

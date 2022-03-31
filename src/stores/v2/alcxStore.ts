@@ -53,6 +53,7 @@ export interface TransmuterType {
 export interface AdapterType {
   type: VaultTypes;
   contractSelector: string;
+  yieldToken: string;
   price: ethers.BigNumber;
 }
 

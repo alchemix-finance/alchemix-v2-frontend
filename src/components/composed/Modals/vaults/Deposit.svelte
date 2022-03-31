@@ -18,6 +18,7 @@
   import { modalReset } from '@stores/modal';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import settings from '@stores/settings';
+  import { VaultTypesInfos } from '@stores/v2/constants';
 
   export let borrowLimit;
 
@@ -33,10 +34,8 @@
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
-
     const adapterPrice = $adaptersStore[vault.type].adapters.filter(
-      (adapter) =>
-        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+      (adapter) => adapter.yieldToken === yieldTokenData.address,
     )[0].price;
     const yieldTokens = underlyingDepositBN
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
@@ -202,6 +201,10 @@
     !yieldDepositBN.add(underlyingDepositBN).gt(0) ||
     yieldDepositBN.gt(yieldTokenData.balance) ||
     underlyingDepositBN.gt(depositEth ? ethData.balance : underlyingTokenData.balance);
+  $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
+  $: acceptGateway = metaConfig.acceptGateway;
+  $: acceptWETH = metaConfig.acceptWETH;
+  $: console.log(acceptWETH);
 </script>
 
 {#if vault}
@@ -213,7 +216,7 @@
       </p>
     </div>
     <div slot="body" class="p-4">
-      {#if useGateway}
+      {#if metaConfig ? acceptGateway : useGateway}
         <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
           <span>Deposit Type:</span>
           <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
@@ -276,7 +279,7 @@
             </div>
           </div>
         {/if}
-        {#if depositEth ? ethData.balance.gt(BigNumber.from(0)) : underlyingTokenData.balance.gt(BigNumber.from(0))}
+        {#if metaConfig ? acceptWETH : depositEth ? ethData.balance.gt(BigNumber.from(0)) : underlyingTokenData.balance.gt(BigNumber.from(0))}
           <div class="w-full">
             <label for="underlyingInput" class="text-sm text-lightgrey10">
               {$_('available')}: {depositEth
