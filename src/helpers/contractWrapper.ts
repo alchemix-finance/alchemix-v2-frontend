@@ -1,5 +1,5 @@
 import { BigNumber, constants, ethers } from 'ethers';
-import { genericAbi } from '@stores/externalContracts';
+import { genericAbi, genericAdapterAbi } from '@stores/externalContracts';
 
 export const contractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
   const contractData = require(`../abi/${selector}.json`);
@@ -10,6 +10,17 @@ export const contractWrapper = (selector: string, signer: ethers.Signer, address
     address: contractData.address,
     instance: _instance,
   };
+};
+
+export const vaultAdapterWrapper = (address: string, signer: ethers.Signer) => {
+  if (address) {
+    const _instance = new ethers.Contract(address, genericAdapterAbi, signer);
+    return {
+      fragment: new ethers.utils.Interface(genericAdapterAbi),
+      address,
+      instance: _instance,
+    };
+  }
 };
 
 export const externalContractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
@@ -23,7 +34,7 @@ export const externalContractWrapper = (selector: string, signer: ethers.Signer,
   };
 };
 
-/** 
+/**
  * const setTokenAllowance = async (token, spender, amount) => {
   console.log('setting allowance', token, spender);
   const amountInfinite = ethers.constants.MaxUint256;

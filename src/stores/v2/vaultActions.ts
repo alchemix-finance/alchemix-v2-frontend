@@ -229,6 +229,7 @@ export async function withdraw(
       yieldAmount,
       accountAddress,
     )) as ethers.ContractTransaction;
+    setPendingTx();
 
     return await tx.wait().then((transaction) => {
       setSuccessTx(transaction.transactionHash);

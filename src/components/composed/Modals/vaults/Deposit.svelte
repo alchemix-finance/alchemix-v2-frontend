@@ -34,10 +34,8 @@
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
-
     const adapterPrice = $adaptersStore[vault.type].adapters.filter(
-      (adapter) =>
-        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+      (adapter) => adapter.yieldToken === yieldTokenData.address,
     )[0].price;
     const yieldTokens = underlyingDepositBN
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
@@ -118,7 +116,6 @@
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: useGateway = vault.useGateway;
-  $: console.log(vault);
 
   function formatDepositToBN(_deposit, _tokenData) {
     if (_deposit && _tokenData) {
@@ -206,6 +203,8 @@
     underlyingDepositBN.gt(depositEth ? ethData.balance : underlyingTokenData.balance);
   $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
   $: acceptGateway = metaConfig.acceptGateway;
+  $: acceptWETH = metaConfig.acceptWETH;
+  $: console.log(acceptWETH);
 </script>
 
 {#if vault}
@@ -280,7 +279,7 @@
             </div>
           </div>
         {/if}
-        {#if depositEth ? ethData.balance.gt(BigNumber.from(0)) : underlyingTokenData.balance.gt(BigNumber.from(0))}
+        {#if metaConfig ? acceptWETH : depositEth ? ethData.balance.gt(BigNumber.from(0)) : underlyingTokenData.balance.gt(BigNumber.from(0))}
           <div class="w-full">
             <label for="underlyingInput" class="text-sm text-lightgrey10">
               {$_('available')}: {depositEth

@@ -183,6 +183,14 @@
       }
     };
 
+    const acceptWETH = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].acceptWETH;
+      } else {
+        return true;
+      }
+    };
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
@@ -201,9 +209,9 @@
           value: depositValue,
           token: {
             balance: vault.balance,
-            perShare: vault.underlyingPerShare,
-            decimals: underlyingTokenData.decimals,
-            symbol: underlyingTokenData.symbol,
+            perShare: acceptWETH() ? vault.underlyingPerShare : vault.yieldPerShare,
+            decimals: acceptWETH() ? underlyingTokenData.decimals : vaultTokenData.decimals,
+            symbol: acceptWETH() ? underlyingTokenData.symbol : vaultTokenData.symbol,
           },
           colSize: 2,
         },
@@ -224,9 +232,9 @@
           value: tvlValue,
           token: {
             balance: vault.tvl,
-            perShare: vault.underlyingPerShare,
-            decimals: underlyingTokenData.decimals,
-            symbol: underlyingTokenData.symbol,
+            perShare: acceptWETH() ? vault.underlyingPerShare : vault.yieldPerShare,
+            decimals: acceptWETH() ? underlyingTokenData.decimals : vaultTokenData.decimals,
+            symbol: acceptWETH() ? underlyingTokenData.symbol : vaultTokenData.symbol,
           },
           colSize: 2,
         },
@@ -239,7 +247,7 @@
         col5: {
           CellComponent: ActionsCell,
           colSize: 3,
-          vault: vault,
+          vault: { ...vault, acceptWETH: acceptWETH() },
           borrowLimit: vaultDebt,
         },
       },

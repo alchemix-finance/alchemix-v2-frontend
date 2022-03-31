@@ -62,6 +62,7 @@ export const VaultTypesInfos = {
         vaultName: 'Lido',
         beta: true,
         acceptGateway: true,
+        acceptWETH: true,
       },
       '0xae78736Cd615f374D3085123A210448E74Fc6393': {
         rewardAdapter: 'rocketPool',
@@ -69,6 +70,7 @@ export const VaultTypesInfos = {
         vaultName: 'Rocket',
         beta: true,
         acceptGateway: false,
+        acceptWETH: false,
       },
     },
   },
