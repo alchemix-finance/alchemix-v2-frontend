@@ -293,13 +293,6 @@
           <span class="mx-2 text-grey2">{$_('table.debt_limit')}</span>
           <span class="text-lg">{fiatDebtLimit}</span>
         </div>
-        <div class="flex items-center">
-          <span class="text-grey2 mr-2">{$_('chart.aggregate_apy')}</span>
-          <span class="text-lg"
-            >{vaultApy.toFixed(2) || 0}
-            %</span
-          >
-        </div>
       </div>
     </div>
     <BarChart data="{data}" options="{options}" />

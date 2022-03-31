@@ -9,6 +9,15 @@ const genericAbi = [
   'function totalSupply() view returns (uint256)',
 ];
 
+const genericAdapterAbi = [
+  'function version() view returns (string)',
+  'function token() view returns (address)',
+  'function underlyingToken() view returns (address)',
+  'function price() view returns (uint256)',
+  'function wrap(uint256, address) nonpayable returns (uint256)',
+  'function unwrap(uint256, address) nonpayable returns (uint256)',
+];
+
 // const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
 
 // @dev mainly used for wallet balance checks of supported collaterals
@@ -62,4 +71,4 @@ const externalContracts = {
 };
 
 export default externalContracts;
-export { genericAbi };
+export { genericAbi, genericAdapterAbi };

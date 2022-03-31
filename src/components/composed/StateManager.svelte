@@ -83,6 +83,7 @@ Use at your own risk.
     vaultsLoading.set(false);
     await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore]);
     await fetchAdaptersForVaultType(VaultTypes.alUSD, [$signer]);
+    await fetchAdaptersForVaultType(VaultTypes.alETH, [$signer]);
   }
 
   $: if ($addressStore !== undefined) {

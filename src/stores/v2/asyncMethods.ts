@@ -8,6 +8,7 @@ import {
   fetchDataForVault,
   fetchDataForAdapter,
   generateTokenPromises,
+  fetchAdapterAddress,
 } from '@stores/v2/helpers';
 import {
   updateAllBalances,
@@ -26,7 +27,7 @@ import {
   updateAllAdapters,
 } from '@stores/v2/methods';
 import { contractWrapper } from '@helpers/contractWrapper';
-import { TransmuterConstants, VaultConstants, AdapterConstants } from '@stores/v2/constants';
+import { TransmuterConstants, VaultConstants } from '@stores/v2/constants';
 import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
@@ -124,12 +125,9 @@ export async function fetchAllVaultsBodies(
 
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
-  const fetchVaultPromises = tokens[vaultId].yieldTokens
-    .filter((tokenAddress) => tokenAddress !== '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0')
-    .filter((tokenAddress) => tokenAddress !== '0xae78736Cd615f374D3085123A210448E74Fc6393')
-    .map((tokenAddress) => {
-      return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress);
-    });
+  const fetchVaultPromises = tokens[vaultId].yieldTokens.map((tokenAddress) => {
+    return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress, signer);
+  });
 
   return Promise.all([...fetchVaultPromises]).then((vaults) => {
     updateAllVaultBody(vaultId, vaults);
@@ -148,7 +146,7 @@ export async function fetchUpdateVaultByAddress(
 
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
-  const vaultData = fetchDataForVault(vaultId, instance, vaultAddress, accountAddress);
+  const vaultData = fetchDataForVault(vaultId, instance, vaultAddress, accountAddress, signer);
 
   return vaultData.then((_vaultData) => {
     updateVaultByAddress(vaultId, vaultAddress, _vaultData);
@@ -161,12 +159,23 @@ export async function fetchAdaptersForVaultType(vaultType: VaultTypes, [signer]:
     return Promise.reject(`[fetchAdaptersForVaultType]: signer is undefined`);
   }
 
-  const adaptersFetchDataPromise = AdapterConstants[vaultType].adapterContractSelectors.map((selectorId) => {
-    return fetchDataForAdapter(vaultType, selectorId, signer);
+  const { instance: alchemist } = contractWrapper(
+    VaultConstants[vaultType].alchemistContractSelector,
+    signer,
+  );
+  const yieldTokens = await alchemist.getSupportedYieldTokens();
+  const adapters = yieldTokens.map((yieldToken) => {
+    return fetchAdapterAddress(VaultConstants[vaultType].alchemistContractSelector, yieldToken, signer);
   });
 
-  return Promise.all([...adaptersFetchDataPromise]).then((adapters) => {
-    updateAllAdapters(vaultType, adapters);
+  return Promise.all([...adapters]).then((params) => {
+    Promise.all([
+      ...params.map((adapter) => {
+        return fetchDataForAdapter(vaultType, adapter.adapter, adapter.yieldToken, signer);
+      }),
+    ]).then((adapters) => {
+      updateAllAdapters(vaultType, adapters);
+    });
   });
 }
 

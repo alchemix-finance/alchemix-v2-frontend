@@ -1,8 +1,15 @@
 import { BigNumber, ethers, utils } from 'ethers';
-import { contractWrapper, erc20Contract, externalContractWrapper } from '@helpers/contractWrapper';
+import {
+  contractWrapper,
+  vaultAdapterWrapper,
+  erc20Contract,
+  externalContractWrapper,
+} from '@helpers/contractWrapper';
 import { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
 import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
+import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
+import { getLidoApr } from '@middleware/lido';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos } from './constants';
 
@@ -52,21 +59,26 @@ export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer) 
   return _tokens.map((token) => fetchDataForToken(token, signer));
 };
 
-// Remove the debt
 export async function fetchDataForVault(
   vaultType: VaultTypes,
   contractInstance: ethers.Contract,
   tokenAddress: string,
   accountAddress: string,
+  signer: ethers.Signer,
 ): Promise<BodyVaultType> {
   // const position = await contract.positions(_account.address, token);
   const position = await contractInstance.positions(accountAddress, tokenAddress);
   const tokenParams = await contractInstance.getYieldTokenParameters(tokenAddress);
   const yieldPerShare = await contractInstance.getYieldTokensPerShare(tokenAddress);
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
-  const apy = await getVaultApy(tokenAddress);
   const useGateway = VaultTypesInfos[vaultType].useGateway;
   const debtToken = await contractInstance.debtToken();
+  let apy;
+  if (VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress)) {
+    apy = await rewardAdapter(VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter, signer);
+  } else {
+    apy = await getVaultApy(tokenAddress);
+  }
 
   return {
     type: vaultType,
@@ -82,18 +94,44 @@ export async function fetchDataForVault(
   };
 }
 
+async function rewardAdapter(adapter: string, signer: ethers.Signer) {
+  switch (adapter) {
+    case 'lido':
+      return getLidoApr(signer);
+    case 'rocketPool':
+      return getRocketApr();
+    default:
+      return 0;
+  }
+}
+
+export async function fetchAdapterAddress(
+  vaultType: string,
+  yieldToken: string,
+  signer: ethers.Signer,
+): Promise<any> {
+  const { instance: alchemist } = contractWrapper(vaultType, signer);
+  const params = await alchemist.getYieldTokenParameters(yieldToken);
+
+  return {
+    yieldToken: yieldToken,
+    adapter: params.adapter,
+  };
+}
+
 export async function fetchDataForAdapter(
   vaultType: number,
   contractSelector: string,
+  yieldToken: string,
   signer: ethers.Signer,
 ): Promise<AdapterType> {
-  const { instance: adapterInstance } = contractWrapper(contractSelector, signer);
-
+  const { instance: adapterInstance } = vaultAdapterWrapper(contractSelector, signer);
   const price = await adapterInstance.price();
 
   return {
     type: vaultType,
     contractSelector: contractSelector,
+    yieldToken: yieldToken,
     price: price,
   };
 }
