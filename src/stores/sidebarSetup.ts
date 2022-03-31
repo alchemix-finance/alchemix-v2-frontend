@@ -30,5 +30,10 @@ export function sidebarSetup() {
       path: 'sentinel',
       icon: 'sentinel_med.svg',
     },
+    {
+      label: 'Cows',
+      path: 'get-out',
+      icon: 'cow_med.svg',
+    },
   ];
 }

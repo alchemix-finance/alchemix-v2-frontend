@@ -1,15 +1,29 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { Link } from 'svelte-routing';
+  import secret from '@stores/secret';
 
   const copyrightYear = () => {
     return `2020 - ${new Date().getFullYear()}`;
+  };
+
+  let secretCounter = 0;
+
+  const unlock = () => {
+    new Audio('sounds/secret.mp3').play();
+    $secret.unlocked = true;
   };
 </script>
 
 <div class="flex flex-col">
   <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-11">
-    <div class="w-60">
+    <div
+      class="w-60"
+      on:click="{() => {
+        secretCounter += 1;
+        if (secretCounter === 7) unlock();
+      }}"
+    >
       <img
         src="images/icons/ALCX_Std_logo.svg"
         class="h-9 mb-5"
