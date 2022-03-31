@@ -26,6 +26,7 @@
   import Governance from './views/Governance.svelte';
   import Settings from './views/Settings.svelte';
   import Sentinel from './views/Sentinel.svelte';
+  import SecretCowLevel from './views/SecretCowLevel.svelte';
   import { routerGuard } from '@helpers/routerGuard';
 
   import { connect } from '@helpers/walletManager';
@@ -116,6 +117,7 @@
                 <Route path="/" component="{Landing}" />
                 <Route path="/*" component="{Error}" />
                 <Route path="/sentinel" component="{Sentinel}" />
+                <Route path="/get-out" component="{SecretCowLevel}" />
               {/if}
             </div>
           </div>

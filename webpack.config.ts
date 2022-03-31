@@ -151,6 +151,7 @@ const config: Configuration = {
       patterns: [
         { from: './public/images', to: './images' },
         { from: './public/fonts', to: './fonts' },
+        { from: './public/sounds', to: './sounds' },
       ],
     }),
 
