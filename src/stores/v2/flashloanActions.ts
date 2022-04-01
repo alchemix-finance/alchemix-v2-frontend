@@ -84,15 +84,18 @@ export async function withdrawLegacy(_vaultType: VaultTypes, [userAddress, signe
         1: [deposit.sub(debtDust.mul(4)), false],
       };
       const param = paramLookup[_vaultType];
-      const tx = (await alchemistInstance.withdraw(...payload[_vaultType])) as ContractTransaction;
-      setPendingTx();
-      return await tx.wait().then((transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        return {
-          withdrawAmount: payload[_vaultType][0],
-          underlyingToken: param.underlyingToken,
-        };
-      });
+      if (payload[_vaultType][0].gt(0)) {
+        const tx = (await alchemistInstance.withdraw(...payload[_vaultType])) as ContractTransaction;
+        setPendingTx();
+        return await tx.wait().then((transaction) => {
+          setSuccessTx(transaction.transactionHash);
+          return {
+            withdrawAmount: payload[_vaultType][0],
+            underlyingToken: param.underlyingToken,
+          };
+        });
+      }
+      return true;
     }
     return true;
   } catch (error) {
