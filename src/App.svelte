@@ -87,7 +87,7 @@
   <StateManager>
     <Modal>
       <Router url="{url}">
-        <div class="wrapper max-w-none grid grid-cols-12 font-alcxFlow">
+        <div class="grid grid-cols-12 font-alcxFlow">
           <div
             class="col-span-12 pl-8 pt-5 pb-5 {$settings.invertColors
               ? 'bg-grey30inverse border-grey5inverse'
