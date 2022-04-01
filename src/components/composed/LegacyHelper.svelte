@@ -80,7 +80,6 @@
   };
 
   const updateMigrate = (vault, state) => {
-    console.log(vault, state);
     switch (vault) {
       case 1:
         canMigrateAlETH = state;

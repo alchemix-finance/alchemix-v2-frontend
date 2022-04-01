@@ -19,6 +19,18 @@
       price: '',
     },
     {
+      name: 'WSTETH',
+      ltv: '50',
+      address: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
+      price: '',
+    },
+    {
+      name: 'RETH',
+      ltv: '50',
+      address: '0xae78736Cd615f374D3085123A210448E74Fc6393',
+      price: '',
+    },
+    {
       name: 'DAI',
       ltv: '50',
       address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
