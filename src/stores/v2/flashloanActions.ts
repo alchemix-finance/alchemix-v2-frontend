@@ -41,7 +41,7 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
     const yieldParams = await alchemistInstance.getYieldTokenParameters(param.yieldToken);
     const expectedValue = yieldParams.expectedValue;
     const mintLimit = await alchemistInstance.getMintLimitInfo();
-    return { openDebt, expectedValue, mintLimit };
+    return { openDebt: openDebt.sub(utils.parseUnits('1', 'gwei')), expectedValue, mintLimit };
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[flashloanActions/limitCheck]: ${error}`);
@@ -78,13 +78,13 @@ export async function withdrawLegacy(_vaultType: VaultTypes, [userAddress, signe
     const debtDust = await alchemistInstance.getCdpTotalDebt(userAddress);
     const deposit = await alchemistInstance.getCdpTotalDeposited(userAddress);
     if (deposit.gt(0)) {
-      setPendingWallet();
       const payload = {
         0: [deposit.sub(debtDust.mul(2))],
         1: [deposit.sub(debtDust.mul(4)), false],
       };
       const param = paramLookup[_vaultType];
       if (payload[_vaultType][0].gt(0)) {
+        setPendingWallet();
         const tx = (await alchemistInstance.withdraw(...payload[_vaultType])) as ContractTransaction;
         setPendingTx();
         return await tx.wait().then((transaction) => {
