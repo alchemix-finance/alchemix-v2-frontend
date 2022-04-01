@@ -42,7 +42,7 @@
   "proudly_using": "Proudly Using",
   "refresh": "Refresh",
   "wrong_network": "Wrong Network",
-  "using_contract": "Contract-Wallets are currently not supported",
+  "using_contract": "Contract-Wallets are not yet supported on Vaults and Transmuters",
   "connect_wallet": "Connect Wallet",
   "available": "Available",
   "custom_amount": "Custom Amount",

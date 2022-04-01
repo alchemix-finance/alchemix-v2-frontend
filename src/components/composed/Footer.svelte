@@ -7,8 +7,6 @@
     return `2020 - ${new Date().getFullYear()}`;
   };
 
-  let secretCounter = 0;
-
   const unlock = () => {
     new Audio('sounds/secret.mp3').play();
     $secret.unlocked = true;
@@ -20,13 +18,12 @@
     <div
       class="w-60"
       on:click="{() => {
-        secretCounter += 1;
-        if (secretCounter === 7) unlock();
+        unlock();
       }}"
     >
       <img
         src="images/icons/ALCX_Std_logo.svg"
-        class="h-9 mb-5"
+        class="h-9 mb-5 {$secret.unlocked ? '' : 'cursor-pointer animate-bounce'}"
         style="filter:saturate(0);"
         alt="The Alchemix logo"
       />
