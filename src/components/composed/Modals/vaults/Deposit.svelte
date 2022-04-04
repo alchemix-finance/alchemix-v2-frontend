@@ -30,13 +30,14 @@
   let underlyingDeposit = 0;
   let depositEth = false;
 
+  $: adapterPrice = $adaptersStore[vault.type].adapters.filter(
+    (adapter) => adapter.yieldToken === yieldTokenData.address,
+  )[0].price;
+
   const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
-    const adapterPrice = $adaptersStore[vault.type].adapters.filter(
-      (adapter) => adapter.yieldToken === yieldTokenData.address,
-    )[0].price;
     const yieldTokens = underlyingDepositBN
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
       .div(adapterPrice);
@@ -53,6 +54,9 @@
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
         underlyingMinimumIn,
+        yieldTokens,
+        BigNumber.from(adapterPrice),
+        yieldTokenData.decimals,
       )
         .then(() => {
           Promise.all([
@@ -67,7 +71,14 @@
           console.error(e);
         });
     } else if (_yieldDeposit.gt(0) && _underlyingDeposit.lte(0)) {
-      await deposit(vault.address, vault.type, _yieldDeposit, [$addressStore, $signer])
+      await deposit(
+        vault.address,
+        vault.type,
+        _yieldDeposit,
+        BigNumber.from(adapterPrice),
+        yieldTokenData.decimals,
+        [$addressStore, $signer],
+      )
         .then(() => {
           Promise.all([
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
@@ -86,7 +97,10 @@
         vault.address,
         vault.type,
         _underlyingDeposit,
+        yieldTokens,
         BigNumber.from(maximumLoss),
+        BigNumber.from(adapterPrice),
+        yieldTokenData.decimals,
         [$addressStore, $signer],
         underlyingMinimumIn,
         depositEth,
@@ -184,6 +198,8 @@
     underlyingDeposit = '';
     yieldDeposit = '';
   }
+
+  // $: yieldTokenParameters = await
 
   $: startDebtLimit = initializeStartDebtLimit(borrowLimit, vault, underlyingTokenData);
   $: projDeptLimit = calculateProjectedDebtLimit(

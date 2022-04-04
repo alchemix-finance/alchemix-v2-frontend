@@ -8,8 +8,10 @@
   };
 
   const unlock = () => {
-    new Audio('sounds/secret.mp3').play();
-    $secret.unlocked = true;
+    if (!$secret.unlocked) {
+      new Audio('sounds/secret.mp3').play();
+      $secret.unlocked = true;
+    }
   };
 </script>
 
