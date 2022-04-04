@@ -38,10 +38,11 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
     );
     const { instance: legacyInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
     const openDebt = await legacyInstance.getCdpTotalDebt(userAddress);
+    const interest = await legacyInstance.getCdpTotalCredit(userAddress);
     const yieldParams = await alchemistInstance.getYieldTokenParameters(param.yieldToken);
     const expectedValue = yieldParams.expectedValue;
     const mintLimit = await alchemistInstance.getMintLimitInfo();
-    return { openDebt: openDebt.sub(utils.parseUnits('1', 'gwei')), expectedValue, mintLimit };
+    return { openDebt: openDebt.sub(utils.parseUnits('1', 'gwei')), interest, expectedValue, mintLimit };
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[flashloanActions/limitCheck]: ${error}`);
@@ -56,8 +57,8 @@ async function mintLegacy(_vaultType: VaultTypes, _interest: BigNumber, [signer]
     const tx = (await alchemistInstance.mint(_interest)) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
-      return true;
+      setSuccessTx(transaction.transactionHash, false);
+      return _interest;
     });
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
@@ -75,7 +76,7 @@ async function liquidateLegacy(_vaultType: VaultTypes, _debt: BigNumber, [signer
     )) as ContractTransaction;
     setPendingTx();
     return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
+      setSuccessTx(transaction.transactionHash, false);
       return true;
     });
   } catch (error) {
@@ -90,12 +91,15 @@ export async function liquidateWrap(_vaultType: VaultTypes, [userAddress, signer
     const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
     const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
     const interest = await alchemistInstance.getCdpTotalCredit(userAddress);
+    let mintedInterest = BigNumber.from(0);
 
     if (interest.gt(BigNumber.from(0))) {
-      await mintLegacy(_vaultType, interest, [signer]);
+      await mintLegacy(_vaultType, interest, [signer]).then((minted) => {
+        mintedInterest = minted;
+      });
     }
 
-    if (interest.eq(BigNumber.from(0)) && debt.gt(utils.parseUnits('1', 'gwei'))) {
+    if (interest.sub(mintedInterest).eq(BigNumber.from(0)) && debt.gt(utils.parseUnits('1', 'gwei'))) {
       await liquidateLegacy(_vaultType, debt, [signer]);
     }
 
