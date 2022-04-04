@@ -13,6 +13,7 @@ import {
 export async function getDepositRemainder(
   _yieldTokenAddress: string,
   _vaultType: VaultTypes,
+  _adapterPrice: BigNumber,
   [_signer]: [Signer],
 ) {
   try {
@@ -21,11 +22,18 @@ export async function getDepositRemainder(
       _signer,
     );
     const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
-    const depositCap = yieldTokenParameters.maximumExpectedValue();
-    const activeBalance = yieldTokenParameters.activeBalance();
-    const harvestableBalance = yieldTokenParameters.harvestableBalance();
-    return depositCap.sub(activeBalance.add(harvestableBalance));
-  } catch (error) {}
+    const depositCap = yieldTokenParameters.maximumExpectedValue;
+    const activeBalance = yieldTokenParameters.activeBalance;
+    const harvestableBalance = yieldTokenParameters.harvestableBalance;
+    const decimals = yieldTokenParameters.decimals;
+    return depositCap.sub(
+      _adapterPrice.mul(activeBalance.add(harvestableBalance)).div(BigNumber.from(10).pow(decimals)),
+    );
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/getDepositRemainder]: ${error}`);
+    throw Error(error);
+  }
 }
 
 function limitChecker(
@@ -39,7 +47,7 @@ function limitChecker(
   const cValue = _adapterPrice
     .mul(_activeBalance.add(_harvestableBalance))
     .div(BigNumber.from(10).pow(_decimals));
-  if (_deposit.gt(_depositLimit.sub(cValue))) throw Error('Deposit exceeds vault limits');
+  if (_deposit.gt(_depositLimit.sub(cValue))) throw Error('Amount exceeds vault deposit limits');
 }
 
 export async function deposit(

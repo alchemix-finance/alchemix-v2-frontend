@@ -30,13 +30,14 @@
   let underlyingDeposit = 0;
   let depositEth = false;
 
+  $: adapterPrice = $adaptersStore[vault.type].adapters.filter(
+    (adapter) => adapter.yieldToken === yieldTokenData.address,
+  )[0].price;
+
   const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
-    const adapterPrice = $adaptersStore[vault.type].adapters.filter(
-      (adapter) => adapter.yieldToken === yieldTokenData.address,
-    )[0].price;
     const yieldTokens = underlyingDepositBN
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
       .div(adapterPrice);
