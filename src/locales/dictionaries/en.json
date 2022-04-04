@@ -84,7 +84,8 @@
     "error_log": "Error Log",
     "no_error": "No errors logged :)",
     "timestamp": "Timestamp",
-    "error_msg": "Error Message"
+    "error_msg": "Error Message",
+    "clear_log": "Clear All Errors From Log"
   },
   "governance_page": {
     "title": "Governance",

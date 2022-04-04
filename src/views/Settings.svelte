@@ -21,6 +21,10 @@
     navigator.clipboard.writeText(message);
     setSuccess('Error copied to clipboard');
   };
+
+  const clearErrors = () => {
+    $errorLog.length = 0;
+  };
 </script>
 
 <ViewContainer>
@@ -160,19 +164,34 @@
       <div class="py-4 px-6" slot="body">
         {#if $errorLog.length > 0}
           <div class="flex flex-col space-y-4">
+            <Button
+              label="{$_('settings_page.clear_log')}"
+              borderSize="1"
+              width="w-full"
+              height="h-12"
+              fontSize="text-md"
+              on:clicked="{() => clearErrors()}"
+            />
             {#each $errorLog as error}
               <div
                 on:click="{() => {
                   copyError(error.message);
                 }}"
-                class="rounded border border-red1 py-4 px-6
+                class="grid grid-cols-12 rounded border border-red1 py-4 px-6
                  cursor-pointer hover:{$settings.invertColors ? 'bg-grey1inverse' : 'bg-grey1'}"
               >
-                <p class="text-sm">{$_('settings_page.timestamp')}:</p>
-                <code class="mb-4">{error.timeStamp}</code>
-                <p class="text-sm">{$_('settings_page.error_msg')}:</p>
-                <div class="overflow-x-scroll">
-                  <code>{error.message}</code>
+                <div class="col-span-2">
+                  <p class="text-sm">{$_('settings_page.timestamp')}:</p>
+                  <code class="mb-4">{error.timeStamp}</code>
+                  <p class="text-sm">
+                    ({new Date(error.timeStamp).toLocaleDateString($settings.userLanguage.locale)})
+                  </p>
+                </div>
+                <div class="col-span-10">
+                  <p class="text-sm">{$_('settings_page.error_msg')}:</p>
+                  <div class="w-full overflow-x-scroll">
+                    <code>{error.message}</code>
+                  </div>
                 </div>
               </div>
             {/each}
