@@ -49,25 +49,60 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
   }
 }
 
-export async function liquidateLegacy(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
+async function mintLegacy(_vaultType: VaultTypes, _interest: BigNumber, [signer]: [Signer]) {
   try {
     const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
-    const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
-    if (debt.gt(utils.parseUnits('1', 'gwei'))) {
-      setPendingWallet();
-      const tx = (await alchemistInstance.liquidate(
-        debt.sub(utils.parseUnits('1', 'gwei')),
-      )) as ContractTransaction;
-      setPendingTx();
-      return await tx.wait().then((transaction) => {
-        setSuccessTx(transaction.transactionHash);
-        return true;
-      });
-    }
-    return true;
+    setPendingWallet();
+    const tx = (await alchemistInstance.mint(_interest)) as ContractTransaction;
+    setPendingTx();
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return true;
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[flashloanActions/mintLegacy]: ${error}`);
+    throw Error(error);
+  }
+}
+
+async function liquidateLegacy(_vaultType: VaultTypes, _debt: BigNumber, [signer]: [Signer]) {
+  try {
+    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    setPendingWallet();
+    const tx = (await alchemistInstance.liquidate(
+      _debt.sub(utils.parseUnits('1', 'gwei')),
+    )) as ContractTransaction;
+    setPendingTx();
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return true;
+    });
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[flashloanActions/liquidateLegacy]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function liquidateWrap(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
+  try {
+    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
+    const interest = await alchemistInstance.getCdpTotalCredit(userAddress);
+
+    if (interest.gt(BigNumber.from(0))) {
+      await mintLegacy(_vaultType, interest, [signer]);
+    }
+
+    if (interest.eq(BigNumber.from(0)) && debt.gt(utils.parseUnits('1', 'gwei'))) {
+      await liquidateLegacy(_vaultType, debt, [signer]);
+    }
+
+    return true;
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[flashloanActions/liquidateWrap]: ${error}`);
     throw Error(error);
   }
 }
