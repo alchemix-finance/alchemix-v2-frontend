@@ -1,15 +1,21 @@
 import toastConfig from '../stores/toast';
+import errorLog from '../stores/errorLog';
 import getItl from './getItl';
 
 let _toastConfig;
+let _errorLog;
 
 toastConfig.subscribe((val) => {
   _toastConfig = val;
 });
 
+errorLog.subscribe((val) => {
+  _errorLog = val;
+});
+
 export function closeToast() {
   _toastConfig.forceClose = true;
-  toastConfig.set({ ...toastConfig });
+  toastConfig.set({ ..._toastConfig });
 }
 
 export function setPendingGas() {
@@ -37,7 +43,6 @@ export function setPendingApproval() {
     _toast.subtitle = 'Approve token allowance in wallet';
     _toast.closeOnMount = false;
     _toast.visible = true;
-
     return _toast;
   });
 }
@@ -64,6 +69,18 @@ export function setSuccessTx(hash) {
   toastConfig.set({ ..._toastConfig });
 }
 
+export function setSuccess(message) {
+  _toastConfig.kind = 'success';
+  _toastConfig.title = getItl('toast.success');
+  _toastConfig.subtitle = message;
+  _toastConfig.closeOnMount = true;
+  _toastConfig.showOpenButton = false;
+  _toastConfig.spinner = false;
+  _toastConfig.visible = true;
+  _toastConfig.closeTimeout = 2000;
+  toastConfig.set({ ..._toastConfig });
+}
+
 export function setError(message) {
   _toastConfig.kind = 'error';
   _toastConfig.title = getItl('toast.error');
@@ -73,7 +90,12 @@ export function setError(message) {
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
   _toastConfig.closeTimeout = 4000;
+  _errorLog.push({
+    timeStamp: Date.now(),
+    message: message,
+  });
   toastConfig.set({ ..._toastConfig });
+  errorLog.set([..._errorLog]);
 }
 
 export function setLoadingData(message, step, totalSteps) {
