@@ -278,5 +278,13 @@
     "cus_explain": "Choose an amount that you want to flashloan into a new v2 position, as well as the desired leverage for your new deposit.",
     "target_ltv": "Leverage",
     "ltv_ratio": "LTV Ratio"
+  },
+  "error_page": {
+    "subtitle": "This doesn't look right...",
+    "headline": "Page not found!",
+    "options_blurb": "Try one of these options",
+    "go_back": "Go Back",
+    "manually": "Manually check out that the URL is correct",
+    "unlock": "Unlock the secret cow level"
   }
 }
