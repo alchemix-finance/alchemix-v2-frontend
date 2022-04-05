@@ -127,7 +127,8 @@
     "borrow": "Borrow",
     "repay": "Repay",
     "liquidate": "Liquidate",
-    "legacy_redirect": "Looking for your old deposits?"
+    "legacy_redirect": "Looking for your old deposits?",
+    "deposit_exceeds_limits": "Deposit exceeds vault limits"
   },
   "accounts_page": {
     "title": "My Accounts",

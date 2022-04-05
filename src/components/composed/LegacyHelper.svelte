@@ -7,7 +7,7 @@
   import settings from '@stores/settings';
   import Button from '@components/elements/Button';
   import { BarLoader } from 'svelte-loading-spinners';
-  import { limitCheck, liquidateLegacy, withdrawLegacy, flashloanDeposit } from '@stores/v2/flashloanActions';
+  import { limitCheck, liquidateWrap, withdrawLegacy, flashloanDeposit } from '@stores/v2/flashloanActions';
   import { signer } from '@stores/v2/derived';
   import { addressStore, balancesStore } from '@stores/v2/alcxStore';
   import MaxLossController from '@components/composed/MaxLossController';
@@ -33,7 +33,7 @@
     processing = true;
     try {
       mode = 1;
-      await liquidateLegacy(targetAlchemist, [$addressStore, $signer]);
+      await liquidateWrap(targetAlchemist, [$addressStore, $signer]);
       mode = 2;
       await withdrawLegacy(targetAlchemist, [$addressStore, $signer]).then((response) => {
         if (response.withdrawAmount) {

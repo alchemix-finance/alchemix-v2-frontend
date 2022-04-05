@@ -56,11 +56,11 @@ export function setPendingTx() {
   toastConfig.set({ ..._toastConfig });
 }
 
-export function setSuccessTx(hash) {
+export function setSuccessTx(hash, closeToggle) {
   _toastConfig.kind = 'success';
   _toastConfig.title = getItl('toast.success');
   _toastConfig.subtitle = getItl('toast.tx_confirmed');
-  _toastConfig.closeOnMount = true;
+  _toastConfig.closeOnMount = closeToggle || true;
   _toastConfig.showOpenButton = true;
   _toastConfig.etherscanUrl = hash;
   _toastConfig.spinner = false;

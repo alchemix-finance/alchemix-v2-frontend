@@ -39,17 +39,14 @@
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vaultType]], [$signer]);
-
     const vaultData = vaults.filter(
       (vault) =>
-        getTokenDataFromBalances(vault.address, [$balancesStore]).address.toLowerCase() ===
-        yieldTokenData.yieldAddress.toLowerCase(),
+        getTokenDataFromBalances(vault.address, [$balancesStore]).address === yieldTokenData.yieldAddress,
     )[0];
     const underlyingTokenData = getTokenDataFromBalances(vaultData.underlyingAddress, [$balancesStore]);
 
     const adapterPrice = $adaptersStore[vaultType].adapters.filter(
-      (adapter) =>
-        adapter.contractSelector.split('_')[1].toLowerCase() === underlyingTokenData.symbol.toLowerCase(),
+      (adapter) => adapter.yieldToken === yieldTokenData.yieldAddress,
     )[0].price;
 
     const adapterYieldAmount = amount

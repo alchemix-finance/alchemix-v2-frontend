@@ -32,7 +32,9 @@
   import { connect } from '@helpers/walletManager';
 
   export let url = '';
-  const showBanner = false;
+  const deploymentUrl = window.location.host.split('.');
+  let showBanner = false;
+  if (deploymentUrl.filter((word) => word === 'staging').length !== 0) showBanner = true;
 
   // @dev to stop waste API request, stop the gas updates if needed
   let gasTimer;
