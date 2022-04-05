@@ -42,7 +42,14 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
     const yieldParams = await alchemistInstance.getYieldTokenParameters(param.yieldToken);
     const expectedValue = yieldParams.expectedValue;
     const mintLimit = await alchemistInstance.getMintLimitInfo();
-    return { openDebt: openDebt.sub(utils.parseUnits('1', 'gwei')), interest, expectedValue, mintLimit };
+    const liquidationLimit = await alchemistInstance.getLiquidationLimitInfo(param.underlyingToken);
+    return {
+      openDebt: openDebt.sub(utils.parseUnits('1', 'gwei')),
+      interest,
+      expectedValue,
+      mintLimit,
+      liquidationLimit,
+    };
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[flashloanActions/limitCheck]: ${error}`);
@@ -170,7 +177,7 @@ export async function flashloanDeposit(
     setPendingApproval();
     const sendApe = (await alchemistInstance.approveMint(
       flashloanAddress,
-      targetDebt,
+      collateralTotal,
     )) as ContractTransaction;
     await sendApe.wait();
     setPendingWallet();
