@@ -277,7 +277,9 @@
     "no_position": "No legacy positions detected, you're all good!",
     "cus_explain": "Choose an amount that you want to flashloan into a new v2 position, as well as the desired leverage for your new deposit.",
     "target_ltv": "Leverage",
-    "ltv_ratio": "LTV Ratio"
+    "ltv_ratio": "LTV Ratio",
+    "skip_legacy_alusd": "Manual alUSD flashloan",
+    "skip_legacy_aleth": "Manual alETH flashloan"
   },
   "error_page": {
     "subtitle": "This doesn't look right...",
