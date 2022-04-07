@@ -164,15 +164,15 @@ export async function depositUnderlying(
         signerStore,
       );
       setPendingWallet();
-
+      console.log(amountUnderlying.toString(), minimumAmountOut.toString());
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
         tokenAddress,
-        amountYield,
+        amountUnderlying,
         userAddressStore,
         minimumAmountOut,
         {
-          value: amountYield,
+          value: amountUnderlying,
           gasLimit: BigNumber.from(1000000),
         },
       )) as ethers.ContractTransaction;
