@@ -28,6 +28,13 @@
   let ethData;
   let daiData;
 
+  const skipToFlashloan = (targetAlchemist) => {
+    alchemist = targetAlchemist;
+    useCustomValues = true;
+    processing = true;
+    mode = 3;
+  };
+
   const migration = async (targetAlchemist) => {
     alchemist = targetAlchemist;
     processing = true;
@@ -373,8 +380,9 @@
           </div>
         </div>
         <div
-          class="w-full flex flex-row justify-between h-12"
+          class="w-full flex flex-row justify-between h-12 mb-4"
           class:space-x-4="{canMigrateAlUSD || canMigrateAlETH}"
+          class:hidden="{!canMigrateAlUSD && !canMigrateAlETH}"
         >
           <div class:hidden="{!canMigrateAlUSD}" class="w-full">
             <Button
@@ -398,38 +406,24 @@
               on:clicked="{() => migration(1)}"
             />
           </div>
-          <div
-            class:hidden="{canMigrateAlUSD || canMigrateAlETH}"
-            class="w-full flex flex-row justify-center space-x-4 items-center"
-          >
-            <Button
-              label="{$_('migration.no_position')}"
-              borderColor="green4"
-              backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-              hoverColor="green4"
-              height="h-12"
-              on:clicked="{() => {
-                updateMigrate(0, true);
-                updateMigrate(1, true);
-              }}"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="#42B792"
-                stroke-width="2"
-                slot="rightSlot"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                ></path>
-              </svg>
-            </Button>
-          </div>
+        </div>
+        <div class="w-full flex flex-row justify-between h-12 space-x-4">
+          <Button
+            label="{$_('migration.skip_legacy_alusd')}"
+            borderColor="green4"
+            backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+            hoverColor="green4"
+            height="h-12"
+            on:clicked="{() => skipToFlashloan(0)}"
+          />
+          <Button
+            label="{$_('migration.skip_legacy_aleth')}"
+            borderColor="green4"
+            backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+            hoverColor="green4"
+            height="h-12"
+            on:clicked="{() => skipToFlashloan(1)}"
+          />
         </div>
       </div>
     {/if}
