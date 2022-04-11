@@ -366,7 +366,7 @@
           break;
         case 9:
           console.log(
-            '%c\t You turn to the world above you, and contemplate its majesty.\r\n\t Claim your treasure on discord: 7hr0w84ck5',
+            '%c\t You turn to the world above you, and contemplate its majesty.\r\n\t There is no greater treasure than life itself.',
             'background: #222; color: #bada55',
           );
           break;
