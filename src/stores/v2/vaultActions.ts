@@ -36,7 +36,7 @@ export async function getDepositRemainder(
   }
 }
 
-function limitChecker(
+export function limitChecker(
   _deposit: BigNumber,
   _depositLimit: BigNumber,
   _activeBalance: BigNumber,
