@@ -2,7 +2,6 @@ import { VaultTypes } from './types';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import { Signer, BigNumber, ContractTransaction, utils } from 'ethers';
 import { VaultConstants } from './constants';
-import { adaptersStore } from '@stores/v2/alcxStore';
 import {
   setPendingWallet,
   setPendingTx,
@@ -11,12 +10,6 @@ import {
   setPendingApproval,
 } from '@helpers/setToast';
 import { limitChecker } from '@stores/v2/vaultActions';
-
-let _adaptersStore;
-
-adaptersStore.subscribe((val) => {
-  _adaptersStore = val;
-});
 
 const paramLookup = Object.freeze({
   0: {
@@ -177,16 +170,11 @@ export async function flashloanDeposit(
       signer,
     );
 
-    const tokenParameters = await alchemistInstance.getYieldTokenParameters(param.yieldToken);
-    const depositLimit = tokenParameters.maximumExpectedValue;
-    const activeBalance = tokenParameters.activeBalance;
-    const harvestableBalance = tokenParameters.harvestableBalance;
-    console.log(_adaptersStore, tokenParameters);
+    const yieldPerShare = await alchemistInstance.getYieldTokensPerShare(param.yieldToken);
+    const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(param.yieldToken);
+    const amountUnderlying = collateralTotal.mul(underlyingPerShare).div(yieldPerShare);
 
-    const adapterPrice = _adaptersStore[_vaultType].adapters.filter(
-      (adapter) => adapter.yieldToken === param.yieldToken,
-    )[0].price;
-    limitChecker(collateralTotal, depositLimit, activeBalance, harvestableBalance, adapterPrice, 18);
+    await limitChecker(amountUnderlying, param.yieldToken, _vaultType, [signer]);
 
     const underlyingAllowance = await underlyingTokenInstance.allowanceOf(userAddress, flashloanAddress);
     if (BigNumber.from(underlyingAllowance).lt(collateralTotal)) {
