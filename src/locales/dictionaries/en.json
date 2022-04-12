@@ -155,6 +155,7 @@
     "tvl": "TVL",
     "apy": "APY",
     "debt_limit": "Debt Limit",
+    "deposit_limit": "Vault Capacity",
     "actions": "Actions",
     "action": "Action",
     "pool": "Pool",

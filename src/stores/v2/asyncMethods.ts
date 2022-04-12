@@ -38,10 +38,10 @@ export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Si
     return Promise.reject(`[fetchVaultTokens]: signer is undefined`);
   }
 
-  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
+  const { instance: alchemist } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer);
 
-  const yieldTokens = await instance.getSupportedYieldTokens();
-  const underlyingTokens = await instance.getSupportedUnderlyingTokens();
+  const yieldTokens = await alchemist.getSupportedYieldTokens();
+  const underlyingTokens = await alchemist.getSupportedUnderlyingTokens();
 
   updateAllTokens(vaultId, yieldTokens, underlyingTokens);
 }

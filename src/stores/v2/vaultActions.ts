@@ -36,18 +36,44 @@ export async function getDepositRemainder(
   }
 }
 
-export function limitChecker(
-  _deposit: BigNumber,
-  _depositLimit: BigNumber,
-  _activeBalance: BigNumber,
-  _harvestableBalance: BigNumber,
-  _adapterPrice: BigNumber,
-  _decimals: number,
+export async function getVaultCapacity(
+  _yieldTokenAddress: string,
+  _vaultType: VaultTypes,
+  [_signer]: [Signer],
 ) {
-  const cValue = _adapterPrice
-    .mul(_activeBalance.add(_harvestableBalance))
-    .div(BigNumber.from(10).pow(_decimals));
-  if (_deposit.gt(_depositLimit.sub(cValue))) throw Error('Amount exceeds vault deposit limits');
+  try {
+    const { instance: alchemist } = contractWrapper(
+      VaultConstants[_vaultType].alchemistContractSelector,
+      _signer,
+    );
+    const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
+    return {
+      value: yieldTokenParameters.maximumExpectedValue.sub(yieldTokenParameters.expectedValue),
+      limit: yieldTokenParameters.maximumExpectedValue,
+      percent: BigNumber.from(10000)
+        .mul(
+          yieldTokenParameters.maximumExpectedValue
+            .sub(yieldTokenParameters.expectedValue)
+            .mul(BigNumber.from(100)),
+        )
+        .div(yieldTokenParameters.maximumExpectedValue.mul(BigNumber.from(100))),
+    };
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/getVaultCapacity]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function limitChecker(
+  _deposit: BigNumber,
+  _yieldTokenAddress: string,
+  _vaultType: VaultTypes,
+  [_signer]: [Signer],
+) {
+  await getVaultCapacity(_yieldTokenAddress, _vaultType, [_signer]).then((response) => {
+    if (_deposit.gt(response.value)) throw Error('Amount exceeds vault deposit limits');
+  });
 }
 
 export async function deposit(
@@ -66,12 +92,12 @@ export async function deposit(
     );
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
-    const tokenParameters = await alchemistInstance.getYieldTokenParameters(tokenAddress);
-    const depositLimit = tokenParameters.maximumExpectedValue;
-    const activeBalance = tokenParameters.activeBalance;
-    const harvestableBalance = tokenParameters.harvestableBalance;
+    const yieldPerShare = await alchemistInstance.getYieldTokensPerShare(tokenAddress);
+    const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(tokenAddress);
+    const amountUnderlying = amountYield.mul(underlyingPerShare).div(yieldPerShare);
+    console.log(amountYield.toString(), amountUnderlying.toString());
 
-    limitChecker(amountYield, depositLimit, activeBalance, harvestableBalance, adapterPrice, decimals);
+    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore]);
 
     if (BigNumber.from(allowance).lt(amountYield)) {
       setPendingApproval();
@@ -125,12 +151,8 @@ export async function depositUnderlying(
     );
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
-    const tokenParameters = await alchemistInstance.getYieldTokenParameters(tokenAddress);
-    const depositLimit = tokenParameters.maximumExpectedValue;
-    const activeBalance = tokenParameters.activeBalance;
-    const harvestableBalance = tokenParameters.harvestableBalance;
 
-    limitChecker(amountYield, depositLimit, activeBalance, harvestableBalance, adapterPrice, decimals);
+    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore]);
 
     if (!useGateway) {
       if (BigNumber.from(allowance).lt(amountUnderlying)) {
@@ -205,9 +227,6 @@ export async function multicallDeposit(
   maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
   minimumOut: BigNumber,
-  underlyingToYield: BigNumber,
-  adapterPrice: BigNumber,
-  decimals: number,
 ) {
   try {
     const yieldTokenInstance = erc20Contract(yieldTokenAddress, signerStore);
@@ -225,12 +244,9 @@ export async function multicallDeposit(
       alchemistAddress,
     );
 
-    const tokenParameters = await alchemistInstance.getYieldTokenParameters(yieldTokenAddress);
-    const depositLimit = tokenParameters.maximumExpectedValue;
-    const activeBalance = tokenParameters.activeBalance;
-    const harvestableBalance = tokenParameters.harvestableBalance;
+    console.log(amountYield.toString(), amountUnderlying.toString());
 
-    limitChecker(amountYield, depositLimit, activeBalance, harvestableBalance, adapterPrice, decimals);
+    await limitChecker(amountUnderlying, yieldTokenAddress, typeOfVault, [signerStore]);
 
     if (BigNumber.from(yieldTokenAllowance).lt(amountYield)) {
       setPendingApproval();

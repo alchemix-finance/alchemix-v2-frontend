@@ -4,9 +4,10 @@
 
   export let CellComponent;
   export let value;
+  export let fullWidth;
 </script>
 
-<div>
+<div class:w-full='{fullWidth}'>
   {#if CellComponent}
     <CellComponent {...$$props} />
   {:else}
