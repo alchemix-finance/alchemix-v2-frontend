@@ -200,6 +200,10 @@
       }
     };
 
+    const sharesBalance = () => {
+      return vault.balance.mul(vault.underlyingPerShare).div(BigNumber.from(10).pow(underlyingTokenData.decimals))
+    }
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
@@ -217,7 +221,7 @@
           CellComponent: CurrencyCell,
           value: depositValue,
           token: {
-            balance: vault.balance,
+            balance: sharesBalance(),
             perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
             symbol: underlyingTokenData.symbol,
