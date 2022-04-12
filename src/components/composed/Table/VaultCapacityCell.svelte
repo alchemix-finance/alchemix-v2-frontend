@@ -33,7 +33,7 @@
 </div>
 <div class="w-full self-start">
   <div class="relative">
-    <div class="overflow-hidden h-2 text-xs flex rounded bg-bronze3 border border-bronze1">
+    <div class="overflow-hidden h-2 text-xs flex rounded bg-bronze4 border border-bronze1">
       <div
         style="width: {100-parseFloat(capacity?.percent.toString())/100 || 0}%"
         class="shadow-none flex flex-col text-left whitespace-nowrap text-white justify-center bg-bronze1"
