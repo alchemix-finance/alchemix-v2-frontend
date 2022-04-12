@@ -2,7 +2,7 @@
   import global from '../../../stores/global';
   import settings from '../../../stores/settings';
   import { utils } from 'ethers';
-  import { numberShortener } from '../../../helpers/numberShortener';
+  import numeral from 'numeral'
 
   export let value;
   export let prefix;
@@ -23,12 +23,12 @@
   $: tokenFormatted = utils.formatUnits(token?.balance || 0, token?.decimals || 18);
 </script>
 
-<div class="flex flex-col items-center">
+<div class='flex flex-col items-center'>
   {#if token}
     <p>
       {#if prefix}{prefix}{/if}{parseFloat(tokenFormatted) === 0
-        ? tokenFormatted
-        : numberShortener(parseFloat(tokenFormatted).toFixed(2))}
+      ? tokenFormatted
+      : numeral(parseFloat(tokenFormatted).toFixed(2)).format('0.00a')}
       {token.symbol}
     </p>{/if}
   <p class="{token ? 'text-sm text-lightgrey10' : ''}">

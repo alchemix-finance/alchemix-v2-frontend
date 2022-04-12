@@ -49,6 +49,7 @@ export async function getVaultCapacity(
     const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
     return {
       value: yieldTokenParameters.maximumExpectedValue.sub(yieldTokenParameters.expectedValue),
+      limit: yieldTokenParameters.maximumExpectedValue,
       percent: BigNumber.from(10000)
         .mul(
           yieldTokenParameters.maximumExpectedValue
