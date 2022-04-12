@@ -23,7 +23,6 @@
     await vaultCapacity();
   });
 
-  $: console.log(capacity?.percent.toString())
 </script>
 
 <div class='flex flex-col items-center mb-1'>
