@@ -84,7 +84,7 @@ export async function fetchDataForVault(
     type: vaultType,
     address: tokenAddress,
     balance: position.shares,
-    tvl: tokenParams.activeBalance,
+    tvl: tokenParams.expectedValue,
     yieldPerShare: yieldPerShare,
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,

@@ -20,7 +20,7 @@
   import { showModal, modalReset } from '@stores/modal';
   import global from '@stores/global';
   import settings from '@stores/settings';
-  import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
+  import { balancesStore, vaultsStore, adaptersStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
@@ -28,6 +28,9 @@
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell';
   import LegacyHelper from '@components/composed/LegacyHelper';
+  import { getDepositRemainder } from '@stores/v2/vaultActions';
+  import { signer } from '@stores/v2/derived';
+  import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell';
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
@@ -47,16 +50,17 @@
       value: $_('table.deposited'),
       colSize: 2,
     },
-    {
-      columnId: 'limit',
-      CellComponent: HeaderCell,
-      value: $_('table.debt_limit'),
-      colSize: 2,
-    },
+
     {
       columnId: 'col3',
       CellComponent: HeaderCell,
       value: $_('table.tvl'),
+      colSize: 2,
+    },
+    {
+      columnId: 'limit',
+      CellComponent: HeaderCell,
+      value: $_('table.deposit_limit'),
       colSize: 2,
     },
     {
@@ -130,7 +134,7 @@
       underlyingTokenData.decimals,
       tokenPrice,
     );
-    const debtValue = depositValue / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio));
+    // const debtValue = depositValue / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio));
     const tvlValue = calculateBalanceValue(
       vault.tvl,
       vault.underlyingPerShare,
@@ -144,6 +148,11 @@
       underlyingTokenData.decimals,
       $vaultsStore[vault.type].ratio,
     );
+
+    // const adapterPrice = $adaptersStore[vault.type].adapters.filter(
+    //   (adapter) => adapter.yieldToken === vault.address,
+    // )[0].price;
+    // const vaultCapacity = getDepositRemainder(vault.address, vault.type, adapterPrice, [$signer]);
 
     const vaultApy = Math.round(vault.apy * 10000) / 100;
     const vaultDebtDisplay = vault.balance
@@ -209,22 +218,10 @@
           value: depositValue,
           token: {
             balance: vault.balance,
-            perShare: acceptWETH() ? vault.underlyingPerShare : vault.yieldPerShare,
-            decimals: acceptWETH() ? underlyingTokenData.decimals : vaultTokenData.decimals,
-            symbol: acceptWETH() ? underlyingTokenData.symbol : vaultTokenData.symbol,
-          },
-          colSize: 2,
-        },
-        limit: {
-          CellComponent: CurrencyCell,
-          value: debtValue,
-          token: {
-            balance: vaultDebtDisplay,
-            perShare: 1,
+            perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
-            symbol: debtTokenData.symbol || '',
+            symbol: underlyingTokenData.symbol,
           },
-          prefix: '+',
           colSize: 2,
         },
         col3: {
@@ -232,12 +229,24 @@
           value: tvlValue,
           token: {
             balance: vault.tvl,
-            perShare: acceptWETH() ? vault.underlyingPerShare : vault.yieldPerShare,
-            decimals: acceptWETH() ? underlyingTokenData.decimals : vaultTokenData.decimals,
-            symbol: acceptWETH() ? underlyingTokenData.symbol : vaultTokenData.symbol,
+            perShare: vault.underlyingPerShare,
+            decimals: underlyingTokenData.decimals,
+            symbol: underlyingTokenData.symbol,
           },
           colSize: 2,
         },
+        limit: {
+          CellComponent: VaultCapacityCell,
+          vaultType: vault.type,
+          signer: $signer,
+          yieldTokenAddress: vaultTokenData.address,
+          underlyingPerShare: vault.underlyingPerShare,
+          yieldPerShare: vault.yieldPerShare,
+          decimals: underlyingTokenData.decimals,
+          symbol: underlyingTokenData.symbol,
+          colSize: 2,
+        },
+
         col4: {
           CellComponent: YieldCell,
           yieldRate: vaultApy,

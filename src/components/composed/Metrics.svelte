@@ -24,7 +24,7 @@
     return new Intl.NumberFormat($settings.userLanguage.locale, {
       style: 'currency',
       currency: $settings.baseCurrency.symbol,
-    }).format(parseFloat((_amount * $global.conversionRate).toFixed(2)));
+    }).format(parseFloat((_amount * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   };
 
   $: aggregate = vaults.map((vault) => {
@@ -66,7 +66,7 @@
   $: totalDepositFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((totalDeposit * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat((totalDeposit * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: openDebt = aggregate
     .reduce((list, item) => {
       if (!list.some((obj) => obj.vaultType === item.vaultType)) {
@@ -79,18 +79,18 @@
   $: openDebtFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((openDebt * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat((openDebt * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: openCreditRaw = aggregate.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr) - openDebt;
   $: openCredit = openCreditRaw < 0 ? openCreditRaw * -1 : openCreditRaw;
   $: openCreditFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((openCredit * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat((openCredit * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: tvl = aggregate.map((val) => val.tvlValue).reduce((prev, curr) => prev + curr);
   $: tvlFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((tvl * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat((tvl * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
 </script>
 
 <div class="w-full flex flex-row space-x-4">

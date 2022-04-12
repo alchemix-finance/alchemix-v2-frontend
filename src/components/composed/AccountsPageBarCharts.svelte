@@ -62,7 +62,7 @@
     return new Intl.NumberFormat($settings.userLanguage.locale, {
       style: 'currency',
       currency: $settings.baseCurrency.symbol,
-    }).format(parseFloat((amount * $global.conversionRate).toFixed(2)));
+    }).format(parseFloat((amount * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   };
 
   // TODO: use tailwind exported colors everywhere
@@ -124,23 +124,23 @@
   $: fiatDeposit = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((totalDeposit || 0) * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat(((totalDeposit || 0) * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: fiatWithdraw = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((totalWithdraw || 0) * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat(((totalWithdraw || 0) * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: fiatDebtLimit = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((debtLimit || 0) * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat(((debtLimit || 0) * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: fiatDebt = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((totalDebt * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat((totalDebt * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
   $: fiatInterest = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((totalInterest || 0) * $global.conversionRate).toFixed(2)));
+  }).format(parseFloat(((totalInterest || 0) * $global.fiatRates[$settings.baseCurrency.symbol]).toFixed(2)));
 
   $: data = {
     labels: [[$_('table.withdrawable')], [$_('chart.debt')], [$_('chart.interest')]],

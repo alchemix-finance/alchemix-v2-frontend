@@ -9,6 +9,7 @@ import {
   setError,
   setPendingApproval,
 } from '@helpers/setToast';
+import { limitChecker } from '@stores/v2/vaultActions';
 
 const paramLookup = Object.freeze({
   0: {
@@ -168,6 +169,13 @@ export async function flashloanDeposit(
       VaultConstants[_vaultType].alchemistContractSelector,
       signer,
     );
+
+    const yieldPerShare = await alchemistInstance.getYieldTokensPerShare(param.yieldToken);
+    const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(param.yieldToken);
+    const amountUnderlying = collateralTotal.mul(underlyingPerShare).div(yieldPerShare);
+
+    await limitChecker(amountUnderlying, param.yieldToken, _vaultType, [signer]);
+
     const underlyingAllowance = await underlyingTokenInstance.allowanceOf(userAddress, flashloanAddress);
     if (BigNumber.from(underlyingAllowance).lt(collateralTotal)) {
       setPendingApproval();
