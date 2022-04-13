@@ -1,6 +1,4 @@
 <script>
-  import { _ } from 'svelte-i18n';
-  import { onMount } from 'svelte';
   import { utils, BigNumber } from 'ethers';
   import { getVaultCapacity } from '../../../stores/v2/vaultActions';
   import numeral from 'numeral';
@@ -19,9 +17,8 @@
   $: valueFormatted = numeral(utils.formatUnits(capacity?.value || BigNumber.from(0), decimals)).format('0.00a');
   $: limitFormatted = numeral(utils.formatUnits(capacity?.limit || BigNumber.from(0), decimals)).format('0a');
 
-  onMount(async () => {
-    await vaultCapacity();
-  });
+  $: yieldTokenAddress, vaultCapacity()
+  $: underlyingPerShare, vaultCapacity()
 
 </script>
 
