@@ -55,7 +55,7 @@
       .div(adapterPrice);
     const subTokens = adapterYieldAmount.mul(BigNumber.from(maximumLoss)).div(100000);
     const minimumOut = adapterYieldAmount.sub(subTokens);
-
+    const vault = vaults.filter((vault) => vault.underlyingAddress === underlyingTokenData.address)[0];
     await liquidate(
       yieldTokenData.yieldAddress,
       amount.mul(BigNumber.from(10).pow(underlyingTokenData.decimals)).div(BigNumber.from(10).pow(18)),
@@ -67,7 +67,7 @@
       Promise.all([
         fetchVaultRatio(vaultType, [$signer]),
         fetchVaultDebt(vaultType, [$addressStore, $signer]),
-        fetchUpdateVaultByAddress(vaultType, yieldTokenData.address, [$signer, $addressStore]),
+        fetchUpdateVaultByAddress(vaultType, vault.address, [$signer, $addressStore]),
       ])
         .then(() => {
           console.log('[onLiquidateButton/finished]: Data updated!');
@@ -179,51 +179,51 @@
 </script>
 
 <ContainerWithHeader>
-  <div slot="header" class="p-4 text-sm flex items-center justify-between">
-    <p class="inline-block">{$_('modals.liquidate_debt')}</p>
-    <div class="flex gap-2 items-center">
+  <div slot='header' class='p-4 text-sm flex items-center justify-between'>
+    <p class='inline-block'>{$_('modals.liquidate_debt')}</p>
+    <div class='flex gap-2 items-center'>
       {#if selectedVaultsType.length > 1}
         <select
-          id="selectVaultType"
+          id='selectVaultType'
           class="cursor-pointer border {$settings.invertColors
             ? 'border-grey5inverse bg-grey1inverse'
             : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
-          bind:value="{selectedVaultType}"
-          on:change="{setToggleToDefault}"
+          bind:value='{selectedVaultType}'
+          on:change='{setToggleToDefault}'
         >
           {#each selectedVaultsType as vaultType}
-            <option value="{vaultType}">{VaultTypesInfos[vaultType].name}</option>
+            <option value='{vaultType}'>{VaultTypesInfos[vaultType].name}</option>
           {/each}
         </select>
       {/if}
 
       <select
-        name="selectToken"
-        id="selectToken"
+        name='selectToken'
+        id='selectToken'
         class="cursor-pointer border {$settings.invertColors
           ? 'border-grey5inverse bg-grey1inverse'
           : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
-        bind:value="{selectedYieldToken}"
-        on:change="{setToggleToDefault}"
+        bind:value='{selectedYieldToken}'
+        on:change='{setToggleToDefault}'
       >
         {#each yieldTokenList as token, index}
-          <option value="{index}">{token.symbol}</option>
+          <option value='{index}'>{token.symbol}</option>
         {/each}
       </select>
     </div>
   </div>
-  <div slot="body" class="flex flex-col space-y-4 p-4">
+  <div slot='body' class='flex flex-col space-y-4 p-4'>
     {#if debtAmount.gt(BigNumber.from(0))}
-      <p class="text-sm">
+      <p class='text-sm'>
         {$_('metrics.open_debt')}: {utils.formatEther(debtAmount)}
         {yieldTokenList[selectedYieldToken].debtToken}
       </p>
     {/if}
-    <label for="liquidateInput" class="text-sm text-lightgrey10">
+    <label for='liquidateInput' class='text-sm text-lightgrey10'>
       {$_('available')}: ~{utils.formatUnits(
-        currentYieldBalance,
-        yieldTokenList[selectedYieldToken].decimals,
-      )}
+      currentYieldBalance,
+      yieldTokenList[selectedYieldToken].decimals,
+    )}
       {yieldTokenList[selectedYieldToken].symbol}
     </label>
     <div
@@ -231,35 +231,35 @@
         ? 'bg-grey3inverse border-grey3inverse'
         : 'bg-grey3 border-grey3'}"
     >
-      <div class="w-full">
+      <div class='w-full'>
         <InputNumber
-          id="liquidateInput"
-          placeholder="~0.00 {yieldTokenList[selectedYieldToken].symbol}"
-          bind:value="{inputLiquidateAmount}"
+          id='liquidateInput'
+          placeholder='~0.00 {yieldTokenList[selectedYieldToken].symbol}'
+          bind:value='{inputLiquidateAmount}'
           class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
             ? 'bg-grey3inverse'
             : 'bg-grey3'}"
         />
       </div>
-      <div class="flex flex-col">
+      <div class='flex flex-col'>
         <Button
-          label="MAX"
-          width="w-full"
-          fontSize="text-xs"
+          label='MAX'
+          width='w-full'
+          fontSize='text-xs'
           textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
           backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => setInputMax(yieldTokenList[selectedYieldToken], debtAmount)}"
+          borderSize='0'
+          height='h-10'
+          on:clicked='{() => setInputMax(yieldTokenList[selectedYieldToken], debtAmount)}'
         />
         <Button
-          label="CLEAR"
-          width="w-max"
-          fontSize="text-xs"
+          label='CLEAR'
+          width='w-max'
+          fontSize='text-xs'
           textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
           backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-          borderSize="0"
-          height="h-10"
+          borderSize='0'
+          height='h-10'
           on:clicked="{() => {
             inputLiquidateAmount = '';
 
@@ -268,41 +268,41 @@
         />
       </div>
     </div>
-    <div class="w-full">
-      <MaxLossController bind:maxLoss="{maximumLoss}" />
+    <div class='w-full'>
+      <MaxLossController bind:maxLoss='{maximumLoss}' />
     </div>
-    <div class="w-full text-sm text-lightgrey10 hidden">
+    <div class='w-full text-sm text-lightgrey10 hidden'>
       {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
-        remainingDebtAmount,
-      )} <br />
+      remainingDebtAmount,
+    )} <br />
       {$_('modals.remaining_deposit')}: {utils.formatUnits(
-        currentYieldBalance,
-        yieldTokenList[selectedYieldToken].decimals,
-      )}
+      currentYieldBalance,
+      yieldTokenList[selectedYieldToken].decimals,
+    )}
       {yieldTokenList[selectedYieldToken].symbol} -> {utils.formatEther(remainingBalance)}
       {yieldTokenList[selectedYieldToken].symbol}
     </div>
 
     <ToggleSwitch
       label="{$_('modals.liq_disclaimer')}"
-      forceState="{toggleForceState}"
-      on:toggleChange="{() => {
+      forceState='{toggleForceState}'
+      on:toggleChange='{() => {
         userVerifiedToggle = !userVerifiedToggle;
-      }}"
+      }}'
     />
     <Button
       label="{$_('actions.liquidate')}"
-      borderColor="green4"
+      borderColor='green4'
       backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-      hoverColor="green4"
-      height="h-12"
-      fontSize="text-md"
-      disabled="{!(
+      hoverColor='green4'
+      height='h-12'
+      fontSize='text-md'
+      disabled='{!(
         checkButtonState(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken], debtAmount) &&
         userVerifiedToggle
-      )}"
-      on:clicked="{() =>
-        onLiquidateButton(yieldTokenList[selectedYieldToken], inputLiquidateAmountBN, selectedVaultType)}"
+      )}'
+      on:clicked='{() =>
+        onLiquidateButton(yieldTokenList[selectedYieldToken], inputLiquidateAmountBN, selectedVaultType)}'
     />
   </div>
 </ContainerWithHeader>
