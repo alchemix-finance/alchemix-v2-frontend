@@ -106,12 +106,14 @@ export async function deposit(
     }
 
     setPendingWallet();
-
-    const tx = (await alchemistInstance.deposit(
+    const estimation = await alchemistInstance.estimateGas.deposit(
       tokenAddress,
       amountYield,
       userAddressStore,
-    )) as ethers.ContractTransaction;
+    );
+    const tx = (await alchemistInstance.deposit(tokenAddress, amountYield, userAddressStore, {
+      gasLimit: estimation.mul(2),
+    })) as ethers.ContractTransaction;
 
     setPendingTx();
 
@@ -162,11 +164,20 @@ export async function depositUnderlying(
       }
 
       setPendingWallet();
+      const estimation = await alchemistInstance.estimateGas.depositUnderlying(
+        tokenAddress,
+        amountUnderlying,
+        userAddressStore,
+        minimumAmountOut,
+      );
       const tx = (await alchemistInstance.depositUnderlying(
         tokenAddress,
         amountUnderlying,
         userAddressStore,
         minimumAmountOut,
+        {
+          gasLimit: estimation.mul(2),
+        },
       )) as ethers.ContractTransaction;
 
       setPendingTx();
@@ -306,11 +317,14 @@ export async function withdraw(
     );
 
     setPendingWallet();
-    const tx = (await alchemistInstance.withdraw(
+    const estimation = await alchemistInstance.estimateGas.withdraw(
       yieldTokenAddress,
       yieldAmount,
       accountAddress,
-    )) as ethers.ContractTransaction;
+    );
+    const tx = (await alchemistInstance.withdraw(yieldTokenAddress, yieldAmount, accountAddress, {
+      gasLimit: estimation.mul(2),
+    })) as ethers.ContractTransaction;
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -347,11 +361,20 @@ export async function withdrawUnderlying(
 
     if (!useGateway) {
       setPendingWallet();
+      const estimation = await alchemistInstance.estimateGas.withdrawUnderlying(
+        yieldTokenAddress,
+        amountUnderlying,
+        accountAddress,
+        minimumAmountOut,
+      );
       const tx = (await alchemistInstance.withdrawUnderlying(
         yieldTokenAddress,
         amountUnderlying,
         accountAddress,
         minimumAmountOut,
+        {
+          gasLimit: estimation.mul(2),
+        },
       )) as ethers.ContractTransaction;
 
       setPendingTx();
@@ -482,7 +505,10 @@ export async function mint(
     );
 
     setPendingWallet();
-    const tx = (await alchemistInstance.mint(amountToBorrow, userAddress)) as ContractTransaction;
+    const estimation = await alchemistInstance.estimateGas.mint(amountToBorrow, userAddress);
+    const tx = (await alchemistInstance.mint(amountToBorrow, userAddress, {
+      gasLimit: estimation.mul(2),
+    })) as ContractTransaction;
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -519,8 +545,10 @@ export async function burn(
       const sendApe = (await underlyingTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
       await sendApe.wait();
     }
-
-    const tx = (await alchemistInstance.burn(amountToBurn, addressStore)) as ContractTransaction;
+    const estimation = await alchemistInstance.estimateGas.burn(amountToBurn, addressStore);
+    const tx = (await alchemistInstance.burn(amountToBurn, addressStore, {
+      gasPrice: estimation.mul(2),
+    })) as ContractTransaction;
 
     setPendingTx();
 
@@ -552,8 +580,10 @@ export async function repay(
     );
 
     setPendingWallet();
-
-    const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore)) as ContractTransaction;
+    const estimation = await alchemistInstance.estimateGas.repay(debtToken, amountToRepay, addressStore);
+    const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore, {
+      gasPrice: estimation.mul(2),
+    })) as ContractTransaction;
 
     setPendingTx();
 
@@ -587,12 +617,14 @@ export async function liquidate(
     );
 
     setPendingWallet();
-
-    const tx = (await alchemistInstance.liquidate(
+    const estimation = await alchemistInstance.estimateGas.liquidate(
       yieldToken,
       amountToRepay,
       minimumAmountOut,
-    )) as ContractTransaction;
+    );
+    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, minimumAmountOut, {
+      gasLimit: estimation.mul(2),
+    })) as ContractTransaction;
 
     setPendingTx();
 
