@@ -75,3 +75,32 @@ export const VaultTypesInfos = {
     },
   },
 };
+
+export const chainIds = [
+  {
+    id: '0x1',
+    legacyId: 1,
+    name: 'Ethereum Mainnet',
+    icon: 'ethereum',
+    abiPath: 'ethereum',
+    rpcUrl: null,
+    explorer: 'https://etherscan.io/',
+    token: {
+      symbol: 'ETH',
+      decimals: 18,
+    },
+  },
+  {
+    id: '0xfa',
+    legacyId: 250,
+    name: 'Fantom Opera',
+    icon: 'fantom',
+    abiPath: 'fantom',
+    rpcUrl: 'https://rpc.ftm.tools',
+    explorer: 'https://rpc.ftm.tools',
+    token: {
+      symbol: 'FTM',
+      decimals: 18,
+    },
+  },
+];

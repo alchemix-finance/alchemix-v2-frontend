@@ -69,6 +69,17 @@ export function setSuccessTx(hash, closeToggle) {
   toastConfig.set({ ..._toastConfig });
 }
 
+export function setLoginSuccess(message) {
+  _toastConfig.spinner = false;
+  _toastConfig.kind = 'success';
+  _toastConfig.showCloseButton = false;
+  _toastConfig.closeOnMount = true;
+  _toastConfig.closeTimeout = 2500;
+  _toastConfig.title = message;
+  _toastConfig.visible = true;
+  toastConfig.set({ ..._toastConfig });
+}
+
 export function setSuccess(message) {
   _toastConfig.kind = 'success';
   _toastConfig.title = getItl('toast.success');

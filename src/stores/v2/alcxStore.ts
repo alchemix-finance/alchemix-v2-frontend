@@ -83,5 +83,6 @@ export const transmutersStore = writable<TransmutersType>({});
 export const adaptersStore = writable<AdaptersType>({});
 export const sentinelStore = writable<boolean>(undefined);
 export const controllerStore = writable<[]>([]);
+export const networkStore = writable<string>(undefined);
 
 export const farmsStore = writable<FarmStoreType[]>([]);

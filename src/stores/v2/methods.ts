@@ -13,6 +13,7 @@ import {
   adaptersStore,
   farmsStore,
   FarmStoreType,
+  networkStore,
 } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
@@ -28,6 +29,8 @@ export const updateProvider = (provider: providers.Web3Provider) => {
 export const updateSentinelRole = (role: boolean) => sentinelStore.set(role);
 
 export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(balances);
+
+export const updateNetwork = (id: string) => networkStore.set(id);
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
   balancesStore.update((_prevStore) => {
