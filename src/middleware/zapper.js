@@ -61,7 +61,7 @@ export async function getTokenPrices() {
 
 // @dev retrieves three levels of current gas prices
 export async function getGasPrices(timeout) {
-  await axios(connector('gas-price', timeout || 0))
+  await axios(connector('gas-prices', timeout || 0))
     .then((result) => {
       _global.gasPrices = {
         standard: result.data.standard,
