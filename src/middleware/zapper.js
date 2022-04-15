@@ -40,6 +40,8 @@ export async function getFiatRates() {
     })
     .catch((error) => {
       console.error(error);
+      _global.fiatRates = { USD: 1 };
+      global.set({ ..._global });
       throw error;
     });
 }
@@ -55,6 +57,10 @@ export async function getTokenPrices() {
     })
     .catch((error) => {
       console.error(error);
+      _global.tokenPrices = [];
+      _tokenPrices = [];
+      global.set({ ..._global });
+      tokenPrices.set([..._tokenPrices]);
       throw error;
     });
 }
@@ -72,6 +78,12 @@ export async function getGasPrices(timeout) {
     })
     .catch((error) => {
       console.error(error);
+      _global.gasPrices = {
+        standard: 0,
+        fast: 0,
+        instant: 0,
+      };
+      global.set({ ..._global });
       throw error;
     });
 }
