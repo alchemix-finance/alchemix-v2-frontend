@@ -1,25 +1,31 @@
 import { ethers } from 'ethers';
 import { navigate } from 'svelte-routing';
-import Onboard from 'bnc-onboard';
 import account from '@stores/account';
-import toastConfig from '../stores/toast';
 import network from '../stores/network';
 import { uninitData } from './uninitData';
-import getItl from './getItl';
-import { updateAddress, updateProvider } from '@stores/v2/methods';
+// import getItl from './getItl';
+import { updateAddress, updateProvider, updateNetwork } from '@stores/v2/methods';
+import Onboard from '@web3-onboard/core';
+import injectedModule from '@web3-onboard/injected-wallets';
+import walletConnectModule from '@web3-onboard/walletconnect';
+import { chainIds } from '../stores/v2/constants';
+// import {setLoginSuccess} from './setToast'
 
-let _toastConfig;
+// let _toastConfig;
 let _network;
 let _account;
 let ethersProvider;
 
-// @dev have eslint not get a stroke
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
-const mainnetId = parseInt(process.env.NETWORK_ID, 10);
-const mainnetName = process.env.NETWORK_NAME;
-const testnetId = parseInt(process.env.LOCAL_NETWORK_ID, 10);
-const testnetName = process.env.LOCAL_NETWORK_NAME;
-const testnetRpc = process.env.LOCAL_NETWORK_URL;
+network.subscribe((val) => {
+  _network = val;
+});
+
+account.subscribe((val) => {
+  _account = val;
+});
+
+const injected = injectedModule();
+const walletConnect = walletConnectModule();
 
 // @dev we're literally cheating infura with this lmfao
 const infuraKeys = [
@@ -33,116 +39,83 @@ const infuraKeys = [
   '42e287812d1c4b038b43b550360e808c',
   'f9274d4bd94d4a9abb568ce154f36a89',
 ];
-const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
-const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`;
+const infuraKey = infuraKeys[Math.floor(Math.random() * 10 * infuraKeys.length)];
+const randomMainnetRpc = `https://mainnet.infura.io/v3/${infuraKey}`;
 
-toastConfig.subscribe((val) => {
-  _toastConfig = val;
+const supportedChains = chainIds.map((chain) => {
+  return {
+    id: chain.id,
+    token: chain.token.symbol,
+    label: chain.name,
+    rpcUrl: chain.id === '0x1' ? randomMainnetRpc : chain.rpcUrl,
+  };
 });
 
-network.subscribe((val) => {
-  _network = val;
-});
-
-account.subscribe((val) => {
-  _account = val;
-});
-
-// @dev prepare list of supported wallets according to
-// https://docs.blocknative.com/onboard#wallet-modules
-const wallets = [
-  { walletName: 'metamask', preferred: true },
-  { walletName: 'tally', preferred: true },
-  {
-    walletName: 'walletConnect',
-    preferred: true,
-    rpc: {
-      [mainnetId]: rpcUrl,
-      [testnetId]: testnetRpc,
-    },
-  },
-  { walletName: 'walletLink', preferred: true, rpcUrl: debugging ? testnetRpc : rpcUrl },
-  // { walletName: 'lattice', rpcUrl, appName: 'Alchemix' },
-  // {
-  //   walletName: 'trezor',
-  //   rpcUrl: debugging ? testnetRpc : rpcUrl,
-  //   appName: 'Alchemix',
-  //   email: 'n4n0@mail.alchemix.fi',
-  //   customNetwork: {
-  //     name: process.env.LOCAL_NETWORK_NAME,
-  //     chainId: process.env.LOCAL_NETWORK_ID,
-  //   },
-  // },
-  // { walletName: 'ledger', rpcUrl: debugging ? testnetRpc : rpcUrl },
-];
-
-// @dev initializes blocknative onboarding
 const onboard = Onboard({
-  darkMode: true,
-  networkId: debugging ? testnetId : mainnetId,
-  networkName: debugging ? testnetName : mainnetName,
-  subscriptions: {
-    // @dev react to changes in the user's wallet
-    wallet: async (result) => {
-      const { provider } = result;
-      ethersProvider = new ethers.providers.Web3Provider(provider);
-      updateProvider(ethersProvider);
-      _account.provider = ethersProvider;
-      account.set({ ..._account });
-      window.localStorage.setItem('userWallet', result.name);
-    },
-    address: (address) => {
-      updateAddress(address);
-    },
-    // @dev react to changes in the wallet's network
-    network: async (result) => {
-      _network.id = result;
-      network.set({ ..._network });
-      if (debugging) console.log('network changed to', result);
+  wallets: [injected, walletConnect],
+  chains: [...supportedChains],
+  appMetadata: {
+    name: 'Alchemix',
+    icon: 'https://alchemix.fi/images/icons/alcx_med.svg',
+    logo: 'https://alchemix.fi/images/icons/ALCX_Std_logo.svg',
+    description: 'Self repaying, non-liquidatable loans. Your only debt is time.',
+    recommendedInjectedWallets: [
+      { name: 'MetaMask', url: 'https://metamask.io/' },
+      { name: 'Tally', url: 'https://tally.cash/' },
+    ],
+  },
+  accountCenter: {
+    desktop: {
+      enabled: false,
     },
   },
-  walletSelect: { wallets },
 });
 
-// @dev function calls onboard to connect user wallets and stores them in state
-async function connect(preselect) {
-  await onboard.walletReset();
-  if (preselect !== null) {
-    await onboard.walletSelect(preselect);
-  } else {
-    await onboard.walletSelect();
-  }
+const connect = async (preselect) => {
   try {
-    await onboard.walletCheck().then(async () => {
-      const signer = await ethersProvider.getSigner();
-      const address = await signer.getAddress();
-      const ens = debugging ? testnetName : await ethersProvider.lookupAddress(await address);
-      const toastGreeting = ens !== null ? `, ${ens}!` : '!';
-      _toastConfig.spinner = false;
-      _toastConfig.kind = 'success';
-      _toastConfig.showCloseButton = false;
-      _toastConfig.closeOnMount = true;
-      _toastConfig.closeTimeout = 2500;
-      _toastConfig.title = `${getItl('toast.welcome_back')}${toastGreeting}`;
-      _toastConfig.visible = true;
-      _account.address = address;
-      _account.ens = ens;
-      _account.signer = signer;
-      account.set({ ..._account });
-    });
-  } catch (error) {
-    console.error(error);
-    throw new Error('User aborted wallet selection');
+    if (preselect && preselect.length !== 0) {
+      await onboard.connectWallet({
+        autoSelect: {
+          label: preselect[0],
+          disableModals: true,
+        },
+      });
+    } else {
+      await onboard.connectWallet();
+    }
+  } catch (e) {
+    console.log('User aborted wallet selection');
   }
-  toastConfig.set({ ..._toastConfig });
-}
+};
 
-// @dev function disconnects user wallets and resets state
-function disconnect() {
-  onboard.walletReset();
+const walletsSub = onboard.state.select('wallets');
+const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
+  if (!!wallets && wallets.length > 0) {
+    const connectedWallets = wallets.map(({ label }) => label);
+    window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
+    ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider);
+    updateNetwork(wallets[0].chains[0].id);
+    updateProvider(ethersProvider);
+    updateAddress(wallets[0].accounts[0].address);
+    _account.provider = ethersProvider;
+    _account.signer = await ethersProvider.getSigner();
+    _account.address = wallets[0].accounts[0].address;
+    _account.ens = wallets[0].accounts[0].ens?.name || null;
+    _network.id = wallets[0].chains[0].id;
+    account.set({ ..._account });
+    network.set({ ..._network });
+  }
+});
+
+const disconnect = async () => {
+  const [primaryWallet] = onboard.state.get().wallets;
+  await onboard.disconnectWallet({
+    label: primaryWallet.label,
+  });
   uninitData();
   navigate('/', { replace: true });
-}
+  unsubscribe();
+};
 
 function getProvider() {
   return ethersProvider;
