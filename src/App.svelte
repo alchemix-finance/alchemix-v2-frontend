@@ -61,7 +61,7 @@
   onMount(async () => {
     if (preselect.length > 0) {
       await connect(preselect);
-      if (location.pathname === '/') routerGuard('accounts');
+      // if (location.pathname === '/') routerGuard('accounts');
     }
     walletChecked = true;
     await getGasPrices();
