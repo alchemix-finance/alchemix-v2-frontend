@@ -6,7 +6,7 @@
   import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { VaultTypes } from '@stores/v2/types';
-  import { addressStore, balancesStore, vaultsStore, adaptersStore } from 'src/stores/v2/alcxStore';
+  import { addressStore, balancesStore, vaultsStore, adaptersStore, networkStore } from 'src/stores/v2/alcxStore';
   import { signer } from 'src/stores/v2/derived';
   import {
     fetchBalanceByAddress,
@@ -54,6 +54,7 @@
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
         underlyingMinimumIn,
+        $networkStore,
         yieldTokens,
         BigNumber.from(adapterPrice),
         yieldTokenData.decimals,
@@ -78,6 +79,7 @@
         BigNumber.from(adapterPrice),
         yieldTokenData.decimals,
         [$addressStore, $signer],
+        $networkStore,
       )
         .then(() => {
           Promise.all([
@@ -103,6 +105,7 @@
         yieldTokenData.decimals,
         [$addressStore, $signer],
         underlyingMinimumIn,
+        $networkStore,
         depositEth,
       )
         .then(() => {
@@ -224,23 +227,23 @@
 
 {#if vault}
   <ContainerWithHeader>
-    <div slot="header" class="p-4 text-sm flex justify-between">
-      <p class="inline-block">{$_('modals.deposit_collateral')}</p>
-      <p class="inline-block">
+    <div slot='header' class='p-4 text-sm flex justify-between'>
+      <p class='inline-block'>{$_('modals.deposit_collateral')}</p>
+      <p class='inline-block'>
         {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio))}%
       </p>
     </div>
-    <div slot="body" class="p-4">
+    <div slot='body' class='p-4'>
       {#if metaConfig ? acceptGateway : useGateway}
-        <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
+        <div class='text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3'>
           <span>Deposit Type:</span>
-          <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
+          <ToggleSwitch label='WETH' secondLabel='ETH' on:toggleChange='{() => switchDepositType()}' />
         </div>
       {/if}
-      <div class="flex space-x-4">
+      <div class='flex space-x-4'>
         {#if yieldTokenData.balance.gt(BigNumber.from(0)) && !depositEth}
-          <div class="w-full">
-            <label for="yieldInput" class="text-sm text-lightgrey10">
+          <div class='w-full'>
+            <label for='yieldInput' class='text-sm text-lightgrey10'>
               {$_('available')}: {utils.formatUnits(yieldTokenData.balance, yieldTokenData.decimals)}
               {yieldTokenData.symbol}
             </label>
@@ -251,11 +254,11 @@
                 ? 'border-red3'
                 : `${$settings.invertColors ? 'border-grey3inverse' : 'border-grey3'}`}"
             >
-              <div class="w-full">
+              <div class='w-full'>
                 <InputNumber
-                  id="yieldInput"
-                  bind:value="{yieldDeposit}"
-                  placeholder="~0.00 {yieldTokenData.symbol}"
+                  id='yieldInput'
+                  bind:value='{yieldDeposit}'
+                  placeholder='~0.00 {yieldTokenData.symbol}'
                   class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
                     ? 'bg-grey3inverse'
                     : 'bg-grey3'} {yieldDepositBN.gt(yieldTokenData.balance)
@@ -265,27 +268,27 @@
                     : 'text-lightgrey5'}"
                 />
               </div>
-              <div class="flex flex-col">
+              <div class='flex flex-col'>
                 <Button
-                  label="MAX"
-                  width="w-full"
-                  fontSize="text-xs"
+                  label='MAX'
+                  width='w-full'
+                  fontSize='text-xs'
                   textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                   backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => {
+                  borderSize='0'
+                  height='h-10'
+                  on:clicked='{() => {
                     yieldDeposit = utils.formatUnits(yieldTokenData.balance, yieldTokenData.decimals);
-                  }}"
+                  }}'
                 />
                 <Button
-                  label="CLEAR"
-                  width="w-max"
-                  fontSize="text-xs"
+                  label='CLEAR'
+                  width='w-max'
+                  fontSize='text-xs'
                   textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                   backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
+                  borderSize='0'
+                  height='h-10'
                   on:clicked="{() => {
                     yieldDeposit = '';
                   }}"
@@ -295,11 +298,11 @@
           </div>
         {/if}
         {#if metaConfig ? acceptWETH : depositEth ? ethData.balance.gt(BigNumber.from(0)) : underlyingTokenData.balance.gt(BigNumber.from(0))}
-          <div class="w-full">
-            <label for="underlyingInput" class="text-sm text-lightgrey10">
+          <div class='w-full'>
+            <label for='underlyingInput' class='text-sm text-lightgrey10'>
               {$_('available')}: {depositEth
-                ? utils.formatEther(ethData.balance)
-                : utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals)}
+              ? utils.formatEther(ethData.balance)
+              : utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals)}
               {depositEth ? ethData.symbol : underlyingTokenData.symbol}
             </label>
             <div
@@ -313,11 +316,11 @@
                 ? 'border-grey3inverse'
                 : 'border-grey3'}"
             >
-              <div class="w-full">
+              <div class='w-full'>
                 <InputNumber
-                  id="underlyingInput"
-                  bind:value="{underlyingDeposit}"
-                  placeholder="~0.00 {depositEth ? ethData.symbol : underlyingTokenData.symbol}"
+                  id='underlyingInput'
+                  bind:value='{underlyingDeposit}'
+                  placeholder='~0.00 {depositEth ? ethData.symbol : underlyingTokenData.symbol}'
                   class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
                     ? 'bg-grey3inverse'
                     : 'bg-grey3'} {underlyingDepositBN.gt(
@@ -329,29 +332,29 @@
                     : 'text-lightgrey5'}"
                 />
               </div>
-              <div class="flex flex-col">
+              <div class='flex flex-col'>
                 <Button
-                  label="MAX"
-                  width="w-full"
-                  fontSize="text-xs"
+                  label='MAX'
+                  width='w-full'
+                  fontSize='text-xs'
                   textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                   backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => {
+                  borderSize='0'
+                  height='h-10'
+                  on:clicked='{() => {
                     underlyingDeposit = depositEth
                       ? utils.formatEther(ethData.balance)
                       : utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals);
-                  }}"
+                  }}'
                 />
                 <Button
-                  label="CLEAR"
-                  width="w-max"
-                  fontSize="text-xs"
+                  label='CLEAR'
+                  width='w-max'
+                  fontSize='text-xs'
                   textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                   backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
+                  borderSize='0'
+                  height='h-10'
                   on:clicked="{() => {
                     underlyingDeposit = '';
                   }}"
@@ -361,17 +364,17 @@
           </div>
         {/if}
         {#if (acceptWETH || ethData.balance.lte(BigNumber.from(0)) || underlyingTokenData.balance.lte(BigNumber.from(0))) && yieldTokenData.balance.lte(BigNumber.from(0))}
-          <div class="w-full">
-            <p class="text-center mx-3 text-red3 opacity-75">No balance available to deposit.</p>
+          <div class='w-full'>
+            <p class='text-center mx-3 text-red3 opacity-75'>No balance available to deposit.</p>
           </div>
         {/if}
       </div>
 
-      <div class="my-4">
-        <MaxLossController bind:maxLoss="{maximumLoss}" />
+      <div class='my-4'>
+        <MaxLossController bind:maxLoss='{maximumLoss}' />
       </div>
 
-      <div class="my-4 text-sm text-lightgrey10 hidden">
+      <div class='my-4 text-sm text-lightgrey10 hidden'>
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData.decimals)}
         -> {totalDep}<br />
         {$_('modals.borrow_limit')}: {startDebtLimit} ->
@@ -380,14 +383,14 @@
 
       <Button
         label="{$_('actions.deposit')}"
-        borderColor="green4"
+        borderColor='green4'
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-        hoverColor="green4"
-        height="h-12"
-        borderSize="1"
-        fontSize="text-md"
-        on:clicked="{() => onButtonDeposit(yieldDepositBN, underlyingDepositBN)}"
-        disabled="{depositButtonDisabled}"
+        hoverColor='green4'
+        height='h-12'
+        borderSize='1'
+        fontSize='text-md'
+        on:clicked='{() => onButtonDeposit(yieldDepositBN, underlyingDepositBN)}'
+        disabled='{depositButtonDisabled}'
       />
     </div>
   </ContainerWithHeader>

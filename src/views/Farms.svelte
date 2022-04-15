@@ -20,7 +20,7 @@
   import ClaimableCell from '@components/composed/Table/farms/ClaimableCell';
   import { BarLoader } from 'svelte-loading-spinners';
   import tokenPrices from '@stores/tokenPrices';
-  import { addressStore, farmsStore } from '@stores/v2/alcxStore';
+  import { addressStore, farmsStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
@@ -277,7 +277,7 @@
   const onInitialize = async () => {
     loadingVaults = true;
 
-    await fetchInternalFarms([$signer]);
+    await fetchInternalFarms([$signer], $networkStore);
     await fetchSushiFarm([$signer]);
     await fetchCrvFarm([$signer]);
 

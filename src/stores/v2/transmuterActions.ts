@@ -7,17 +7,21 @@ import {
   setPendingApproval,
   setError,
 } from '@helpers/setToast';
+import { chainIds } from './constants';
 
 export async function deposit(
   tokenAddress: string,
   amountToDeposit: ethers.BigNumber,
   transmuterSelector: string,
   [signer, addressStore]: [ethers.Signer, string],
+  _network: string,
 ) {
   try {
+    const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
     const { instance: transmuterInstance, address: transmuterAddress } = contractWrapper(
       transmuterSelector,
       signer,
+      path,
     );
 
     const tokenInstance = erc20Contract(tokenAddress, signer);
@@ -50,9 +54,12 @@ export async function withdraw(
   amountToWithdraw: ethers.BigNumber,
   transmuterSelector: string,
   [signer, addressStore]: [ethers.Signer, string],
+  _network: string,
 ) {
   try {
-    const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer);
+    const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
+
+    const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer, path);
     setPendingWallet();
 
     const tx = (await transmuterInstance.withdraw(amountToWithdraw, addressStore)) as ContractTransaction;
@@ -73,9 +80,12 @@ export async function claim(
   amountToClaim: ethers.BigNumber,
   transmuterSelector: string,
   [signer, addressStore]: [ethers.Signer, string],
+  _network: string,
 ) {
   try {
-    const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer);
+    const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
+
+    const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer, path);
 
     setPendingWallet();
 

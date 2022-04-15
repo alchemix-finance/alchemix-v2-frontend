@@ -9,7 +9,7 @@
 
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
-  import { addressStore, vaultsStore, balancesStore, adaptersStore } from 'src/stores/v2/alcxStore';
+  import { addressStore, vaultsStore, balancesStore, adaptersStore, networkStore } from 'src/stores/v2/alcxStore';
   import { signer, vaultsAggregatedBalances, vaultsAggregatedCoveredDebt } from 'src/stores/v2/derived';
   import {
     fetchBalanceByAddress,
@@ -89,7 +89,7 @@
     modalReset();
 
     // @dev we need to fetch the adapter prices
-    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
+    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer], $networkStore);
 
     const adapterPrice = $adaptersStore[vault.type].adapters.filter(
       (adapter) => adapter.yieldToken === yieldTokenData.address,
@@ -105,10 +105,10 @@
       yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
       (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)
     ) {
-      await withdraw(vault.type, vault.address, yieldWithdrawAmountShares, $addressStore, [$signer]).then(
+      await withdraw(vault.type, vault.address, yieldWithdrawAmountShares, $addressStore, [$signer], $networkStore).then(
         () => {
           Promise.all([
-            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
             fetchBalanceByAddress(vault.address, [$signer]),
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
           ]);
@@ -127,10 +127,11 @@
         BigNumber.from(maximumLoss),
         [$signer],
         minimumOut,
+        $networkStore,
         withdrawEth,
       ).then(() => {
         Promise.all([
-          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
           fetchBalanceByAddress(vault.address, [$signer]),
           fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
         ]);
@@ -146,9 +147,10 @@
         maximumLoss,
         [$signer],
         minimumOut,
+        $networkStore,
       ).then(() => {
         Promise.all([
-          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+          fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
           fetchBalanceByAddress(vault.address, [$signer]),
           fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
         ]);
@@ -215,9 +217,9 @@
     const vaultCoverAmount = vaultCover.lt(BigNumber.from(0))
       ? '0'
       : utils.formatUnits(
-          vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
-          _decimals,
-        );
+        vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
+        _decimals,
+      );
 
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
@@ -280,31 +282,31 @@
 
 {#if vault}
   <ContainerWithHeader>
-    <div slot="header" class="p-4 text-sm flex justify-between">
-      <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
+    <div slot='header' class='p-4 text-sm flex justify-between'>
+      <p class='inline-block'>{$_('modals.withdraw_collateral')}</p>
       <div>
         {#if debt.gt(BigNumber.from(0))}
-          <p class="inline-block">
+          <p class='inline-block'>
             {$_('chart.debt')}: {utils.formatEther(debt)}
             {VaultTypesInfos[vault.type].name} |
           </p>
         {/if}
-        <p class="inline-block">
+        <p class='inline-block'>
           {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio))}%
         </p>
       </div>
     </div>
-    <div slot="body" class="p-4">
+    <div slot='body' class='p-4'>
       {#if useGateway}
-        <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
+        <div class='text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3'>
           <span>Withdraw Type:</span>
-          <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchWithdrawType()}" />
+          <ToggleSwitch label='WETH' secondLabel='ETH' on:toggleChange='{() => switchWithdrawType()}' />
         </div>
       {/if}
-      <div class="flex space-x-4">
+      <div class='flex space-x-4'>
         {#if !withdrawEth}
-          <div class="w-full">
-            <label for="yieldInput" class="text-sm text-lightgrey10">
+          <div class='w-full'>
+            <label for='yieldInput' class='text-sm text-lightgrey10'>
               {$_('available')}: {maxWithdrawAmountForYield}
               {yieldTokenData.symbol}
             </label>
@@ -317,11 +319,11 @@
                 ? 'border-grey3inverse'
                 : 'border-grey3'}"
             >
-              <div class="w-full">
+              <div class='w-full'>
                 <InputNumber
-                  id="yieldInput"
-                  bind:value="{yieldWithdrawAmount}"
-                  placeholder="~0.00 {yieldTokenData.symbol}"
+                  id='yieldInput'
+                  bind:value='{yieldWithdrawAmount}'
+                  placeholder='~0.00 {yieldTokenData.symbol}'
                   class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
                     ? 'bg-grey3inverse'
                     : 'bg-grey3'} {yieldWithdrawAmount > parseFloat(maxWithdrawAmountForYield)
@@ -331,33 +333,33 @@
                     : 'text-lightgrey5'}"
                 />
               </div>
-              <div class="flex flex-col">
+              <div class='flex flex-col'>
                 <Button
-                  label="MAX"
-                  width="w-full"
-                  fontSize="text-xs"
+                  label='MAX'
+                  width='w-full'
+                  fontSize='text-xs'
                   textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                   backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => setMaxYield(maxWithdrawAmountForYield)}"
+                  borderSize='0'
+                  height='h-10'
+                  on:clicked='{() => setMaxYield(maxWithdrawAmountForYield)}'
                 />
                 <Button
-                  label="CLEAR"
-                  width="w-max"
-                  fontSize="text-xs"
+                  label='CLEAR'
+                  width='w-max'
+                  fontSize='text-xs'
                   textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                   backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => clearYield()}"
+                  borderSize='0'
+                  height='h-10'
+                  on:clicked='{() => clearYield()}'
                 />
               </div>
             </div>
           </div>
         {/if}
-        <div class="w-full">
-          <label for="underlyingInput" class="text-sm text-lightgrey10">
+        <div class='w-full'>
+          <label for='underlyingInput' class='text-sm text-lightgrey10'>
             {$_('available')}: {maxWithdrawAmountForUnderlying}
             {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}
           </label>
@@ -371,11 +373,11 @@
               ? 'border-grey3inverse'
               : 'border-grey3'}"
           >
-            <div class="w-full">
+            <div class='w-full'>
               <InputNumber
-                id="underlyingInput"
-                bind:value="{underlyingWithdrawAmount}"
-                placeholder="~0.00 {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}"
+                id='underlyingInput'
+                bind:value='{underlyingWithdrawAmount}'
+                placeholder='~0.00 {withdrawEth ? ethData.symbol : underlyingTokenData.symbol}'
                 class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
                   ? 'bg-grey3inverse'
                   : 'bg-grey3'} {underlyingWithdrawAmount > parseFloat(maxWithdrawAmountForUnderlying)
@@ -385,59 +387,59 @@
                   : 'text-lightgrey5'}"
               />
             </div>
-            <div class="flex flex-col">
+            <div class='flex flex-col'>
               <Button
-                label="MAX"
-                width="w-full"
-                fontSize="text-xs"
+                label='MAX'
+                width='w-full'
+                fontSize='text-xs'
                 textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                 backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                borderSize="0"
-                height="h-10"
-                on:clicked="{() => setMaxUnderlying(maxWithdrawAmountForUnderlying)}"
+                borderSize='0'
+                height='h-10'
+                on:clicked='{() => setMaxUnderlying(maxWithdrawAmountForUnderlying)}'
               />
               <Button
-                label="CLEAR"
-                width="w-max"
-                fontSize="text-xs"
+                label='CLEAR'
+                width='w-max'
+                fontSize='text-xs'
                 textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                 backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                borderSize="0"
-                height="h-10"
-                on:clicked="{() => clearUnderlying()}"
+                borderSize='0'
+                height='h-10'
+                on:clicked='{() => clearUnderlying()}'
               />
             </div>
           </div>
         </div>
       </div>
-      <div class="my-4">
-        <MaxLossController bind:maxLoss="{maximumLoss}" />
+      <div class='my-4'>
+        <MaxLossController bind:maxLoss='{maximumLoss}' />
       </div>
-      <div class="my-4 text-sm text-lightgrey10 hidden">
+      <div class='my-4 text-sm text-lightgrey10 hidden'>
         {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
         -> {calculateRemainingBalance(
-          vault,
-          underlyingWithdrawAmountShares,
-          yieldWithdrawAmountShares,
-          underlyingTokenData,
-        )}
+        vault,
+        underlyingWithdrawAmountShares,
+        yieldWithdrawAmountShares,
+        underlyingTokenData,
+      )}
         <br />
         {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
         -> {utils.formatUnits(projDebtLimit, underlyingTokenData.decimals) ||
-          utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
+      utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
       </div>
 
       <Button
         label="{$_('actions.withdraw')}"
-        borderColor="red4"
+        borderColor='red4'
         backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
-        hoverColor="red3"
-        height="h-12"
-        borderSize="1"
-        fontSize="text-md"
-        solid="{withdrawButtonState}"
-        on:clicked="{onWithdrawButton}"
-        disabled="{!withdrawButtonState}"
+        hoverColor='red3'
+        height='h-12'
+        borderSize='1'
+        fontSize='text-md'
+        solid='{withdrawButtonState}'
+        on:clicked='{onWithdrawButton}'
+        disabled='{!withdrawButtonState}'
       />
     </div>
   </ContainerWithHeader>

@@ -28,7 +28,6 @@
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell';
   import LegacyHelper from '@components/composed/LegacyHelper';
-  import { getDepositRemainder } from '@stores/v2/vaultActions';
   import { signer } from '@stores/v2/derived';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell';
 

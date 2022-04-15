@@ -89,6 +89,7 @@ export const chainIds = [
       symbol: 'ETH',
       decimals: 18,
     },
+    vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
   },
   {
     id: '0xfa',
@@ -102,5 +103,6 @@ export const chainIds = [
       symbol: 'FTM',
       decimals: 18,
     },
+    vaultTypes: [VaultTypes.alUSD],
   },
 ];

@@ -11,7 +11,7 @@ import { getVaultApy } from '@middleware/yearn';
 import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { getLidoApr } from '@middleware/lido';
 import { v4 as uuidv4 } from 'uuid';
-import { VaultTypesInfos } from './constants';
+import { VaultTypesInfos, chainIds } from './constants';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -109,8 +109,10 @@ export async function fetchAdapterAddress(
   vaultType: string,
   yieldToken: string,
   signer: ethers.Signer,
+  _network: string,
 ): Promise<any> {
-  const { instance: alchemist } = contractWrapper(vaultType, signer);
+  const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
+  const { instance: alchemist } = contractWrapper(vaultType, signer, path);
   const params = await alchemist.getYieldTokenParameters(yieldToken);
 
   return {
@@ -141,10 +143,13 @@ export async function fetchDataForTransmuter(
   contractSelector: string,
   signer: ethers.Signer,
   accountAddress: string,
+  _network: string,
 ): Promise<TransmuterType> {
+  const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
   const { instance: transmuterInstance, address: transmuterAddress } = contractWrapper(
     contractSelector,
     signer,
+    path,
   );
 
   const syntethicTokenAddress = await transmuterInstance.syntheticToken();
@@ -197,7 +202,7 @@ export async function fetchDataForInternalFarm(
   poolId: number,
   [signer]: [ethers.Signer],
 ): Promise<InternalFarmType> {
-  const { instance: stakingInstance } = contractWrapper('StakingPools', signer);
+  const { instance: stakingInstance } = contractWrapper('StakingPools', signer, 'ethereum');
   const accountAddress = await signer.getAddress();
 
   const tokenAddress = await stakingInstance.getPoolToken(poolId);

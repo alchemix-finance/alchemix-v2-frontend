@@ -9,6 +9,7 @@ import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import { chainIds } from '../stores/v2/constants';
+// import { getRpcUrl } from '../middleware/figment';
 // import {setLoginSuccess} from './setToast'
 
 // let _toastConfig;
@@ -28,26 +29,28 @@ const injected = injectedModule();
 const walletConnect = walletConnectModule();
 
 // @dev we're literally cheating infura with this lmfao
-const infuraKeys = [
-  '823507aa205c4761a50d3c4e1498143a',
-  '54a3abfeaadc4c71b8ebe13d593ba611',
-  '68c754b1dc074216b0b4c60c059c456e',
-  'd506144931134462b2157f3b6ee001b4',
-  'bfd639c5e98b41a990b4e3983ba54c7d',
-  'eba3c9fbe23e45318034d525c6b9f10c',
-  '9322e37943ef4d61bd3fd8e2049a441e',
-  '42e287812d1c4b038b43b550360e808c',
-  'f9274d4bd94d4a9abb568ce154f36a89',
-];
-const infuraKey = infuraKeys[Math.floor(Math.random() * 10 * infuraKeys.length)];
-const randomMainnetRpc = `https://mainnet.infura.io/v3/${infuraKey}`;
+// const infuraKeys = [
+//   '823507aa205c4761a50d3c4e1498143a',
+//   '54a3abfeaadc4c71b8ebe13d593ba611',
+//   '68c754b1dc074216b0b4c60c059c456e',
+//   'd506144931134462b2157f3b6ee001b4',
+//   'bfd639c5e98b41a990b4e3983ba54c7d',
+//   'eba3c9fbe23e45318034d525c6b9f10c',
+//   '9322e37943ef4d61bd3fd8e2049a441e',
+//   '42e287812d1c4b038b43b550360e808c',
+//   'f9274d4bd94d4a9abb568ce154f36a89',
+// ];
+// const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
+// const randomMainnetRpc = () => `https://mainnet.infura.io/v3/${infuraKey}`;
 
+const figmentRpc = `https://ethereum-mainnet--rpc.datahub.figment.io/apikey/${process.env.FIGMENT_KEY}/`;
+console.log(figmentRpc);
 const supportedChains = chainIds.map((chain) => {
   return {
     id: chain.id,
     token: chain.token.symbol,
     label: chain.name,
-    rpcUrl: chain.id === '0x1' ? randomMainnetRpc : chain.rpcUrl,
+    rpcUrl: chain.id === '0x1' ? figmentRpc : chain.rpcUrl,
   };
 });
 

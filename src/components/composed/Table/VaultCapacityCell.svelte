@@ -2,6 +2,7 @@
   import { utils, BigNumber } from 'ethers';
   import { getVaultCapacity } from '../../../stores/v2/vaultActions';
   import numeral from 'numeral';
+  import {networkStore} from '@stores/v2/alcxStore'
 
   export let yieldTokenAddress;
   export let underlyingPerShare;
@@ -12,7 +13,7 @@
 
   let capacity;
   const vaultCapacity = async () => {
-    capacity = await getVaultCapacity(yieldTokenAddress, vaultType, [signer]);
+    capacity = await getVaultCapacity(yieldTokenAddress, vaultType, [signer], $networkStore);
   };
   $: valueFormatted = numeral(utils.formatUnits(capacity?.value || BigNumber.from(0), decimals)).format('0.00a');
   $: limitFormatted = numeral(utils.formatUnits(capacity?.limit || BigNumber.from(0), decimals)).format('0a');

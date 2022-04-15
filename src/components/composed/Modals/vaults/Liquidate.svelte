@@ -7,7 +7,7 @@
   import MaxLossController from '@components/composed/MaxLossController';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { addressStore, balancesStore, vaultsStore, adaptersStore } from '@stores/v2/alcxStore';
+  import { addressStore, balancesStore, vaultsStore, adaptersStore, networkStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from '@stores/v2/types';
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { liquidate } from '@stores/v2/vaultActions';
@@ -38,7 +38,7 @@
   const onLiquidateButton = async (yieldTokenData, amount, vaultType) => {
     modalReset();
 
-    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vaultType]], [$signer]);
+    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vaultType]], [$signer], $networkStore);
     const vaultData = vaults.filter(
       (vault) =>
         getTokenDataFromBalances(vault.address, [$balancesStore]).address === yieldTokenData.yieldAddress,
@@ -65,9 +65,9 @@
       minimumOut,
     ).then(() => {
       Promise.all([
-        fetchVaultRatio(vaultType, [$signer]),
-        fetchVaultDebt(vaultType, [$addressStore, $signer]),
-        fetchUpdateVaultByAddress(vaultType, vault.address, [$signer, $addressStore]),
+        fetchVaultRatio(vaultType, [$signer], $networkStore),
+        fetchVaultDebt(vaultType, [$addressStore, $signer], $networkStore),
+        fetchUpdateVaultByAddress(vaultType, vault.address, [$signer, $addressStore], $networkStore),
       ])
         .then(() => {
           console.log('[onLiquidateButton/finished]: Data updated!');

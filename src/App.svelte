@@ -67,6 +67,48 @@
     await getGasPrices();
     await getFiatRates();
     await getTokenPrices();
+    console.log(
+      `%c
+ ▄▄▄       ██▓     ▄████▄   ██░ ██ ▓█████  ███▄ ▄███▓ ██▓▒██   ██▒
+▒████▄    ▓██▒    ▒██▀ ▀█  ▓██░ ██▒▓█   ▀ ▓██▒▀█▀ ██▒▓██▒▒▒ █ █ ▒░
+▒██  ▀█▄  ▒██░    ▒▓█    ▄ ▒██▀▀██░▒███   ▓██    ▓██░▒██▒░░  █   ░
+░██▄▄▄▄██ ▒██░    ▒▓▓▄ ▄██▒░▓█ ░██ ▒▓█  ▄ ▒██    ▒██ ░██░ ░ █ █ ▒
+ ▓█   ▓██▒░██████▒▒ ▓███▀ ░░▓█▒░██▓░▒████▒▒██▒   ░██▒░██░▒██▒ ▒██▒
+ ▒▒   ▓▒█░░ ▒░▓  ░░ ░▒ ▒  ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ░  ░░▓  ▒▒ ░ ░▓ ░
+  ▒   ▒▒ ░░ ░ ▒  ░  ░  ▒    ▒ ░▒░ ░ ░ ░  ░░  ░      ░ ▒ ░░░   ░▒ ░
+  ░   ▒     ░ ░   ░         ░  ░░ ░   ░   ░      ░    ▒ ░ ░    ░
+      ░  ░    ░  ░░ ░       ░  ░  ░   ░  ░       ░    ░   ░    ░
+                  ░
+
+=============================[ v2 ]=================================
+
+GitHub:   https://github.com/alchemix-finance
+Twitter:  https://twitter.com/alchemixfi
+Telegram: lmao no
+
+Make sure you're running this on ${
+        process.env.APP_URL ||
+        'if you can read this, the site you are visiting right now is probably trying to scam you'
+      }
+We will never ask you for your private key or seedphrase.
+
+========================[ DISCLAIMER ]==============================
+
+All rights reserved, no guarantees given.
+DeFi tools are not toys.
+Use at your own risk.
+
+=========================[ CREDITS ]================================
+
+[ ICONS ]
+* CC-BY, FontAwesome (https://fontawesome.com/)
+  "globe", "speech bubbles"
+* CC0 1.0, Simple Icons et al. (https://simpleicons.org/)
+  "gitbook", "amp", "discord", "twitter", "github", "substack"
+
+  `,
+      'color: #F5C09A',
+    );
   });
 </script>
 

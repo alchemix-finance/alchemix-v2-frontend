@@ -14,8 +14,13 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
-  import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
-  import { addressStore, balancesStore, transmutersStore } from '@stores/v2/alcxStore';
+  import {
+    AllowedTransmuterTypes,
+    TransmuterNameAliases,
+    VaultTypesInfos,
+    chainIds,
+  } from '@stores/v2/constants';
+  import { addressStore, balancesStore, transmutersStore, networkStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
@@ -180,10 +185,13 @@
       return;
     }
 
-    Promise.all([
-      fetchTransmutersForVaultType(VaultTypes.alUSD, [signer, addressStore]),
-      fetchTransmutersForVaultType(VaultTypes.alETH, [signer, addressStore]),
-    ]).then(() => {
+    let transmuterSelection = [];
+    const transmuterFilter = chainIds.filter((entry) => entry.id === $networkStore)[0];
+    transmuterFilter.vaultTypes.forEach((type) => {
+      transmuterSelection.push(fetchTransmutersForVaultType(type, [signer, addressStore], $networkStore));
+    });
+
+    Promise.all([...transmuterSelection]).then(() => {
       transmutersLoading = false;
     });
   };
