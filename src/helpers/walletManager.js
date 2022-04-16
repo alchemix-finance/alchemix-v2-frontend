@@ -39,15 +39,15 @@ const infuraKeys = [
   '42e287812d1c4b038b43b550360e808c',
   'f9274d4bd94d4a9abb568ce154f36a89',
 ];
-const infuraKey = infuraKeys[Math.floor(Math.random() * 10 * infuraKeys.length)];
-const randomMainnetRpc = `https://mainnet.infura.io/v3/${infuraKey}`;
+const infuraKey = infuraKeys[Math.floor(Math.random()* infuraKeys.length)];
+const randomMainnetRpc = () => `https://mainnet.infura.io/v3/${infuraKey}`;
 
 const supportedChains = chainIds.map((chain) => {
   return {
     id: chain.id,
     token: chain.token.symbol,
     label: chain.name,
-    rpcUrl: chain.id === '0x1' ? randomMainnetRpc : chain.rpcUrl,
+    rpcUrl: chain.id === '0x1' ? randomMainnetRpc() : chain.rpcUrl,
   };
 });
 
