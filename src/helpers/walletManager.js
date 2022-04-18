@@ -8,6 +8,7 @@ import { updateAddress, updateProvider, updateNetwork } from '@stores/v2/methods
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
+import walletLinkModule from '@web3-onboard/walletlink';
 import { chainIds } from '../stores/v2/constants';
 // import {setLoginSuccess} from './setToast'
 
@@ -26,6 +27,7 @@ account.subscribe((val) => {
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
+const walletLink = walletLinkModule();
 
 // @dev we're literally cheating infura with this lmfao
 const infuraKeys = [
@@ -39,7 +41,7 @@ const infuraKeys = [
   '42e287812d1c4b038b43b550360e808c',
   'f9274d4bd94d4a9abb568ce154f36a89',
 ];
-const infuraKey = infuraKeys[Math.floor(Math.random()* infuraKeys.length)];
+const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
 const randomMainnetRpc = () => `https://mainnet.infura.io/v3/${infuraKey}`;
 
 const supportedChains = chainIds.map((chain) => {
@@ -52,7 +54,7 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect],
+  wallets: [injected, walletConnect, walletLink],
   chains: [...supportedChains],
   appMetadata: {
     name: 'Alchemix',
