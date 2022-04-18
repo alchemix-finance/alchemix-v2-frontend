@@ -71,6 +71,7 @@
     "@web3-onboard/core": "^2.2.3",
     "@web3-onboard/injected-wallets": "^2.0.5",
     "@web3-onboard/walletconnect": "^2.0.1",
+    "@web3-onboard/walletlink": "^2.0.1",
     "assert": "^2.0.0",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
