@@ -32,7 +32,6 @@ import { FarmTypes, VaultTypes } from '@stores/v2/types';
 import { ethers } from 'ethers';
 import { TokensType } from './alcxStore';
 
-
 export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Signer], _network: string) {
   if (!signer) {
     console.error(`[fetchVaultTokens]: signer is undefined`);
@@ -40,8 +39,11 @@ export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Si
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-
-  const { instance: alchemist } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+  const { instance: alchemist } = contractWrapper(
+    VaultConstants[vaultId].alchemistContractSelector,
+    signer,
+    path,
+  );
 
   const yieldTokens = await alchemist.getSupportedYieldTokens();
   const underlyingTokens = await alchemist.getSupportedUnderlyingTokens();
@@ -54,7 +56,6 @@ export async function fetchAllBalances([signer, fullTokenList]: [ethers.Signer, 
     console.error(`[fetchAllBalances]: signer is undefined`);
     return Promise.reject(`[fetchAllBalances]: signer is undefined`);
   }
-
 
   const fetchETHPromise = fetchDataForETH(signer);
   const fetchTokensPromises = generateTokenPromises(fullTokenList, signer);
@@ -79,7 +80,11 @@ export async function fetchBalanceByAddress(address: string, [signer]: [ethers.S
   }
 }
 
-export async function fetchVaultDebt(vaultId: VaultTypes, [accountAddress, signer]: [string, ethers.Signer], _network: string) {
+export async function fetchVaultDebt(
+  vaultId: VaultTypes,
+  [accountAddress, signer]: [string, ethers.Signer],
+  _network: string,
+) {
   if (!signer) {
     console.error(`[fetchBalanceByAddress]: signer is undefined`);
     return Promise.reject(`[fetchAllBalances]: signer is undefined`);
@@ -107,7 +112,11 @@ export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Sig
   updateVaultRatio(vaultId, rawRatio);
 }
 
-export async function fetchVaultDebtTokenAddress(vaultId: VaultTypes, [signer]: [ethers.Signer], _network: string) {
+export async function fetchVaultDebtTokenAddress(
+  vaultId: VaultTypes,
+  [signer]: [ethers.Signer],
+  _network: string,
+) {
   if (!signer) {
     console.error(`[fetchBalanceByAddress]: signer is undefined`);
     return Promise.reject(`[fetchAllBalances]: signer is undefined`);
@@ -135,7 +144,7 @@ export async function fetchAllVaultsBodies(
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const fetchVaultPromises = tokens[vaultId].yieldTokens.map((tokenAddress) => {
-    return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress, signer);
+    return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress, signer, _network);
   });
 
   return Promise.all([...fetchVaultPromises]).then((vaults) => {
@@ -157,14 +166,18 @@ export async function fetchUpdateVaultByAddress(
 
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
-  const vaultData = fetchDataForVault(vaultId, instance, vaultAddress, accountAddress, signer);
+  const vaultData = fetchDataForVault(vaultId, instance, vaultAddress, accountAddress, signer, _network);
 
   return vaultData.then((_vaultData) => {
     updateVaultByAddress(vaultId, vaultAddress, _vaultData);
   });
 }
 
-export async function fetchAdaptersForVaultType(vaultType: VaultTypes, [signer]: [ethers.Signer], _network: string) {
+export async function fetchAdaptersForVaultType(
+  vaultType: VaultTypes,
+  [signer]: [ethers.Signer],
+  _network: string,
+) {
   if (!signer) {
     console.error(`[fetchAdaptersForVaultType]: signer is undefined`);
     return Promise.reject(`[fetchAdaptersForVaultType]: signer is undefined`);
@@ -178,7 +191,12 @@ export async function fetchAdaptersForVaultType(vaultType: VaultTypes, [signer]:
   );
   const yieldTokens = await alchemist.getSupportedYieldTokens();
   const adapters = yieldTokens.map((yieldToken) => {
-    return fetchAdapterAddress(VaultConstants[vaultType].alchemistContractSelector, yieldToken, signer, _network);
+    return fetchAdapterAddress(
+      VaultConstants[vaultType].alchemistContractSelector,
+      yieldToken,
+      signer,
+      _network,
+    );
   });
 
   return Promise.all([...adapters]).then((params) => {

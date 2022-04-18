@@ -1,10 +1,10 @@
 export function sidebarSetup() {
   return [
-    {
-      label: 'my_account',
-      path: 'accounts',
-      icon: 'vault_med.svg',
-    },
+    // {
+    //   label: 'my_account',
+    //   path: 'accounts',
+    //   icon: 'vault_med.svg',
+    // },
     {
       label: 'vaults',
       path: 'vaults',

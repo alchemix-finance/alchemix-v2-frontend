@@ -19,7 +19,7 @@
   // router configuration and views
   import Landing from './views/Landing.svelte';
   import Error from './views/Error.svelte';
-  import Accounts from './views/Accounts.svelte';
+  // import Accounts from './views/Accounts.svelte';
   import Vaults from './views/Vaults.svelte';
   import Transmuter from './views/Transmuter.svelte';
   import Farms from './views/Farms.svelte';
@@ -27,7 +27,7 @@
   import Settings from './views/Settings.svelte';
   import Sentinel from './views/Sentinel.svelte';
   import SecretCowLevel from './views/SecretCowLevel.svelte';
-  import { routerGuard } from '@helpers/routerGuard';
+  // import { routerGuard } from '@helpers/routerGuard';
 
   import { connect } from '@helpers/walletManager';
 
@@ -59,14 +59,12 @@
   }
 
   onMount(async () => {
+    await Promise.all([getFiatRates(), getTokenPrices(), getGasPrices()]);
     if (preselect.length > 0) {
       await connect(preselect);
       // if (location.pathname === '/') routerGuard('accounts');
     }
     walletChecked = true;
-    await getGasPrices();
-    await getFiatRates();
-    await getTokenPrices();
     console.log(
       `%c
  ▄▄▄       ██▓     ▄████▄   ██░ ██ ▓█████  ███▄ ▄███▓ ██▓▒██   ██▒
@@ -114,22 +112,24 @@ Use at your own risk.
 
 <style>
   .regularBg {
-    background: linear-gradient(171.08deg, #010101 -11.16%, #141921 6.1%, #0a0d11 49.05%, #000000 93.22%) no-repeat fixed;
+    background: linear-gradient(171.08deg, #010101 -11.16%, #141921 6.1%, #0a0d11 49.05%, #000000 93.22%)
+      no-repeat fixed;
     color: #f5f5f5;
   }
 
   .inverseBg {
-    background: linear-gradient(171.08deg, #fefefe -11.16%, #ebe6de 6.1%, #f5f2ee 49.05%, #fff 93.22%) no-repeat fixed;
+    background: linear-gradient(171.08deg, #fefefe -11.16%, #ebe6de 6.1%, #f5f2ee 49.05%, #fff 93.22%)
+      no-repeat fixed;
     color: #0a0a0a;
   }
 </style>
 
-<svelte:window on:blur='{gasIdle}' on:focus='{gasPriceUpdater}' />
+<svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 <div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'} min-h-screen">
   <StateManager>
     <Modal>
-      <Router url='{url}'>
-        <div class='grid grid-cols-12 font-alcxFlow'>
+      <Router url="{url}">
+        <div class="grid grid-cols-12 font-alcxFlow">
           <div
             class="col-span-12 pl-8 pt-5 pb-5 {$settings.invertColors
               ? 'bg-grey30inverse border-grey5inverse'
@@ -140,8 +140,8 @@ Use at your own risk.
           {#if showBanner}
             <Emergency />
           {/if}
-          <div class='col-span-12 flex'>
-            <div class='pl-8 pr-9 pt-8 w-96 hidden lg:block'>
+          <div class="col-span-12 flex">
+            <div class="pl-8 pr-9 pt-8 w-96 hidden lg:block">
               <SideBar />
             </div>
             <div
@@ -150,22 +150,22 @@ Use at your own risk.
                 : 'border-grey5'} w-full hidden lg:block"
             >
               {#if walletChecked}
-                <Route path='/accounts' component='{Accounts}' />
-                <Route path='/vaults' component='{Vaults}' />
-                <Route path='/transmuter' component='{Transmuter}' />
-                <Route path='/farms' component='{Farms}' />
-                <Route path='/governance' component='{Governance}' />
-                <Route path='/settings' component='{Settings}' />
-                <Route path='/' component='{Landing}' />
-                <Route path='/*' component='{Error}' />
-                <Route path='/sentinel' component='{Sentinel}' />
-                <Route path='/get-out' component='{SecretCowLevel}' />
+                <!--                <Route path='/accounts' component='{Accounts}' />-->
+                <Route path="/vaults" component="{Vaults}" />
+                <Route path="/transmuter" component="{Transmuter}" />
+                <Route path="/farms" component="{Farms}" />
+                <Route path="/governance" component="{Governance}" />
+                <Route path="/settings" component="{Settings}" />
+                <Route path="/" component="{Landing}" />
+                <Route path="/*" component="{Error}" />
+                <Route path="/sentinel" component="{Sentinel}" />
+                <Route path="/get-out" component="{SecretCowLevel}" />
               {/if}
             </div>
           </div>
-          <div class='block lg:hidden col-span-12'>
-            <p class='text-center text-lg my-12'>{$_('small_screen.title')}</p>
-            <p class='text-center mb-12'>
+          <div class="block lg:hidden col-span-12">
+            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
+            <p class="text-center mb-12">
               {$_('small_screen.message')}
             </p>
           </div>

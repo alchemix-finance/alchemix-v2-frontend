@@ -98,7 +98,7 @@ export const chainIds = [
     icon: 'fantom',
     abiPath: 'fantom',
     rpcUrl: 'https://rpc.ftm.tools',
-    explorer: 'https://rpc.ftm.tools',
+    explorer: 'https://ftmscan.com/',
     token: {
       symbol: 'FTM',
       decimals: 18,

@@ -1,18 +1,21 @@
 import { arrayDoubleCheck } from 'src/helpers/arrayHelpers';
 import { derived } from 'svelte/store';
-import { balancesStore, providerStore, tokensStore, vaultsStore } from './alcxStore';
+import { balancesStore, providerStore, tokensStore, vaultsStore, networkStore } from './alcxStore';
 import { poolLookup, additionalTokens } from '@stores/stakingPools';
 import { BigNumber } from 'ethers';
 import { calculateVaultDebt, getTokenDataFromBalances, normalizeAmount } from './helpers';
 
 export const signer = derived([providerStore], ([$provider]) => $provider?.getSigner());
 
-export const fullTokenList = derived([tokensStore], ([$tokensStore]) => {
+export const fullTokenList = derived([tokensStore, networkStore], ([$tokensStore, $network]) => {
   if (!$tokensStore) {
     return [];
   }
 
-  const _list = [...poolLookup.map((pool) => pool.address), ...additionalTokens];
+  const _list = [
+    ...poolLookup.filter((pool) => pool.network === $network).map((pool) => pool.address),
+    ...additionalTokens.filter((token) => token.network === $network).map((token) => token.address),
+  ];
 
   Object.keys($tokensStore).forEach((vaultKey) => {
     Object.keys($tokensStore[vaultKey]).forEach((tokenKey) => {

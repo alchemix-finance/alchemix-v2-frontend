@@ -1,12 +1,12 @@
 // see yearn documentation at https://docs.yearn.finance/vaults/yearn-api
 
 import axios from 'axios';
+import { chainIds } from '../stores/v2/constants';
 
-const apiUrl = 'https://api.yearn.finance/v1/chains/1/vaults/all';
-
-function connector() {
+function connector(networkId) {
+  const legacyId = chainIds.filter((entry) => entry.id === networkId)[0].legacyId;
   return {
-    url: apiUrl,
+    url: `https://api.yearn.finance/v1/chains/${legacyId}/vaults/all`,
     method: 'GET',
   };
 }
@@ -15,8 +15,8 @@ function connector() {
  * @param tokenAddress the address of the vault
  * @returns the yearn vault object
  * */
-export async function getVaultApy(vaultAddress) {
-  const api = await axios(connector());
+export async function getVaultApy(vaultAddress, networkId) {
+  const api = await axios(connector(networkId));
   const vaults = api.data.filter((vault) => vault.address.toUpperCase() === vaultAddress.toUpperCase());
   const vault = vaults[vaults.length - 1];
   return vault.apy.net_apy;

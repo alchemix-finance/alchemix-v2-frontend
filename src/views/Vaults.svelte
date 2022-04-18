@@ -20,7 +20,7 @@
   import { showModal, modalReset } from '@stores/modal';
   import global from '@stores/global';
   import settings from '@stores/settings';
-  import { balancesStore, vaultsStore, adaptersStore } from '@stores/v2/alcxStore';
+  import { balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
@@ -428,9 +428,11 @@
       {/if}
     </div>
 
-    <div class="w-full mb-8">
-      <LegacyHelper />
-    </div>
+    {#if $networkStore === '0x1'}
+      <div class="w-full mb-8">
+        <LegacyHelper />
+      </div>
+    {/if}
 
     <div class="w-full mb-8">
       <ContainerWithHeader>

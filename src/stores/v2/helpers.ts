@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
+  console.log(tokenAddress);
   const tokenContract = erc20Contract(tokenAddress, signer);
 
   const address = await signer.getAddress();
@@ -31,7 +32,7 @@ export async function fetchDataForToken(tokenAddress: string, signer: ethers.Sig
       balance,
     };
   } catch (error) {
-    console.error('[fetchDataForToken]:', error);
+    console.error('[fetchDataForToken]:', tokenAddress, error);
 
     return {
       address: tokenAddress,
@@ -65,6 +66,7 @@ export async function fetchDataForVault(
   tokenAddress: string,
   accountAddress: string,
   signer: ethers.Signer,
+  network: string,
 ): Promise<BodyVaultType> {
   // const position = await contract.positions(_account.address, token);
   const position = await contractInstance.positions(accountAddress, tokenAddress);
@@ -77,7 +79,7 @@ export async function fetchDataForVault(
   if (VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress)) {
     apy = await rewardAdapter(VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter, signer);
   } else {
-    apy = await getVaultApy(tokenAddress);
+    apy = await getVaultApy(tokenAddress, network);
   }
 
   return {

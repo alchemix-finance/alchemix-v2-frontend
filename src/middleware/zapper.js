@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import global from '../stores/global';
-import tokenPrices from '@stores/tokenPrices';
+import tokenPrices from '../stores/tokenPrices';
 
 let _global;
 let _tokenPrices;
