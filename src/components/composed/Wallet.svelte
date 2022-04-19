@@ -2,7 +2,7 @@
   import { getDefaultProvider } from 'ethers';
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
-  import { connect } from '@helpers/walletManager';
+  import { connect, switchChain } from '@helpers/walletManager';
   import Button from '../elements/Button.svelte';
   import BorderContainer from '../elements/BorderContainer.svelte';
   import WalletBalance from './WalletBalance.svelte';
@@ -17,6 +17,7 @@
   let balanceCollapsed = true;
   let supportedNetwork = true;
   let isHuman = true;
+  let chainCollapsed = true;
 
   const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
   const provider = getDefaultProvider();
@@ -53,17 +54,33 @@
     window.open(`https://etherscan.io/address/${$account.address}`, '_blank');
   }
 
-  const toggleCollapse = () => {
+  const toggleBalanceCollapse = () => {
     balanceCollapsed = !balanceCollapsed;
+    chainCollapsed = true;
+  };
+
+  const chainSelectCollapse = () => {
+    chainCollapsed = !chainCollapsed;
+    balanceCollapsed = true;
+  };
+
+  const updateChain = async (id) => {
+    await switchChain(id);
+    chainSelectCollapse();
   };
 
   $: $network, resolveIndicator($networkStore);
   $: $network, resolveHuman($account.address);
+  $: networkIcon = chainIds.filter((item) => item.id === $networkStore)[0]?.icon;
 </script>
 
 <BorderContainer>
   {#if $account.signer}
     <div class="flex space-x-2">
+      <Button width="w-max" height="h-10" label="" on:clicked="{() => chainSelectCollapse()}">
+        <img slot="rightSlot" class="h-8 w-8" src="images/icons/{networkIcon}.svg" />
+      </Button>
+
       <Button
         borderSize="1"
         label="{resolveAddress($account.address)}"
@@ -75,7 +92,7 @@
           <AvatarWithIndicator hash="{$account.address}" bgColor="{indicatorColor}" />
         </div>
       </Button>
-      <Button width="w-max" label="" on:clicked="{() => toggleCollapse()}">
+      <Button width="w-max" label="" on:clicked="{() => toggleBalanceCollapse()}">
         <svg
           slot="rightSlot"
           xmlns="http://www.w3.org/2000/svg"
@@ -185,12 +202,32 @@
         <p>{$_('using_contract')}!</p>
       </div>
     {/if}
-    {#if !balanceCollapsed}
+    {#if !balanceCollapsed && chainCollapsed}
       <div
         class="mt-2 py-2 px-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'} rounded"
         transition:slide
       >
         <WalletBalance />
+      </div>
+    {/if}
+    {#if balanceCollapsed && !chainCollapsed}
+      <div
+        class="mt-2 py-2 px-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'} rounded"
+        transition:slide
+      >
+        <div class="flex flex-col space-y-4">
+          {#each chainIds as chainId}
+            <div
+              class="flex space-x-4 flex-row {chainId.id === $networkStore
+                ? 'opacity-100 hover:cursor-default'
+                : 'opacity-50 hover:opacity-100 hover:cursor-pointer'} items-center"
+              on:click="{() => updateChain(chainId.id)}"
+            >
+              <img src="images/icons/{chainId.icon}.svg" alt="asd" class="w-6 h-6" />
+              <p class="h-6">{chainId.name}</p>
+            </div>
+          {/each}
+        </div>
       </div>
     {/if}
   {:else}

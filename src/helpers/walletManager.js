@@ -59,7 +59,7 @@ const supportedChains = chainIds.map((chain) => {
 
 const onboard = Onboard({
   wallets: [injected, walletConnect],
-  chains: [...supportedChains],
+  chains: supportedChains,
   appMetadata: {
     name: 'Alchemix',
     icon: 'https://alchemix.fi/images/icons/alcx_med.svg',
@@ -91,6 +91,14 @@ const connect = async (preselect) => {
     }
   } catch (e) {
     console.log('User aborted wallet selection');
+  }
+};
+
+export const switchChain = async (id) => {
+  try {
+    await onboard.setChain({ chainId: id });
+  } catch (e) {
+    console.log(`[switchChain]: ${e}`);
   }
 };
 

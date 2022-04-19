@@ -33,7 +33,7 @@
 
   const vaultsSelector = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
 
-  const showMetrics = true;
+  const showMetrics = false;
 
   let rowsAll = [];
   let colsStrats = [
@@ -410,7 +410,7 @@
     </div>
 
     <div class="w-full mb-8">
-      {#if showMetrics}
+      {#if showMetrics && !$vaultsLoading}
         <Metrics vaults="{currentVaultsBasedOnType}" />
       {:else}
         <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">

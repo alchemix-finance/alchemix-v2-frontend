@@ -41,6 +41,7 @@
   )[0].price;
 
   const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
+    console.log(_yieldDeposit.toString(), _underlyingDeposit.toString());
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer], $networkStore);
@@ -124,7 +125,7 @@
         })
         .catch((e) => {
           const log = e.data ? e.data.message : e.message;
-          console.error(`[onButtonDeposit/depositUnderlying]`, log);
+          console.trace(`[onButtonDeposit/depositUnderlying]`, log);
         });
     }
   };

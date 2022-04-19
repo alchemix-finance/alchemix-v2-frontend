@@ -125,6 +125,7 @@ export async function depositUnderlying(
   network: string,
   useGateway = false,
 ) {
+  console.log(amountUnderlying.toString(), amountYield.toString());
   try {
     console.log(signerStore);
     console.log(await new ethers.providers.JsonRpcProvider().connection);
@@ -210,9 +211,8 @@ export async function depositUnderlying(
       });
     }
   } catch (error) {
-    console.trace('dis fuck');
-    setError(error.data ? await error.data.message : error.message);
-    console.error(`[vaultActions/depositUnderlying]: ${error}`);
+    setError(error.data ? await error.data.data : error.message);
+    console.error(`[vaultActions/depositUnderlying]: ${await error.data}`);
     throw Error(error);
   }
 }
