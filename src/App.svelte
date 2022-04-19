@@ -28,6 +28,8 @@
   import Sentinel from './views/Sentinel.svelte';
   import SecretCowLevel from './views/SecretCowLevel.svelte';
   // import { routerGuard } from '@helpers/routerGuard';
+  import { networkStore } from '@stores/v2/alcxStore';
+  import { chainIds } from '@stores/v2/constants';
 
   import { connect } from '@helpers/walletManager';
 
@@ -45,7 +47,10 @@
   function gasPriceUpdater() {
     gasTimer = window.setTimeout(async () => {
       try {
-        await getGasPrices();
+        await getGasPrices(
+          null,
+          chainIds.filter((entry) => entry.id === $networkStore)[0]?.abiPath || 'ethereum',
+        );
         if (gasTimer !== 'stopped') gasPriceUpdater();
       } catch (e) {
         console.log('Error fetching gas prices from zapper', e);
@@ -59,7 +64,11 @@
   }
 
   onMount(async () => {
-    await Promise.all([getFiatRates(), getTokenPrices(), getGasPrices()]);
+    await Promise.all([
+      getFiatRates(),
+      getTokenPrices(chainIds.filter((entry) => entry.id === $networkStore)[0]?.abiPath || 'ethereum'),
+      getGasPrices(),
+    ]);
     if (preselect.length > 0) {
       await connect(preselect);
       // if (location.pathname === '/') routerGuard('accounts');

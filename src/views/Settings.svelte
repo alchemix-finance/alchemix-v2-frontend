@@ -142,7 +142,7 @@
       </p>
       <div class="py-4 px-6" slot="body">
         <div class="grid grid-cols-3 gap-4">
-          {#each Object.entries($global.gasPrices) as gas}
+          {#each Object.entries($global.gasPrices).filter((entry) => entry[0] !== 'eip1559') as gas}
             <GasCard
               cardColor="{$global.gasColor[`${gas[0]}`]}"
               description="{gas[0]}"
