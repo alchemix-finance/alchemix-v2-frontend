@@ -5,7 +5,7 @@
   import PageHeader from '../components/elements/PageHeader.svelte';
   import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
   import Button from '../components/elements/Button.svelte';
-  import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
+  // import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
   import { BarLoader } from 'svelte-loading-spinners';
   import { aggregate, alusd } from '@stores/vaults';
   import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
@@ -22,7 +22,7 @@
   import settings from '@stores/settings';
   import { balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
-  import { AllowedVaultTypes, VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
+  import { VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
@@ -34,7 +34,7 @@
   $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
   $: vaultsSelector = makeSelectorStore([...vaultTypes]);
 
-  const showMetrics = false;
+  const showMetrics = true;
 
   let rowsAll = [];
   let colsStrats = [
@@ -117,6 +117,40 @@
       })
       .filter((elm) => elm !== undefined)
       .reduce((accumulator, value) => accumulator.concat(value), []) ?? [];
+
+  $: aggregated = currentVaultsBasedOnType.map((vault) => {
+    const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
+    const tokenPrice = $global.tokenPrices.find(
+      (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
+    )?.price;
+    const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
+    const depositValue = calculateBalanceValue(
+      vault.balance,
+      vault.underlyingPerShare,
+      underlyingTokenData.decimals,
+      tokenPrice,
+    );
+    const debtLimit = depositValue / ratio;
+    const tvlValue = calculateBalanceValue(
+      vault.tvl,
+      vault.underlyingPerShare,
+      underlyingTokenData.decimals,
+      tokenPrice,
+    );
+    const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt)) * tokenPrice;
+    const rawWithdraw = depositValue - vaultDebt * ratio;
+    const vaultWithdraw = rawWithdraw < 0 ? 0 : rawWithdraw;
+    return {
+      vaultType: vault.type,
+      token: vault.debtTokenAddress,
+      ratio,
+      depositValue,
+      debtLimit,
+      tvlValue,
+      vaultDebt: vaultDebt > 0 ? vaultDebt : 0,
+      vaultWithdraw,
+    };
+  });
 
   $: currentVaultsBasedOnStrategyType =
     currentVaultsBasedOnType.filter(strategyFilterFunc[currentStrategy]) ?? [];
@@ -411,20 +445,21 @@
     </div>
 
     <div class="w-full mb-8">
-      {#if showMetrics && !$vaultsLoading}
-        <Metrics vaults="{currentVaultsBasedOnType}" />
-        <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
-          <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>
-          <div slot="body" class="bg-grey15">
-            <AccountsPageBarCharts
-              totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"
-              totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"
-              aggregatedApy="0"
-              totalDebt="{$aggregate.totalDebt.toFixed(2)}"
-              totalInterest="0"
-            />
-          </div>
-        </ContainerWithHeader>
+      {#if showMetrics && aggregated.length > 0}
+        <Metrics aggregate="{aggregated}" />
+        <!--{:else}-->
+        <!--  <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">-->
+        <!--    <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>-->
+        <!--    <div slot="body" class="bg-grey15">-->
+        <!--      <AccountsPageBarCharts-->
+        <!--        totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"-->
+        <!--        totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"-->
+        <!--        aggregatedApy="0"-->
+        <!--        totalDebt="{$aggregate.totalDebt.toFixed(2)}"-->
+        <!--        totalInterest="0"-->
+        <!--      />-->
+        <!--    </div>-->
+        <!--  </ContainerWithHeader>-->
       {/if}
     </div>
 

@@ -50,8 +50,9 @@
   /*
    * @dev opens etherscan for the currently logged in wallet
    * */
-  function openEtherscan() {
-    window.open(`https://etherscan.io/address/${$account.address}`, '_blank');
+  function openExplorer() {
+    const explorer = chainIds.filter((entry) => entry.id === $networkStore)[0].explorer;
+    window.open(`${explorer}address/${$account.address}`, '_blank');
   }
 
   const toggleBalanceCollapse = () => {
@@ -86,7 +87,7 @@
         label="{resolveAddress($account.address)}"
         uppercase="{false}"
         height="h-10"
-        on:clicked="{openEtherscan}"
+        on:clicked="{openExplorer}"
       >
         <div slot="leftSlot">
           <AvatarWithIndicator hash="{$account.address}" bgColor="{indicatorColor}" />

@@ -1,24 +1,13 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { utils, BigNumber } from 'ethers';
   import global from '@stores/global';
   import settings from '@stores/settings';
-  import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
-  import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader';
 
-  export let vaults;
+  export let aggregate;
 
-  const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
-  const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
-
-  const calculateBalanceValue = (_balance, _perShare, _decimals, _price) => {
-    return (
-      parseFloat(
-        utils.formatUnits(_balance.mul(_perShare).div(BigNumber.from(10).pow(_decimals)), _decimals),
-      ) * _price
-    );
-  };
+  // const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
+  // const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
 
   const toFiat = (_amount) => {
     return new Intl.NumberFormat($settings.userLanguage.locale, {
@@ -26,41 +15,6 @@
       currency: $settings.baseCurrency.symbol,
     }).format(parseFloat((_amount * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
   };
-
-  $: aggregate = vaults.map((vault) => {
-    const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
-    const tokenPrice = $global.tokenPrices.find(
-      (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
-    )?.price;
-    const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type].ratio));
-
-    const depositValue = calculateBalanceValue(
-      vault.balance,
-      vault.underlyingPerShare,
-      underlyingTokenData.decimals,
-      tokenPrice,
-    );
-    const debtLimit = depositValue / ratio;
-    const tvlValue = calculateBalanceValue(
-      vault.tvl,
-      vault.underlyingPerShare,
-      underlyingTokenData.decimals,
-      tokenPrice,
-    );
-    const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt)) * tokenPrice;
-    const rawWithdraw = depositValue - vaultDebt * ratio;
-    const vaultWithdraw = rawWithdraw < 0 ? 0 : rawWithdraw;
-    return {
-      vaultType: vault.type,
-      token: vault.debtTokenAddress,
-      ratio,
-      depositValue,
-      debtLimit,
-      tvlValue,
-      vaultDebt: vaultDebt > 0 ? vaultDebt : 0,
-      vaultWithdraw,
-    };
-  });
 
   $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
   $: totalDepositFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
@@ -93,17 +47,17 @@
   }).format(parseFloat((tvl * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
 </script>
 
-<div class='w-full flex flex-row space-x-4'>
-  <div class='grow w-full'>
-    <ContainerWithHeader fullWidth='{true}'>
-      <div slot='header' class='py-4 px-6'>
-        <div class='flex font-alcxTitles text-lg tracking-wide justify-between'>
-          <div class='flex-col'>
-            <div class='text-bronze3 mr-2 uppercase text-sm whitespace-nowrap'>
+<div class="w-full flex flex-row space-x-4">
+  <div class="grow w-full">
+    <ContainerWithHeader fullWidth="{true}">
+      <div slot="header" class="py-4 px-6">
+        <div class="flex font-alcxTitles text-lg tracking-wide justify-between">
+          <div class="flex-col">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
               {$_('metrics.total_deposit')}
             </div>
-            <div class='flex'>
-              <div class='flex mr-2'>
+            <div class="flex">
+              <div class="flex mr-2">
                 {totalDepositFiat}
               </div>
               <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
@@ -113,32 +67,32 @@
             </div>
           </div>
 
-          <div class='flex-col'>
-            <div class='text-bronze3 mr-2 uppercase text-sm whitespace-nowrap'>{$_('metrics.open_debt')}</div>
-            <div class='flex'>
-              <div class='flex mr-2'>
+          <div class="flex-col">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">{$_('metrics.open_debt')}</div>
+            <div class="flex">
+              <div class="flex mr-2">
                 {openDebtFiat}
               </div>
             </div>
           </div>
 
-          <div class='flex-col'>
-            <div class='text-bronze3 mr-2 uppercase text-sm whitespace-nowrap'>
+          <div class="flex-col">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
               {$_('metrics.open_credit')}
             </div>
-            <div class='flex'>
-              <div class='flex mr-2'>
+            <div class="flex">
+              <div class="flex mr-2">
                 {openCreditFiat}
               </div>
             </div>
           </div>
 
-          <div class='flex-col pl-6 border-l border-dashed border-bronze3'>
-            <div class='text-bronze3 mr-2 uppercase text-sm whitespace-nowrap'>
+          <div class="flex-col pl-6 border-l border-dashed border-bronze3">
+            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
               {$_('metrics.global_tvl')}
             </div>
-            <div class='flex'>
-              <div class='flex mr-2'>
+            <div class="flex">
+              <div class="flex mr-2">
                 {tvlFiat}
               </div>
             </div>
