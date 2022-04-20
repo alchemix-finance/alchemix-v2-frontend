@@ -22,7 +22,7 @@
   import settings from '@stores/settings';
   import { balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
-  import { AllowedVaultTypes, VaultTypesInfos } from 'src/stores/v2/constants';
+  import { AllowedVaultTypes, VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
@@ -31,7 +31,8 @@
   import { signer } from '@stores/v2/derived';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell';
 
-  const vaultsSelector = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
+  $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
+  $: vaultsSelector = makeSelectorStore([...vaultTypes]);
 
   const showMetrics = false;
 
@@ -330,22 +331,22 @@
         <ContainerWithHeader>
           <div slot="body">
             <div class=" items-center flex space-x-2 h-10 px-2">
-              {#if AllowedVaultTypes.length > 1}
+              {#if vaultTypes.length > 1}
                 <Button
                   label="All Vaults"
                   width="w-max"
                   canToggle="{true}"
-                  selected="{vaultsSelector.isSelectedAll($vaultsSelector, AllowedVaultTypes)}"
+                  selected="{vaultsSelector.isSelectedAll($vaultsSelector, vaultTypes)}"
                   solid="{false}"
                   borderSize="0"
-                  on:clicked="{() => vaultsSelector.select(AllowedVaultTypes)}"
+                  on:clicked="{() => vaultsSelector.select(vaultTypes)}"
                 >
                   <p slot="leftSlot">
                     <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
                   </p>
                 </Button>
               {/if}
-              {#each AllowedVaultTypes as vaultType}
+              {#each vaultTypes as vaultType}
                 <Button
                   label="{VaultTypesInfos[vaultType].name}"
                   width="w-max"
@@ -412,7 +413,6 @@
     <div class="w-full mb-8">
       {#if showMetrics && !$vaultsLoading}
         <Metrics vaults="{currentVaultsBasedOnType}" />
-      {:else}
         <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">
           <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>
           <div slot="body" class="bg-grey15">

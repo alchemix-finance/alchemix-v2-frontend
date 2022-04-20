@@ -87,6 +87,7 @@ export const chainIds = [
     explorer: 'https://etherscan.io/',
     token: {
       symbol: 'ETH',
+      name: 'Ethereum',
       decimals: 18,
     },
     vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
@@ -101,6 +102,7 @@ export const chainIds = [
     explorer: 'https://ftmscan.com/',
     token: {
       symbol: 'FTM',
+      name: 'Fantom',
       decimals: 18,
     },
     vaultTypes: [VaultTypes.alUSD],

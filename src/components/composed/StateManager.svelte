@@ -36,7 +36,7 @@
       });
       await Promise.all([...vaultTokens]);
 
-      await fetchAllBalances([$signer, $fullTokenList]);
+      await fetchAllBalances([$signer, $fullTokenList], netId);
 
       let vaultDebts = [];
       execute.vaultTypes.forEach((type) => {

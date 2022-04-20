@@ -51,13 +51,13 @@ export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Si
   updateAllTokens(vaultId, yieldTokens, underlyingTokens);
 }
 
-export async function fetchAllBalances([signer, fullTokenList]: [ethers.Signer, any[]]) {
+export async function fetchAllBalances([signer, fullTokenList]: [ethers.Signer, any[]], network?: string) {
   if (!signer) {
     console.error(`[fetchAllBalances]: signer is undefined`);
     return Promise.reject(`[fetchAllBalances]: signer is undefined`);
   }
 
-  const fetchETHPromise = fetchDataForETH(signer);
+  const fetchETHPromise = fetchDataForETH(signer, network);
   const fetchTokensPromises = generateTokenPromises(fullTokenList, signer);
   //
   return Promise.all([fetchETHPromise, ...fetchTokensPromises]).then((balances) => {

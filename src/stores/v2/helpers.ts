@@ -44,15 +44,15 @@ export async function fetchDataForToken(tokenAddress: string, signer: ethers.Sig
   }
 }
 
-export async function fetchDataForETH(signer: ethers.Signer): Promise<BalanceType> {
+export async function fetchDataForETH(signer: ethers.Signer, network = '0x1'): Promise<BalanceType> {
   const balance = await signer.getBalance();
 
   return {
-    symbol: 'ETH',
-    name: 'Ethereum',
+    symbol: chainIds.filter((entry) => entry.id === network)[0].token.symbol,
+    name: chainIds.filter((entry) => entry.id === network)[0].token.name,
     balance,
     address: '0xETH',
-    decimals: 18,
+    decimals: chainIds.filter((entry) => entry.id === network)[0].token.decimals,
   };
 }
 
