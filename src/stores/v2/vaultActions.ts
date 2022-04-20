@@ -94,6 +94,7 @@ export async function deposit(
       userAddressStore,
     )) as ethers.ContractTransaction;
 
+
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -147,6 +148,7 @@ export async function depositUnderlying(
       }
 
       setPendingWallet();
+
       const tx = (await alchemistInstance.depositUnderlying(
         tokenAddress,
         amountUnderlying,
@@ -296,11 +298,13 @@ export async function withdraw(
 
     setPendingWallet();
 
+
     const tx = (await alchemistInstance.withdraw(
       yieldTokenAddress,
       yieldAmount,
       accountAddress,
     )) as ethers.ContractTransaction;
+
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -341,6 +345,7 @@ export async function withdrawUnderlying(
 
     if (!useGateway) {
       setPendingWallet();
+
       const tx = (await alchemistInstance.withdrawUnderlying(
         yieldTokenAddress,
         amountUnderlying,
@@ -485,6 +490,7 @@ export async function mint(
     );
 
     setPendingWallet();
+
     const tx = (await alchemistInstance.mint(amountToBorrow, userAddress)) as ContractTransaction;
     setPendingTx();
 
@@ -526,6 +532,7 @@ export async function burn(
       const sendApe = (await underlyingTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
       await sendApe.wait();
     }
+
     const tx = (await alchemistInstance.burn(amountToBurn, addressStore)) as ContractTransaction;
 
     setPendingTx();
@@ -562,6 +569,7 @@ export async function repay(
     );
 
     setPendingWallet();
+
     const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore)) as ContractTransaction;
 
     setPendingTx();
@@ -606,6 +614,7 @@ export async function liquidate(
       amountToRepay,
       minimumAmountOut,
     )) as ContractTransaction;
+
 
     setPendingTx();
 

@@ -40,6 +40,7 @@ const infuraKeys = [
   '42e287812d1c4b038b43b550360e808c',
   'f9274d4bd94d4a9abb568ce154f36a89',
 ];
+
 const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
 const randomMainnetRpc = () => `https://mainnet.infura.io/v3/${infuraKey}`;
 
