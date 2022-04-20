@@ -18,18 +18,8 @@ import {
 } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
-import { get } from 'svelte/store';
 
 export const resetStores = async () => {
-  console.log(
-    get(balancesStore),
-    get(tokensStore),
-    get(vaultsStore),
-    get(transmutersStore),
-    get(adaptersStore),
-    get(sentinelStore),
-    get(controllerStore),
-  );
   balancesStore.set([]);
   tokensStore.set({});
   vaultsStore.set({});
@@ -37,15 +27,6 @@ export const resetStores = async () => {
   adaptersStore.set({});
   sentinelStore.set(undefined);
   controllerStore.set([]);
-  console.log(
-    get(balancesStore),
-    get(tokensStore),
-    get(vaultsStore),
-    get(transmutersStore),
-    get(adaptersStore),
-    get(sentinelStore),
-    get(controllerStore),
-  );
 };
 
 export const updateAddress = (address: string) => {

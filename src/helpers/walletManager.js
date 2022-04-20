@@ -90,7 +90,7 @@ const connect = async (preselect) => {
       await onboard.connectWallet();
     }
   } catch (e) {
-    console.log('User aborted wallet selection');
+    console.log(`[connect]: ${e}`);
   }
 };
 
@@ -98,17 +98,15 @@ export const switchChain = async (id) => {
   try {
     await onboard.setChain({ chainId: id });
   } catch (e) {
-    console.log(`[switchChain]: ${e}`);
+    console.error(`[switchChain]: ${e}`);
   }
 };
 
 const walletsSub = onboard.state.select('wallets');
 const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
   if (!!wallets && wallets.length > 0) {
-    console.log('detected wallet change, updating state...');
     const connectedWallets = wallets.map(({ label }) => label);
     window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
-    console.log('wallet readout', wallets);
     ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider);
     updateNetwork(wallets[0].chains[0].id);
     updateProvider(await ethersProvider);

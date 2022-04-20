@@ -125,47 +125,34 @@ export async function depositUnderlying(
   network: string,
   useGateway = false,
 ) {
-  console.log(amountUnderlying.toString(), amountYield.toString());
   try {
-    console.log(signerStore);
-    console.log(await new ethers.providers.JsonRpcProvider().connection);
-    console.log(await ethers.getDefaultProvider());
     const erc20Instance = erc20Contract(underlyingAddress, signerStore);
-    console.log('erc20Instance done');
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
-    console.log('path done');
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
-    console.log('alchemist done', alchemistAddress);
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
-    console.log('allowance check done');
 
     await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore], network);
-    console.log('limit check done');
 
     if (!useGateway) {
-      console.log('not using a gateway');
       if (BigNumber.from(allowance).lt(amountUnderlying)) {
-        console.log('approval needed');
         setPendingApproval();
         const sendApe = (await erc20Instance.approve(alchemistAddress)) as ethers.ContractTransaction;
         await sendApe.wait();
       }
 
       setPendingWallet();
-      console.log('set pending wallet done');
       const tx = (await alchemistInstance.depositUnderlying(
         tokenAddress,
         amountUnderlying,
         userAddressStore,
         minimumAmountOut,
       )) as ethers.ContractTransaction;
-      console.log('tx made');
 
       setPendingTx();
 
@@ -185,7 +172,6 @@ export async function depositUnderlying(
         path,
       );
       setPendingWallet();
-      console.log(amountUnderlying.toString(), minimumAmountOut.toString());
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
         tokenAddress,
