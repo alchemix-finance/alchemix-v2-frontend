@@ -21,6 +21,10 @@ export const additionalTokens = [
     network: '0x1',
     address: '0x93Dede06AE3B5590aF1d4c111BC54C3f717E4b35',
   },
+  {
+    network: '0xfa',
+    address: '0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6',
+  },
 ];
 
 export const externalLookup = [

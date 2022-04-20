@@ -14,12 +14,7 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
-  import {
-    AllowedTransmuterTypes,
-    TransmuterNameAliases,
-    VaultTypesInfos,
-    chainIds,
-  } from '@stores/v2/constants';
+  import { TransmuterNameAliases, VaultTypesInfos, chainIds } from '@stores/v2/constants';
   import { addressStore, balancesStore, transmutersStore, networkStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
@@ -199,6 +194,7 @@
   };
 
   $: onInitialize($addressStore, $balancesStore, $signer);
+  $: allowedVaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
 </script>
 
 <ViewContainer>
@@ -237,35 +233,40 @@
           canToggle="{true}"
           selected="{currentTransmuterCategories.isSelectedAll(
             $currentTransmuterCategories,
-            AllowedTransmuterTypes,
+            allowedVaultTypes,
           )}"
           solid="{false}"
           borderSize="0"
-          on:clicked="{() => currentTransmuterCategories.select(AllowedTransmuterTypes)}"
+          on:clicked="{() => currentTransmuterCategories.select(allowedVaultTypes)}"
         >
           <p slot="leftSlot">
             <img src="images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
-        {#each AllowedTransmuterTypes as transmuterType}
-          <Button
-            label="{VaultTypesInfos[transmuterType].name}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{currentTransmuterCategories.isSelected($currentTransmuterCategories, transmuterType)}"
-            solid="{false}"
-            borderSize="0"
-            on:clicked="{() => currentTransmuterCategories.select([transmuterType])}"
-          >
-            <p slot="leftSlot">
-              <img
-                src="{VaultTypesInfos[transmuterType].icon}"
-                alt="{VaultTypesInfos[transmuterType].name} transmuters"
-                class="w-5 h-5"
-              />
-            </p>
-          </Button>
-        {/each}
+        {#if allowedVaultTypes.length > 1}
+          {#each allowedVaultTypes as transmuterType}
+            <Button
+              label="{VaultTypesInfos[transmuterType].name}"
+              width="w-max"
+              canToggle="{true}"
+              selected="{currentTransmuterCategories.isSelected(
+                $currentTransmuterCategories,
+                transmuterType,
+              )}"
+              solid="{false}"
+              borderSize="0"
+              on:clicked="{() => currentTransmuterCategories.select([transmuterType])}"
+            >
+              <p slot="leftSlot">
+                <img
+                  src="{VaultTypesInfos[transmuterType].icon}"
+                  alt="{VaultTypesInfos[transmuterType].name} transmuters"
+                  class="w-5 h-5"
+                />
+              </p>
+            </Button>
+          {/each}
+        {/if}
       </div>
       <div slot="body">
         {#if transmutersLoading}
@@ -276,7 +277,7 @@
           <Table rows="{currentRowsForSelectedType}" columns="{columns}" />
         {:else}
           <div class="flex justify-center my-4">
-            <p>Didn't found any transmuters for this type of asset.</p>
+            <p>Didn't find any transmuters for this type of asset.</p>
           </div>
         {/if}
       </div>
