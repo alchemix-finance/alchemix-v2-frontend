@@ -5,7 +5,7 @@
   import { _ } from 'svelte-i18n';
   import Wallet from './Wallet.svelte';
   import { routerGuard } from '@helpers/routerGuard';
-  import { sentinelStore } from '@stores/v2/alcxStore';
+  import { sentinelStore, networkStore } from '@stores/v2/alcxStore';
   import settings from '@stores/settings';
   import { sidebarSetup } from '@stores/sidebarSetup';
   import secret from '@stores/secret';
@@ -37,7 +37,8 @@
 <ul>
   {#each sidebarSetup()
     .filter((key) => key.label !== 'sentinel')
-    .filter((key) => key.label !== 'Cows') as sidebarItem}
+    .filter((key) => key.label !== 'Cows')
+    .filter((key) => key.supportedChains.includes($networkStore)) as sidebarItem}
     <li
       class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(1) ===
       `${sidebarItem.path}`
@@ -52,7 +53,9 @@
       />
     </li>
   {/each}
-  {#each sidebarSetup().filter((key) => key.label === 'sentinel') as sidebarItem}
+  {#each sidebarSetup()
+    .filter((key) => key.label === 'sentinel')
+    .filter((key) => key.supportedChains.includes($networkStore)) as sidebarItem}
     {#if $sentinelStore}
       <li
         class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(

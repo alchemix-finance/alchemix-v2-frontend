@@ -1,7 +1,7 @@
 import { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '@helpers/contractWrapper';
 import { Signer, BigNumber, ethers, ContractTransaction } from 'ethers';
-import { VaultConstants } from './constants';
+import { VaultConstants, chainIds } from './constants';
 import {
   setPendingWallet,
   setPendingTx,
@@ -10,41 +10,18 @@ import {
   setError,
 } from '@helpers/setToast';
 
-export async function getDepositRemainder(
-  _yieldTokenAddress: string,
-  _vaultType: VaultTypes,
-  _adapterPrice: BigNumber,
-  [_signer]: [Signer],
-) {
-  try {
-    const { instance: alchemist } = contractWrapper(
-      VaultConstants[_vaultType].alchemistContractSelector,
-      _signer,
-    );
-    const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
-    const depositCap = yieldTokenParameters.maximumExpectedValue;
-    const activeBalance = yieldTokenParameters.activeBalance;
-    const harvestableBalance = yieldTokenParameters.harvestableBalance;
-    const decimals = yieldTokenParameters.decimals;
-    return depositCap.sub(
-      _adapterPrice.mul(activeBalance.add(harvestableBalance)).div(BigNumber.from(10).pow(decimals)),
-    );
-  } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
-    console.error(`[vaultActions/getDepositRemainder]: ${error}`);
-    throw Error(error);
-  }
-}
-
 export async function getVaultCapacity(
   _yieldTokenAddress: string,
   _vaultType: VaultTypes,
   [_signer]: [Signer],
+  _network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
     const { instance: alchemist } = contractWrapper(
       VaultConstants[_vaultType].alchemistContractSelector,
       _signer,
+      path,
     );
     const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
     return {
@@ -70,8 +47,9 @@ export async function limitChecker(
   _yieldTokenAddress: string,
   _vaultType: VaultTypes,
   [_signer]: [Signer],
+  _network: string,
 ) {
-  await getVaultCapacity(_yieldTokenAddress, _vaultType, [_signer]).then((response) => {
+  await getVaultCapacity(_yieldTokenAddress, _vaultType, [_signer], _network).then((response) => {
     if (_deposit.gt(response.value)) throw Error('Amount exceeds vault deposit limits');
   });
 }
@@ -83,12 +61,16 @@ export async function deposit(
   adapterPrice: BigNumber,
   decimals: number,
   [userAddressStore, signerStore]: [string, Signer],
+  _network: string,
 ) {
   try {
     const erc20Instance = erc20Contract(tokenAddress, signerStore);
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
@@ -96,7 +78,7 @@ export async function deposit(
     const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(tokenAddress);
     const amountUnderlying = amountYield.mul(underlyingPerShare).div(yieldPerShare);
 
-    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore]);
+    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore], _network);
 
     if (BigNumber.from(allowance).lt(amountYield)) {
       setPendingApproval();
@@ -105,7 +87,13 @@ export async function deposit(
     }
 
     setPendingWallet();
-    const tx = (await alchemistInstance.deposit(tokenAddress, amountYield, userAddressStore)) as ethers.ContractTransaction;
+
+    const tx = (await alchemistInstance.deposit(
+      tokenAddress,
+      amountYield,
+      userAddressStore,
+    )) as ethers.ContractTransaction;
+
 
     setPendingTx();
 
@@ -135,18 +123,22 @@ export async function depositUnderlying(
   decimals: number,
   [userAddressStore, signerStore]: [string, Signer],
   minimumAmountOut: BigNumber,
+  network: string,
   useGateway = false,
 ) {
   try {
     const erc20Instance = erc20Contract(underlyingAddress, signerStore);
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
 
-    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore]);
+    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore], network);
 
     if (!useGateway) {
       if (BigNumber.from(allowance).lt(amountUnderlying)) {
@@ -179,6 +171,7 @@ export async function depositUnderlying(
       const { instance: gatewayInstance } = contractWrapper(
         VaultConstants[typeOfVault].gatewayContractSelector,
         signerStore,
+        path,
       );
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
@@ -206,8 +199,8 @@ export async function depositUnderlying(
       });
     }
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
-    console.error(`[vaultActions/depositUnderlying]: ${error}`);
+    setError(error.data ? await error.data.data : error.message);
+    console.error(`[vaultActions/depositUnderlying]: ${await error.data}`);
     throw Error(error);
   }
 }
@@ -221,16 +214,18 @@ export async function multicallDeposit(
   maximumLoss: BigNumber,
   [userAddressStore, signerStore]: [string, Signer],
   minimumOut: BigNumber,
+  network: string,
 ) {
   try {
     const yieldTokenInstance = erc20Contract(yieldTokenAddress, signerStore);
     const underlyingTokenInstance = erc20Contract(underlyingTokenAddress, signerStore);
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
     const {
       address: alchemistAddress,
       instance: alchemistInstance,
       fragment: alchemistInterface,
-    } = contractWrapper(VaultConstants[typeOfVault].alchemistContractSelector, signerStore);
+    } = contractWrapper(VaultConstants[typeOfVault].alchemistContractSelector, signerStore, path);
 
     const yieldTokenAllowance = await yieldTokenInstance.allowanceOf(userAddressStore, alchemistAddress);
     const underlyingTokenAllowance = await underlyingTokenInstance.allowanceOf(
@@ -238,7 +233,7 @@ export async function multicallDeposit(
       alchemistAddress,
     );
 
-    await limitChecker(amountUnderlying, yieldTokenAddress, typeOfVault, [signerStore]);
+    await limitChecker(amountUnderlying, yieldTokenAddress, typeOfVault, [signerStore], network);
 
     if (BigNumber.from(yieldTokenAllowance).lt(amountYield)) {
       setPendingApproval();
@@ -290,16 +285,26 @@ export async function withdraw(
   yieldAmount: BigNumber,
   accountAddress: string,
   [signerStore]: [Signer],
+  network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     setPendingWallet();
 
-    const tx = (await alchemistInstance.withdraw(yieldTokenAddress, yieldAmount, accountAddress)) as ethers.ContractTransaction;
+
+    const tx = (await alchemistInstance.withdraw(
+      yieldTokenAddress,
+      yieldAmount,
+      accountAddress,
+    )) as ethers.ContractTransaction;
+
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -326,12 +331,16 @@ export async function withdrawUnderlying(
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
   minimumAmountOut: BigNumber,
+  network: string,
   useGateway = false,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     if (!useGateway) {
@@ -358,6 +367,7 @@ export async function withdrawUnderlying(
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
         VaultConstants[typeOfVault].gatewayContractSelector,
         signerStore,
+        path,
       );
       // check withdrawAllowance on alchemist
       // if insufficient, call approveWithdraw for amount on alchemist with spender gateway
@@ -415,11 +425,15 @@ export async function multicallWithdraw(
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
   minimumAmountOut: BigNumber,
+  network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { instance: alchemistInstance, fragment: alchemistInterface } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     const encodedWithdrawUnderlyingFunc = alchemistInterface.encodeFunctionData('withdrawUnderlying', [
@@ -464,11 +478,15 @@ export async function mint(
   userAddress: string,
   typeOfVault: VaultTypes,
   [signerStore]: [Signer],
+  network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     setPendingWallet();
@@ -495,13 +513,17 @@ export async function burn(
   amountToBurn: BigNumber,
   typeOfVault: VaultTypes,
   [signerStore, addressStore]: [Signer, string],
+  network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
 
     const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     const burnAllowanceAmount = await underlyingTokenInstance.allowanceOf(addressStore, alchemistAddress);
@@ -535,11 +557,15 @@ export async function repay(
   amountToRepay: BigNumber,
   typeOfVault: VaultTypes,
   [signerStore, addressStore]: [Signer, string],
+  network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     setPendingWallet();
@@ -570,15 +596,25 @@ export async function liquidate(
   maximumLoss: BigNumber,
   [signerStore]: [Signer],
   minimumAmountOut: BigNumber,
+  network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
+      path,
     );
 
     setPendingWallet();
-    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, minimumAmountOut)) as ContractTransaction;
+
+    const tx = (await alchemistInstance.liquidate(
+      yieldToken,
+      amountToRepay,
+      minimumAmountOut,
+    )) as ContractTransaction;
+
 
     setPendingTx();
 

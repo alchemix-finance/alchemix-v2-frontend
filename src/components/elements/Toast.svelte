@@ -4,6 +4,8 @@
   import settings from '@stores/settings';
   import cn from 'classnames';
   import { Circle } from 'svelte-loading-spinners';
+  import { chainIds } from '@stores/v2/constants';
+  import { networkStore } from '@stores/v2/alcxStore';
 
   import ToastIconButton from './ToastIconButton.svelte';
 
@@ -75,7 +77,8 @@
 
   export let showOpenButton = true;
   export let onClickOpen = () => {
-    window.open(`https://etherscan.io/tx/${$toastConfig.etherscanUrl}`, '_blank');
+    const explorer = chainIds.filter((entry) => entry.id === $networkStore)[0].explorer;
+    window.open(`${explorer}tx/${$toastConfig.etherscanUrl}`, '_blank');
   };
 
   export let showCloseButton = true;

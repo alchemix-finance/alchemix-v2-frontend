@@ -6,7 +6,13 @@
   import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { VaultTypes } from '@stores/v2/types';
-  import { addressStore, balancesStore, vaultsStore, adaptersStore } from 'src/stores/v2/alcxStore';
+  import {
+    addressStore,
+    balancesStore,
+    vaultsStore,
+    adaptersStore,
+    networkStore,
+  } from 'src/stores/v2/alcxStore';
   import { signer } from 'src/stores/v2/derived';
   import {
     fetchBalanceByAddress,
@@ -35,9 +41,10 @@
   )[0].price;
 
   const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
+    console.log(_yieldDeposit.toString(), _underlyingDeposit.toString());
     modalReset();
 
-    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer]);
+    await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer], $networkStore);
     const yieldTokens = underlyingDepositBN
       .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
       .div(adapterPrice);
@@ -54,21 +61,20 @@
         BigNumber.from(maximumLoss),
         [$addressStore, $signer],
         underlyingMinimumIn,
-        yieldTokens,
-        BigNumber.from(adapterPrice),
-        yieldTokenData.decimals,
+        $networkStore,
       )
         .then(() => {
           Promise.all([
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
             fetchBalanceByAddress(vault.address, [$signer]),
-            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
           ]).then(() => {
             console.log('[multicallDeposit/finished]: Balances and vault data updated!');
           });
         })
         .catch((e) => {
-          console.error(e);
+          const log = e.data ? e.data.message : e.message;
+          console.error(log);
         });
     } else if (_yieldDeposit.gt(0) && _underlyingDeposit.lte(0)) {
       await deposit(
@@ -78,18 +84,20 @@
         BigNumber.from(adapterPrice),
         yieldTokenData.decimals,
         [$addressStore, $signer],
+        $networkStore,
       )
         .then(() => {
           Promise.all([
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
             fetchBalanceByAddress(vault.address, [$signer]),
-            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
           ]).then(() => {
             console.log('[deposit/finished]: Balances and vault data updated!');
           });
         })
         .catch((e) => {
-          console.error(e);
+          const log = e.data ? e.data.message : e.message;
+          console.error(log);
         });
     } else {
       await depositUnderlying(
@@ -103,19 +111,21 @@
         yieldTokenData.decimals,
         [$addressStore, $signer],
         underlyingMinimumIn,
+        $networkStore,
         depositEth,
       )
         .then(() => {
           Promise.all([
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
             fetchBalanceByAddress(vault.address, [$signer]),
-            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore]),
+            fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
           ]).then(() => {
             console.log('[depositUnderlying/finished]: Balances and vault data updated!');
           });
         })
         .catch((e) => {
-          console.error(`[onButtonDeposit/depositUnderlying]`, e);
+          const log = e.data ? e.data.message : e.message;
+          console.trace(`[onButtonDeposit/depositUnderlying]`, log);
         });
     }
   };

@@ -19,6 +19,7 @@
   const eventCheck = () => {
     if (!isActive) dispatch('gasSelected');
   };
+  $: normalizedGas = typeof gasFee === 'number' ? gasFee : gasFee.baseFeePerGas + gasFee.maxPriorityFeePerGas;
 </script>
 
 <div
@@ -29,20 +30,22 @@
 >
   <div class="flex flex-row justify-between mb-3">
     <p class="capitalize font-alcxTitles text-sm {compactView ? '' : 'opacity-50'}">
-      {compactView ? `${description}: ${gasFee.baseFeePerGas + gasFee.maxPriorityFeePerGas}` : description}
+      {compactView ? `${description}: ${normalizedGas}` : description}
     </p>
     <p class="bg-{cardColor} w-4 h-1 rounded self-center"></p>
   </div>
   {#if !compactView}
     <p class="text-3xl mb-3">
-      {gasFee.baseFeePerGas + gasFee.maxPriorityFeePerGas} Gwei
+      {normalizedGas} Gwei
     </p>
   {/if}
-  <div class="flex flex-row justify-between">
-    <p class="text-sm opacity-50">{$_('base')}: {gasFee.baseFeePerGas}</p>
-    <p class="text-sm opacity-50">
-      {$_('prio')}: {gasFee.maxPriorityFeePerGas}
-    </p>
-    <p class="text-sm opacity-50">{$_('max')}: {gasFee.maxFeePerGas}</p>
-  </div>
+  {#if typeof gasFee === 'object'}
+    <div class="flex flex-row justify-between">
+      <p class="text-sm opacity-50">{$_('base')}: {gasFee.baseFeePerGas}</p>
+      <p class="text-sm opacity-50">
+        {$_('prio')}: {gasFee.maxPriorityFeePerGas}
+      </p>
+      <p class="text-sm opacity-50">{$_('max')}: {gasFee.maxFeePerGas}</p>
+    </div>
+  {/if}
 </div>

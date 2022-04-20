@@ -14,8 +14,8 @@
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
-  import { AllowedTransmuterTypes, TransmuterNameAliases, VaultTypesInfos } from '@stores/v2/constants';
-  import { addressStore, balancesStore, transmutersStore } from '@stores/v2/alcxStore';
+  import { TransmuterNameAliases, VaultTypesInfos, chainIds } from '@stores/v2/constants';
+  import { addressStore, balancesStore, transmutersStore, networkStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
@@ -93,11 +93,13 @@
           return {};
         }
 
+        console.log(_transmuterData, [balancesStore]);
         const synthTokenData = getTokenDataFromBalances(_transmuterData.synthAddress, [balancesStore]);
         const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
           balancesStore,
         ]);
 
+        console.log(synthTokenData);
         const tokenPrice = $global.tokenPrices.find(
           (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
         )?.price;
@@ -180,15 +182,19 @@
       return;
     }
 
-    Promise.all([
-      fetchTransmutersForVaultType(VaultTypes.alUSD, [signer, addressStore]),
-      fetchTransmutersForVaultType(VaultTypes.alETH, [signer, addressStore]),
-    ]).then(() => {
+    let transmuterSelection = [];
+    const transmuterFilter = chainIds.filter((entry) => entry.id === $networkStore)[0];
+    transmuterFilter.vaultTypes.forEach((type) => {
+      transmuterSelection.push(fetchTransmutersForVaultType(type, [signer, addressStore], $networkStore));
+    });
+
+    Promise.all([...transmuterSelection]).then(() => {
       transmutersLoading = false;
     });
   };
 
   $: onInitialize($addressStore, $balancesStore, $signer);
+  $: allowedVaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
 </script>
 
 <ViewContainer>
@@ -227,35 +233,40 @@
           canToggle="{true}"
           selected="{currentTransmuterCategories.isSelectedAll(
             $currentTransmuterCategories,
-            AllowedTransmuterTypes,
+            allowedVaultTypes,
           )}"
           solid="{false}"
           borderSize="0"
-          on:clicked="{() => currentTransmuterCategories.select(AllowedTransmuterTypes)}"
+          on:clicked="{() => currentTransmuterCategories.select(allowedVaultTypes)}"
         >
           <p slot="leftSlot">
             <img src="images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
-        {#each AllowedTransmuterTypes as transmuterType}
-          <Button
-            label="{VaultTypesInfos[transmuterType].name}"
-            width="w-max"
-            canToggle="{true}"
-            selected="{currentTransmuterCategories.isSelected($currentTransmuterCategories, transmuterType)}"
-            solid="{false}"
-            borderSize="0"
-            on:clicked="{() => currentTransmuterCategories.select([transmuterType])}"
-          >
-            <p slot="leftSlot">
-              <img
-                src="{VaultTypesInfos[transmuterType].icon}"
-                alt="{VaultTypesInfos[transmuterType].name} transmuters"
-                class="w-5 h-5"
-              />
-            </p>
-          </Button>
-        {/each}
+        {#if allowedVaultTypes.length > 1}
+          {#each allowedVaultTypes as transmuterType}
+            <Button
+              label="{VaultTypesInfos[transmuterType].name}"
+              width="w-max"
+              canToggle="{true}"
+              selected="{currentTransmuterCategories.isSelected(
+                $currentTransmuterCategories,
+                transmuterType,
+              )}"
+              solid="{false}"
+              borderSize="0"
+              on:clicked="{() => currentTransmuterCategories.select([transmuterType])}"
+            >
+              <p slot="leftSlot">
+                <img
+                  src="{VaultTypesInfos[transmuterType].icon}"
+                  alt="{VaultTypesInfos[transmuterType].name} transmuters"
+                  class="w-5 h-5"
+                />
+              </p>
+            </Button>
+          {/each}
+        {/if}
       </div>
       <div slot="body">
         {#if transmutersLoading}
@@ -266,7 +277,7 @@
           <Table rows="{currentRowsForSelectedType}" columns="{columns}" />
         {:else}
           <div class="flex justify-center my-4">
-            <p>Didn't found any transmuters for this type of asset.</p>
+            <p>Didn't find any transmuters for this type of asset.</p>
           </div>
         {/if}
       </div>

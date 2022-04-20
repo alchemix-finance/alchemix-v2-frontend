@@ -14,9 +14,20 @@ import {
   farmsStore,
   FarmStoreType,
   networkStore,
+  controllerStore,
 } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
+
+export const resetStores = async () => {
+  balancesStore.set([]);
+  tokensStore.set({});
+  vaultsStore.set({});
+  transmutersStore.set({});
+  adaptersStore.set({});
+  sentinelStore.set(undefined);
+  controllerStore.set([]);
+};
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);

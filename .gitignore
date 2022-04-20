@@ -118,6 +118,3 @@ package-lock.json
 # storybook build directory
 storybook-static/
 
-# testing in prod, do not commit abis
-src/abi/
-src/external-abi/

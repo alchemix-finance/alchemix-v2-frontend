@@ -1,5 +1,5 @@
 {
-  "address": "0x1EEd2DbeB9fc23Ab483F447F38F289cA15f79Bac",
+  "address": "0x44027C9Ea196a503b1883825938f5FcAe387a1a7",
   "abi": [
     {
       "inputs": [],
@@ -44,8 +44,97 @@
     },
     {
       "anonymous": false,
-      "inputs": [],
-      "name": "RefreshStrategies",
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "AdminUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Claim",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Exchange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "flag",
+          "type": "bool"
+        }
+      ],
+      "name": "Paused",
       "type": "event"
     },
     {
@@ -54,17 +143,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "transmuter",
+          "name": "pendingAdmin",
           "type": "address"
         }
       ],
-      "name": "RegisterAsset",
+      "name": "PendingAdminUpdated",
       "type": "event"
     },
     {
@@ -146,70 +229,25 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
-          "name": "alchemist",
+          "name": "sender",
           "type": "address"
-        }
-      ],
-      "name": "SetAlchemist",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
+        },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
-          "name": "underlyingToken",
+          "name": "recipient",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "flowRate",
+          "name": "amount",
           "type": "uint256"
         }
       ],
-      "name": "SetFlowRate",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "source",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "flag",
-          "type": "bool"
-        }
-      ],
-      "name": "SetSource",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "transmuter",
-          "type": "address"
-        }
-      ],
-      "name": "SetTransmuter",
+      "name": "Withdraw",
       "type": "event"
     },
     {
@@ -240,7 +278,7 @@
     },
     {
       "inputs": [],
-      "name": "KEEPER",
+      "name": "SENTINEL",
       "outputs": [
         {
           "internalType": "bytes32",
@@ -252,19 +290,8 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "_yieldTokens",
+      "inputs": [],
+      "name": "ZERO_ADDRESS",
       "outputs": [
         {
           "internalType": "address",
@@ -277,46 +304,7 @@
     },
     {
       "inputs": [],
-      "name": "alchemist",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "burnCredit",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "currentExchanged",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "debtToken",
+      "name": "buffer",
       "outputs": [
         {
           "internalType": "address",
@@ -329,18 +317,49 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
         {
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
         }
       ],
-      "name": "depositFunds",
+      "name": "claim",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "conversionFactor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "deposit",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -348,9 +367,9 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
         }
       ],
       "name": "exchange",
@@ -362,15 +381,15 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "owner",
           "type": "address"
         }
       ],
-      "name": "flowAvailable",
+      "name": "getClaimableBalance",
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "claimableBalance",
           "type": "uint256"
         }
       ],
@@ -381,34 +400,15 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "owner",
           "type": "address"
         }
       ],
-      "name": "flowRate",
+      "name": "getExchangedBalance",
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        }
-      ],
-      "name": "getAvailableFlow",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
+          "name": "exchangedBalance",
           "type": "uint256"
         }
       ],
@@ -435,55 +435,18 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getTotalCredit",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "credit",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
-          "name": "underlyingToken",
+          "name": "owner",
           "type": "address"
         }
       ],
-      "name": "getTotalUnderlyingBuffered",
+      "name": "getUnexchangedBalance",
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "totalBuffered",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "weightToken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        }
-      ],
-      "name": "getWeight",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "weight",
+          "name": "unexchangedBalance",
           "type": "uint256"
         }
       ],
@@ -536,12 +499,22 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_admin",
+          "name": "_syntheticToken",
           "type": "address"
         },
         {
           "internalType": "address",
-          "name": "_debtToken",
+          "name": "_underlyingToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_buffer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_whitelist",
           "type": "address"
         }
       ],
@@ -551,81 +524,13 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "lastFlowrateUpdate",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "onERC20Received",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
-      "name": "refreshStrategies",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_transmuter",
-          "type": "address"
-        }
-      ],
-      "name": "registerAsset",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "registeredUnderlyings",
+      "name": "isPaused",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "bool",
           "name": "",
-          "type": "address"
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -671,109 +576,26 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_alchemist",
+          "name": "_newCollateralSource",
           "type": "address"
         }
       ],
-      "name": "setAlchemist",
+      "name": "setCollateralSource",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_flowRate",
-          "type": "uint256"
-        }
-      ],
-      "name": "setFlowRate",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "source",
-          "type": "address"
-        },
         {
           "internalType": "bool",
-          "name": "flag",
+          "name": "pauseState",
           "type": "bool"
         }
       ],
-      "name": "setSource",
+      "name": "setPause",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "newTransmuter",
-          "type": "address"
-        }
-      ],
-      "name": "setTransmuter",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "weightToken",
-          "type": "address"
-        },
-        {
-          "internalType": "address[]",
-          "name": "tokens",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "weights",
-          "type": "uint256[]"
-        }
-      ],
-      "name": "setWeights",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "sources",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -796,14 +618,47 @@
       "type": "function"
     },
     {
-      "inputs": [
+      "inputs": [],
+      "name": "syntheticToken",
+      "outputs": [
         {
           "internalType": "address",
           "name": "",
           "type": "address"
         }
       ],
-      "name": "transmuter",
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalBuffered",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalUnexchanged",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "underlyingToken",
       "outputs": [
         {
           "internalType": "address",
@@ -828,19 +683,13 @@
       "type": "function"
     },
     {
-      "inputs": [
+      "inputs": [],
+      "name": "whitelist",
+      "outputs": [
         {
           "internalType": "address",
           "name": "",
           "type": "address"
-        }
-      ],
-      "name": "weightings",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "totalWeight",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -848,11 +697,6 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "underlyingToken",
-          "type": "address"
-        },
         {
           "internalType": "uint256",
           "name": "amount",
@@ -868,29 +712,7 @@
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "yieldToken",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "shares",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minimumAmountOut",
-          "type": "uint256"
-        }
-      ],
-      "name": "withdrawFromAlchemist",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
     }
-  ]
+  ],
+  "numDeployments": 4
 }
