@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import global from '../stores/global';
-import tokenPrices from '@stores/tokenPrices';
+import tokenPrices from '../stores/tokenPrices';
 
 let _global;
 let _tokenPrices;
@@ -20,9 +20,9 @@ tokenPrices.subscribe((val) => {
  * @param endpoint the zapper endpoint as per their documentation
  * @param timeout optional parameter to limit request retries
  * */
-function connector(endpoint, timeout) {
+function connector(endpoint, timeout, network, version) {
   return {
-    url: `https://api.zapper.fi/v1/${endpoint}?api_key=${process.env.ZAPPER_KEY}&eip1559=true&network=ethereum`,
+    url: `https://api.zapper.fi/${version}/${endpoint}?api_key=${process.env.ZAPPER_KEY}&eip1559=true&network=${network}`,
     method: 'GET',
     headers: {
       Authorization: process.env.ZAPPER_KEY,
@@ -33,7 +33,7 @@ function connector(endpoint, timeout) {
 
 // @dev retrieves the fiat conversion rates
 export async function getFiatRates() {
-  await axios(connector('fiat-rates'))
+  await axios(connector('fiat-rates', null, 'ethereum', 'v1'))
     .then((result) => {
       _global.fiatRates = result.data;
       global.set({ ..._global });
@@ -42,13 +42,12 @@ export async function getFiatRates() {
       console.error(error);
       _global.fiatRates = { USD: 1 };
       global.set({ ..._global });
-      throw error;
     });
 }
 
 // @dev retrieves all available token prices
-export async function getTokenPrices() {
-  await axios(connector('prices'))
+export async function getTokenPrices(network) {
+  await axios(connector('prices', null, network || 'ethereum', 'v2'))
     .then((result) => {
       _global.tokenPrices = result.data;
       _tokenPrices = result.data;
@@ -61,15 +60,15 @@ export async function getTokenPrices() {
       _tokenPrices = [];
       global.set({ ..._global });
       tokenPrices.set([..._tokenPrices]);
-      throw error;
     });
 }
 
 // @dev retrieves three levels of current gas prices
-export async function getGasPrices(timeout) {
-  await axios(connector('gas-prices', timeout || 0))
+export async function getGasPrices(timeout, network) {
+  await axios(connector('gas-prices', timeout || 0, network || 'ethereum', 'v1'))
     .then((result) => {
       _global.gasPrices = {
+        eip1559: result.data.eip1559,
         standard: result.data.standard,
         fast: result.data.fast,
         instant: result.data.instant,
@@ -84,6 +83,5 @@ export async function getGasPrices(timeout) {
         instant: 0,
       };
       global.set({ ..._global });
-      throw error;
     });
 }
