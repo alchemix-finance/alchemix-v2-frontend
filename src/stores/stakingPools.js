@@ -23,7 +23,7 @@ export const additionalTokens = [
   },
   {
     network: '0xfa',
-    address: '0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6',
+    address: '0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E',
   },
 ];
 

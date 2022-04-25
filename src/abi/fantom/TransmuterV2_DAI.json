@@ -1,5 +1,5 @@
 {
-  "address": "0x44027C9Ea196a503b1883825938f5FcAe387a1a7",
+  "address": "0x486FCC9385dCd16fE9ac21a959B072dcB58912e0",
   "abi": [
     {
       "inputs": [],
@@ -714,5 +714,5 @@
       "type": "function"
     }
   ],
-  "numDeployments": 4
+  "numDeployments": 1
 }

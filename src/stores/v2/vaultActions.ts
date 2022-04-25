@@ -94,7 +94,6 @@ export async function deposit(
       userAddressStore,
     )) as ethers.ContractTransaction;
 
-
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -298,7 +297,6 @@ export async function withdraw(
 
     setPendingWallet();
 
-
     const tx = (await alchemistInstance.withdraw(
       yieldTokenAddress,
       yieldAmount,
@@ -481,6 +479,7 @@ export async function mint(
   network: string,
 ) {
   try {
+    console.log(amountToBorrow.toString());
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
     const { instance: alchemistInstance } = contractWrapper(
@@ -614,7 +613,6 @@ export async function liquidate(
       amountToRepay,
       minimumAmountOut,
     )) as ContractTransaction;
-
 
     setPendingTx();
 
