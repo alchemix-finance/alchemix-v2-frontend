@@ -142,7 +142,7 @@
     const vaultWithdraw = rawWithdraw < 0 ? 0 : rawWithdraw;
     return {
       vaultType: vault.type,
-      token: vault.debtTokenAddress,
+      token: vault.debtToken,
       ratio,
       depositValue,
       debtLimit,
@@ -261,6 +261,7 @@
             perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
             symbol: underlyingTokenData.symbol,
+            address: underlyingTokenData.address,
           },
           colSize: 2,
         },
@@ -272,6 +273,7 @@
             perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
             symbol: underlyingTokenData.symbol,
+            address: underlyingTokenData.address,
           },
           colSize: 2,
         },
@@ -446,7 +448,7 @@
 
     <div class="w-full mb-8">
       {#if showMetrics && aggregated.length > 0}
-        <Metrics aggregate="{aggregated}" />
+        <!--        <Metrics aggregate="{aggregated}" />-->
         <!--{:else}-->
         <!--  <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">-->
         <!--    <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>-->

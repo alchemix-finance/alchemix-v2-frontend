@@ -20,7 +20,7 @@
   import ClaimableCell from '@components/composed/Table/farms/ClaimableCell';
   import { BarLoader } from 'svelte-loading-spinners';
   import tokenPrices from '@stores/tokenPrices';
-  import { addressStore, farmsStore, networkStore } from '@stores/v2/alcxStore';
+  import { addressStore, farmsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
   import { ExternalFarmsMetadata, InternalFarmsMetadata } from '@stores/v2/farmsConstants';
@@ -31,6 +31,7 @@
   import GAlcxWrapper from '@components/composed/GAlcxWrapper';
   import YieldCell from '@components/composed/Table/YieldCell';
   import settings from '@stores/settings';
+  import TvlCell from '@components/composed/Table/farms/TvlCell.svelte';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,
@@ -203,8 +204,8 @@
               colSize: 2,
             },
             col2: {
-              CellComponent: CurrencyCell,
-              value: adapter.getTvl(),
+              CellComponent: TvlCell,
+              tvl: adapter.getTvl(),
               colSize: 2,
             },
             col3: {
@@ -270,7 +271,7 @@
       });
   };
 
-  $: filteredRows = renderRows($farmsStore, $tokenPrices, currentFilter);
+  $: filteredRows = renderRows($farmsStore, $tokenPriceStore, currentFilter);
 
   let loadingVaults = true;
 

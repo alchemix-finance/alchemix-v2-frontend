@@ -63,6 +63,21 @@ export interface TransmutersType {
   };
 }
 
+export type TokenPrice = {
+  symbol: string;
+  address: string;
+};
+
+export interface TokenPriceType {
+  [address: string]: {
+    type: TokenPrice;
+  };
+}
+
+export interface TokenPriceStoreType {
+  type: TokenPriceType;
+}
+
 export interface FarmStoreType {
   type: FarmTypes;
   body: any;
@@ -84,5 +99,6 @@ export const adaptersStore = writable<AdaptersType>({});
 export const sentinelStore = writable<boolean>(undefined);
 export const controllerStore = writable<[]>([]);
 export const networkStore = writable<string>(undefined);
+export const tokenPriceStore = writable<TokenPriceStoreType[]>([]);
 
 export const farmsStore = writable<FarmStoreType[]>([]);

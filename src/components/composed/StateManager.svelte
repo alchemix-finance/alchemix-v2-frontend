@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { addressStore, networkStore, tokensStore } from '@stores/v2/alcxStore';
+  import { addressStore, networkStore, tokensStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { fullTokenList, signer } from '@stores/v2/derived';
   import {
     fetchAdaptersForVaultType,
@@ -70,11 +70,11 @@
       execute.vaultTypes.forEach((type) => {
         adapters.push(fetchAdaptersForVaultType(type, [$signer], netId));
       });
-      await Promise.all([...adapters]);
-
-      lastConnection.chainId = netId;
-      lastConnection.address = $addressStore;
-      initStarted = false;
+      await Promise.all([...adapters]).then(() => {
+        lastConnection.chainId = netId;
+        lastConnection.address = $addressStore;
+        initStarted = false;
+      });
 
       console.log(`[StateManager]: Connected with address ${$addressStore}`);
     }

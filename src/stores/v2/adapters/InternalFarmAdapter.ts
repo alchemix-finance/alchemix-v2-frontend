@@ -10,8 +10,8 @@ export class InternalFarmAdapter extends IFarmAdapter {
     const _fRewardRate = parseFloat(utils.formatEther(rewardRate));
     const _fTotalPoolDeposits = parseFloat(utils.formatEther(tvl || tvl[0]));
 
-    const _fWethPrice = this.getPrice('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
-    const _fTokenprice = this.getPrice('0xdbdb4d16eda451d0503b854cf79d55697f90c8df');
+    const _fWethPrice = this.getPrice('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2').usd;
+    const _fTokenprice = this.getPrice('0xdbdb4d16eda451d0503b854cf79d55697f90c8df').usd;
     const _fRewardsPerWeek = _fRewardRate * 45000;
 
     const _fAprSaddle =
@@ -44,6 +44,12 @@ export class InternalFarmAdapter extends IFarmAdapter {
       Object.keys(TokenOverride).includes(lookupValue) ? TokenOverride[`${lookupValue}`] : tokenAddress,
     );
 
-    return parseFloat(utils.formatEther(tvl || tvl[0])) * _tokenPrice;
+    return [
+      {
+        tvl: utils.formatEther(tvl || tvl[0]),
+        tokenPrice: _tokenPrice,
+        tokenAddress,
+      },
+    ];
   }
 }

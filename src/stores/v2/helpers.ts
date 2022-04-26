@@ -12,9 +12,17 @@ import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { getLidoApr } from '@middleware/lido';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
+import { getTokenPrices } from '@middleware/coingecko';
+import global from '@stores/global';
+import { get } from 'svelte/store';
+
+function getCurrencies(): string[] {
+  const globalStore = get(global);
+  // @ts-ignore
+  return globalStore.allCurrencies.map((entry) => entry.symbol);
+}
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
-  console.log(tokenAddress);
   const tokenContract = erc20Contract(tokenAddress, signer);
 
   const address = await signer.getAddress();
@@ -23,7 +31,6 @@ export async function fetchDataForToken(tokenAddress: string, signer: ethers.Sig
     const symbol = (await tokenContract.symbol()) || '';
     const decimals = (await tokenContract.decimals()) || 18;
     const balance = (await tokenContract.balanceOf(address)) || 0;
-
     return {
       address: tokenAddress,
       name,
@@ -56,7 +63,13 @@ export async function fetchDataForETH(signer: ethers.Signer, network = '0x1'): P
   };
 }
 
-export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer) => {
+export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer, network?: string) => {
+  const networkName = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+  getTokenPrices(
+    networkName || 'ethereum',
+    _tokens.map((token) => token),
+    getCurrencies(),
+  );
   return _tokens.map((token) => fetchDataForToken(token, signer));
 };
 
@@ -189,7 +202,7 @@ export function calculateVaultDebt(
 }
 
 export function getTokenDataFromBalances(address: string, [balancesStore]: [BalanceType[]]) {
-  return balancesStore.find((val) => `${val.address}` === `${address}`);
+  return balancesStore.find((val) => `${val.address}`.toLowerCase() === `${address}`.toLowerCase());
 }
 
 export function getTokenDataFromBalancesBySymbol(symbol: string, [balancesStore]: [BalanceType[]]) {

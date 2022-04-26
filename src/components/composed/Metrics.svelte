@@ -3,24 +3,30 @@
   import global from '@stores/global';
   import settings from '@stores/settings';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader';
+  import { tokenPriceStore } from '@stores/v2/alcxStore';
 
   export let aggregate;
 
   // const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
   // const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
 
-  const toFiat = (_amount) => {
+  $: currency = $settings.baseCurrency.symbol;
+  const getTokenPrice = (address) => $tokenPriceStore[address.toLowerCase()][currency.toLowerCase()];
+  const toFiat = (amount, address) => {
     return new Intl.NumberFormat($settings.userLanguage.locale, {
       style: 'currency',
-      currency: $settings.baseCurrency.symbol,
-    }).format(parseFloat((_amount * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+      currency: currency,
+    }).format(parseFloat(amount * getTokenPrice(address)).toFixed(2));
   };
 
+  $: console.log(aggregate);
+
   $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
+  $: console.log(totalDeposit);
   $: totalDepositFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((totalDeposit * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+  }).format(parseFloat((totalDeposit * (getTokenPrice(aggregate.token) || 1)).toFixed(2)));
   $: openDebt = aggregate
     .reduce((list, item) => {
       if (!list.some((obj) => obj.vaultType === item.vaultType)) {
