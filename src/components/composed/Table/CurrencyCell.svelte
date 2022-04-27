@@ -12,7 +12,6 @@
   let normalizedValue;
 
   $: currency = $settings.baseCurrency.symbol;
-  $: console.log($tokenPriceStore, token);
   $: tokenPrice = $tokenPriceStore[token?.address.toLowerCase()][currency.toLowerCase()];
   $: tokenFormatted = utils.formatUnits(token?.balance || 0, token?.decimals || 18);
 

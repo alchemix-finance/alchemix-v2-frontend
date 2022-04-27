@@ -1,34 +1,24 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import global from '@stores/global';
   import settings from '@stores/settings';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader';
-  import { tokenPriceStore } from '@stores/v2/alcxStore';
 
   export let aggregate;
 
   // const getUpDownIndicator = (isIncrease) => (isIncrease ? '▲' : '▼');
   // const getPlusOrMinusIndicator = (isIncrease) => (isIncrease ? '+' : '-');
 
-  $: currency = $settings.baseCurrency.symbol;
-  const getTokenPrice = (address) => $tokenPriceStore[address.toLowerCase()][currency.toLowerCase()];
-  const toFiat = (amount, address) => {
+  const getFormattedValue = (amount) => {
     return new Intl.NumberFormat($settings.userLanguage.locale, {
       style: 'currency',
-      currency: currency,
-    }).format(parseFloat(amount * getTokenPrice(address)).toFixed(2));
+      currency: $settings.baseCurrency.symbol,
+    }).format(parseFloat(amount.toFixed(2)));
   };
 
-  $: console.log(aggregate);
-
-  $: totalDeposit = aggregate.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
-  $: console.log(totalDeposit);
-  $: totalDepositFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
-    style: 'currency',
-    currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((totalDeposit * (getTokenPrice(aggregate.token) || 1)).toFixed(2)));
+  $: totalDeposit = aggregate?.map((val) => val.depositValue).reduce((prev, curr) => prev + curr);
+  $: totalDepositFiat = getFormattedValue(totalDeposit);
   $: openDebt = aggregate
-    .reduce((list, item) => {
+    ?.reduce((list, item) => {
       if (!list.some((obj) => obj.vaultType === item.vaultType)) {
         list.push(item);
       }
@@ -36,21 +26,12 @@
     }, [])
     .map((val) => val.vaultDebt)
     .reduce((prev, curr) => prev + curr);
-  $: openDebtFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
-    style: 'currency',
-    currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((openDebt * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
-  $: openCreditRaw = aggregate.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr) - openDebt;
+  $: openDebtFiat = getFormattedValue(openDebt);
+  $: openCreditRaw = aggregate?.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr) - openDebt;
   $: openCredit = openCreditRaw < 0 ? openCreditRaw * -1 : openCreditRaw;
-  $: openCreditFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
-    style: 'currency',
-    currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((openCredit * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
-  $: tvl = aggregate.map((val) => val.tvlValue).reduce((prev, curr) => prev + curr);
-  $: tvlFiat = new Intl.NumberFormat($settings.userLanguage.locale, {
-    style: 'currency',
-    currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat((tvl * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+  $: openCreditFiat = getFormattedValue(openCredit);
+  $: tvl = aggregate?.map((val) => val.tvlValue).reduce((prev, curr) => prev + curr);
+  $: tvlFiat = getFormattedValue(tvl);
 </script>
 
 <div class="w-full flex flex-row space-x-4">
