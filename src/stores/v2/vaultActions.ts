@@ -105,7 +105,11 @@ export async function deposit(
     }
 
     setPendingWallet();
-    const tx = (await alchemistInstance.deposit(tokenAddress, amountYield, userAddressStore)) as ethers.ContractTransaction;
+    const tx = (await alchemistInstance.deposit(
+      tokenAddress,
+      amountYield,
+      userAddressStore,
+    )) as ethers.ContractTransaction;
 
     setPendingTx();
 
@@ -299,7 +303,11 @@ export async function withdraw(
 
     setPendingWallet();
 
-    const tx = (await alchemistInstance.withdraw(yieldTokenAddress, yieldAmount, accountAddress)) as ethers.ContractTransaction;
+    const tx = (await alchemistInstance.withdraw(
+      yieldTokenAddress,
+      yieldAmount,
+      accountAddress,
+    )) as ethers.ContractTransaction;
     setPendingTx();
 
     return await tx.wait().then((transaction) => {
@@ -537,12 +545,19 @@ export async function repay(
   [signerStore, addressStore]: [Signer, string],
 ) {
   try {
-    const { instance: alchemistInstance } = contractWrapper(
+    const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
+
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
     );
 
+    const allowanceAmount = await underlyingTokenInstance.allowanceOf(addressStore, alchemistAddress);
     setPendingWallet();
+    if (amountToRepay.gt(allowanceAmount)) {
+      const sendApe = (await underlyingTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      await sendApe.wait();
+    }
 
     const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore)) as ContractTransaction;
 
@@ -568,17 +583,29 @@ export async function liquidate(
   amountToRepay: BigNumber,
   typeOfVault: VaultTypes,
   maximumLoss: BigNumber,
-  [signerStore]: [Signer],
+  [signerStore, addressStore]: [Signer, string],
   minimumAmountOut: BigNumber,
 ) {
   try {
-    const { instance: alchemistInstance } = contractWrapper(
+    const yieldTokenInstance = erc20Contract(yieldToken, signerStore);
+
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
     );
 
+    const allowanceAmount = await yieldTokenInstance.allowanceOf(addressStore, alchemistAddress);
     setPendingWallet();
-    const tx = (await alchemistInstance.liquidate(yieldToken, amountToRepay, minimumAmountOut)) as ContractTransaction;
+    if (amountToRepay.gt(allowanceAmount)) {
+      const sendApe = (await yieldTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      await sendApe.wait();
+    }
+
+    const tx = (await alchemistInstance.liquidate(
+      yieldToken,
+      amountToRepay,
+      minimumAmountOut,
+    )) as ContractTransaction;
 
     setPendingTx();
 
