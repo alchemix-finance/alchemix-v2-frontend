@@ -20,7 +20,7 @@
   import { showModal, modalReset } from '@stores/modal';
   import global from '@stores/global';
   import settings from '@stores/settings';
-  import { balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
+  import { balancesStore, vaultsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
   import makeSelectorStore from 'src/stores/v2/selectorStore';
@@ -120,9 +120,11 @@
 
   $: aggregated = currentVaultsBasedOnType.map((vault) => {
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
-    const tokenPrice = $global.tokenPrices.find(
-      (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
-    )?.price;
+    // const tokenPrice = $global.tokenPrices.find(
+    //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
+    // )?.price;
+    const currency = $settings.baseCurrency.symbol;
+    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
     const depositValue = calculateBalanceValue(
       vault.balance,
@@ -142,7 +144,7 @@
     const vaultWithdraw = rawWithdraw < 0 ? 0 : rawWithdraw;
     return {
       vaultType: vault.type,
-      token: vault.debtTokenAddress,
+      token: vault.debtToken,
       ratio,
       depositValue,
       debtLimit,
@@ -159,9 +161,11 @@
     const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
     const debtTokenData = getTokenDataFromBalances(vault.debtToken, [$balancesStore]);
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
-    const tokenPrice = $global.tokenPrices.find(
-      (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
-    )?.price;
+    // const tokenPrice = $global.tokenPrices.find(
+    //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
+    // )?.price;
+    const currency = $settings.baseCurrency.symbol;
+    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
@@ -261,6 +265,7 @@
             perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
             symbol: underlyingTokenData.symbol,
+            address: underlyingTokenData.address,
           },
           colSize: 2,
         },
@@ -272,6 +277,7 @@
             perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
             symbol: underlyingTokenData.symbol,
+            address: underlyingTokenData.address,
           },
           colSize: 2,
         },

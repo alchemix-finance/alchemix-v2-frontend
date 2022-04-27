@@ -58,7 +58,7 @@ export async function fetchAllBalances([signer, fullTokenList]: [ethers.Signer, 
   }
 
   const fetchETHPromise = fetchDataForETH(signer, network);
-  const fetchTokensPromises = generateTokenPromises(fullTokenList, signer);
+  const fetchTokensPromises = generateTokenPromises(fullTokenList, signer, network);
   //
   return Promise.all([fetchETHPromise, ...fetchTokensPromises]).then((balances) => {
     updateAllBalances([...balances]);
