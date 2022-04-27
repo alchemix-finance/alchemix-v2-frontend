@@ -15,7 +15,13 @@
   import makeSelectorStore from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
   import { TransmuterNameAliases, VaultTypesInfos, chainIds } from '@stores/v2/constants';
-  import { addressStore, balancesStore, transmutersStore, networkStore } from '@stores/v2/alcxStore';
+  import {
+    addressStore,
+    balancesStore,
+    transmutersStore,
+    networkStore,
+    tokenPriceStore,
+  } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { fetchTransmutersForVaultType } from '@stores/v2/asyncMethods';
   import { signer } from '@stores/v2/derived';
@@ -93,16 +99,18 @@
           return {};
         }
 
-        console.log(_transmuterData, [balancesStore]);
         const synthTokenData = getTokenDataFromBalances(_transmuterData.synthAddress, [balancesStore]);
         const underlyingTokenData = getTokenDataFromBalances(_transmuterData.underlyingTokenAddress, [
           balancesStore,
         ]);
 
-        console.log(synthTokenData);
-        const tokenPrice = $global.tokenPrices.find(
-          (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
-        )?.price;
+        // const tokenPrice = $global.tokenPrices.find(
+        //   (token) => token.address.toLowerCase() === synthTokenData.address.toLowerCase(),
+        // )?.price;
+        const tokenPrice =
+          $tokenPriceStore[underlyingTokenData.address.toLowerCase()][
+            $settings.baseCurrency.symbol.toLowerCase()
+          ];
 
         const nameAlias = TransmuterNameAliases[`${underlyingTokenData?.symbol}`.toLowerCase()] || '';
 
@@ -133,7 +141,7 @@
             CellComponent: CurrencyCell,
             value: depositValue,
             token: {
-              balance: totalDeposited.mul(BigNumber.from(10).pow(18)),
+              balance: totalDeposited,
               symbol: synthTokenData?.symbol || '',
               perShare: 1,
               decimals: 18,
@@ -145,7 +153,7 @@
             CellComponent: CurrencyCell,
             value: withdrawValue,
             token: {
-              balance: _transmuterData.unexchangedBalanceBN.mul(BigNumber.from(10).pow(18)),
+              balance: _transmuterData.unexchangedBalanceBN,
               symbol: synthTokenData?.symbol || '',
               perShare: 1,
               decimals: 18,
