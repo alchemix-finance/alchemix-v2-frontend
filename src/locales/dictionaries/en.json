@@ -32,6 +32,7 @@
   "my": "My",
   "vaults": "Vaults",
   "transmuter": "Transmuter",
+  "swap": "Swap",
   "farms": "Farms",
   "submit": "Submit",
   "base": "Base",
@@ -114,6 +115,11 @@
     "saddle_text": "Deposit alUSD, FEI, FRAX, and/or LUSD to earn ALCX, TRIBE, FXS and LQTY",
     "sushi_text": "Deposit alUSD and ETH on Sushiswap to earn SUSHI",
     "mstable_text": "Deposit alUSD to earn MTA"
+  },
+  "swap_page": {
+    "title": "Swap",
+    "subtitle": "Swap your tokens or bridge them to other chains",
+    "bridge": "Multichain Bridge"
   },
   "transmuter_page": {
     "title": "Transmuter",

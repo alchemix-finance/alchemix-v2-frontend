@@ -73,12 +73,19 @@
   $: $network, resolveIndicator($networkStore);
   $: $network, resolveHuman($account.address);
   $: networkIcon = chainIds.filter((item) => item.id === $networkStore)[0]?.icon;
+  $: networkColor = chainIds.filter((item) => item.id === $networkStore)[0]?.abiPath;
 </script>
 
 <BorderContainer>
   {#if $account.signer}
     <div class="flex space-x-2">
-      <Button width="w-max" height="h-10" label="" on:clicked="{() => chainSelectCollapse()}">
+      <Button
+        backgroundColor="{networkColor}"
+        width="w-max"
+        height="h-10"
+        label=""
+        on:clicked="{() => chainSelectCollapse()}"
+      >
         <img slot="rightSlot" class="h-8 w-8" src="images/icons/{networkIcon}.svg" />
       </Button>
 

@@ -18,7 +18,6 @@
   import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
   import Metrics from '../components/composed/Metrics.svelte';
   import { showModal, modalReset } from '@stores/modal';
-  import global from '@stores/global';
   import settings from '@stores/settings';
   import { balancesStore, vaultsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
