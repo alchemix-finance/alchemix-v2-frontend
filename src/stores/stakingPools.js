@@ -26,6 +26,10 @@ export const additionalTokens = [
     address: '0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E',
   },
   {
+    network: '0xfa',
+    address: '0x70F9fd19f857411b089977E7916c05A0fc477Ac9',
+  },
+  {
     network: '0x1',
     address: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
   },

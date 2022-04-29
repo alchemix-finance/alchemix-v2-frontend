@@ -18,6 +18,12 @@ export function sidebarSetup() {
       supportedChains: ['0x1', '0xfa'],
     },
     {
+      label: 'swap',
+      path: 'swap',
+      icon: 'swap_med.svg',
+      supportedChains: ['0x1', '0xfa'],
+    },
+    {
       label: 'farms',
       path: 'farms',
       icon: 'farm_med.svg',

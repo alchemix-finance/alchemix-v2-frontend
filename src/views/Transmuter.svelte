@@ -165,9 +165,7 @@
             CellComponent: CurrencyCell,
             value: claimValue,
             token: {
-              balance: _transmuterData.exchangedBalanceBN.mul(
-                BigNumber.from(10).pow(underlyingTokenData?.decimals),
-              ),
+              balance: _transmuterData.exchangedBalanceBN,
               symbol: underlyingTokenData?.symbol || '',
               perShare: 1,
               decimals: underlyingTokenData?.decimals || 18,
@@ -217,24 +215,6 @@
     />
   </div>
 
-  <div class="w-full mb-8">
-    <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
-        <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
-      </div>
-      <div slot="body" class="py-4 px-6 flex space-x-4">
-        <Button on:clicked="{() => goTo('http://curve.fi')}" label="Curve" width="w-max" py="py-2">
-          <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" />
-        </Button>
-        <Button on:clicked="{() => goTo('http://zapper.fi')}" label="Zapper" width="w-max" py="py-2">
-          <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" />
-        </Button>
-        <Button on:clicked="{() => goTo('http://paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
-          <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" />
-        </Button>
-      </div>
-    </ContainerWithHeader>
-  </div>
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex gap-1">

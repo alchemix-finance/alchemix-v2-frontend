@@ -27,6 +27,7 @@
   import Settings from './views/Settings.svelte';
   import Sentinel from './views/Sentinel.svelte';
   import SecretCowLevel from './views/SecretCowLevel.svelte';
+  import Swap from './views/Swap.svelte';
   // import { routerGuard } from '@helpers/routerGuard';
   import { networkStore } from '@stores/v2/alcxStore';
   import { chainIds } from '@stores/v2/constants';
@@ -162,6 +163,7 @@ Use at your own risk.
                 <!--                <Route path='/accounts' component='{Accounts}' />-->
                 <Route path="/vaults" component="{Vaults}" />
                 <Route path="/transmuter" component="{Transmuter}" />
+                <Route path="/swap" component="{Swap}" />
                 <Route path="/farms" component="{Farms}" />
                 <Route path="/governance" component="{Governance}" />
                 <Route path="/settings" component="{Settings}" />

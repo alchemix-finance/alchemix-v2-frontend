@@ -143,13 +143,23 @@
       <p class="uppercase text-sm alcxTitle mb-5">{$_('proudly_using')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
-          <a href="https://zapper.fi/" target="_blank">
-            <img src="images/integrations/zapper_black.svg" class="w-32" alt="The logo of Zapper" />
+          <a href="https://coingecko.com/" target="_blank">
+            <img src="images/integrations/coingecko.svg" class="w-32" alt="The logo of Coingecko" />
+          </a>
+        </li>
+        <li class="opacity-50 hover:opacity-100">
+          <a href="https://li.fi/" target="_blank">
+            <img src="images/integrations/lifi.svg" class="w-32" alt="The logo of Li.Fi" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
           <a href="https://snapshot.org/" target="_blank">
             <img src="images/integrations/snapshot.svg" class="w-32" alt="The logo of Snapshot" />
+          </a>
+        </li>
+        <li class="opacity-50 hover:opacity-100">
+          <a href="https://zapper.fi/" target="_blank">
+            <img src="images/integrations/zapper_black.svg" class="w-32" alt="The logo of Zapper" />
           </a>
         </li>
       </ul>
