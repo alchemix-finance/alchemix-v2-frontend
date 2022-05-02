@@ -418,55 +418,8 @@
 
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
             <div class="w-full flex flex-row justify-between items-center">
-              <p class="text-lg">Step 2: Change</p>
-              {#if step > 2 || onTargetNetwork}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="#42B792"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  ></path>
-                </svg>
-              {/if}
-            </div>
-            <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Set your wallet to the target network to continue with the last step.
-            </p>
-            {#if processing || step > 2 || (pendingTx && onTargetNetwork)}
-              <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
-                <BarLoader
-                  duration="{step === 2 ? '2.1s' : '0'}"
-                  color="{step > 2 || onTargetNetwork
-                    ? '#42B792'
-                    : $settings.invertColors
-                    ? '#6C93C7'
-                    : '#F5C59F'}"
-                />
-              </div>
-            {:else if (step === 2 && !processing) || pendingTx}
-              <Button
-                label="Change Network"
-                disabled="{onTargetNetwork}"
-                borderColor="green4"
-                backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-                hoverColor="green4"
-                height="h-12"
-                on:clicked="{() => switchNetwork()}"
-              />
-            {/if}
-          </div>
-
-          <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-            <div class="w-full flex flex-row justify-between items-center">
-              <p class="text-lg">Step 3: Wait</p>
-              {#if step > 3 || bridgeReceived}
+              <p class="text-lg">Step 2: Wait</p>
+              {#if step > 2 || bridgeReceived}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-6 w-6"
@@ -489,14 +442,61 @@
             {#if pendingTx}
               <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
                 <BarLoader
-                  duration="{step === 3 || !bridgeReceived ? '2.1s' : '0'}"
-                  color="{step > 3 || bridgeReceived
+                  duration="{step === 2 || !bridgeReceived ? '2.1s' : '0'}"
+                  color="{step > 2 || bridgeReceived
                     ? '#42B792'
                     : $settings.invertColors
                     ? '#6C93C7'
                     : '#F5C59F'}"
                 />
               </div>
+            {/if}
+          </div>
+
+          <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+            <div class="w-full flex flex-row justify-between items-center">
+              <p class="text-lg">Step 3: Change</p>
+              {#if step > 3 || onTargetNetwork}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#42B792"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                  ></path>
+                </svg>
+              {/if}
+            </div>
+            <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
+              Set your wallet to the target network to continue with the last step.
+            </p>
+            {#if processing || step > 3 || (pendingTx && onTargetNetwork)}
+              <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                <BarLoader
+                  duration="{step === 3 ? '2.1s' : '0'}"
+                  color="{step > 3 || onTargetNetwork
+                    ? '#42B792'
+                    : $settings.invertColors
+                    ? '#6C93C7'
+                    : '#F5C59F'}"
+                />
+              </div>
+            {:else if (step === 3 && !processing) || pendingTx}
+              <Button
+                label="Change Network"
+                disabled="{onTargetNetwork}"
+                borderColor="green4"
+                backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+                hoverColor="green4"
+                height="h-12"
+                on:clicked="{() => switchNetwork()}"
+              />
             {/if}
           </div>
 
