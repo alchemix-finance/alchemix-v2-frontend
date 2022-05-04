@@ -32,7 +32,7 @@
   "my": "My",
   "vaults": "Vaults",
   "transmuter": "Transmuter",
-  "swap": "Swap",
+  "swap": "Bridge",
   "farms": "Farms",
   "submit": "Submit",
   "base": "Base",
@@ -117,8 +117,8 @@
     "mstable_text": "Deposit alUSD to earn MTA"
   },
   "swap_page": {
-    "title": "Swap",
-    "subtitle": "Swap your tokens or bridge them to other chains",
+    "title": "Bridge",
+    "subtitle": "Bridge your tokens to other chains or swap them",
     "bridge": "Multichain Bridge"
   },
   "transmuter_page": {

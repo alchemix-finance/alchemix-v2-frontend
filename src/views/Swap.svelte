@@ -7,7 +7,7 @@
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import Button from '@components/elements/Button.svelte';
   import { getQuote, getStatus } from '@middleware/liFi';
-  import { bridge, toCanonical } from '@helpers/multichain';
+  import { bridge, toCanonical, fromCanonical } from '@helpers/multichain';
   import { BarLoader } from 'svelte-loading-spinners';
   import { addressStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
@@ -108,18 +108,16 @@
   };
 
   const statusPing = () => {
-    clearTimeout(statusTimer);
-    statusTimer = setTimeout(async () => {
+    statusTimer = setInterval(async () => {
       await getStatus(
         $multichainPendingTx.bridge,
         $multichainPendingTx.fromChain,
         $multichainPendingTx.toChain,
         $multichainPendingTx.txHash,
       ).then((response) => {
-        if (response.status !== 'DONE') {
-          statusPing();
-        } else {
+        if (response.status === 'DONE') {
           bridgeReceived = true;
+          clearInterval(statusTimer);
         }
       });
     }, 10000);
@@ -157,71 +155,124 @@
       });
   };
 
-  const startBridge = async (txData) => {
-    processing = true;
-    step = 1;
+  const startBridge = async (txData, _targetNetwork) => {
+    let fromToken;
     const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId;
-    const fromToken =
-      fromChain === 1
-        ? supportedTokens[selectedToken].address.ethereum
-        : supportedTokens[selectedToken].address.fantom.bridge;
-    await bridge(txData, fromToken, tokenBalanceRaw, approvalTarget, [$addressStore, $signer])
-      .then((hash) => {
-        $multichainPendingTx.bridge = tool;
-        $multichainPendingTx.fromChain = fromChain;
-        $multichainPendingTx.toChain = toChain.legacyId;
-        $multichainPendingTx.txHash = hash;
-        $multichainPendingTx.bridgeToken = bridgeToken;
-        $multichainPendingTx.token = selectedToken;
-        autoCheck = true;
-        statusPing();
+    const amount = utils.parseEther(bridgeAmount.toString());
+    switch (_targetNetwork) {
+      case '0x1':
         step = 2;
-      })
-      .catch((error) => {
-        step = 0;
-        processing = false;
-        console.error(error);
-      });
+        fromToken = supportedTokens[selectedToken].address.fantom.bridge;
+        await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
+          .then((hash) => {
+            $multichainPendingTx.bridge = tool;
+            $multichainPendingTx.fromChain = fromChain;
+            $multichainPendingTx.toChain = toChain.legacyId;
+            $multichainPendingTx.txHash = hash;
+            $multichainPendingTx.bridgeToken = bridgeToken;
+            $multichainPendingTx.token = selectedToken;
+            autoCheck = true;
+            step = 3;
+            processing = false;
+            statusPing();
+          })
+          .catch((error) => {
+            step = 0;
+            processing = false;
+            console.error(error);
+          });
+        break;
+      case '0xfa':
+      default:
+        processing = true;
+        step = 1;
+        fromToken = supportedTokens[selectedToken].address.ethereum;
+        await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
+          .then((hash) => {
+            $multichainPendingTx.bridge = tool;
+            $multichainPendingTx.fromChain = fromChain;
+            $multichainPendingTx.toChain = toChain.legacyId;
+            $multichainPendingTx.txHash = hash;
+            $multichainPendingTx.bridgeToken = bridgeToken;
+            $multichainPendingTx.token = selectedToken;
+            autoCheck = true;
+            step = 2;
+            statusPing();
+          })
+          .catch((error) => {
+            step = 0;
+            processing = false;
+            console.error(error);
+          });
+        break;
+    }
   };
 
   const switchNetwork = async () => {
     await switchChain(chainIds.filter((chain) => chain.legacyId === $multichainPendingTx.toChain)[0].id)
       .then(() => {
-        if (!bridgeReceived) step = 3;
+        if (!bridgeReceived) step = 2;
       })
       .catch((e) => {
         console.log(e);
       });
   };
 
-  const swapToken = async () => {
-    await toCanonical(
-      $multichainPendingTx.bridgeToken,
-      supportedTokens[$multichainPendingTx.token].selector,
-      $multichainPendingTx.toChain,
-      [$addressStore, $signer],
-    )
-      .then((txHash) => {
-        console.log(txHash);
-        step = 0;
-        processing = false;
-        txData = '';
-        approvalTarget = '';
-        tool = '';
-        pendingTx = false;
-        bridgeToken = '';
-        autoCheck = false;
-        bridgeReceived = false;
-        $multichainPendingTx.txHash = undefined;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const swapToken = async (targetNetwork) => {
+    switch (targetNetwork) {
+      case '0x1':
+        processing = true;
+        step = 1;
+        await fromCanonical(
+          supportedTokens[selectedToken].address.fantom.bridge,
+          supportedTokens[selectedToken].selector,
+          chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId,
+          utils.parseEther(bridgeAmount.toString()),
+          [$signer],
+        )
+          .then((txHash) => {
+            console.log(txHash);
+            startBridge(txData, '0x1');
+          })
+          .catch((error) => {
+            console.error(error);
+            step = 0;
+            processing = false;
+          });
+        break;
+      case '0xfa':
+      default:
+        await toCanonical(
+          $multichainPendingTx.bridgeToken,
+          supportedTokens[$multichainPendingTx.token].selector,
+          $multichainPendingTx.toChain,
+          [$addressStore, $signer],
+        )
+          .then((txHash) => {
+            console.log(txHash);
+            step = 0;
+            processing = false;
+            txData = '';
+            approvalTarget = '';
+            tool = '';
+            pendingTx = false;
+            bridgeToken = '';
+            autoCheck = false;
+            bridgeReceived = false;
+            $multichainPendingTx.txHash = undefined;
+            localStorage.removeItem('multichainPendingTx');
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        break;
+    }
   };
 
   $: onTargetNetwork =
     $multichainPendingTx.toChain === chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId;
-  $: if ($multichainPendingTx.bridge !== undefined && step === 0) pendingTx = true;
+  $: if ($multichainPendingTx.bridge !== undefined && $multichainPendingTx.txHash !== undefined && step === 0)
+    pendingTx = true;
   $: if (pendingTx && !autoCheck) statusPing();
 </script>
 
@@ -369,181 +420,329 @@
             </div>
           </div>
         {/if}
-        <div class="w-full flex flex-row space-x-4">
-          <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-            <div class="w-full flex flex-row justify-between items-center">
-              <p class="text-lg">Step 1: Bridge</p>
-              {#if step > 1 || pendingTx}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="#42B792"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  ></path>
-                </svg>
+        {#if toChain.id === '0xfa'}
+          <div class="w-full flex flex-row space-x-4">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 1: Bridge</p>
+                {#if step > 1 || pendingTx}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Get a quote and send the desired token to Li.Fi's bridging service.
+              </p>
+              {#if processing || step > 1 || pendingTx}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{step === 1 ? '2.1s' : '0'}"
+                    color="{step > 1 || pendingTx
+                      ? '#42B792'
+                      : $settings.invertColors
+                      ? '#6C93C7'
+                      : '#F5C59F'}"
+                  />
+                </div>
+              {:else if fetchingQuote}
+                <div class="flex justify-center items-center my-4 h-12">
+                  <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
+                </div>
+              {:else}
+                <Button
+                  label="Bridge Token"
+                  disabled="{!quoteReceived}"
+                  borderColor="green4"
+                  backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+                  hoverColor="green4"
+                  height="h-12"
+                  on:clicked="{() => startBridge(txData)}"
+                />
               {/if}
             </div>
-            <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Get a quote and send the desired token to Li.Fi's bridging service.
-            </p>
-            {#if processing || step > 1 || pendingTx}
-              <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
-                <BarLoader
-                  duration="{step === 1 ? '2.1s' : '0'}"
-                  color="{step > 1 || pendingTx ? '#42B792' : $settings.invertColors ? '#6C93C7' : '#F5C59F'}"
-                />
-              </div>
-            {:else if fetchingQuote}
-              <div class="flex justify-center items-center my-4 h-12">
-                <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
-              </div>
-            {:else}
-              <Button
-                label="Bridge Token"
-                disabled="{!quoteReceived}"
-                borderColor="green4"
-                backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-                hoverColor="green4"
-                height="h-12"
-                on:clicked="{() => startBridge(txData)}"
-              />
-            {/if}
-          </div>
 
-          <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-            <div class="w-full flex flex-row justify-between items-center">
-              <p class="text-lg">Step 2: Wait</p>
-              {#if step > 2 || bridgeReceived}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="#42B792"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  ></path>
-                </svg>
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 2: Wait</p>
+                {#if step > 2 || bridgeReceived}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Wait patiently for the bridged token to appear in your wallet. This takes a while.
+              </p>
+              {#if pendingTx}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{step === 2 || !bridgeReceived ? '2.1s' : '0'}"
+                    color="{step > 2 || bridgeReceived
+                      ? '#42B792'
+                      : $settings.invertColors
+                      ? '#6C93C7'
+                      : '#F5C59F'}"
+                  />
+                </div>
               {/if}
             </div>
-            <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Wait patiently for the bridged token to appear in your wallet. This takes a while.
-            </p>
-            {#if pendingTx}
-              <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
-                <BarLoader
-                  duration="{step === 2 || !bridgeReceived ? '2.1s' : '0'}"
-                  color="{step > 2 || bridgeReceived
-                    ? '#42B792'
-                    : $settings.invertColors
-                    ? '#6C93C7'
-                    : '#F5C59F'}"
-                />
-              </div>
-            {/if}
-          </div>
 
-          <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-            <div class="w-full flex flex-row justify-between items-center">
-              <p class="text-lg">Step 3: Change</p>
-              {#if step > 3 || onTargetNetwork}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="#42B792"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  ></path>
-                </svg>
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 3: Change</p>
+                {#if step > 3 || onTargetNetwork}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Set your wallet to the target network to continue with the last step.
+              </p>
+              {#if processing || step > 3 || (pendingTx && onTargetNetwork)}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{step === 3 ? '2.1s' : '0'}"
+                    color="{step > 3 || onTargetNetwork
+                      ? '#42B792'
+                      : $settings.invertColors
+                      ? '#6C93C7'
+                      : '#F5C59F'}"
+                  />
+                </div>
+              {:else if (step === 3 && !processing) || pendingTx}
+                <Button
+                  label="Change Network"
+                  disabled="{onTargetNetwork}"
+                  borderColor="green4"
+                  backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+                  hoverColor="green4"
+                  height="h-12"
+                  on:clicked="{() => switchNetwork()}"
+                />
               {/if}
             </div>
-            <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Set your wallet to the target network to continue with the last step.
-            </p>
-            {#if processing || step > 3 || (pendingTx && onTargetNetwork)}
-              <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
-                <BarLoader
-                  duration="{step === 3 ? '2.1s' : '0'}"
-                  color="{step > 3 || onTargetNetwork
-                    ? '#42B792'
-                    : $settings.invertColors
-                    ? '#6C93C7'
-                    : '#F5C59F'}"
-                />
-              </div>
-            {:else if (step === 3 && !processing) || pendingTx}
-              <Button
-                label="Change Network"
-                disabled="{onTargetNetwork}"
-                borderColor="green4"
-                backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-                hoverColor="green4"
-                height="h-12"
-                on:clicked="{() => switchNetwork()}"
-              />
-            {/if}
-          </div>
 
-          <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-            <div class="w-full flex flex-row justify-between items-center">
-              <p class="text-lg">Step 4: Swap</p>
-              {#if step > 4}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="#42B792"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                  ></path>
-                </svg>
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 4: Swap</p>
+                {#if step > 4}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Swap the bridge token for it's canonical counterpart on the target chain.
+              </p>
+              {#if processing}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{step === 4 ? '2.1s' : '0'}"
+                    color="{step > 4 ? '#42B792' : $settings.invertColors ? '#6C93C7' : '#F5C59F'}"
+                  />
+                </div>
+              {:else if (step === 4 && !processing) || pendingTx}
+                <Button
+                  label="Swap to Canonical"
+                  disabled="{!onTargetNetwork || !bridgeReceived}"
+                  borderColor="green4"
+                  backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+                  hoverColor="green4"
+                  height="h-12"
+                  on:clicked="{() => swapToken('0xfa')}"
+                />
               {/if}
             </div>
-            <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
-              Swap the bridge token for it's canonical counterpart on the target chain.
-            </p>
-            {#if processing}
-              <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
-                <BarLoader
-                  duration="{step === 4 ? '2.1s' : '0'}"
-                  color="{step > 4 ? '#42B792' : $settings.invertColors ? '#6C93C7' : '#F5C59F'}"
-                />
-              </div>
-            {:else if (step === 4 && !processing) || pendingTx}
-              <Button
-                label="Swap to Canonical"
-                disabled="{!onTargetNetwork || !bridgeReceived}"
-                borderColor="green4"
-                backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-                hoverColor="green4"
-                height="h-12"
-                on:clicked="{() => swapToken()}"
-              />
-            {/if}
           </div>
-        </div>
+        {/if}
+        {#if toChain.id === '0x1'}
+          <div class="w-full flex flex-row space-x-4">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 1: Swap</p>
+                {#if step > 1 || pendingTx}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Swap the canonical token for it's bridge counterpart before sending it to the target network.
+              </p>
+              {#if processing || step > 1 || pendingTx}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{step === 1 ? '2.1s' : '0'}"
+                    color="{step > 1 || pendingTx
+                      ? '#42B792'
+                      : $settings.invertColors
+                      ? '#6C93C7'
+                      : '#F5C59F'}"
+                  />
+                </div>
+              {:else if fetchingQuote}
+                <div class="flex justify-center items-center my-4 h-12">
+                  <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
+                </div>
+              {:else}
+                <Button
+                  label="Swap Token"
+                  disabled="{!quoteReceived}"
+                  borderColor="green4"
+                  backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+                  hoverColor="green4"
+                  height="h-12"
+                  on:clicked="{() => swapToken('0x1')}"
+                />
+              {/if}
+            </div>
+
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 2: Bridge</p>
+                {#if step > 2 || bridgeReceived}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Send the desired token to Li.Fi's bridging service.
+              </p>
+              {#if processing || step > 2 || pendingTx}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{step === 2 ? '2.1s' : '0'}"
+                    color="{step > 2 || pendingTx
+                      ? '#42B792'
+                      : $settings.invertColors
+                      ? '#6C93C7'
+                      : '#F5C59F'}"
+                  />
+                </div>
+              {/if}
+            </div>
+
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+              <div class="w-full flex flex-row justify-between items-center">
+                <p class="text-lg">Step 3: Wait</p>
+                {#if step > 3 || bridgeReceived}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="#42B792"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                    ></path>
+                  </svg>
+                {/if}
+              </div>
+              <p
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+              >
+                Wait patiently for the bridged token to appear in your wallet. This takes a while.
+              </p>
+              {#if pendingTx || processing}
+                <div class="flex flex-row justify-center items-center h-12" transition:slide|local>
+                  <BarLoader
+                    duration="{(step === 3 || !bridgeReceived) && !processing ? '2.1s' : '0'}"
+                    color="{step > 3 || bridgeReceived
+                      ? '#42B792'
+                      : $settings.invertColors
+                      ? '#6C93C7'
+                      : '#F5C59F'}"
+                  />
+                </div>
+              {/if}
+            </div>
+          </div>
+        {/if}
       </div>
     </ContainerWithHeader>
   </div>
