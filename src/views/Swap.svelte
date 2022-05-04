@@ -18,6 +18,7 @@
   import multichainPendingTx from '@stores/multichainStore';
   import Dropdown from '@components/elements/Dropdown.svelte';
   import { switchChain } from '@helpers/walletManager';
+  import { setError } from '@helpers/setToast';
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -152,7 +153,7 @@
       .catch((error) => {
         step = 0;
         fetchingQuote = false;
-        console.error(error);
+        setError(error);
       });
   };
 
