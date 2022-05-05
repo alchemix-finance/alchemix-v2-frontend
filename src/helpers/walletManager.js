@@ -61,7 +61,7 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect],
+  wallets: [injected, walletConnect, walletLink],
   chains: supportedChains,
 
   appMetadata: {

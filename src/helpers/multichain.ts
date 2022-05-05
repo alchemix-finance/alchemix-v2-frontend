@@ -42,6 +42,18 @@ export async function bridge(
   }
 }
 
+export async function bridgeBalance(_bridgeToken: string, [_userAddress, _signer]: [string, Signer]) {
+  try {
+    const bridgeTokenInstance = erc20Contract(_bridgeToken, _signer);
+    return await bridgeTokenInstance.balanceOf(_userAddress);
+  } catch (e) {
+    const message = e.data ? await e.data.message : e.message;
+    setError(message);
+    console.error(`[bridgeBalance]: ${message}`);
+    throw Error(e);
+  }
+}
+
 export async function toCanonical(
   _bridgeToken: string,
   _canonicalContract: string,
