@@ -94,6 +94,8 @@ module.exports = {
       twitter: '#4CABFA',
       discord: '#7289DA',
       iconsInverse: '#252736',
+      fantom: '#1969ff',
+      ethereum: '#647fe5',
     },
     fontFamily: {
       alcxLogo: ['Reem Kufi', 'sans-serif'],

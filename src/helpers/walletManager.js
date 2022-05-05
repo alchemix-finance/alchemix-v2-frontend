@@ -4,12 +4,13 @@ import account from '@stores/account';
 import network from '../stores/network';
 import { uninitData } from './uninitData';
 // import getItl from './getItl';
-import { updateAddress, updateProvider, updateNetwork } from '@stores/v2/methods';
+import { updateAddress, updateProvider, updateNetwork } from '../stores/v2/methods';
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import walletLinkModule from '@web3-onboard/walletlink';
 import { chainIds } from '../stores/v2/constants';
+// import { getRpcUrl } from '../middleware/figment';
 // import {setLoginSuccess} from './setToast'
 
 // let _toastConfig;
@@ -41,8 +42,14 @@ const infuraKeys = [
   '42e287812d1c4b038b43b550360e808c',
   'f9274d4bd94d4a9abb568ce154f36a89',
 ];
+
 const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
 const randomMainnetRpc = () => `https://mainnet.infura.io/v3/${infuraKey}`;
+
+// @note throws CORS errors due to datahub not supporting cross origin request
+// @note solution from figment: "use a cloudflare worker" => extra dollars
+// const figmentRpc = `https://ethereum-mainnet--rpc.datahub.figment.io/apikey/${process.env.FIGMENT_KEY}/`;
+// console.log(figmentRpc);
 
 const supportedChains = chainIds.map((chain) => {
   return {
@@ -54,8 +61,9 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect, walletLink],
-  chains: [...supportedChains],
+  wallets: [injected, walletConnect],
+  chains: supportedChains,
+
   appMetadata: {
     name: 'Alchemix',
     icon: 'https://alchemix.fi/images/icons/alcx_med.svg',
@@ -86,7 +94,16 @@ const connect = async (preselect) => {
       await onboard.connectWallet();
     }
   } catch (e) {
-    console.log('User aborted wallet selection');
+    console.log(`[connect]: ${e}`);
+  }
+};
+
+export const switchChain = async (id) => {
+  console.log(id);
+  try {
+    await onboard.setChain({ chainId: id });
+  } catch (e) {
+    console.error(`[switchChain]: ${e}`);
   }
 };
 
@@ -97,9 +114,9 @@ const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
     window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
     ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider);
     updateNetwork(wallets[0].chains[0].id);
-    updateProvider(ethersProvider);
+    updateProvider(await ethersProvider);
     updateAddress(wallets[0].accounts[0].address);
-    _account.provider = ethersProvider;
+    _account.provider = await ethersProvider;
     _account.signer = await ethersProvider.getSigner();
     _account.address = wallets[0].accounts[0].address;
     _account.ens = wallets[0].accounts[0].ens?.name || null;

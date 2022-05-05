@@ -1,8 +1,8 @@
 import { BigNumber, constants, ethers } from 'ethers';
 import { genericAbi, genericAdapterAbi } from '@stores/externalContracts';
 
-export const contractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
-  const contractData = require(`../abi/${selector}.json`);
+export const contractWrapper = (selector: string, signer: ethers.Signer, _path: string, address?: string) => {
+  const contractData = require(`../abi/${_path}/${selector}.json`);
   const _instance = new ethers.Contract(address || contractData.address, contractData.abi, signer);
 
   return {

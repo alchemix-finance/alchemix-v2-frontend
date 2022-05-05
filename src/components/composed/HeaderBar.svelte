@@ -24,7 +24,7 @@
   };
 
   const userGas = (selector) => {
-    return selector.baseFeePerGas + selector.maxPriorityFeePerGas;
+    return typeof selector === 'number' ? selector : selector.baseFeePerGas + selector.maxPriorityFeePerGas;
   };
 </script>
 
@@ -86,7 +86,7 @@
         <p>▾</p>
       </div>
       <div slot="options" class="flex flex-col gap-4 justify-between w-60 p-4">
-        {#each Object.entries($global.gasPrices) as gas}
+        {#each Object.entries($global.gasPrices).filter((entry) => entry[0] !== 'eip1559') as gas}
           <GasCard
             cardColor="{$global.gasColor[`${gas[0]}`]}"
             description="{gas[0]}"

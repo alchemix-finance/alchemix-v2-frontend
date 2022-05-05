@@ -1,7 +1,7 @@
 import { contractWrapper } from '@helpers/contractWrapper';
 import { Signer, ContractTransaction } from 'ethers';
 import { VaultTypes } from './types';
-import { VaultConstants, TransmuterConstants } from './constants';
+import { VaultConstants, TransmuterConstants, chainIds } from './constants';
 import { setPendingWallet, setPendingTx, setError, setSuccessTx } from '@helpers/setToast';
 import { getAddress } from '@helpers/getContract';
 
@@ -10,11 +10,15 @@ export async function toggleTokenEnabled(
   tokenAddress: string,
   newState: boolean,
   [signerStore]: [Signer],
+  _network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[vaultType].alchemistContractSelector,
       signerStore,
+      path,
     );
     const selector = (await alchemistInstance.isSupportedUnderlyingToken(tokenAddress))
       ? 'setUnderlyingTokenEnabled'
@@ -43,12 +47,16 @@ export async function toggleTransmuterStatus(
   tokenName: string,
   state: boolean,
   [signerStore]: [Signer],
+  _network: string,
 ) {
   try {
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+
     const transmuters = TransmuterConstants[vaultType].transmuterContractSelectors;
     const { instance: transmuterInstance } = contractWrapper(
       transmuters.find((selector) => selector.includes(tokenName)),
       signerStore,
+      path,
     );
     setPendingWallet();
     const tx = (await transmuterInstance.setPause(state)) as ContractTransaction;
@@ -69,12 +77,15 @@ export async function toggleTransmuterStatus(
   }
 }
 
-export async function toggleAlchemistStatus(vaultType: VaultTypes, state: boolean, [signerStore]: [Signer]) {
+export async function toggleAlchemistStatus(vaultType: VaultTypes, state: boolean, [signerStore]: [Signer], _network: string) {
   try {
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+
     const targetAlchemist = getAddress(VaultConstants[VaultTypes[vaultType]].alchemistContractSelector);
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[VaultTypes[vaultType]].alToken,
       signerStore,
+      path,
     );
     setPendingWallet();
     const tx = (await alchemistInstance.pauseAlchemist(targetAlchemist, state)) as ContractTransaction;

@@ -14,9 +14,21 @@ import {
   farmsStore,
   FarmStoreType,
   networkStore,
+  controllerStore,
+  tokenPriceStore,
 } from '@stores/v2/alcxStore';
 import { ethers, providers } from 'ethers';
 import { VaultTypes } from '@stores/v2/types';
+
+export const resetStores = async () => {
+  balancesStore.set([]);
+  tokensStore.set({});
+  vaultsStore.set({});
+  transmutersStore.set({});
+  adaptersStore.set({});
+  sentinelStore.set(undefined);
+  controllerStore.set([]);
+};
 
 export const updateAddress = (address: string) => {
   addressStore.set(address);
@@ -31,6 +43,8 @@ export const updateSentinelRole = (role: boolean) => sentinelStore.set(role);
 export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(balances);
 
 export const updateNetwork = (id: string) => networkStore.set(id);
+
+export const updateTokenPrices = (prices: []) => tokenPriceStore.set(prices);
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
   balancesStore.update((_prevStore) => {

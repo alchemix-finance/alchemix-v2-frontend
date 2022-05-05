@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { addressStore, tokensStore } from '@stores/v2/alcxStore';
+  import { addressStore, networkStore, tokensStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { fullTokenList, signer } from '@stores/v2/derived';
   import {
+    fetchAdaptersForVaultType,
     fetchAlchemistSentinelRole,
     fetchAllBalances,
     fetchAllVaultsBodies,
@@ -9,88 +10,78 @@
     fetchVaultDebtTokenAddress,
     fetchVaultRatio,
     fetchVaultTokens,
-    fetchAdaptersForVaultType,
   } from 'src/stores/v2/asyncMethods';
   import { VaultTypes } from 'src/stores/v2/types';
-
+  import { chainIds } from '@stores/v2/constants';
   import { vaultsLoading } from '@stores/v2/loadingStores';
+  import { resetStores } from '@stores/v2/methods';
 
-  function leet() {
-    console.log(
-      `%c
- ▄▄▄       ██▓     ▄████▄   ██░ ██ ▓█████  ███▄ ▄███▓ ██▓▒██   ██▒
-▒████▄    ▓██▒    ▒██▀ ▀█  ▓██░ ██▒▓█   ▀ ▓██▒▀█▀ ██▒▓██▒▒▒ █ █ ▒░
-▒██  ▀█▄  ▒██░    ▒▓█    ▄ ▒██▀▀██░▒███   ▓██    ▓██░▒██▒░░  █   ░
-░██▄▄▄▄██ ▒██░    ▒▓▓▄ ▄██▒░▓█ ░██ ▒▓█  ▄ ▒██    ▒██ ░██░ ░ █ █ ▒
- ▓█   ▓██▒░██████▒▒ ▓███▀ ░░▓█▒░██▓░▒████▒▒██▒   ░██▒░██░▒██▒ ▒██▒
- ▒▒   ▓▒█░░ ▒░▓  ░░ ░▒ ▒  ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ░  ░░▓  ▒▒ ░ ░▓ ░
-  ▒   ▒▒ ░░ ░ ▒  ░  ░  ▒    ▒ ░▒░ ░ ░ ░  ░░  ░      ░ ▒ ░░░   ░▒ ░
-  ░   ▒     ░ ░   ░         ░  ░░ ░   ░   ░      ░    ▒ ░ ░    ░
-      ░  ░    ░  ░░ ░       ░  ░  ░   ░  ░       ░    ░   ░    ░
-                  ░
+  let lastConnection = {
+    chainId: '',
+    address: '',
+  };
+  let initStarted = false;
 
-=============================[ v2 ]=================================
+  async function initialize(netId) {
+    if (!initStarted && $addressStore !== undefined && netId !== lastConnection.chainId) {
+      vaultsLoading.set(true);
 
-GitHub:   https://github.com/alchemix-finance
-Twitter:  https://twitter.com/alchemixfi
-Telegram: lmao no
+      await resetStores();
+      initStarted = true;
+      const execute = chainIds.filter((entry) => entry.id === netId)[0];
 
-Make sure you're running this on ${
-        process.env.APP_URL ||
-        'if you can read this, the site you are visiting right now is probably trying to scam you'
-      }
-We will never ask you for your private key or seedphrase.
+      let vaultTokens = [];
+      execute.vaultTypes.forEach((type) => {
+        vaultTokens.push(fetchVaultTokens(type, [$signer], netId));
+      });
+      await Promise.all([...vaultTokens]);
 
-========================[ DISCLAIMER ]==============================
+      await fetchAllBalances([$signer, $fullTokenList], netId);
 
-All rights reserved, no guarantees given.
-DeFi tools are not toys.
-Use at your own risk.
+      let vaultDebts = [];
+      execute.vaultTypes.forEach((type) => {
+        vaultDebts.push(fetchVaultDebt(type, [$addressStore, $signer], netId));
+      });
+      await Promise.all([...vaultDebts]);
 
-=========================[ CREDITS ]================================
+      let vaultRatios = [];
+      execute.vaultTypes.forEach((type) => {
+        vaultDebts.push(fetchVaultRatio(type, [$signer], netId));
+      });
+      await Promise.all([...vaultRatios]);
 
-[ ICONS ]
-* CC-BY, FontAwesome (https://fontawesome.com/)
-  "globe", "speech bubbles"
-* CC0 1.0, Simple Icons et al. (https://simpleicons.org/)
-  "gitbook", "amp", "discord", "twitter", "github", "substack"
+      let tokenAddresses = [];
+      execute.vaultTypes.forEach((type) => {
+        tokenAddresses.push(fetchVaultDebtTokenAddress(type, [$signer], netId));
+      });
+      await Promise.all([...tokenAddresses]);
 
-  `,
-      'color: #F5C09A',
-    );
+      let vaultBodies = [];
+      execute.vaultTypes.forEach((type) => {
+        vaultBodies.push(fetchAllVaultsBodies(type, [$signer, $tokensStore, $addressStore], netId));
+      });
+      await Promise.all([...vaultBodies]).then(() => {
+        vaultsLoading.set(false);
+      });
+
+      await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore], netId);
+
+      let adapters = [];
+      execute.vaultTypes.forEach((type) => {
+        adapters.push(fetchAdaptersForVaultType(type, [$signer], netId));
+      });
+      await Promise.all([...adapters]).then(() => {
+        lastConnection.chainId = netId;
+        lastConnection.address = $addressStore;
+        initStarted = false;
+      });
+
+      console.log(`[StateManager]: Connected with address ${$addressStore}`);
+    }
   }
 
-  async function initialize() {
-    leet();
-    await fetchVaultTokens(VaultTypes.alUSD, [$signer]);
-    await fetchVaultTokens(VaultTypes.alETH, [$signer]);
-
-    vaultsLoading.set(true);
-    await fetchAllBalances([$signer, $fullTokenList]);
-
-    await fetchVaultDebt(VaultTypes.alUSD, [$addressStore, $signer]);
-    await fetchVaultDebt(VaultTypes.alETH, [$addressStore, $signer]);
-
-    await fetchVaultRatio(VaultTypes.alUSD, [$signer]);
-    await fetchVaultRatio(VaultTypes.alETH, [$signer]);
-
-    await fetchVaultDebtTokenAddress(VaultTypes.alUSD, [$signer]);
-    await fetchVaultDebtTokenAddress(VaultTypes.alETH, [$signer]);
-
-    await fetchAllVaultsBodies(VaultTypes.alUSD, [$signer, $tokensStore, $addressStore]);
-    await fetchAllVaultsBodies(VaultTypes.alETH, [$signer, $tokensStore, $addressStore]);
-
-    vaultsLoading.set(false);
-    await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore]);
-    await fetchAdaptersForVaultType(VaultTypes.alUSD, [$signer]);
-    await fetchAdaptersForVaultType(VaultTypes.alETH, [$signer]);
-  }
-
-  $: if ($addressStore !== undefined) {
-    console.log(`[StateManager]: Connected with address ${$addressStore}`);
-
-    initialize();
-  }
+  $: $networkStore, initialize($networkStore);
+  $: $addressStore, initialize($networkStore);
 </script>
 
 <slot />

@@ -36,8 +36,9 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[_vaultType].alchemistContractSelector,
       signer,
+      'ethereum',
     );
-    const { instance: legacyInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    const { instance: legacyInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer, 'ethereum');
     const openDebt = await legacyInstance.getCdpTotalDebt(userAddress);
     const interest = await legacyInstance.getCdpTotalCredit(userAddress);
     const yieldParams = await alchemistInstance.getYieldTokenParameters(param.yieldToken);
@@ -60,7 +61,7 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
 
 async function mintLegacy(_vaultType: VaultTypes, _interest: BigNumber, [signer]: [Signer]) {
   try {
-    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer, 'ethereum');
     setPendingWallet();
     const tx = (await alchemistInstance.mint(_interest)) as ContractTransaction;
     setPendingTx();
@@ -77,7 +78,7 @@ async function mintLegacy(_vaultType: VaultTypes, _interest: BigNumber, [signer]
 
 async function liquidateLegacy(_vaultType: VaultTypes, _debt: BigNumber, [signer]: [Signer]) {
   try {
-    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer, 'ethereum');
     setPendingWallet();
     const tx = (await alchemistInstance.liquidate(
       _debt.sub(utils.parseUnits('1', 'gwei')),
@@ -96,7 +97,7 @@ async function liquidateLegacy(_vaultType: VaultTypes, _debt: BigNumber, [signer
 
 export async function liquidateWrap(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
   try {
-    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer, 'ethereum');
     const debt = await alchemistInstance.getCdpTotalDebt(userAddress);
     const interest = await alchemistInstance.getCdpTotalCredit(userAddress);
     let mintedInterest = BigNumber.from(0);
@@ -121,7 +122,7 @@ export async function liquidateWrap(_vaultType: VaultTypes, [userAddress, signer
 
 export async function withdrawLegacy(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
   try {
-    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer);
+    const { instance: alchemistInstance } = contractWrapper(VaultConstants[_vaultType].legacy, signer, 'ethereum');
     const debtDust = await alchemistInstance.getCdpTotalDebt(userAddress);
     const deposit = await alchemistInstance.getCdpTotalDeposited(userAddress);
     if (deposit.gt(0)) {
@@ -164,17 +165,18 @@ export async function flashloanDeposit(
   const param = paramLookup[_vaultType];
   try {
     const underlyingTokenInstance = erc20Contract(param.underlyingToken, signer);
-    const { instance: flashloanInstance, address: flashloanAddress } = contractWrapper(param.abi, signer);
+    const { instance: flashloanInstance, address: flashloanAddress } = contractWrapper(param.abi, signer, 'ethereum');
     const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
       VaultConstants[_vaultType].alchemistContractSelector,
       signer,
+      'ethereum',
     );
 
     const yieldPerShare = await alchemistInstance.getYieldTokensPerShare(param.yieldToken);
     const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(param.yieldToken);
     const amountUnderlying = collateralTotal.mul(underlyingPerShare).div(yieldPerShare);
 
-    await limitChecker(amountUnderlying, param.yieldToken, _vaultType, [signer]);
+    await limitChecker(amountUnderlying, param.yieldToken, _vaultType, [signer], '0x1');
 
     const underlyingAllowance = await underlyingTokenInstance.allowanceOf(userAddress, flashloanAddress);
     if (BigNumber.from(underlyingAllowance).lt(collateralTotal)) {

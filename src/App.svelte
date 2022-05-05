@@ -19,7 +19,7 @@
   // router configuration and views
   import Landing from './views/Landing.svelte';
   import Error from './views/Error.svelte';
-  import Accounts from './views/Accounts.svelte';
+  // import Accounts from './views/Accounts.svelte';
   import Vaults from './views/Vaults.svelte';
   import Transmuter from './views/Transmuter.svelte';
   import Farms from './views/Farms.svelte';
@@ -27,7 +27,10 @@
   import Settings from './views/Settings.svelte';
   import Sentinel from './views/Sentinel.svelte';
   import SecretCowLevel from './views/SecretCowLevel.svelte';
-  import { routerGuard } from '@helpers/routerGuard';
+  import Swap from './views/Swap.svelte';
+  // import { routerGuard } from '@helpers/routerGuard';
+  import { networkStore } from '@stores/v2/alcxStore';
+  import { chainIds } from '@stores/v2/constants';
 
   import { connect } from '@helpers/walletManager';
 
@@ -45,7 +48,10 @@
   function gasPriceUpdater() {
     gasTimer = window.setTimeout(async () => {
       try {
-        await getGasPrices();
+        await getGasPrices(
+          null,
+          chainIds.filter((entry) => entry.id === $networkStore)[0]?.abiPath || 'ethereum',
+        );
         if (gasTimer !== 'stopped') gasPriceUpdater();
       } catch (e) {
         console.log('Error fetching gas prices from zapper', e);
@@ -59,14 +65,58 @@
   }
 
   onMount(async () => {
+    await Promise.all([
+      getFiatRates(),
+      getTokenPrices(chainIds.filter((entry) => entry.id === $networkStore)[0]?.abiPath || 'ethereum'),
+      getGasPrices(),
+    ]);
     if (preselect.length > 0) {
       await connect(preselect);
       // if (location.pathname === '/') routerGuard('accounts');
     }
     walletChecked = true;
-    await getGasPrices();
-    await getFiatRates();
-    await getTokenPrices();
+    console.log(
+      `%c
+ ▄▄▄       ██▓     ▄████▄   ██░ ██ ▓█████  ███▄ ▄███▓ ██▓▒██   ██▒
+▒████▄    ▓██▒    ▒██▀ ▀█  ▓██░ ██▒▓█   ▀ ▓██▒▀█▀ ██▒▓██▒▒▒ █ █ ▒░
+▒██  ▀█▄  ▒██░    ▒▓█    ▄ ▒██▀▀██░▒███   ▓██    ▓██░▒██▒░░  █   ░
+░██▄▄▄▄██ ▒██░    ▒▓▓▄ ▄██▒░▓█ ░██ ▒▓█  ▄ ▒██    ▒██ ░██░ ░ █ █ ▒
+ ▓█   ▓██▒░██████▒▒ ▓███▀ ░░▓█▒░██▓░▒████▒▒██▒   ░██▒░██░▒██▒ ▒██▒
+ ▒▒   ▓▒█░░ ▒░▓  ░░ ░▒ ▒  ░ ▒ ░░▒░▒░░ ▒░ ░░ ▒░   ░  ░░▓  ▒▒ ░ ░▓ ░
+  ▒   ▒▒ ░░ ░ ▒  ░  ░  ▒    ▒ ░▒░ ░ ░ ░  ░░  ░      ░ ▒ ░░░   ░▒ ░
+  ░   ▒     ░ ░   ░         ░  ░░ ░   ░   ░      ░    ▒ ░ ░    ░
+      ░  ░    ░  ░░ ░       ░  ░  ░   ░  ░       ░    ░   ░    ░
+                  ░
+
+=============================[ v2 ]=================================
+
+GitHub:   https://github.com/alchemix-finance
+Twitter:  https://twitter.com/alchemixfi
+Telegram: lmao no
+
+Make sure you're running this on ${
+        process.env.APP_URL ||
+        'if you can read this, the site you are visiting right now is probably trying to scam you'
+      }
+We will never ask you for your private key or seedphrase.
+
+========================[ DISCLAIMER ]==============================
+
+All rights reserved, no guarantees given.
+DeFi tools are not toys.
+Use at your own risk.
+
+=========================[ CREDITS ]================================
+
+[ ICONS ]
+* CC-BY, FontAwesome (https://fontawesome.com/)
+  "globe", "speech bubbles"
+* CC0 1.0, Simple Icons et al. (https://simpleicons.org/)
+  "gitbook", "amp", "discord", "twitter", "github", "substack"
+
+  `,
+      'color: #F5C09A',
+    );
   });
 </script>
 
@@ -110,9 +160,11 @@
                 : 'border-grey5'} w-full hidden lg:block"
             >
               {#if walletChecked}
-                <Route path="/accounts" component="{Accounts}" />
+                <!--                <Route path='/accounts' component='{Accounts}' />-->
                 <Route path="/vaults" component="{Vaults}" />
                 <Route path="/transmuter" component="{Transmuter}" />
+                <Route path="/swap" component="{Swap}" />
+
                 <Route path="/farms" component="{Farms}" />
                 <Route path="/governance" component="{Governance}" />
                 <Route path="/settings" component="{Settings}" />

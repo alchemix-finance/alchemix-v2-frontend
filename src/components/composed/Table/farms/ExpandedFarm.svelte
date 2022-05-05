@@ -23,7 +23,7 @@
   export let farm;
   export let farmType;
 
-  const { instance: stakingInstance, address: stakingAddress } = contractWrapper('StakingPools', $signer);
+  const { instance: stakingInstance, address: stakingAddress } = contractWrapper('StakingPools', $signer, 'ethereum');
 
   const deposit = async (depositBN) => {
     try {
@@ -137,7 +137,7 @@
     <div
       class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
     >
-      <label for="borrowInput" class="text-sm text-lightgrey10">
+      <label for='borrowInput' class='text-sm text-lightgrey10'>
         {$_('available')}: {utils.formatEther(tokenInfo.balance)}
         {farm.tokenSymbol}
       </label>
@@ -146,55 +146,55 @@
           ? 'border-grey3inverse bg-grey3inverse'
           : 'border-grey3 bg-grey3'}"
       >
-        <div class="w-full">
+        <div class='w-full'>
           <InputNumber
-            id="borrowInput"
-            placeholder="~0.00 {farm.tokenSymbol}"
-            bind:value="{inputDepositAmount}"
+            id='borrowInput'
+            placeholder='~0.00 {farm.tokenSymbol}'
+            bind:value='{inputDepositAmount}'
             class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
               ? 'bg-grey3inverse'
               : 'bg-grey3'}"
           />
         </div>
-        <div class="flex flex-col">
+        <div class='flex flex-col'>
           <Button
-            label="MAX"
-            width="w-full"
-            fontSize="text-xs"
+            label='MAX'
+            width='w-full'
+            fontSize='text-xs'
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-            borderSize="0"
-            height="h-10"
-            on:clicked="{() => (inputDepositAmount = utils.formatEther(tokenInfo.balance || 0))}"
+            borderSize='0'
+            height='h-10'
+            on:clicked='{() => (inputDepositAmount = utils.formatEther(tokenInfo.balance || 0))}'
           />
           <Button
-            label="CLEAR"
-            width="w-max"
-            fontSize="text-xs"
+            label='CLEAR'
+            width='w-max'
+            fontSize='text-xs'
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-            borderSize="0"
-            height="h-10"
+            borderSize='0'
+            height='h-10'
             on:clicked="{() => (inputDepositAmount = '')}"
           />
         </div>
       </div>
       <Button
         label="{$_('actions.deposit')}"
-        borderSize="1"
-        borderColor="green4"
+        borderSize='1'
+        borderColor='green4'
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-        hoverColor="green4"
-        height="h-12"
-        fontSize="text-md"
-        disabled="{!checkButtonState(inputDepositBN, tokenInfo.balance)}"
-        on:clicked="{() => deposit(inputDepositBN)}"
+        hoverColor='green4'
+        height='h-12'
+        fontSize='text-md'
+        disabled='{!checkButtonState(inputDepositBN, tokenInfo.balance)}'
+        on:clicked='{() => deposit(inputDepositBN)}'
       />
     </div>
     <div
       class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
     >
-      <label for="withdrawInput" class="text-sm text-lightgrey10">
+      <label for='withdrawInput' class='text-sm text-lightgrey10'>
         {$_('available')}: {utils.formatEther(farm.userDeposit)}
         {farm.tokenSymbol}
       </label>
@@ -203,62 +203,62 @@
           ? 'bg-grey3inverse border-grey3inverse'
           : 'bg-grey3 border-grey3'}"
       >
-        <div class="w-full">
+        <div class='w-full'>
           <InputNumber
-            id="withdrawInput"
-            placeholder="~0.00 {farm.tokenSymbol}"
-            bind:value="{inputWithdrawAmount}"
+            id='withdrawInput'
+            placeholder='~0.00 {farm.tokenSymbol}'
+            bind:value='{inputWithdrawAmount}'
             class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
               ? 'bg-grey3inverse'
               : 'bg-grey3'}"
           />
         </div>
-        <div class="flex flex-col">
+        <div class='flex flex-col'>
           <Button
-            label="MAX"
-            width="w-full"
-            fontSize="text-xs"
+            label='MAX'
+            width='w-full'
+            fontSize='text-xs'
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-            borderSize="0"
-            height="h-10"
-            on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit || 0))}"
+            borderSize='0'
+            height='h-10'
+            on:clicked='{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit || 0))}'
           />
           <Button
-            label="CLEAR"
-            width="w-max"
-            fontSize="text-xs"
+            label='CLEAR'
+            width='w-max'
+            fontSize='text-xs'
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-            borderSize="0"
-            height="h-10"
+            borderSize='0'
+            height='h-10'
             on:clicked="{() => (inputWithdrawAmount = '')}"
           />
         </div>
       </div>
       <Button
         label="{$_('actions.withdraw')}"
-        borderSize="1"
-        borderColor="green4"
+        borderSize='1'
+        borderColor='green4'
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-        hoverColor="green4"
-        height="h-12"
-        fontSize="text-md"
-        disabled="{!checkButtonState(inputWithdrawBN, farm.userDeposit)}"
-        on:clicked="{() => withdraw(inputWithdrawBN)}"
+        hoverColor='green4'
+        height='h-12'
+        fontSize='text-md'
+        disabled='{!checkButtonState(inputWithdrawBN, farm.userDeposit)}'
+        on:clicked='{() => withdraw(inputWithdrawBN)}'
       />
     </div>
 
     <div
       class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
     >
-      <label for="borrowInput" class="text-sm text-lightgrey10"> {$_('table.rewards')}: </label>
+      <label for='borrowInput' class='text-sm text-lightgrey10'> {$_('table.rewards')}: </label>
       <div
         class="flex rounded border {$settings.invertColors
           ? 'bg-grey3inverse border-grey3inverse'
           : 'bg-grey3 border-grey3'}"
       >
-        <div class="w-full">
+        <div class='w-full'>
           <div
             class="w-full rounded appearance-none text-xl text-right h-full py-6 px-14 {$settings.invertColors
               ? 'bg-grey3inverse'
@@ -271,14 +271,14 @@
       </div>
       <Button
         label="{$_('actions.claim')}"
-        borderSize="1"
-        borderColor="green4"
+        borderSize='1'
+        borderColor='green4'
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-        hoverColor="green4"
-        height="h-12"
-        fontSize="text-md"
-        disabled="{!farm.userUnclaimed[0].gt(BigNumber.from(0))}"
-        on:clicked="{() => claim()}"
+        hoverColor='green4'
+        height='h-12'
+        fontSize='text-md'
+        disabled='{!farm.userUnclaimed[0].gt(BigNumber.from(0))}'
+        on:clicked='{() => claim()}'
       />
     </div>
   </div>

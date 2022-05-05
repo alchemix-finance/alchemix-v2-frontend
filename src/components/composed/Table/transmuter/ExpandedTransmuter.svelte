@@ -5,7 +5,7 @@
   import { BigNumber, utils } from 'ethers';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { addressStore, balancesStore } from '@stores/v2/alcxStore';
+  import { addressStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
   import { claim, deposit, withdraw } from '@stores/v2/transmuterActions';
   import { signer } from '@stores/v2/derived';
   import { fetchBalanceByAddress, fetchTransmuterBySelector } from '@stores/v2/asyncMethods';
@@ -16,16 +16,21 @@
   const onDepositButton = async (tokenAddress, amountToDeposit, tokenDecimals) => {
     const _fAmountToDeposit = utils.parseUnits(utils.formatEther(amountToDeposit), tokenDecimals);
 
-    await deposit(tokenAddress, _fAmountToDeposit, transmuterData.contractSelector, [
-      $signer,
-      $addressStore,
-    ]).then(() => {
+    await deposit(
+      tokenAddress,
+      _fAmountToDeposit,
+      transmuterData.contractSelector,
+      [$signer, $addressStore],
+      $networkStore,
+    ).then(() => {
       Promise.all([
         fetchBalanceByAddress(tokenAddress, [$signer]),
-        fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [
-          $signer,
-          $addressStore,
-        ]),
+        fetchTransmuterBySelector(
+          transmuterData.type,
+          transmuterData.contractSelector,
+          [$signer, $addressStore],
+          $networkStore,
+        ),
       ]).then(() => {
         inputDepositAmount = '';
         console.log(`[onDepositButton/deposit/finish]: Updated!`);
@@ -36,13 +41,20 @@
   const onWithdrawButton = async (tokenAddress, amountToWithdraw, tokenDecimals) => {
     const _fAmountToWithdraw = utils.parseUnits(utils.formatEther(amountToWithdraw), tokenDecimals);
 
-    await withdraw(_fAmountToWithdraw, transmuterData.contractSelector, [$signer, $addressStore]).then(() => {
+    await withdraw(
+      _fAmountToWithdraw,
+      transmuterData.contractSelector,
+      [$signer, $addressStore],
+      $networkStore,
+    ).then(() => {
       Promise.all([
         fetchBalanceByAddress(tokenAddress, [$signer]),
-        fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [
-          $signer,
-          $addressStore,
-        ]),
+        fetchTransmuterBySelector(
+          transmuterData.type,
+          transmuterData.contractSelector,
+          [$signer, $addressStore],
+          $networkStore,
+        ),
       ]).then(() => {
         inputWithdrawAmount = '';
         console.log(`[onWithdrawButton/withdraw/finish]: Updated!`);
@@ -53,13 +65,20 @@
   const onClaimButton = async (tokenAddress, amountToClaim, tokenDecimals) => {
     const _fAmountToClaim = utils.parseUnits(utils.formatEther(amountToClaim), tokenDecimals);
 
-    await claim(_fAmountToClaim, transmuterData.contractSelector, [$signer, $addressStore]).then(() => {
+    await claim(
+      _fAmountToClaim,
+      transmuterData.contractSelector,
+      [$signer, $addressStore],
+      $networkStore,
+    ).then(() => {
       Promise.all([
         fetchBalanceByAddress(tokenAddress, [$signer]),
-        fetchTransmuterBySelector(transmuterData.type, transmuterData.contractSelector, [
-          $signer,
-          $addressStore,
-        ]),
+        fetchTransmuterBySelector(
+          transmuterData.type,
+          transmuterData.contractSelector,
+          [$signer, $addressStore],
+          $networkStore,
+        ),
       ]).then(() => {
         inputClaimAmount = '';
         console.log(`[onWithdrawButton/withdraw/finish]: Updated!`);

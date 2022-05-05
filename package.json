@@ -75,7 +75,6 @@
     "assert": "^2.0.0",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
-    "bnc-onboard": "^1.38.0",
     "buffer": "^6.0.3",
     "chart.js": "^3.5.0",
     "classnames": "^2.3.1",

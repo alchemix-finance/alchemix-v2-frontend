@@ -22,7 +22,7 @@
       if (farmType === FarmTypes.INTERNAL) {
         const castedFarm = castToInternalFarmType(farm);
 
-        const { instance } = contractWrapper('StakingPools', $signer);
+        const { instance } = contractWrapper('StakingPools', $signer, 'ethereum');
         setPendingWallet();
         const tx = await instance.exit(castedFarm.poolId);
         setPendingTx();
@@ -79,12 +79,12 @@
 
 {#if farm}
   <Button
-    borderColor="red4"
+    borderColor='red4'
     backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
-    hoverColor="red3"
-    label="Exit"
-    solid="{false}"
-    disabled="{!checkButtonState(farm)}"
-    on:clicked="{() => exitPool()}"
+    hoverColor='red3'
+    label='Exit'
+    solid='{false}'
+    disabled='{!checkButtonState(farm)}'
+    on:clicked='{() => exitPool()}'
   />
 {/if}

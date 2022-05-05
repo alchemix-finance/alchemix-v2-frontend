@@ -38,6 +38,7 @@ export const TransmuterNameAliases = {
   usdc: 'Ge Hong',
   usdt: 'Paracelsus',
   weth: 'Van Helmont',
+  fusdt: 'de Rais',
 };
 
 export const AllowedVaultTypes = [VaultTypes.alUSD, VaultTypes.alETH];
@@ -87,8 +88,10 @@ export const chainIds = [
     explorer: 'https://etherscan.io/',
     token: {
       symbol: 'ETH',
+      name: 'Ethereum',
       decimals: 18,
     },
+    vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
   },
   {
     id: '0xfa',
@@ -97,10 +100,12 @@ export const chainIds = [
     icon: 'fantom',
     abiPath: 'fantom',
     rpcUrl: 'https://rpc.ftm.tools',
-    explorer: 'https://rpc.ftm.tools',
+    explorer: 'https://ftmscan.com/',
     token: {
       symbol: 'FTM',
+      name: 'Fantom',
       decimals: 18,
     },
+    vaultTypes: [VaultTypes.alUSD],
   },
 ];

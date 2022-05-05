@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10"
+     style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1"
+     viewBox="0 0 128 128" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+     xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+<metadata>
+<vectornator:setting key="IsTimeLapseWatermarkDisabled" value="false"/>
+    <vectornator:setting key="UndoHistoryDisabled" value="true"/>
+    <vectornator:setting key="VNDimensionsVisible" value="true"/>
+    <vectornator:setting key="VNSnapToGuides" value="true"/>
+    <vectornator:setting key="WDCMYKEnabledKey" value="false"/>
+    <vectornator:setting key="WDDisplayWhiteBackground" value="false"/>
+    <vectornator:setting key="WDDynamicGuides" value="false"/>
+    <vectornator:setting key="WDGuidesVisible" value="true"/>
+    <vectornator:setting key="WDIsolateActiveLayer" value="false"/>
+    <vectornator:setting key="WDOutlineMode" value="false"/>
+    <vectornator:setting key="WDRulersVisible" value="true"/>
+    <vectornator:setting key="WDSnapToEdges" value="false"/>
+    <vectornator:setting key="WDSnapToGrid" value="false"/>
+    <vectornator:setting key="WDSnapToPoints" value="false"/>
+    <vectornator:setting key="WDUnits" value="Points"/>
+</metadata>
+    <defs/>
+    <clipPath id="ArtboardFrame">
+<rect height="128" width="128" x="0" y="0"/>
+</clipPath>
+    <g clip-path="url(#ArtboardFrame)" id="Untitled" vectornator:layerName="Untitled" visibility="hidden">
+<path d="M56.5803 1.22614C59.6913-0.408713 64.425-0.408713 67.536 1.22614L99.281 17.9083C101.155 18.8929 102.184 20.3601 102.368 21.8747L102.398 21.8747L102.398 105.728C102.357 107.38 101.318 109.021 99.281 110.092L67.536 126.774C64.425 128.409 59.6913 128.409 56.5803 126.774L24.8354 110.092C22.8066 109.026 21.833 107.373 21.7848 105.728C21.78 105.566 21.7794 105.431 21.784 105.319L21.7838 22.4133C21.7806 22.3225 21.7803 22.2318 21.7829 22.1415L21.7848 21.8747L21.799 21.8746C21.94 20.3434 22.9223 18.9137 24.8354 17.9083L56.5803 1.22614ZM97.4008 68.656L67.536 84.3502C64.425 85.9851 59.6913 85.9851 56.5803 84.3502L26.7808 68.691L26.7808 105.562L56.5803 121.139C58.263 122.034 60.0095 122.906 61.7172 123.017L62.0582 123.028C63.8377 123.034 65.5653 122.135 67.3172 121.284L97.4008 105.428L97.4008 68.656ZM16.6215 103.905C16.6215 107.117 16.9968 109.229 17.742 110.717C18.3596 111.95 19.2862 112.892 20.9782 114.039L21.0748 114.104C21.4462 114.353 21.8552 114.614 22.3531 114.92L22.9403 115.278L24.7434 116.361L22.1573 120.615L20.1392 119.402L19.8 119.195C19.2164 118.836 18.7328 118.529 18.2817 118.226C13.4593 114.991 11.6609 111.465 11.6254 104.128L11.6248 103.905L16.6215 103.905ZM59.5591 46.1808C59.328 46.2598 59.1114 46.3511 58.9139 46.4549L27.169 63.1371C27.1357 63.1546 27.1039 63.1719 27.0737 63.189L27.0468 63.2046L27.0966 63.2329L27.169 63.272L58.9139 79.9542C59.1114 80.058 59.328 80.1493 59.5591 80.2283L59.5591 46.1808ZM64.5573 46.1808L64.5573 80.2283C64.7884 80.1493 65.005 80.058 65.2024 79.9542L96.9474 63.272C96.9807 63.2545 97.0125 63.2372 97.0427 63.2201L97.0696 63.2046L97.0197 63.1762L96.9474 63.1371L65.2024 46.4549C65.005 46.3511 64.7884 46.2598 64.5573 46.1808ZM97.4008 27.823L68.9238 42.788L97.4008 57.753L97.4008 27.823ZM26.7808 27.858L26.7808 57.718L55.1918 42.788L26.7808 27.858ZM65.2024 5.62216C63.5516 4.75463 60.5648 4.75463 58.9139 5.62216L27.169 22.3044C27.1357 22.3219 27.1039 22.3392 27.0737 22.3563L27.0468 22.3718L27.0966 22.4002L27.169 22.4393L58.9139 39.1215C60.5648 39.989 63.5516 39.989 65.2024 39.1215L96.9474 22.4393C96.9807 22.4218 97.0125 22.4045 97.0427 22.3873L97.0696 22.3718L97.0197 22.3434L96.9474 22.3044L65.2024 5.62216ZM102.092 7.45154L104.111 8.66424L104.45 8.87145C105.033 9.22982 105.517 9.5377 105.968 9.84031C110.79 13.075 112.589 16.6017 112.624 23.9381L112.625 24.1616L107.628 24.1616C107.628 20.9488 107.253 18.8372 106.508 17.3495C105.89 16.1165 104.963 15.1742 103.271 14.0276L103.175 13.9625C102.804 13.7134 102.394 13.4525 101.897 13.1458L101.309 12.788L99.5062 11.7054L102.092 7.45154Z"
+      fill="#ffffff" fill-rule="evenodd" opacity="1" stroke="none"/>
+</g>
+    <g clip-path="url(#ArtboardFrame)" id="Layer-2" vectornator:layerName="Layer 2">
+<path d="M26.0008 65.6141L63.853-0.0675412L102.194 65.3979L63.9912 89.2987L26.0008 65.6141Z" fill="#ffffff"
+      fill-rule="evenodd" opacity="1" stroke="none"/>
+        <path d="M25.9013 73.1686L63.7492 96.9752L102.176 73.0417L64.0111 127.761L25.9013 73.1686Z" fill="#ffffff"
+              fill-rule="evenodd" opacity="1" stroke="none"/>
+</g>
+</svg>
