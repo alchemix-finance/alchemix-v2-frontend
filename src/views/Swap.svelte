@@ -151,7 +151,9 @@
       .catch((error) => {
         step = 0;
         fetchingQuote = false;
-        setError(error);
+        setError(
+          toChain.id === $networkStore ? 'Target network is not different from current network' : error,
+        );
       });
   };
 
@@ -279,7 +281,7 @@
 <ViewContainer>
   <div slot="head" class="flex justify-between">
     <PageHeader
-      pageIcon="swap_med.svg"
+      pageIcon="swap_thin.svg"
       pageTitle="{$_('swap_page.title')}"
       pageSubtitle="{$_('swap_page.subtitle')}"
     />
@@ -291,14 +293,42 @@
         <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
       </div>
       <div slot="body" class="py-4 px-6 flex space-x-4">
+        {#if $networkStore === '0xfa'}
+          <Button
+            on:clicked="{() => goTo('https://beets.fi/#/trade')}"
+            label="Beethovenx"
+            width="w-max"
+            py="py-2"
+          >
+            <img src="images/icons/beethovenx.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of BeethovenX" />
+          </Button>
+        {/if}
         <Button on:clicked="{() => goTo('http://curve.fi')}" label="Curve" width="w-max" py="py-2">
-          <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" />
+          <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
+        </Button>
+        {#if $networkStore === '0xfa'}
+          <Button
+            on:clicked="{() => goTo('https://app.spiritswap.finance/#/exchange/swap/FTM/SPIRIT')}"
+            label="SpiritSwap"
+            width="w-max"
+            py="py-2"
+          >
+            <img src="images/icons/spiritswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpiritSwap" />
+          </Button>
+          <Button
+            on:clicked="{() => goTo('https://spookyswap.finance/swap')}"
+            label="SpookySwap"
+            width="w-max"
+            py="py-2"
+          >
+            <img src="images/icons/spookyswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpookySwap" />
+          </Button>
+        {/if}
+        <Button on:clicked="{() => goTo('http://app.paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
+          <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
         </Button>
         <Button on:clicked="{() => goTo('http://zapper.fi')}" label="Zapper" width="w-max" py="py-2">
-          <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" />
-        </Button>
-        <Button on:clicked="{() => goTo('http://paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
-          <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" />
+          <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
         </Button>
       </div>
     </ContainerWithHeader>
