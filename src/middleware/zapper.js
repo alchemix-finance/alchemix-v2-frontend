@@ -42,7 +42,6 @@ export async function getFiatRates() {
       console.error(error);
       _global.fiatRates = { USD: 1 };
       global.set({ ..._global });
-      throw error;
     });
 }
 
@@ -61,7 +60,6 @@ export async function getTokenPrices(network) {
       _tokenPrices = [];
       global.set({ ..._global });
       tokenPrices.set([..._tokenPrices]);
-      throw error;
     });
 }
 
@@ -85,6 +83,5 @@ export async function getGasPrices(timeout, network) {
         instant: 0,
       };
       global.set({ ..._global });
-      throw error;
     });
 }

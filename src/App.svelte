@@ -164,6 +164,7 @@ Use at your own risk.
                 <Route path="/vaults" component="{Vaults}" />
                 <Route path="/transmuter" component="{Transmuter}" />
                 <Route path="/swap" component="{Swap}" />
+
                 <Route path="/farms" component="{Farms}" />
                 <Route path="/governance" component="{Governance}" />
                 <Route path="/settings" component="{Settings}" />

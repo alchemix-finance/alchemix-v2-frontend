@@ -1,4 +1,5 @@
 {
+  "main_page": "Introductie",
   "account": "Rekening",
   "alchemix": "Alchemix",
   "alchemix_labs": "Alchemix Labs",
@@ -21,7 +22,7 @@
   "modules": "Modules",
   "navigation": "Navigatie",
   "settings": "Instellingen",
-  "social": "Sociaal",
+  "social": "Socials",
   "newsletter": "Nieuwsbrief",
   "twitter": "Twitter",
   "voting": "Stemmen",
@@ -31,22 +32,46 @@
   "my": "Mijn",
   "vaults": "Kluizen",
   "transmuter": "Transmutatie",
-  "farms": "Boerderijen",
+  "farms": "Farms",
   "submit": "Indienen",
-  "base": "Baseren",
+  "base": "Basis",
   "prio": "Prio",
-  "max": "Maximum",
+  "max": "Max",
   "depositing": "Deponeren",
   "to": "Naar",
   "proudly_using": "Trots met behulp van",
   "refresh": "Refresh",
   "wrong_network": "Fout Netwerk",
-  "connect_wallet": "Verbind Wallet",
+  "using_contract": "Contract-Wallets worden momenteel niet ondersteund",
+  "connect_wallet": "Wallet verbinden",
   "available": "Beschikbaar",
+  "custom_amount": "Aangepast bedrag",
+  "max_slippage": "Maximale Slippage",
+  "sentinel": "Sentinel",
+  "wrap": "Wrap",
+  "unwrap": "Unwrap",
+  "external": "Extern",
   "landing": {
-    "intro_title": "Een Zelfterugbetalende Lening Afsluiten",
-    "intro_subtitle": "Verhoog uw kapitaalefficiëntie door vandaag nog het toekomstige rendement van uw deposito te lenen.",
-    "button_label": "Enter Alchemix"
+    "intro_title": "Alchemix zelfterugbetalende leningen laten u toe om een hefboom te zetten onder een aantal tokens zonder risico op liquidatie.",
+    "intro_subtitle_0": "Leen tot 50% van uw gestorte onderpand",
+    "intro_subtitle_1": "Uitgeven en sparen tegelijkertijd",
+    "intro_subtitle_2": "Je enige schuld is tijd",
+    "button_label": "Krijg uw eerste zelfterugbetalende lening",
+    "learn_more": "Meer info",
+    "short_explainer": "Door een synthetische versie van het tegoed dat u stort te lenen, vermijdt u het risico van liquidatie. DeFi-innovatie op een nieuw niveau, Alchemix is ​​het eerste DeFi-product met deze mogelijkheid.",
+    "short_explainer_end": "Met uw onderpand verdienen wij in uw naam rendement om uw lening automatisch af te lossen!",
+    "path_headline": "Kies je pad",
+    "path_subtitle": "Een multifunctionele rekening voor al uw financiële behoeften",
+    "leverage_headline": "Zet een hefboom onder uw vermogen",
+    "benefits_headline": "De voordelen van Alchemix",
+    "benefit_leverage_title": "Zet een hefboom onder je rijkdom",
+    "benefit_leverage_blurb": "Houd blootstelling aan belangrijke activa terwijl u ze voor u laat werken. Haal meer uit uw vermogen (zonder risico op liquidatie!) door een synthetische versie van uw onderpand te lenen.",
+    "benefit_range_title": "Breed scala aan tokens",
+    "benefit_range_blurb": "Alchemix opent deuren naar nieuwe soorten onderpand. Maak meer gebruik van uw vermogen dan ooit tevoren.",
+    "benefit_liquidations_title": "Geen liquidaties",
+    "benefit_liquidations_blurb": "Wat er ook gebeurt, we zullen uw aanbetaling nooit te gelde maken. U kunt ervoor kiezen om uw eigen lening naar eigen inzicht zelf af te lossen.",
+    "benefit_flexible_title": "Volledig flexibel",
+    "benefit_flexible_blurb": "Alchemix blokkeert uw aanbetaling niet en brengt geen kosten in rekening. Uw geld is 100% van de tijd toegankelijk. U kunt uw schuld ook terugbetalen wanneer u maar wilt."
   },
   "settings_page": {
     "locale": "Lokaal",
@@ -60,8 +85,9 @@
     "title": "Bestuur",
     "subtitle": "Alchemix Verbeteringsvoorstellen",
     "loading": "Data Ophalen...",
-    "openAllOnSnapshot": "Bekijk alle voorstellen op Snapshot",
-    "openOnSnapshot": "Bekijk voorstel op Snapshot",
+    "openAllOnSnapshot": "Alle voorstellen",
+    "openOnSnapshot": "Openen op Snapshot",
+    "openOnForum": "Alle discussies",
     "noOpenVotes": "Er zijn momenteel geen openstaande voorstellen.",
     "noTranslation": "De resultaten worden opgehaald via externe API's en worden niet vertaald vanuit hun oorspronkelijke taal.",
     "description": "Beschrijving",
@@ -71,7 +97,10 @@
     "closedVote": "Stemmen Gesloten",
     "choose": "Jouw Stem",
     "alreadyVoted": "Je hebt al gestemd",
-    "proposals": "Voorstellen"
+    "proposals": "Voorstellen",
+    "all": "Alle",
+    "active": "Actief",
+    "closed": "Gesloten"
   },
   "farm_page": {
     "title": "Boerderijen",
@@ -91,7 +120,8 @@
     "subtitle": "Stort onderpand en leen direct uw toekomstige rendement",
     "borrow": "Lenen",
     "repay": "Terugbetalen",
-    "liquidate": "Liquideren"
+    "liquidate": "Liquideren",
+    "legacy_redirect": "Op zoek naar uw oude deposito's?"
   },
   "accounts_page": {
     "title": "Mijn Rekeningen",
@@ -107,7 +137,7 @@
     "debt": "Schuld",
     "interest": "Rente",
     "total_deposit": "Totale storting",
-    "aggregate_apy": "Totale APY"
+    "aggregate_apy": "Gemiddelde APY"
   },
   "table": {
     "strategy": "Strategie",
@@ -134,13 +164,16 @@
     "ipfs": "IPFS",
     "no_strategies": "U heeft geen actieve strategieën.",
     "all_strategies": "Je gebruikt alle beschikbare strategieën.",
+    "no_strategies_avail": "Er zijn op dit moment geen strategieën beschikbaar.",
     "your_strategies_select": "Uw strategieën",
     "all_strategies_select": "Alle strategieën",
     "unused_strategies_select": "Ongebruikte strategieën",
     "collateral": "Onderpand",
     "active_select": "Actief",
     "retired_select": "Non-actief",
-    "external_select": "Extern"
+    "external_select": "Extern",
+    "galcx": "gALCX",
+    "yield": "Opbrengst"
   },
   "expanded": {
     "credit_limit": "Kredietlimiet",
@@ -163,6 +196,7 @@
     "welcome_back": "Welkom terug",
     "pending": "In behandeling",
     "pending_sign": "Teken de transactie in uw wallet",
+    "pending_gas": "Gasprijs ophalen",
     "pending_confirm": "Transactie bevestigen",
     "success": "Succes",
     "tx_confirmed": "Transactie is bevestigd",
@@ -170,6 +204,7 @@
     "init_data": "Gegevens Initialiseren",
     "registering_vote": "Stem Registreren op Snapshot",
     "vote_registered": "Stem is geregistreerd",
+    "vote_rejected": "Metamask-Handtekening afgewezen door gebruiker",
     "currency_updated": "Valuta bijgewerkt",
     "using": "Gebruik makend van",
     "as_default": "als standaard",
@@ -195,6 +230,46 @@
     "transfer_loan": "Lening overzetten naar een andere wallet",
     "target_wallet": "Nieuwe wallet",
     "transfer_error": "Het opgegeven adres is niet geldig. Controleer uw invoer.",
-    "transfer_disclaimer": "Ik heb geverifieerd dat bovenstaande adres de juiste ontvanger is van mijn nieuwe lening"
+    "transfer_disclaimer": "Ik heb geverifieerd dat bovenstaande adres de juiste ontvanger is van mijn nieuwe lening",
+    "slippage_below_safe": "Slippage tolerantie erg laag, transactie kan misschien niet doorgaan.",
+    "slippage_above_max": "Slippage hoger dan maximaal mogelijk bedrag.",
+    "slippage_above_safe": "Slippage tolerantie zeer hoog, het verlies van fondsen kan optreden."
+  },
+  "metrics": {
+    "total_deposit": "Totale Aanbetaling",
+    "open_debt": "Huidige Schuld",
+    "open_credit": "Beschikbaar Krediet",
+    "global_tvl": "Globaal TVL"
+  },
+  "galcx": {
+    "title": "gALCX Wrapper",
+    "leading": "Een liquide ALCX-wrapper voor enkelzijdige staking.",
+    "p_1": "Wrap uw ALCX in gALCX en laat uw ALCX voor u werken in de enkelzijdige staking pool terwijl u de controle over uw gALCX behoudt.",
+    "p_2": "Autocompounding verhoogt de hoeveelheid ALCX die u per gALCX kunt unwrappen.",
+    "galcx_supply": "gALCX-Tokenvoorraad",
+    "wrapped_alcx": "Wrapped ALCX"
+  },
+  "migration": {
+    "title": "Verouderde Migratie",
+    "step": "Stap",
+    "liquidating": "Liquideren",
+    "withdrawing": "Intrekken",
+    "migrating": "Migreren",
+    "liq_explain": "De eerste stap is om uw uitstaande schuld te vereffenen, indien van toepassing.",
+    "wit_explain": "Bij de tweede stap wordt uw volledige saldo van V1 ingetrokken.",
+    "mig_explain": "De derde stap flashleent uw nieuwe saldo naar een aanbetaling met een LTV-ratio van 50%.",
+    "toggle_default": "Standaard instellingen",
+    "toggle_custom": "Aangepaste Instellingen",
+    "flashloan_waiting": "Wachten op andere stappen...",
+    "flashloan_ready": "Flashlening naar V2",
+    "restart": "Herstarten",
+    "paragraph_1": "Om het zo eenvoudig mogelijk te maken om uw Legacy-kluisdeposito's naar V2 te migreren, biedt Alchemix een migratietool aan waarmee u uw positie naar V2 kunt overbrengen met zo laag mogelijke gas-kosten.",
+    "paragraph_2": "Uw wallet zal u een paar keer vragen om transacties te ondertekenen die voor de volgende stappen zorgen:",
+    "from_alusd": "Legacy alUSD-positie migreren",
+    "from_aleth": "Migreer legacy alETH positie",
+    "no_position": "Geen legacy-posities gedetecteerd, alles ziet er goed uit!",
+    "cus_explain": "Kies een bedrag dat u wilt flashlenen naar een nieuwe V2-positie, evenals het gewenste LTV-bedrag dat wordt gebruikt om te bepalen hoeveel schuld u wilt opnemen met elke schuld token mint.",
+    "target_ltv": "Doel-LTV",
+    "ltv_ratio": "LTV-ratio"
   }
 }

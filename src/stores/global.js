@@ -84,6 +84,14 @@ const defaults = {
       name: 'Turkish',
       locale: 'tr',
     },
+    {
+      name: 'Catalan',
+      locale: 'ca',
+    },
+    {
+      name: 'Polish',
+      locale: 'pl',
+    },
   ],
   allCurrencies: [
     {

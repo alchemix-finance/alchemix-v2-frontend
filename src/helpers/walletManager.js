@@ -8,6 +8,7 @@ import { updateAddress, updateProvider, updateNetwork } from '../stores/v2/metho
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
+import walletLinkModule from '@web3-onboard/walletlink';
 import { chainIds } from '../stores/v2/constants';
 // import { getRpcUrl } from '../middleware/figment';
 // import {setLoginSuccess} from './setToast'
@@ -27,6 +28,7 @@ account.subscribe((val) => {
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
+const walletLink = walletLinkModule();
 
 // @dev we're literally cheating infura with this lmfao
 const infuraKeys = [
@@ -61,6 +63,7 @@ const supportedChains = chainIds.map((chain) => {
 const onboard = Onboard({
   wallets: [injected, walletConnect],
   chains: supportedChains,
+
   appMetadata: {
     name: 'Alchemix',
     icon: 'https://alchemix.fi/images/icons/alcx_med.svg',

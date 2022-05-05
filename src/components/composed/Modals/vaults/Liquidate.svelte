@@ -67,7 +67,7 @@
       amount.mul(BigNumber.from(10).pow(underlyingTokenData.decimals)).div(BigNumber.from(10).pow(18)),
       vaultType,
       BigNumber.from(maximumLoss),
-      [$signer],
+      [$signer, $addressStore],
       minimumOut,
       $networkStore,
     ).then(() => {

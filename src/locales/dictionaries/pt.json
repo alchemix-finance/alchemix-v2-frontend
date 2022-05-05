@@ -1,4 +1,5 @@
 {
+  "main_page": "Introduction",
   "account": "Conta",
   "alchemix": "Alchemix",
   "alchemix_labs": "Alchemix Labs",
@@ -41,12 +42,36 @@
   "proudly_using": "Proudly Using",
   "refresh": "Refresh",
   "wrong_network": "Wrong Network",
+  "using_contract": "Contract-Wallets are currently not supported",
   "connect_wallet": "Connect Wallet",
   "available": "Available",
+  "custom_amount": "Custom Amount",
+  "max_slippage": "Maximum Slippage",
+  "sentinel": "Sentinel",
+  "wrap": "Wrap",
+  "unwrap": "Unwrap",
+  "external": "External",
   "landing": {
-    "intro_title": "Tome um empréstimo auto-pagável",
-    "intro_subtitle": "Aumente a eficiência do capital emprestando o rendimento futuro do seu depósito hoje.",
-    "button_label": "Entrar No Alchemix"
+    "intro_title": "Alchemix Self-Repaying Loans allow you to leverage a range of tokens without risk of liquidation.",
+    "intro_subtitle_0": "Borrow up to 50% of your deposited collateral",
+    "intro_subtitle_1": "Spend and save at the same time",
+    "intro_subtitle_2": "Your only debt is time",
+    "button_label": "Get your first Self-Repaying Loan",
+    "learn_more": "Learn more",
+    "short_explainer": "By borrowing a synthetic version of the asset you deposit you'll avoid the risk of liquidation. Defi innovation on a whole new level, Alchemix is the first same-asset loan product in DeFi.",
+    "short_explainer_end": "Using your collateral we earn yield on your behalf to pay off your loan automagically!",
+    "path_headline": "Choose your path",
+    "path_subtitle": "A multi-functional account for all your financial needs",
+    "leverage_headline": "Leverage your assets",
+    "benefits_headline": "The benefits of Alchemix",
+    "benefit_leverage_title": "Leverage your wealth",
+    "benefit_leverage_blurb": "Keep exposure to important assets while making them work for you. Leverage more of your wealth (without risk of liquidation!) by borrowing a synthetic version of your collateral.",
+    "benefit_range_title": "Wide range of tokens",
+    "benefit_range_blurb": "Alchemix is opening doors to new collateral types. Leverage more of your wealth than ever before.",
+    "benefit_liquidations_title": "No liquidations",
+    "benefit_liquidations_blurb": "No matter what happens we'll never liquidate your deposit. You can choose to self-liquidate your own loan at your own discretion.",
+    "benefit_flexible_title": "Completely flexible",
+    "benefit_flexible_blurb": "Alchemix doesn't lock your deposit or charge you fees. Your funds are accessible 100% of the time. You can also repay your debt whenever you like."
   },
   "settings_page": {
     "locale": "Localização",
@@ -60,8 +85,9 @@
     "title": "Governança",
     "subtitle": "Alchemix Improvement Proposals",
     "loading": "Buscando Dados...",
-    "openAllOnSnapshot": "Ver todas as propostas no Snapshot",
-    "openOnSnapshot": "Ver a proposta no Snapshot",
+    "openAllOnSnapshot": "All proposals",
+    "openOnSnapshot": "Open on Snapshot",
+    "openOnForum": "All discussions",
     "noOpenVotes": "Não há propostas abertas neste momento.",
     "noTranslation": "Os resultados são obtidos através de APIs externas e não são traduzidos a partir da sua língua original.",
     "description": "Descrição",
@@ -71,7 +97,10 @@
     "closedVote": "Votação Encerrada",
     "choose": "Seu Voto",
     "alreadyVoted": "You Already Voted",
-    "proposals": "Proposals"
+    "proposals": "Proposals",
+    "all": "All",
+    "active": "Active",
+    "closed": "Closed"
   },
   "farm_page": {
     "title": "Fazendas",
@@ -91,7 +120,8 @@
     "subtitle": "Deposite sua garantia e empreste o seu rendimento future imediatemente",
     "borrow": "Borrow",
     "repay": "Repay",
-    "liquidate": "Liquidate"
+    "liquidate": "Liquidate",
+    "legacy_redirect": "Looking for your old deposits?"
   },
   "accounts_page": {
     "title": "My Accounts",
@@ -107,7 +137,7 @@
     "debt": "Debt",
     "interest": "Interest",
     "total_deposit": "Total Deposit",
-    "aggregate_apy": "Aggregate APY"
+    "aggregate_apy": "Average APY"
   },
   "table": {
     "strategy": "Strategy",
@@ -134,13 +164,16 @@
     "ipfs": "IPFS",
     "no_strategies": "You don't have any active strategies.",
     "all_strategies": "You are using all available strategies.",
+    "no_strategies_avail": "No strategies are available at this moment.",
     "your_strategies_select": "Your Strategies",
     "all_strategies_select": "All Strategies",
     "unused_strategies_select": "Unused Strategies",
     "collateral": "Collateral",
     "active_select": "Active",
     "retired_select": "Retired",
-    "external_select": "External"
+    "external_select": "External",
+    "galcx": "gALCX",
+    "yield": "Yield"
   },
   "expanded": {
     "credit_limit": "Credit Limit",
@@ -163,6 +196,7 @@
     "welcome_back": "Welcome back",
     "pending": "Pending",
     "pending_sign": "Sign transaction in wallet",
+    "pending_gas": "Fetching gas price",
     "pending_confirm": "Confirming transaction",
     "success": "Success",
     "tx_confirmed": "Transaction was confirmed",
@@ -170,6 +204,7 @@
     "init_data": "Initializing Data",
     "registering_vote": "Registering Vote on Snapshot",
     "vote_registered": "Vote was registered",
+    "vote_rejected": "User Rejected Metamask Signature",
     "currency_updated": "Currency updated",
     "using": "Using",
     "as_default": "as default",
@@ -195,6 +230,46 @@
     "transfer_loan": "Transfer loan to a different wallet",
     "target_wallet": "Target Wallet",
     "transfer_error": "The provided address is not valid. Please check the input.",
-    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan"
+    "transfer_disclaimer": "I have verified the above address to be the correct recipient of my new loan",
+    "slippage_below_safe": "Slippage tolerance very low, transaction might revert.",
+    "slippage_above_max": "Slippage higher than maximum possible amount.",
+    "slippage_above_safe": "Slippage tolerance very high, loss of funds might occur."
+  },
+  "metrics": {
+    "total_deposit": "Total Deposit",
+    "open_debt": "Current Debt",
+    "open_credit": "Available Credit",
+    "global_tvl": "Global TVL"
+  },
+  "galcx": {
+    "title": "gALCX Wrapper",
+    "leading": "A liquid ALCX wrapper for single-sided staking.",
+    "p_1": "Wrap your ALCX into gALCX and have your ALCX work for you in the single sided staking pool while staying in control of your gALCX.",
+    "p_2": "Autocompounding increases the amount of ALCX you can unwrap per gALCX.",
+    "galcx_supply": "gALCX Token Supply",
+    "wrapped_alcx": "Wrapped ALCX"
+  },
+  "migration": {
+    "title": "Legacy Migration",
+    "step": "Step",
+    "liquidating": "Liquidating",
+    "withdrawing": "Withdrawing",
+    "migrating": "Migrating",
+    "liq_explain": "First step is to liquidate your outstanding debt, if applicable.",
+    "wit_explain": "Second step withdraws your entire balance from V1.",
+    "mig_explain": "Third step flashloans your new balance into a deposit with 50% LTV ratio.",
+    "toggle_default": "Default Settings",
+    "toggle_custom": "Custom Settings",
+    "flashloan_waiting": "Waiting for other steps...",
+    "flashloan_ready": "Flashloan into V2",
+    "restart": "Restart",
+    "paragraph_1": "To make it as simple as possible to migrate your Legacy vault deposits into V2, Alchemix is providing a migration tool which enables you to transfer your position into V2 while staying as gas-cost efficient as possible.",
+    "paragraph_2": "Your wallet will prompt you a few times to sign transactions that take care of the following steps:",
+    "from_alusd": "Migrate Legacy alUSD position",
+    "from_aleth": "Migrate Legacy alETH position",
+    "no_position": "No legacy positions detected, you're all good!",
+    "cus_explain": "Choose an amount that you want to flashloan into a new V2 position, as well as the desired LTV amount which is used to determine how much debt to take up with each debt token mint.",
+    "target_ltv": "Target LTV",
+    "ltv_ratio": "LTV Ratio"
   }
 }

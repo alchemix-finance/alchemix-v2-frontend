@@ -561,13 +561,20 @@ export async function repay(
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: alchemistInstance } = contractWrapper(
+    const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
+
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
 
+    const allowanceAmount = await underlyingTokenInstance.allowanceOf(addressStore, alchemistAddress);
     setPendingWallet();
+    if (amountToRepay.gt(allowanceAmount)) {
+      const sendApe = (await underlyingTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      await sendApe.wait();
+    }
 
     const tx = (await alchemistInstance.repay(debtToken, amountToRepay, addressStore)) as ContractTransaction;
 
@@ -593,19 +600,22 @@ export async function liquidate(
   amountToRepay: BigNumber,
   typeOfVault: VaultTypes,
   maximumLoss: BigNumber,
-  [signerStore]: [Signer],
+  [signerStore, addressStore]: [Signer, string],
   minimumAmountOut: BigNumber,
   network: string,
 ) {
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: alchemistInstance } = contractWrapper(
+    const yieldTokenInstance = erc20Contract(yieldToken, signerStore);
+
+    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
 
+    const allowanceAmount = await yieldTokenInstance.allowanceOf(addressStore, alchemistAddress);
     setPendingWallet();
 
     const tx = (await alchemistInstance.liquidate(
