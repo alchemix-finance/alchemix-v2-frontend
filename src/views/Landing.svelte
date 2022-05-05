@@ -134,7 +134,7 @@
         border-orange4
         transition-all
         tracking-wider"
-        on:click="{() => routerGuard('accounts')}"
+        on:click="{() => routerGuard('vaults')}"
       >
         <span class="flex flex-row space-x-4 self-center content-center h-max text-orange4">
           <span class="self-center {$settings.invertColors ? 'text-white2inverse' : 'text-white2'}"
@@ -297,7 +297,7 @@
         border-orange4
         transition-all
         tracking-wider"
-        on:click="{() => routerGuard('accounts')}"
+        on:click="{() => routerGuard('vaults')}"
       >
         <span class="flex flex-row space-x-4 self-center content-center h-max text-orange4">
           <span class="self-center {$settings.invertColors ? 'text-white2inverse' : 'text-white2'}"
