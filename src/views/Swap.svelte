@@ -7,7 +7,7 @@
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import Button from '@components/elements/Button.svelte';
   import { getQuote, getStatus } from '@middleware/liFi';
-  import { bridge, toCanonical, fromCanonical } from '@helpers/multichain';
+  import { bridge, toCanonical, fromCanonical, bridgeBalance } from '@helpers/multichain';
   import { BarLoader } from 'svelte-loading-spinners';
   import { addressStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
@@ -271,11 +271,37 @@
     }
   };
 
+  let unbridgedAssets = false;
+  let unbridgedAddresses = [];
+  const checkForBridgeAssets = async () => {
+    const tokenKeys = Object.keys(supportedTokens);
+    tokenKeys.map(async (token) => {
+      const bridgeToken = supportedTokens[token].address.fantom.bridge;
+      const balance = await bridgeBalance(bridgeToken, [$addressStore, $signer]);
+      if (balance.gt(BigNumber.from(0))) {
+        unbridgedAssets = true;
+        unbridgedAddresses.push({ symbol: token, address: bridgeToken });
+      }
+    });
+  };
+
+  const batchToCanonical = async (_tokens) => {
+    _tokens.map(async (token, index) => {
+      const canonicalToken = supportedTokens[token.symbol].selector;
+      await toCanonical(token.address, canonicalToken, 250, [$addressStore, $signer]);
+      if (index + 1 === _tokens.length) {
+        unbridgedAssets = false;
+        localStorage.removeItem('multichainPendingTx');
+      }
+    });
+  };
+
   $: onTargetNetwork =
     $multichainPendingTx.toChain === chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId;
   $: if ($multichainPendingTx.bridge !== undefined && $multichainPendingTx.txHash !== undefined && step === 0)
     pendingTx = true;
   $: if (pendingTx && !autoCheck) statusPing();
+  $: if ($networkStore === '0xfa') checkForBridgeAssets();
 </script>
 
 <ViewContainer>
@@ -286,6 +312,23 @@
       pageSubtitle="{$_('swap_page.subtitle')}"
     />
   </div>
+
+  {#if unbridgedAssets}
+    <div
+      class="border-y-1 mb-8 py-2 rounded text-sm border border-green4 {$settings.invertColors
+        ? 'bg-green7 text-white2inverse'
+        : 'bg-black2 text-white2'} flex flex-row justify-center space-x-4"
+    >
+      <div class="flex flex-row space-x-4">
+        <p class="self-center">You need to swap your bridge assets</p>
+        <Button
+          label="Swap to canonical"
+          width="w-max"
+          on:clicked="{() => batchToCanonical(unbridgedAddresses)}"
+        />
+      </div>
+    </div>
+  {/if}
 
   <div class="w-full mb-8">
     <ContainerWithHeader>

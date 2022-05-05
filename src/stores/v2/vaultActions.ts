@@ -616,6 +616,11 @@ export async function liquidate(
     );
 
     const allowanceAmount = await yieldTokenInstance.allowanceOf(addressStore, alchemistAddress);
+
+    if (amountToRepay.gt(allowanceAmount)) {
+      const sendApe = (await yieldTokenInstance.approve(alchemistAddress)) as ethers.ContractTransaction;
+      await sendApe.wait();
+    }
     setPendingWallet();
 
     const tx = (await alchemistInstance.liquidate(
