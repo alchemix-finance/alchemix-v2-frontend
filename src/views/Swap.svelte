@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
@@ -33,6 +34,10 @@
           bridge: '0x4CbA8902ce48AB1d5eEa1920D65faeDB934B9916',
           canonical: '0x70F9fd19f857411b089977E7916c05A0fc477Ac9',
         },
+        arbitrum: {
+          bridge: '0x026e91e4C3d35EB31a90FcdBF50313d0290Af3cb',
+          canonical: '0x870d36B8AD33919Cc57FFE17Bb5D3b84F3aDee4f',
+        },
       },
       selector: 'CrossChainCanonicalGALCX',
     },
@@ -43,6 +48,10 @@
         fantom: {
           bridge: '0xe5130d3dbfac6ae7d73a24d719762df74d8e4c27',
           canonical: '0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E',
+        },
+        arbitrum: {
+          bridge: '0x2130d2a1e51112D349cCF78D2a1EE65843ba36e0',
+          canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
         },
       },
       selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
@@ -125,19 +134,20 @@
 
   $: bridgeAmount, debounce();
 
+  let quoteTry = 0;
   const _getQuote = async () => {
     fetchingQuote = true;
-    const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId;
+    const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0];
     const amount = utils.parseEther(bridgeAmount.toString());
     const fromToken =
-      fromChain === 1
+      fromChain.legacyId === 1
         ? supportedTokens[selectedToken].address.ethereum
-        : supportedTokens[selectedToken].address.fantom.bridge;
+        : supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
     const toToken =
-      fromChain === 1
-        ? supportedTokens[selectedToken].address.fantom.bridge
+      fromChain.legacyId === 1
+        ? supportedTokens[selectedToken].address[toChain.abiPath].bridge
         : supportedTokens[selectedToken].address.ethereum;
-    await getQuote(fromChain, toChain.legacyId, fromToken, toToken, amount.toString(), $addressStore)
+    await getQuote(fromChain.legacyId, toChain.legacyId, fromToken, toToken, amount.toString(), $addressStore)
       .then((_quote) => {
         quoteReceived = true;
         fetchingQuote = false;
@@ -151,24 +161,31 @@
       .catch((error) => {
         step = 0;
         fetchingQuote = false;
-        setError(
-          toChain.id === $networkStore ? 'Target network is not different from current network' : error,
-        );
+        // @dev stupid workaround for issues fetching arbitrum quotes
+        if (quoteTry < 2) {
+          quoteTry += 1;
+          _getQuote();
+        } else {
+          quoteTry = 0;
+          setError(
+            toChain.id === $networkStore ? 'Target network is not different from current network' : error,
+          );
+        }
       });
   };
 
   const startBridge = async (txData, _targetNetwork) => {
     let fromToken;
-    const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId;
+    const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0];
     const amount = utils.parseEther(bridgeAmount.toString());
     switch (_targetNetwork) {
       case '0x1':
         step = 2;
-        fromToken = supportedTokens[selectedToken].address.fantom.bridge;
+        fromToken = supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
         await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
           .then((hash) => {
             $multichainPendingTx.bridge = tool;
-            $multichainPendingTx.fromChain = fromChain;
+            $multichainPendingTx.fromChain = fromChain.legacyId;
             $multichainPendingTx.toChain = toChain.legacyId;
             $multichainPendingTx.txHash = hash;
             $multichainPendingTx.bridgeToken = bridgeToken;
@@ -185,14 +202,18 @@
           });
         break;
       case '0xfa':
+      case '0xa4b1':
       default:
         processing = true;
         step = 1;
-        fromToken = supportedTokens[selectedToken].address.ethereum;
+        fromToken =
+          fromChain.id === '0x1'
+            ? supportedTokens[selectedToken].address.ethereum
+            : supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
         await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
           .then((hash) => {
             $multichainPendingTx.bridge = tool;
-            $multichainPendingTx.fromChain = fromChain;
+            $multichainPendingTx.fromChain = fromChain.legacyId;
             $multichainPendingTx.toChain = toChain.legacyId;
             $multichainPendingTx.txHash = hash;
             $multichainPendingTx.bridgeToken = bridgeToken;
@@ -225,8 +246,9 @@
       case '0x1':
         processing = true;
         step = 1;
+        const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
         await fromCanonical(
-          supportedTokens[selectedToken].address.fantom.bridge,
+          supportedTokens[selectedToken].address[chain.abiPath].bridge,
           supportedTokens[selectedToken].selector,
           chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId,
           utils.parseEther(bridgeAmount.toString()),
@@ -275,8 +297,9 @@
   let unbridgedAddresses = [];
   const checkForBridgeAssets = async () => {
     const tokenKeys = Object.keys(supportedTokens);
+    const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
     tokenKeys.map(async (token) => {
-      const bridgeToken = supportedTokens[token].address.fantom.bridge;
+      const bridgeToken = supportedTokens[token].address[chain.abiPath].bridge;
       const balance = await bridgeBalance(bridgeToken, [$addressStore, $signer]);
       if (balance.gt(BigNumber.from(0))) {
         unbridgedAssets = true;
@@ -301,7 +324,9 @@
   $: if ($multichainPendingTx.bridge !== undefined && $multichainPendingTx.txHash !== undefined && step === 0)
     pendingTx = true;
   $: if (pendingTx && !autoCheck) statusPing();
-  $: if ($networkStore === '0xfa') checkForBridgeAssets();
+  onMount(() => {
+    if ($networkStore !== '0x1') checkForBridgeAssets();
+  });
 </script>
 
 <ViewContainer>
@@ -462,13 +487,30 @@
           </div>
           <div class="flex flex-row space-x-4 h-8" transition:slide|local>
             <p class="text-sm text-lightgrey10 min-w-max self-center">Target Network</p>
-            <div
-              on:click="{() => setToChain(toChain.legacyId === 1 ? '0xfa' : '0x1')}"
-              class="rounded h-full w-max self-center flex flex-row items-center space-x-2 pl-2 pr-6 bg-{toChain.abiPath}"
-            >
-              <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
-              <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
-            </div>
+
+            <Dropdown>
+              <div
+                slot="label"
+                class="flex flex-row space-x-4 justify-between items-center px-2 w-full h-full rounded bg-{toChain.abiPath}"
+              >
+                <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
+                <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
+                <p>▾</p>
+              </div>
+              <ul slot="options" class="w-full">
+                {#each chainIds as chain}
+                  <li
+                    class="cursor-pointer h-8 border-t {$settings.invertColors
+                      ? 'hover:bg-grey10inverse border-grey10inverse'
+                      : 'hover:bg-grey10 border-grey10'}"
+                    on:click="{() => setToChain(chain.id)}"
+                  >
+                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{chain.name}</p>
+                  </li>
+                {/each}
+              </ul>
+            </Dropdown>
+
             <p class="pl-4 text-sm text-lightgrey10 min-w-max self-center">Bridge Fees</p>
             <div
               class="w-full rounded text-xl text-center flex p-4 {$settings.invertColors
@@ -493,7 +535,7 @@
             </div>
           </div>
         {/if}
-        {#if toChain.id === '0xfa'}
+        {#if toChain.id !== '0x1'}
           <div class="w-full flex flex-row space-x-4">
             <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
               <div class="w-full flex flex-row justify-between items-center">

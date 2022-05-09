@@ -99,7 +99,6 @@ const connect = async (preselect) => {
 };
 
 export const switchChain = async (id) => {
-  console.log(id);
   try {
     await onboard.setChain({ chainId: id });
   } catch (e) {

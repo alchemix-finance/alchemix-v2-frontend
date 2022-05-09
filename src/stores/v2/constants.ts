@@ -108,4 +108,19 @@ export const chainIds = [
     },
     vaultTypes: [VaultTypes.alUSD],
   },
+  {
+    id: '0xa4b1',
+    legacyId: 42161,
+    name: 'Arbitrum One',
+    icon: 'arbitrum',
+    abiPath: 'arbitrum',
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    explorer: 'https://arbiscan.io/',
+    token: {
+      symbol: 'ETH',
+      name: 'Ethereum',
+      decimals: 18,
+    },
+    vaultTypes: [],
+  },
 ];
