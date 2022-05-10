@@ -64,7 +64,9 @@
         vaultsLoading.set(false);
       });
 
-      await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore], netId);
+      if (execute.vaultTypes.length > 0) {
+        await fetchAlchemistSentinelRole(VaultTypes.alUSD, [$signer, $addressStore], netId);
+      }
 
       let adapters = [];
       execute.vaultTypes.forEach((type) => {
