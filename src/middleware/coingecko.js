@@ -10,14 +10,16 @@ function connector(endpoint, network, queryString) {
 
 export async function getTokenPrices(network, tokenAddress, currencies) {
   let geckoAssetId = 'ethereum';
-  try {
-    await axios.get('https://api.coingecko.com/api/v3/asset_platforms').then((result) => {
-      geckoAssetId = result.data.filter(
-        (item) => item.id !== null && item.id !== undefined && item.id.includes(network),
-      )[0].id;
-    });
-  } catch (e) {
-    console.error(e);
+  if (network !== 'ethereum') {
+    try {
+      await axios.get('https://api.coingecko.com/api/v3/asset_platforms').then((result) => {
+        geckoAssetId = result.data.filter(
+          (item) => item.id !== null && item.id !== undefined && item.id.includes(network),
+        )[0].id;
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
   const queryString = `contract_addresses=${tokenAddress}&vs_currencies=${currencies
     .join(',')
