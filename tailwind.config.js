@@ -96,6 +96,7 @@ module.exports = {
       iconsInverse: '#252736',
       fantom: '#1969ff',
       ethereum: '#647fe5',
+      arbitrum: '#93b4d5',
     },
     fontFamily: {
       alcxLogo: ['Reem Kufi', 'sans-serif'],

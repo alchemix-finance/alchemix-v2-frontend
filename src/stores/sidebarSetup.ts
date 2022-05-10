@@ -21,7 +21,7 @@ export function sidebarSetup() {
       label: 'swap',
       path: 'swap',
       icon: 'swap_med.svg',
-      supportedChains: ['0x1', '0xfa'],
+      supportedChains: ['0x1', '0xfa', '0xa4b1'],
     },
     {
       label: 'farms',
@@ -33,7 +33,7 @@ export function sidebarSetup() {
       label: 'governance',
       path: 'governance',
       icon: 'alcx_med.svg',
-      supportedChains: ['0x1', '0xfa'],
+      supportedChains: ['0x1', '0xfa', '0xa4b1'],
     },
     {
       label: 'sentinel',
@@ -45,7 +45,7 @@ export function sidebarSetup() {
       label: 'Cows',
       path: 'get-out',
       icon: 'cow_med.svg',
-      supportedChains: ['0x1', '0xfa'],
+      supportedChains: ['0x1', '0xfa', '0xa4b1'],
     },
   ];
 }
