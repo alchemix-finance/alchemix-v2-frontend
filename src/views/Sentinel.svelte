@@ -1,5 +1,5 @@
 <script>
-  import { sentinelStore, tokensStore } from '@stores/v2/alcxStore';
+  import { sentinelStore, tokensStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { VaultTypes } from '@stores/v2/types';
   import { onMount } from 'svelte';
@@ -16,6 +16,7 @@
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import settings from '@stores/settings';
+  import { chainIds } from '@stores/v2/constants';
 
   let tokenList = [];
 
@@ -36,9 +37,11 @@
   const alchemists = ['AlchemistV2_alUSD', 'AlchemistV2_alETH'];
   let alchemistList = [];
 
+  $: abiPath = chainIds.filter((chain) => chain.id === $networkStore)[0].abiPath;
+
   const initTokenData = (tokens, vaultType) => {
     tokens?.forEach(async (token) => {
-      const isEnabled = await fetchTokenEnabledStatus(VaultTypes[vaultType], token, $signer);
+      const isEnabled = await fetchTokenEnabledStatus(VaultTypes[vaultType], token, $signer, $networkStore);
       const name = await getTokenName(token);
       tokenList = [...tokenList, { name, address: token, isEnabled, alchemist: vaultType }];
     });
@@ -46,7 +49,7 @@
 
   const initTransmuters = () => {
     transmuters.forEach(async (transmuter) => {
-      const contract = getContract(`TransmuterV2_${transmuter.token}`);
+      const contract = getContract(`TransmuterV2_${transmuter.token}`, abiPath);
       const isPaused = await contract.isPaused();
       transmuterList = [...transmuterList, { type: transmuter.transmuter, name: transmuter.token, isPaused }];
     });
@@ -54,8 +57,8 @@
 
   const initAlTokens = () => {
     alTokens.forEach(async (alToken) => {
-      const contract = getContract(alToken.token);
-      const alchemistAddress = await getAddress(`AlchemistV2_${alToken.alchemist}`);
+      const contract = getContract(alToken.token, abiPath);
+      const alchemistAddress = await getAddress(`AlchemistV2_${alToken.alchemist}`, abiPath);
       const isPaused = await contract.paused(alchemistAddress);
       const name = await contract.name();
       alTokenList = [...alTokenList, { name, isPaused, token: alToken.token, alchemist: alToken.alchemist }];
@@ -63,7 +66,7 @@
   };
 
   const toggleTokenStatus = async (alchemist, token, newStatus) => {
-    await toggleTokenEnabled(VaultTypes[alchemist], token, newStatus, [$signer]).then(() => {
+    await toggleTokenEnabled(VaultTypes[alchemist], token, newStatus, [$signer], $networkStore).then(() => {
       tokenList.length = 0;
       initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
       initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
@@ -71,14 +74,16 @@
   };
 
   const toggleTransmuter = async (vaultType, tokenName, state) => {
-    await toggleTransmuterStatus(VaultTypes[vaultType], tokenName, state, [$signer]).then(() => {
-      transmuterList.length = 0;
-      initTransmuters();
-    });
+    await toggleTransmuterStatus(VaultTypes[vaultType], tokenName, state, [$signer], $networkStore).then(
+      () => {
+        transmuterList.length = 0;
+        initTransmuters();
+      },
+    );
   };
 
   const toggleAlchemist = async (vaultType, state) => {
-    await toggleAlchemistStatus(vaultType, state, [$signer]).then(() => {
+    await toggleAlchemistStatus(vaultType, state, [$signer], $networkStore).then(() => {
       alTokenList.length = 0;
       initAlTokens();
     });

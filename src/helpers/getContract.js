@@ -14,9 +14,9 @@ account.subscribe((val) => {
  * @param selector the contract's filename without extension
  * @returns new ethers contract instance
  */
-export default function getContract(selector) {
+export default function getContract(selector, path) {
   // eslint-disable-next-line global-require,import/no-dynamic-require
-  const contract = require(`../abi/${selector}.json`);
+  const contract = require(`../abi/${path}/${selector}.json`);
   const abi = contract.abi;
   return new ethers.Contract(contract.address, abi, _account.signer);
 }
@@ -49,9 +49,9 @@ export function getFragment(selector) {
  * @param contract the contract's filename without extension
  * @returns the address string
  * */
-export function getAddress(selector) {
+export function getAddress(selector, path) {
   // eslint-disable-next-line global-require,import/no-dynamic-require
-  const contract = require(`../abi/${selector}.json`);
+  const contract = require(`../abi/${path}/${selector}.json`);
   return contract.address;
 }
 
