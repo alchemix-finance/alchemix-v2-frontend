@@ -384,7 +384,7 @@
             <img src="images/icons/spiritswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpiritSwap" />
           </Button>
           <Button
-            on:clicked="{() => goTo('https://spookyswap.finance/swap')}"
+            on:clicked="{() => goTo('https://spookyswap.fi/#/swap')}"
             label="SpookySwap"
             width="w-max"
             py="py-2"

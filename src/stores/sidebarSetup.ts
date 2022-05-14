@@ -39,7 +39,7 @@ export function sidebarSetup() {
       label: 'sentinel',
       path: 'sentinel',
       icon: 'sentinel_med.svg',
-      supportedChains: ['0x1'],
+      supportedChains: ['0x1', '0xfa'],
     },
     {
       label: 'Cows',

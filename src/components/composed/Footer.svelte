@@ -40,7 +40,7 @@
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a href="https://alchemix-finance.gitbook.io/v2/" class="flex space-x-4" target="_blank">
+          <a href="https://alchemix-finance.gitbook.io/user-docs/" class="flex space-x-4" target="_blank">
             <span>{$_('documentation')}</span></a
           >
         </li>
