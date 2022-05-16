@@ -38,6 +38,7 @@
   "base": "Base",
   "prio": "Prio",
   "max": "Max",
+  "clear": "Clear",
   "depositing": "Depositing",
   "to": "To",
   "proudly_using": "Proudly Using",
@@ -52,6 +53,7 @@
   "wrap": "Wrap",
   "unwrap": "Unwrap",
   "external": "External",
+  "balance": "Balance",
   "landing": {
     "intro_title": "Alchemix Self-Repaying Loans allow you to leverage a range of tokens without risk of liquidation.",
     "intro_subtitle_0": "Borrow up to 50% of your deposited collateral",
@@ -134,7 +136,8 @@
     "repay": "Repay",
     "liquidate": "Liquidate",
     "legacy_redirect": "Looking for your old deposits?",
-    "deposit_exceeds_limits": "Deposit exceeds vault limits"
+    "deposit_exceeds_limits": "Deposit exceeds vault limits",
+    "add_collateral_type": "Add another collateral type"
   },
   "accounts_page": {
     "title": "My Accounts",

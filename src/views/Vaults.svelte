@@ -29,6 +29,7 @@
   import LegacyHelper from '@components/composed/LegacyHelper';
   import { signer } from '@stores/v2/derived';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell';
+  import VaultStrategy from '@components/composed/VaultStrategy.svelte';
 
   $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
   $: vaultsSelector = makeSelectorStore([...vaultTypes]);
@@ -524,10 +525,11 @@
         </div>
         <div slot="body">
           {#if currentRowsOnCurrentStrategyType.length > 0}
-            <Table
-              rows="{[...currentRowsOnCurrentStrategyType.map((obj) => obj.row)]}"
-              columns="{colsStrats}"
-            />
+            <div class="flex flex-col space-y-4 px-4 py-4">
+              {#each currentRowsOnCurrentStrategyType.map((obj) => obj.row) as strategy}
+                <VaultStrategy strategy="{strategy}" />
+              {/each}
+            </div>
           {:else}
             <div class="flex justify-center my-4">
               <p>{noVaultsForStrategyText[currentStrategy]}</p>
