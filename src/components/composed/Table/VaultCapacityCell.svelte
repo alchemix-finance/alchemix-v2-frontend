@@ -10,17 +10,21 @@
   export let signer;
   export let decimals;
   export let symbol;
+  export let capReached;
 
   let capacity;
+
   const vaultCapacity = async () => {
     capacity = await getVaultCapacity(yieldTokenAddress, vaultType, [signer], $networkStore);
   };
-  $: valueFormatted = numeral(utils.formatUnits(capacity?.value || BigNumber.from(0), decimals)).format(
-    '0.00a',
-  );
+  $: valueFormatted = numeral(
+    utils.formatUnits(capacity?.limit.sub(capacity?.value) || BigNumber.from(0), decimals),
+  ).format('0.00a');
   $: limitFormatted = numeral(utils.formatUnits(capacity?.limit || BigNumber.from(0), decimals)).format(
     '0.00a',
   );
+  $: isFull = valueFormatted === limitFormatted;
+  $: capReached = isFull;
 
   $: yieldTokenAddress, vaultCapacity();
   $: underlyingPerShare, vaultCapacity();
@@ -38,7 +42,11 @@
 </div>
 <div class="flex flex-col items-center mt-2">
   <p class="text-sm text-lightgrey10">
-    {valueFormatted} / {limitFormatted}
-    {symbol}
+    {#if isFull}
+      Vault Full ({valueFormatted} {symbol})
+    {:else}
+      {valueFormatted} / {limitFormatted}
+      {symbol}
+    {/if}
   </p>
 </div>

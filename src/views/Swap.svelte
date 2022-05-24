@@ -13,13 +13,13 @@
   import { addressStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
-  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
   import { chainIds } from '@stores/v2/constants';
   import settings from '@stores/settings';
   import multichainPendingTx from '@stores/multichainStore';
   import Dropdown from '@components/elements/Dropdown.svelte';
   import { switchChain } from '@helpers/walletManager';
   import { setError } from '@helpers/setToast';
+  import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -409,82 +409,15 @@
       </div>
       <div slot="body" class="py-4 px-6 flex space-y-4 flex-col">
         {#if !pendingTx}
-          <div
-            class="relative flex flex-row w-full rounded border {$settings.invertColors
-              ? 'border-grey3inverse bg-grey3inverse'
-              : 'border-grey3 bg-grey3'}"
-            transition:slide|local
-          >
-            <div class="flex items-center">
-              <Dropdown>
-                <div
-                  slot="label"
-                  class="flex flex-row space-x-4 items-center pl-4 pr-6 py-4 rounded border {$settings.invertColors
-                    ? 'border-grey3inverse bg-grey3inverse'
-                    : 'border-grey3 bg-grey3'}"
-                >
-                  <img src="/images/token-icons/{selectedToken}.svg" class="h-12 w-12" alt="Selected Token" />
-                  <p>▾</p>
-                </div>
-                <ul slot="options" class="w-full">
-                  {#each Object.entries(supportedTokens) as token}
-                    <li
-                      class="cursor-pointer h-8 border-t {$settings.invertColors
-                        ? 'hover:bg-grey10inverse border-grey10inverse'
-                        : 'hover:bg-grey10 border-grey10'}"
-                      on:click="{() => setToken(token[1].name)}"
-                    >
-                      <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{token[1].name}</p>
-                    </li>
-                  {/each}
-                </ul>
-              </Dropdown>
-            </div>
-
-            <div
-              class="flex justify-end rounded border w-full {$settings.invertColors
-                ? 'border-grey3inverse bg-grey3inverse'
-                : 'border-grey3 bg-grey3'}"
-            >
-              <div class="relative w-full">
-                <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
-                  Available:
-                  {tokenBalance}
-                  {selectedToken}
-                </p>
-                <InputNumber
-                  id="depositInput"
-                  bind:value="{bridgeAmount}"
-                  placeholder="0.00"
-                  class=" rounded appearance-none text-xl w-full text-right h-full p-4 {$settings.invertColors
-                    ? 'bg-grey3inverse'
-                    : 'bg-grey3'}"
-                />
-              </div>
-              <div class="flex flex-col w-max">
-                <Button
-                  label="MAX"
-                  width="w-full"
-                  fontSize="text-xs"
-                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => setMax()}"
-                />
-                <Button
-                  label="CLEAR"
-                  width="w-full"
-                  fontSize="text-xs"
-                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => clear()}"
-                />
-              </div>
-            </div>
+          <div transition:slide|local>
+            <ComplexInput
+              bind:inputValue="{bridgeAmount}"
+              supportedTokens="{Object.entries(supportedTokens).map((entry) => {
+                return entry[1].name;
+              })}"
+            />
           </div>
+
           <div class="flex flex-row space-x-4 h-8" transition:slide|local>
             <p class="text-sm text-lightgrey10 min-w-max self-center">Target Network</p>
 
