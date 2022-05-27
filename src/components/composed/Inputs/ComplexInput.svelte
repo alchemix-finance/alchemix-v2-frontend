@@ -19,7 +19,10 @@
   $: tokenData = getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore]);
   $: tokenBalanceRaw = tokenData?.balance || BigNumber.from(0);
   $: tokenDecimals = tokenData?.decimals || 18;
-  $: tokenBalance = utils.formatUnits(!!externalMax ? externalMax : tokenBalanceRaw, tokenDecimals);
+  $: tokenBalance = utils.formatUnits(
+    !!externalMax && tokenBalanceRaw.gt(externalMax) ? externalMax : tokenBalanceRaw,
+    tokenDecimals,
+  );
 
   const setMax = () => {
     inputValue =

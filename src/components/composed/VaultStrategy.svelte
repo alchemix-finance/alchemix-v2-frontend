@@ -17,7 +17,7 @@
   let isExpanded = false;
   let isHovered = false;
   let mode = 0;
-  let vaultLimitReached = false;
+  let _capInfo;
 
   $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
 
@@ -52,6 +52,7 @@
     <div class="absolute -left-2 top-8">
       <div class="flex justify-center items-center w-6">
         <Button
+          borderColor="bronze3"
           selected="{isHovered}"
           borderSize="1"
           fontSize="text-md"
@@ -93,7 +94,7 @@
           yieldPerShare="{strategy.limit.yieldPerShare}"
           decimals="{strategy.limit.decimals}"
           symbol="{strategy.limit.symbol}"
-          bind:capReached="{vaultLimitReached}"
+          bind:capInfo="{_capInfo}"
         />
       </div>
       <div class="self-start">
@@ -138,7 +139,7 @@
               <Deposit
                 vault="{strategy.col5.vault}"
                 borrowLimit="{strategy.col5.borrowLimit}"
-                capReached="{vaultLimitReached}"
+                capInfo="{_capInfo}"
               />
             </div>
           {:else if mode === 1}

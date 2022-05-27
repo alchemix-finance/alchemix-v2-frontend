@@ -100,7 +100,7 @@ export function setError(message) {
   _toastConfig.showOpenButton = false;
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
-  _toastConfig.closeTimeout = 4000;
+  _toastConfig.closeTimeout = 10000;
   _errorLog.push({
     timeStamp: Date.now(),
     message: message,
