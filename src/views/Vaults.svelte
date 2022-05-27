@@ -468,7 +468,7 @@
       {/if}
     </div>
 
-    {#if $networkStore === '0x1'}
+    {#if $networkStore === 'nope_0x1'}
       <div class="w-full mb-8">
         <LegacyHelper />
       </div>
