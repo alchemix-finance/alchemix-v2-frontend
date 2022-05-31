@@ -1,11 +1,11 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
+  import { writable } from 'svelte/store';
 
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
   import MaxLossController from '@components/composed/MaxLossController';
-  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
@@ -318,9 +318,50 @@
     yieldWithdrawAmountShares,
     underlyingTokenData.decimals,
   );
+
+  $: supportedTokens = [yieldTokenData.symbol, underlyingTokenData.symbol];
+  let activeInputs = 1;
+  const selection = writable();
+  let _selection;
+  selection.subscribe((val) => {
+    _selection = val;
+  });
+  $: if (supportedTokens.length >= 1) {
+    selection.set(
+      supportedTokens?.map((token) => {
+        return {
+          token: token,
+          selected: false,
+          maxWithdrawAmount: utils.parseUnits(
+            token === yieldTokenData.symbol ? maxWithdrawAmountForYield : maxWithdrawAmountForUnderlying,
+            underlyingTokenData.decimals,
+          ),
+        };
+      }),
+    );
+  }
+  $: canAddInputs = activeInputs < supportedTokens?.length;
+  const addInputs = (token) => {
+    _selection.find((entry) => entry.token === token).selected = true;
+    selection.set(_selection);
+    activeInputs += 1;
+  };
+  let selectedTokens = [];
+  let inputValues = {};
+  $: if (inputValues) {
+    if (inputValues[underlyingTokenData.symbol])
+      underlyingWithdrawAmount = inputValues[underlyingTokenData.symbol];
+    if (inputValues[yieldTokenData.symbol]) yieldWithdrawAmount = inputValues[yieldTokenData.symbol];
+  }
 </script>
 
 {#if vault}
+  {#if debt.gt(BigNumber.from(0))}
+    <p class="text-center pb-3">
+      {$_('chart.debt')}: {utils.formatEther(debt)}
+      {VaultTypesInfos[vault.type].name}
+    </p>
+  {/if}
   {#if useGateway}
     <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
       <span>Withdraw Type:</span>
@@ -329,16 +370,25 @@
   {/if}
   <div class="flex flex-col space-y-4">
     {#if !withdrawEth}
-      <ComplexInput
-        bind:inputValue="{underlyingWithdrawAmount}"
-        supportedTokens="{[underlyingTokenData.symbol]}"
-        externalMax="{utils.parseUnits(maxWithdrawAmountForUnderlying, underlyingTokenData.decimals)}"
-      />
-      <ComplexInput
-        bind:inputValue="{yieldWithdrawAmount}"
-        supportedTokens="{[yieldTokenData.symbol]}"
-        externalMax="{utils.parseUnits(maxWithdrawAmountForYield, yieldTokenData.decimals)}"
-      />
+      {#each Array(activeInputs) as o, i}
+        <ComplexInput
+          supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
+          bind:selectedToken="{selectedTokens[i]}"
+          bind:inputValue="{inputValues[selectedTokens[i]]}"
+          externalMax="{$selection
+            .filter((entry) => entry.token === selectedTokens[i])[0]
+            ?.maxWithdrawAmount.lt(BigNumber.from(0))
+            ? utils.parseUnits('0', underlyingTokenData.decimals)
+            : $selection.filter((entry) => entry.token === selectedTokens[i])[0]?.maxWithdrawAmount}"
+        />
+        {#if canAddInputs}
+          <Button
+            label="+ {$_('vaults_page.add_collateral_type')}"
+            on:clicked="{() => addInputs(selectedTokens[i])}"
+            py="py-2"
+          />
+        {/if}
+      {/each}
     {/if}
     {#if withdrawEth}
       <ComplexInput
@@ -377,21 +427,4 @@
     on:clicked="{onWithdrawButton}"
     disabled="{!withdrawButtonState}"
   />
-
-  <ContainerWithHeader>
-    <div slot="header" class="p-4 text-sm flex justify-between">
-      <p class="inline-block">{$_('modals.withdraw_collateral')}</p>
-      <div>
-        {#if debt.gt(BigNumber.from(0))}
-          <p class="inline-block">
-            {$_('chart.debt')}: {utils.formatEther(debt)}
-            {VaultTypesInfos[vault.type].name} |
-          </p>
-        {/if}
-        <p class="inline-block">
-          {$_('modals.loan_ratio')}: {100 / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio))}%
-        </p>
-      </div>
-    </div>
-  </ContainerWithHeader>
 {/if}

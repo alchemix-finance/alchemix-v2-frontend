@@ -107,7 +107,7 @@
     <div class="relative w-full">
       <!--   token balance   -->
       <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
-        {$_('balance')}:
+        {$_('available')}:
         {tokenBalance}
         {selectedToken}
       </p>

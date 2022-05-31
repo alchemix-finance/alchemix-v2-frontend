@@ -63,10 +63,10 @@
       </div>
     </div>
     <div
-      class="w-full flex flex-row justify-between items-center hover:cursor-pointer"
+      class="w-full grid grid-cols-12 justify-between items-center hover:cursor-pointer"
       on:click="{() => toggleExpanded()}"
     >
-      <div class="w-1/4">
+      <div class="col-span-3">
         <FarmNameCell
           farmIcon="{strategy.col2.farmIcon}"
           farmName="{strategy.col2.farmName}"
@@ -76,15 +76,15 @@
           isHalted="{false}"
         />
       </div>
-      <div>
+      <div class="col-span-2">
         <p class="text-center text-sm text-lightgrey10">Deposit</p>
         <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
       </div>
-      <div>
+      <div class="col-span-2">
         <p class="text-center text-sm text-lightgrey10">TVL</p>
         <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
       </div>
-      <div class="flex flex-col px-8 w-1/4">
+      <div class="flex flex-col px-8 col-span-3">
         <p class="text-center text-sm text-lightgrey10">Utilization</p>
         <VaultCapacityCell
           vaultType="{strategy.limit.vaultType}"
@@ -97,11 +97,11 @@
           bind:capInfo="{_capInfo}"
         />
       </div>
-      <div class="self-start">
+      <div class="self-start col-span-1">
         <p class="text-center text-sm text-lightgrey10">LTV</p>
         <YieldCell yieldRate="{ltv}" yieldType="" />
       </div>
-      <div class="self-start">
+      <div class="self-start col-span-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
         <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
       </div>
