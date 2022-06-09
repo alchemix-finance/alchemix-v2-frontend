@@ -123,4 +123,19 @@ export const chainIds = [
     },
     vaultTypes: [],
   },
+  {
+    id: '0xa',
+    legacyId: 10,
+    name: 'Optimism',
+    icon: 'optimism',
+    abiPath: 'optimism',
+    rpcUrl: 'https://mainnet.optimism.io/',
+    explorer: 'https://optimistic.etherscan.io/',
+    token: {
+      symbol: 'OP',
+      name: 'Optimism',
+      decimals: 18,
+    },
+    vaultTypes: [],
+  },
 ];

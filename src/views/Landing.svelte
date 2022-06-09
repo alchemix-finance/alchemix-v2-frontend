@@ -4,7 +4,6 @@
   import { _ } from 'svelte-i18n';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
   import settings from '../stores/settings';
-  import global from '../stores/global';
   import { routerGuard } from '@helpers/routerGuard.js';
 
   const playVideo = () => {
@@ -49,22 +48,6 @@
       price: '',
     },
   ];
-
-  const getPrice = () => {
-    let _assets = assets;
-    _assets.forEach((asset) => {
-      const price =
-        $global.tokenPrices.find((token) => token.address.toLowerCase() === asset.address.toLowerCase())
-          ?.price * $global.conversionRate;
-      asset.price = new Intl.NumberFormat($settings.userLanguage.locale, {
-        style: 'currency',
-        currency: $settings.baseCurrency.symbol,
-      }).format(parseFloat(((price || 0) * $global.conversionRate).toFixed(2)));
-    });
-    assets = [..._assets];
-  };
-
-  $: $global.tokenPrices, getPrice();
 
   let carouselItems = ['intro_subtitle_0', 'intro_subtitle_1', 'intro_subtitle_2'];
   let carouselItem = carouselItems[0];

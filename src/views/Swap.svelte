@@ -13,13 +13,13 @@
   import { addressStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
-  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
   import { chainIds } from '@stores/v2/constants';
   import settings from '@stores/settings';
   import multichainPendingTx from '@stores/multichainStore';
   import Dropdown from '@components/elements/Dropdown.svelte';
   import { switchChain } from '@helpers/walletManager';
   import { setError } from '@helpers/setToast';
+  import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -53,8 +53,23 @@
           bridge: '0x2130d2a1e51112D349cCF78D2a1EE65843ba36e0',
           canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
         },
+        optimism: {
+          bridge: '0xb2c22a9fb4fc02eb9d1d337655ce079a04a526c7',
+          canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
+        },
       },
       selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
+    },
+    alETH: {
+      name: 'alETH',
+      address: {
+        ethereum: '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',
+        optimism: {
+          bridge: '0x1CcCA1cE62c62F7Be95d4A67722a8fDbed6EEcb4',
+          canonical: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
+        },
+      },
+      selector: 'CrossChainCanonicalAlchemicTokenV2_alETH.json',
     },
   };
 
@@ -144,7 +159,7 @@
         ? supportedTokens[selectedToken].address.ethereum
         : supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
     const toToken =
-      fromChain.legacyId === 1
+      toChain.legacyId !== 1
         ? supportedTokens[selectedToken].address[toChain.abiPath].bridge
         : supportedTokens[selectedToken].address.ethereum;
     await getQuote(fromChain.legacyId, toChain.legacyId, fromToken, toToken, amount.toString(), $addressStore)
@@ -178,57 +193,30 @@
     let fromToken;
     const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0];
     const amount = utils.parseEther(bridgeAmount.toString());
-    switch (_targetNetwork) {
-      case '0x1':
-        step = 2;
-        fromToken = supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
-        await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
-          .then((hash) => {
-            $multichainPendingTx.bridge = tool;
-            $multichainPendingTx.fromChain = fromChain.legacyId;
-            $multichainPendingTx.toChain = toChain.legacyId;
-            $multichainPendingTx.txHash = hash;
-            $multichainPendingTx.bridgeToken = bridgeToken;
-            $multichainPendingTx.token = selectedToken;
-            autoCheck = true;
-            step = 3;
-            processing = false;
-            statusPing();
-          })
-          .catch((error) => {
-            step = 0;
-            processing = false;
-            console.error(error);
-          });
-        break;
-      case '0xfa':
-      case '0xa4b1':
-      default:
-        processing = true;
-        step = 1;
-        fromToken =
-          fromChain.id === '0x1'
-            ? supportedTokens[selectedToken].address.ethereum
-            : supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
-        await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
-          .then((hash) => {
-            $multichainPendingTx.bridge = tool;
-            $multichainPendingTx.fromChain = fromChain.legacyId;
-            $multichainPendingTx.toChain = toChain.legacyId;
-            $multichainPendingTx.txHash = hash;
-            $multichainPendingTx.bridgeToken = bridgeToken;
-            $multichainPendingTx.token = selectedToken;
-            autoCheck = true;
-            step = 2;
-            statusPing();
-          })
-          .catch((error) => {
-            step = 0;
-            processing = false;
-            console.error(error);
-          });
-        break;
-    }
+    if (_targetNetwork !== '0x1') processing = true;
+    step = _targetNetwork === '0x1' ? 2 : 1;
+    fromToken =
+      fromChain.id === '0x1'
+        ? supportedTokens[selectedToken].address.ethereum
+        : supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
+    await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
+      .then((hash) => {
+        $multichainPendingTx.bridge = tool;
+        $multichainPendingTx.fromChain = fromChain.legacyId;
+        $multichainPendingTx.toChain = toChain.legacyId;
+        $multichainPendingTx.txHash = hash;
+        $multichainPendingTx.bridgeToken = bridgeToken;
+        $multichainPendingTx.token = selectedToken;
+        autoCheck = true;
+        step = _targetNetwork === '0x1' ? 3 : 2;
+        if (_targetNetwork === '0x1') processing = false;
+        statusPing();
+      })
+      .catch((error) => {
+        step = 0;
+        processing = false;
+        console.error(error);
+      });
   };
 
   const switchNetwork = async () => {
@@ -264,7 +252,6 @@
             processing = false;
           });
         break;
-      case '0xfa':
       default:
         await toCanonical(
           $multichainPendingTx.bridgeToken,
@@ -296,9 +283,8 @@
   let unbridgedAssets = false;
   let unbridgedAddresses = [];
   const checkForBridgeAssets = async () => {
-    const tokenKeys = Object.keys(supportedTokens);
-    const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
-    tokenKeys.map(async (token) => {
+    Object.keys(supportedTokens).map(async (token) => {
+      const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
       const bridgeToken = supportedTokens[token].address[chain.abiPath].bridge;
       const balance = await bridgeBalance(bridgeToken, [$addressStore, $signer]);
       if (balance.gt(BigNumber.from(0))) {
@@ -327,6 +313,16 @@
   onMount(() => {
     if ($networkStore !== '0x1') checkForBridgeAssets();
   });
+  let targetNetworks;
+  const updateNetworks = () => {
+    targetNetworks = chainIds
+      .map((chain) => {
+        if (supportedTokens[selectedToken].address.hasOwnProperty(chain.abiPath)) return chain;
+      })
+      .filter((chain) => !!chain);
+    if (!targetNetworks.includes(toChain)) setToChain(targetNetworks[0].id);
+  };
+  $: selectedToken, updateNetworks();
 </script>
 
 <ViewContainer>
@@ -395,6 +391,16 @@
         <Button on:clicked="{() => goTo('http://app.paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
           <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
         </Button>
+        {#if $networkStore === '0xa'}
+          <Button
+            on:clicked="{() => goTo('https://app.velodrome.finance/swap')}"
+            label="Velodrome"
+            width="w-max"
+            py="py-2"
+          >
+            <img src="images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
+          </Button>
+        {/if}
         <Button on:clicked="{() => goTo('http://zapper.fi')}" label="Zapper" width="w-max" py="py-2">
           <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
         </Button>
@@ -409,82 +415,16 @@
       </div>
       <div slot="body" class="py-4 px-6 flex space-y-4 flex-col">
         {#if !pendingTx}
-          <div
-            class="relative flex flex-row w-full rounded border {$settings.invertColors
-              ? 'border-grey3inverse bg-grey3inverse'
-              : 'border-grey3 bg-grey3'}"
-            transition:slide|local
-          >
-            <div class="flex items-center">
-              <Dropdown>
-                <div
-                  slot="label"
-                  class="flex flex-row space-x-4 items-center pl-4 pr-6 py-4 rounded border {$settings.invertColors
-                    ? 'border-grey3inverse bg-grey3inverse'
-                    : 'border-grey3 bg-grey3'}"
-                >
-                  <img src="/images/token-icons/{selectedToken}.svg" class="h-12 w-12" alt="Selected Token" />
-                  <p>▾</p>
-                </div>
-                <ul slot="options" class="w-full">
-                  {#each Object.entries(supportedTokens) as token}
-                    <li
-                      class="cursor-pointer h-8 border-t {$settings.invertColors
-                        ? 'hover:bg-grey10inverse border-grey10inverse'
-                        : 'hover:bg-grey10 border-grey10'}"
-                      on:click="{() => setToken(token[1].name)}"
-                    >
-                      <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{token[1].name}</p>
-                    </li>
-                  {/each}
-                </ul>
-              </Dropdown>
-            </div>
-
-            <div
-              class="flex justify-end rounded border w-full {$settings.invertColors
-                ? 'border-grey3inverse bg-grey3inverse'
-                : 'border-grey3 bg-grey3'}"
-            >
-              <div class="relative w-full">
-                <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
-                  Available:
-                  {tokenBalance}
-                  {selectedToken}
-                </p>
-                <InputNumber
-                  id="depositInput"
-                  bind:value="{bridgeAmount}"
-                  placeholder="0.00"
-                  class=" rounded appearance-none text-xl w-full text-right h-full p-4 {$settings.invertColors
-                    ? 'bg-grey3inverse'
-                    : 'bg-grey3'}"
-                />
-              </div>
-              <div class="flex flex-col w-max">
-                <Button
-                  label="MAX"
-                  width="w-full"
-                  fontSize="text-xs"
-                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => setMax()}"
-                />
-                <Button
-                  label="CLEAR"
-                  width="w-full"
-                  fontSize="text-xs"
-                  textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-                  backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                  borderSize="0"
-                  height="h-10"
-                  on:clicked="{() => clear()}"
-                />
-              </div>
-            </div>
+          <div transition:slide|local>
+            <ComplexInput
+              bind:inputValue="{bridgeAmount}"
+              supportedTokens="{Object.entries(supportedTokens).map((entry) => {
+                return entry[1].name;
+              })}"
+              bind:selectedToken
+            />
           </div>
+
           <div class="flex flex-row space-x-4 h-8" transition:slide|local>
             <p class="text-sm text-lightgrey10 min-w-max self-center">Target Network</p>
 
@@ -498,7 +438,7 @@
                 <p>▾</p>
               </div>
               <ul slot="options" class="w-full">
-                {#each chainIds as chain}
+                {#each targetNetworks as chain}
                   <li
                     class="cursor-pointer h-8 border-t {$settings.invertColors
                       ? 'hover:bg-grey10inverse border-grey10inverse'

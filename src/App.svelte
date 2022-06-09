@@ -8,7 +8,7 @@
   import settings from '@stores/settings';
 
   // middleware
-  import { getFiatRates, getGasPrices, getTokenPrices } from '@middleware/zapper';
+  import { getGasPrices } from '@middleware/zapper';
 
   // composed components
   import HeaderBar from '@components/composed/HeaderBar.svelte';
@@ -65,11 +65,7 @@
   }
 
   onMount(async () => {
-    await Promise.all([
-      getFiatRates(),
-      getTokenPrices(chainIds.filter((entry) => entry.id === $networkStore)[0]?.abiPath || 'ethereum'),
-      getGasPrices(),
-    ]);
+    await Promise.all([getGasPrices()]);
     if (preselect.length > 0) {
       await connect(preselect);
       // if (location.pathname === '/') routerGuard('accounts');

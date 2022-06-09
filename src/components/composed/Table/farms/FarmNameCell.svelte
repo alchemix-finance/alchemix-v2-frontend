@@ -5,6 +5,7 @@
   export let farmSubtitle;
   export let pl = 'pl-8';
   export let isBeta = false;
+  export let isHalted = false;
 
   const defaultIcon = 'alcx_med.svg';
 </script>
@@ -22,5 +23,8 @@
   <div>
     <p class="font-bold">{farmName}</p>
     <p class="text-sm text-lightgrey10">{farmSubtitle}</p>
+    {#if isHalted}
+      <p class="text-sm text-red3">Deposits paused</p>
+    {/if}
   </div>
 </div>
