@@ -10,7 +10,7 @@
   export let signer;
   export let decimals;
   export let symbol;
-  export let capReached;
+  export let capInfo;
 
   let capacity;
 
@@ -24,7 +24,7 @@
     '0.00a',
   );
   $: isFull = valueFormatted === limitFormatted;
-  $: capReached = isFull;
+  $: capInfo = { isFull, capacity };
 
   $: yieldTokenAddress, vaultCapacity();
   $: underlyingPerShare, vaultCapacity();

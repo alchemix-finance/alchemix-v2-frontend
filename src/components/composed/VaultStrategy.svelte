@@ -17,7 +17,7 @@
   let isExpanded = false;
   let isHovered = false;
   let mode = 0;
-  let vaultLimitReached = false;
+  let _capInfo;
 
   $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
 
@@ -52,6 +52,7 @@
     <div class="absolute -left-2 top-8">
       <div class="flex justify-center items-center w-6">
         <Button
+          borderColor="bronze3"
           selected="{isHovered}"
           borderSize="1"
           fontSize="text-md"
@@ -62,10 +63,10 @@
       </div>
     </div>
     <div
-      class="w-full flex flex-row justify-between items-center hover:cursor-pointer"
+      class="w-full grid grid-cols-12 justify-between items-center hover:cursor-pointer"
       on:click="{() => toggleExpanded()}"
     >
-      <div class="w-1/4">
+      <div class="col-span-3">
         <FarmNameCell
           farmIcon="{strategy.col2.farmIcon}"
           farmName="{strategy.col2.farmName}"
@@ -75,15 +76,15 @@
           isHalted="{false}"
         />
       </div>
-      <div>
+      <div class="col-span-2">
         <p class="text-center text-sm text-lightgrey10">Deposit</p>
         <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
       </div>
-      <div>
+      <div class="col-span-2">
         <p class="text-center text-sm text-lightgrey10">TVL</p>
         <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
       </div>
-      <div class="flex flex-col px-8 w-1/4">
+      <div class="flex flex-col px-8 col-span-3">
         <p class="text-center text-sm text-lightgrey10">Utilization</p>
         <VaultCapacityCell
           vaultType="{strategy.limit.vaultType}"
@@ -93,14 +94,14 @@
           yieldPerShare="{strategy.limit.yieldPerShare}"
           decimals="{strategy.limit.decimals}"
           symbol="{strategy.limit.symbol}"
-          bind:capReached="{vaultLimitReached}"
+          bind:capInfo="{_capInfo}"
         />
       </div>
-      <div class="self-start">
+      <div class="self-start col-span-1">
         <p class="text-center text-sm text-lightgrey10">LTV</p>
         <YieldCell yieldRate="{ltv}" yieldType="" />
       </div>
-      <div class="self-start">
+      <div class="self-start col-span-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
         <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
       </div>
@@ -138,7 +139,7 @@
               <Deposit
                 vault="{strategy.col5.vault}"
                 borrowLimit="{strategy.col5.borrowLimit}"
-                capReached="{vaultLimitReached}"
+                capInfo="{_capInfo}"
               />
             </div>
           {:else if mode === 1}

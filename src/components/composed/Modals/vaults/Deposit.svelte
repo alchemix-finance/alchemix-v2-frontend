@@ -29,7 +29,7 @@
   export let borrowLimit;
 
   export let vault;
-  export let capReached;
+  export let capInfo;
 
   let maximumLoss;
 
@@ -279,19 +279,20 @@
 </script>
 
 {#if vault}
-  {#if (metaConfig ? acceptGateway : useGateway) && !broke && !capReached}
+  {#if (metaConfig ? acceptGateway : useGateway) && !broke && !capInfo.isFull}
     <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
       <span>Deposit Type:</span>
       <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
     </div>
   {/if}
   <div class="flex flex-col space-y-4">
-    {#if !depositEth && !broke && !capReached}
+    {#if !depositEth && !broke && !capInfo.isFull}
       {#each Array(activeInputs) as o, i}
         <ComplexInput
           supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
           bind:selectedToken="{selectedTokens[i]}"
           bind:inputValue="{inputValues[selectedTokens[i]]}"
+          externalMax="{capInfo.capacity.limit}"
         />
         {#if canAddInputs}
           <Button
@@ -301,22 +302,22 @@
           />
         {/if}
       {/each}
-    {:else if depositEth && !broke && !capReached}
+    {:else if depositEth && !broke && !capInfo.isFull}
       <ComplexInput supportedTokens="{[ethData.symbol]}" bind:inputValue="{underlyingDeposit}" />
     {/if}
-    {#if broke && !capReached}
+    {#if broke && !capInfo.isFull}
       <div class="w-full">
         <p class="text-center mx-3 text-red3 opacity-75">No balance available to deposit.</p>
       </div>
     {/if}
-    {#if capReached}
+    {#if capInfo.isFull}
       <div class="w-full">
         <p class="text-center mx-3 text-red3 opacity-75">Vault deposit capacity reached.</p>
       </div>
     {/if}
   </div>
 
-  {#if !broke && !capReached}
+  {#if !broke && !capInfo.isFull}
     <div class="my-4">
       <MaxLossController bind:maxLoss="{maximumLoss}" />
     </div>
