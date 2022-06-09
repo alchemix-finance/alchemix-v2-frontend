@@ -421,6 +421,7 @@
               supportedTokens="{Object.entries(supportedTokens).map((entry) => {
                 return entry[1].name;
               })}"
+              bind:selectedToken
             />
           </div>
 
