@@ -97,6 +97,7 @@ module.exports = {
       fantom: '#1969ff',
       ethereum: '#647fe5',
       arbitrum: '#93b4d5',
+      optimism: '#ed3a2a',
     },
     fontFamily: {
       alcxLogo: ['Reem Kufi', 'sans-serif'],
