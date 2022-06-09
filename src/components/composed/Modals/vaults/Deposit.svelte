@@ -20,7 +20,7 @@
     fetchAdaptersForVaultType,
   } from 'src/stores/v2/asyncMethods';
   import MaxLossController from '@components/composed/MaxLossController';
-  import { getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { getTokenDataFromBalances, getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
   import { modalReset } from '@stores/modal';
   import ToggleSwitch from '@components/elements/ToggleSwitch';
   import settings from '@stores/settings';
@@ -276,6 +276,7 @@
     if (inputValues[underlyingTokenData.symbol]) underlyingDeposit = inputValues[underlyingTokenData.symbol];
     if (inputValues[yieldTokenData.symbol]) yieldDeposit = inputValues[yieldTokenData.symbol];
   }
+  $: capa = capInfo.capacity.value;
 </script>
 
 {#if vault}
@@ -292,7 +293,11 @@
           supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
           bind:selectedToken="{selectedTokens[i]}"
           bind:inputValue="{inputValues[selectedTokens[i]]}"
-          externalMax="{capInfo.capacity.limit}"
+          externalMax="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance.lt(
+            capa,
+          )
+            ? getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance
+            : capa}"
         />
         {#if canAddInputs}
           <Button
