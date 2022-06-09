@@ -375,11 +375,8 @@
           supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
           bind:selectedToken="{selectedTokens[i]}"
           bind:inputValue="{inputValues[selectedTokens[i]]}"
-          externalMax="{$selection
-            .filter((entry) => entry.token === selectedTokens[i])[0]
-            ?.maxWithdrawAmount.lt(BigNumber.from(0))
-            ? utils.parseUnits('0', underlyingTokenData.decimals)
-            : $selection.filter((entry) => entry.token === selectedTokens[i])[0]?.maxWithdrawAmount}"
+          externalMax="{$selection.filter((entry) => entry.token === selectedTokens[i])[0]
+            ?.maxWithdrawAmount}"
         />
         {#if canAddInputs}
           <Button
