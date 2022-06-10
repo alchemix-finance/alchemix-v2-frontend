@@ -285,7 +285,7 @@
     loadingVaults = false;
   };
 
-  $: if ($addressStore && $tokenPrices.length > 0) {
+  $: if ($addressStore && $tokenPriceStore) {
     onInitialize();
   }
 </script>
