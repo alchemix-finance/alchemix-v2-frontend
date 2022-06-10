@@ -69,7 +69,7 @@
           canonical: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
         },
       },
-      selector: 'CrossChainCanonicalAlchemicTokenV2_alETH.json',
+      selector: 'CrossChainCanonicalAlchemicTokenV2_alETH',
     },
   };
 
