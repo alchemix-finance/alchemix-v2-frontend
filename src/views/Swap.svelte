@@ -297,7 +297,8 @@
   const batchToCanonical = async (_tokens) => {
     _tokens.map(async (token, index) => {
       const canonicalToken = supportedTokens[token.symbol].selector;
-      await toCanonical(token.address, canonicalToken, 250, [$addressStore, $signer]);
+      const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
+      await toCanonical(token.address, canonicalToken, chain.legacyId, [$addressStore, $signer]);
       if (index + 1 === _tokens.length) {
         unbridgedAssets = false;
         localStorage.removeItem('multichainPendingTx');

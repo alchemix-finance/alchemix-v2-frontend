@@ -280,7 +280,7 @@
 </script>
 
 {#if vault}
-  {#if (metaConfig ? acceptGateway : useGateway) && !broke && !capInfo.isFull}
+  {#if (metaConfig ? acceptGateway : useGateway) && !capInfo.isFull}
     <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
       <span>Deposit Type:</span>
       <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
