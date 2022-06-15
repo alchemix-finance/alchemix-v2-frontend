@@ -241,7 +241,11 @@
   $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
   $: acceptGateway = metaConfig.acceptGateway;
   $: acceptWETH = metaConfig.acceptWETH;
-  $: supportedTokens = [yieldTokenData.symbol, underlyingTokenData.symbol];
+  $: supportedTokens = metaConfig
+    ? acceptWETH
+      ? [yieldTokenData.symbol, underlyingTokenData.symbol]
+      : [yieldTokenData.symbol]
+    : [yieldTokenData.symbol, underlyingTokenData.symbol];
   $: ethTokens = depositEth ? ethData.symbol : underlyingTokenData.symbol;
   let activeInputs = 1;
   const selection = writable();
