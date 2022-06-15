@@ -242,11 +242,6 @@
   $: acceptGateway = metaConfig.acceptGateway;
   $: acceptWETH = metaConfig.acceptWETH;
   $: supportedTokens = [yieldTokenData.symbol, underlyingTokenData.symbol];
-  $: broke =
-    (acceptWETH ||
-      ethData.balance.lte(BigNumber.from(0)) ||
-      underlyingTokenData.balance.lte(BigNumber.from(0))) &&
-    yieldTokenData.balance.lte(BigNumber.from(0));
   $: ethTokens = depositEth ? ethData.symbol : underlyingTokenData.symbol;
   let activeInputs = 1;
   const selection = writable();
@@ -287,7 +282,7 @@
     </div>
   {/if}
   <div class="flex flex-col space-y-4">
-    {#if !depositEth && !broke && !capInfo.isFull}
+    {#if !depositEth && !capInfo.isFull}
       {#each Array(activeInputs) as o, i}
         <ComplexInput
           supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
@@ -307,13 +302,8 @@
           />
         {/if}
       {/each}
-    {:else if depositEth && !broke && !capInfo.isFull}
+    {:else if depositEth && !capInfo.isFull}
       <ComplexInput supportedTokens="{[ethData.symbol]}" bind:inputValue="{underlyingDeposit}" />
-    {/if}
-    {#if broke && !capInfo.isFull}
-      <div class="w-full">
-        <p class="text-center mx-3 text-red3 opacity-75">No balance available to deposit.</p>
-      </div>
     {/if}
     {#if capInfo.isFull}
       <div class="w-full">
@@ -322,7 +312,7 @@
     {/if}
   </div>
 
-  {#if !broke && !capInfo.isFull}
+  {#if !capInfo.isFull}
     <div class="my-4">
       <MaxLossController bind:maxLoss="{maximumLoss}" />
     </div>
