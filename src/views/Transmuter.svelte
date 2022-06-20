@@ -215,6 +215,32 @@
     />
   </div>
 
+  <div slot="message">
+    <div class="flex flex-row space-x-4">
+      <p class="self-center">{$_('transmuter_page.disclaimer')}</p>
+      <Button
+        label="Discussion"
+        width="w-max"
+        on:clicked="{() => {
+          window.open(
+            'https://forum.alchemix.fi/public/d/291-aip-39-alusd-v1-transmuter-migration-to-amo-and-boosted-yield',
+            '_blank',
+          );
+        }}"
+      />
+      <Button
+        label="Snapshot"
+        width="w-max"
+        on:clicked="{() => {
+          window.open(
+            'https://snapshot.org/#/alchemixstakers.eth/proposal/0x30585c0ef576da3aa3d9c9980823d96a8a6eaa90592f6754ef91b40eb7583f26',
+            '_blank',
+          );
+        }}"
+      />
+    </div>
+  </div>
+
   <div class="w-full mb-8">
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex gap-1">
