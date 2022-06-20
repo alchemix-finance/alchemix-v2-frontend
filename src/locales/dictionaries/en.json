@@ -127,7 +127,8 @@
     "title": "Transmuter",
     "subtitle": "Convert your synthetic tokens to their counterpart at a 1:1 ratio",
     "external_swaps": "External Swap Providers",
-    "all_transmuter": "All Transmuter"
+    "all_transmuter": "All Transmuter",
+    "disclaimer": "Transmuter operations are paused for the benefit of the AMO, in accordance with AIP-39."
   },
   "vaults_page": {
     "title": "Vaults",
