@@ -115,6 +115,8 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer) {
       return getLidoApr(signer);
     case 'rocketPool':
       return getRocketApr();
+    case 'aave':
+      return 0;
     default:
       return 0;
   }

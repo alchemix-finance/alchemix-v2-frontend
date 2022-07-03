@@ -50,7 +50,16 @@ export const VaultTypesInfos = {
     name: 'alUSD',
     icon: 'images/icons/alusd_med.svg',
     useGateway: false,
-    metaConfig: {},
+    metaConfig: {
+      '0x59417c1b2085e086f1EEB1AF0F40eE1dFD9c097f': {
+        rewardAdapter: 'aave',
+        rewardType: 'APR',
+        vaultName: 'AAVE',
+        beta: true,
+        acceptGateway: false,
+        acceptWETH: false,
+      },
+    },
   },
   [VaultTypes.alETH]: {
     name: 'alETH',
