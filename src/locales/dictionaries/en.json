@@ -208,7 +208,8 @@
     "liquidate": "Liquidate",
     "borrow": "Borrow",
     "borrow_and_transfer": "Borrow and Transfer",
-    "swap": "Swap"
+    "swap": "Swap",
+    "migrate": "Migrate"
   },
   "toast": {
     "welcome_back": "Welcome back",
