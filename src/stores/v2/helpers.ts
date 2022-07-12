@@ -10,6 +10,7 @@ import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './ty
 import { getVaultApy } from '@middleware/yearn';
 import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { getLidoApr } from '@middleware/lido';
+import { getAaveApr } from '@middleware/aave';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
 import { getTokenPrices } from '@middleware/coingecko';
@@ -90,10 +91,21 @@ export async function fetchDataForVault(
   const debtToken = await contractInstance.debtToken();
   let apy;
   if (VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress)) {
-    apy = await rewardAdapter(VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter, signer);
+    apy = await rewardAdapter(
+      VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter,
+      signer,
+      tokenParams.underlyingToken,
+    );
   } else {
-    apy = await getVaultApy(tokenAddress, network);
+    try {
+      apy = await getVaultApy(tokenAddress, network);
+    } catch (e) {
+      console.log(e);
+      apy = 0;
+    }
   }
+  // reduce values by 10% cut taken by Alchemix
+  apy *= 0.9;
 
   return {
     type: vaultType,
@@ -109,14 +121,14 @@ export async function fetchDataForVault(
   };
 }
 
-async function rewardAdapter(adapter: string, signer: ethers.Signer) {
+async function rewardAdapter(adapter: string, signer: ethers.Signer, token: string) {
   switch (adapter) {
     case 'lido':
       return getLidoApr(signer);
     case 'rocketPool':
       return getRocketApr();
     case 'aave':
-      return 0;
+      return getAaveApr(token);
     default:
       return 0;
   }

@@ -112,7 +112,7 @@ const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
     const connectedWallets = wallets.map(({ label }) => label);
     window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
     ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider);
-    updateNetwork(wallets[0].chains[0].id);
+    updateNetwork(wallets[0].chains[0].id === '0x539' ? '0x1' : wallets[0].chains[0].id);
     updateProvider(await ethersProvider);
     updateAddress(wallets[0].accounts[0].address);
     _account.provider = await ethersProvider;
