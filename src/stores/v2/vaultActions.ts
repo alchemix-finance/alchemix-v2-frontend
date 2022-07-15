@@ -67,21 +67,22 @@ export async function deposit(
   try {
     const erc20Instance = erc20Contract(tokenAddress, signerStore);
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-    const gatewayIndexCheck = Object.entries(
-      VaultConstants[typeOfVault].gatewayContractSelector,
-    )[0][1].indexOf(tokenAddress);
+    const gatewayIndexCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
+      .map((gates) => {
+        if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
+      })
+      .filter((gate) => !!gate)[0];
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
-    if (gatewayIndexCheck >= 0) {
+    if (!!gatewayIndexCheck) {
       const staticInstance = erc20Contract(tokenAddress, signerStore);
-      const gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
 
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
-        gateway,
+        gatewayIndexCheck,
         signerStore,
         path,
       );
@@ -447,8 +448,9 @@ export async function withdrawUnderlying(
         };
       });
     } else {
+      const _gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
-        VaultConstants[typeOfVault].gatewayContractSelector[gateway],
+        _gateway,
         signerStore,
         path,
       );

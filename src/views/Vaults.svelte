@@ -210,7 +210,6 @@
     };
 
     const yieldToken = () => {
-      console.log('yieldToken check');
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
         if (metaConfig[vaultTokenData.address].customAddress !== '') {
           return metaConfig[vaultTokenData.address].customAddress;
