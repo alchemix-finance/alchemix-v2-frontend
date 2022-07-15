@@ -20,6 +20,7 @@
   let mode = 0;
   let prevMode = 0;
   let _capInfo;
+  const aipPassed = false;
 
   $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
 
@@ -134,16 +135,18 @@
               borderSize="0"
               on:clicked="{() => toggleMode(1)}"
             />
-            <Button
-              label="{$_('actions.migrate')}"
-              solid="{false}"
-              width="w-full"
-              height="h-8"
-              selected="{mode === 2}"
-              canToggle="{true}"
-              borderSize="0"
-              on:clicked="{() => toggleMode(2)}"
-            />
+            {#if aipPassed}
+              <Button
+                label="{$_('actions.migrate')}"
+                solid="{false}"
+                width="w-full"
+                height="h-8"
+                selected="{mode === 2}"
+                canToggle="{true}"
+                borderSize="0"
+                on:clicked="{() => toggleMode(2)}"
+              />
+            {/if}
           </div>
         </div>
         <div class="transition-fix">
@@ -164,7 +167,7 @@
             </div>
           {:else if mode === 2}
             <div in:fly|local="{{ x: 200 }}" out:fly|local="{{ x: 200 }}">
-              <Migrate vault="{strategy.col5.vault}" />
+              <Migrate vault="{strategy.col5.vault}" vaultType="{strategy.limit.vaultType}" />
             </div>
           {/if}
         </div>

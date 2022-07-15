@@ -139,21 +139,6 @@ export const chainIds = [
     vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
   },
   {
-    id: '0x539',
-    legacyId: 1,
-    name: 'Alchemix Testnet',
-    icon: 'ethereum',
-    abiPath: 'ethereum',
-    rpcUrl: 'https://18.221.197.224/',
-    explorer: 'https://etherscan.io/',
-    token: {
-      symbol: 'ETH',
-      name: 'Ethereum',
-      decimals: 18,
-    },
-    vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
-  },
-  {
     id: '0xfa',
     legacyId: 250,
     name: 'Fantom Opera',

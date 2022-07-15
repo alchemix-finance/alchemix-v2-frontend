@@ -241,12 +241,14 @@
   $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
   $: acceptGateway = metaConfig.acceptGateway;
   $: acceptWETH = metaConfig.acceptWETH;
-  $: supportedTokens = metaConfig
-    ? acceptWETH
-      ? [yieldTokenData.symbol, underlyingTokenData.symbol]
-      : [yieldTokenData.symbol]
-    : [yieldTokenData.symbol, underlyingTokenData.symbol];
+  $: supportedTokens =
+    vault.type === 1 && metaConfig
+      ? acceptWETH
+        ? [yieldTokenData.symbol, underlyingTokenData.symbol]
+        : [yieldTokenData.symbol]
+      : [yieldTokenData.symbol, underlyingTokenData.symbol];
   $: ethTokens = depositEth ? ethData.symbol : underlyingTokenData.symbol;
+  $: yieldTokenSymbol = metaConfig.token || yieldTokenData.symbol;
   let activeInputs = 1;
   const selection = writable();
   let _selection;
@@ -297,6 +299,7 @@
           )
             ? getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance
             : capa}"
+          forcedTokenName="{yieldTokenSymbol}"
         />
         {#if canAddInputs}
           <Button

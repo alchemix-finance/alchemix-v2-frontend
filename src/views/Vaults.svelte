@@ -22,7 +22,7 @@
   import { balancesStore, vaultsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
-  import makeSelectorStore from 'src/stores/v2/selectorStore';
+  import { makeSelectorStore } from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell';
