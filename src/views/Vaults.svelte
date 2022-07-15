@@ -209,6 +209,19 @@
       }
     };
 
+    const yieldToken = () => {
+      console.log('yieldToken check');
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        if (metaConfig[vaultTokenData.address].customAddress !== '') {
+          return metaConfig[vaultTokenData.address].customAddress;
+        } else {
+          return vaultTokenData.address;
+        }
+      } else {
+        return vaultTokenData.address;
+      }
+    };
+
     const vaultSubtitle = () => {
       let appendix;
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
@@ -318,7 +331,7 @@
         col5: {
           CellComponent: ActionsCell,
           colSize: 3,
-          vault: { ...vault, acceptWETH: acceptWETH() },
+          vault: { ...vault, yieldToken: yieldToken(), acceptWETH: acceptWETH() },
           borrowLimit: vaultDebt,
         },
       },

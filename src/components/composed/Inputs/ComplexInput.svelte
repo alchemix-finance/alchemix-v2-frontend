@@ -90,7 +90,9 @@
                 : 'hover:bg-grey10 border-grey10'}"
               on:click="{() => setToken(token)}"
             >
-              <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{token}</p>
+              <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
+                {token}
+              </p>
             </li>
           {/each}
         {/if}
@@ -107,7 +109,7 @@
       <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
         {$_('available')}:
         {tokenBalance}
-        {selectedToken?.includes('s_') ? selectedToken.slice(2) : selectedToken}
+        {selectedToken}
       </p>
       <!--   input field   -->
       <InputNumber

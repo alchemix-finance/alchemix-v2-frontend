@@ -44,7 +44,7 @@
   let underlyingWithdrawAmount = 0;
 
   let withdrawEth = false;
-  $: useGateway = vault.useGateway;
+  $: useGateway = vault.useGateway && vault.type === 1;
   $: foo = $vaultsAggregatedCoveredDebt;
 
   function switchWithdrawType() {
@@ -100,7 +100,7 @@
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer], $networkStore);
 
     const adapterPrice = $adaptersStore[vault.type].adapters.filter(
-      (adapter) => adapter.yieldToken === yieldTokenData.address,
+      (adapter) => adapter.yieldToken === vault.address,
     )[0].price;
 
     const underlyingToYield = underlyingWithdrawAmountShares
@@ -115,11 +115,12 @@
     ) {
       await withdraw(
         vault.type,
-        vault.address,
+        vault.yieldToken,
         yieldWithdrawAmountShares,
         $addressStore,
         [$signer],
         $networkStore,
+        vault.address,
       )
         .then(() => {
           Promise.all([
@@ -142,7 +143,7 @@
     ) {
       withdrawUnderlying(
         vault.type,
-        vault.address,
+        vault.yieldToken,
         vault.underlyingAddress,
         underlyingWithdrawAmountShares,
         $addressStore,
@@ -150,6 +151,7 @@
         [$signer],
         minimumOut,
         $networkStore,
+        withdrawEth ? 'eth' : vault.yieldToken,
         withdrawEth,
       )
         .then(() => {
@@ -169,7 +171,7 @@
         });
     } else {
       multicallWithdraw(
-        vault.address,
+        vault.yieldToken,
         vault.underlyingAddress,
         yieldWithdrawAmountShares,
         underlyingWithdrawAmountShares,
@@ -183,7 +185,7 @@
         .then(() => {
           Promise.all([
             fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
-            fetchBalanceByAddress(vault.address, [$signer]),
+            fetchBalanceByAddress(vault.yieldToken, [$signer]),
             fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
           ]);
         })
@@ -270,7 +272,8 @@
       : '0';
   }
 
-  $: yieldTokenData = initializeTokenDataForAddress(vault.address);
+  $: console.log(vault);
+  $: yieldTokenData = initializeTokenDataForAddress(vault.yieldToken);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
 
@@ -318,8 +321,8 @@
     yieldWithdrawAmountShares,
     underlyingTokenData.decimals,
   );
-
-  $: supportedTokens = [yieldTokenData.symbol, underlyingTokenData.symbol];
+  $: console.log(yieldTokenData, underlyingTokenData);
+  $: supportedTokens = [yieldTokenData?.symbol, underlyingTokenData?.symbol];
   let activeInputs = 1;
   const selection = writable();
   let _selection;
@@ -340,7 +343,8 @@
       }),
     );
   }
-  $: canAddInputs = activeInputs < supportedTokens?.length;
+  $: metaConfig = VaultTypesInfos[vault.type].metaConfig[vault.address] || false;
+  $: canAddInputs = metaConfig ? activeInputs < supportedTokens?.length && metaConfig.multicall : true;
   const addInputs = (token) => {
     _selection.find((entry) => entry.token === token).selected = true;
     selection.set(_selection);
