@@ -12,7 +12,7 @@
   import ExpandedTransmuter from '../components/composed/Table/transmuter/ExpandedTransmuter.svelte';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
-  import makeSelectorStore from '@stores/v2/selectorStore';
+  import { makeSelectorStore } from '@stores/v2/selectorStore';
   import { VaultTypes } from '@stores/v2/types';
   import { TransmuterNameAliases, VaultTypesInfos, chainIds } from '@stores/v2/constants';
   import {

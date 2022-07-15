@@ -645,3 +645,42 @@ export async function liquidate(
     throw Error(error);
   }
 }
+
+export async function migrateVault(
+  baseVaultToken: string,
+  targetVaultToken: string,
+  shareAmount: BigNumber,
+  minReturnShares: BigNumber,
+  minReturnUnderlying: BigNumber,
+  network: string,
+  [signerStore]: [Signer],
+) {
+  console.log(baseVaultToken, targetVaultToken, shareAmount, minReturnShares, minReturnUnderlying);
+
+  try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
+    const { instance: migratorInstance } = contractWrapper('VaultMigrationTool_USD', signerStore, path);
+
+    setPendingWallet();
+
+    const tx = (await migratorInstance.migrateVaults(
+      baseVaultToken,
+      targetVaultToken,
+      shareAmount,
+      minReturnShares,
+      minReturnUnderlying,
+    )) as ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return true;
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/migrateVault]: ${error}`);
+    throw Error(error);
+  }
+}

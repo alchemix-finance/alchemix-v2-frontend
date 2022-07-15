@@ -368,7 +368,7 @@
             <img src="images/icons/beethovenx.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of BeethovenX" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('http://curve.fi')}" label="Curve" width="w-max" py="py-2">
+        <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" width="w-max" py="py-2">
           <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
         </Button>
         {#if $networkStore === '0xfa'}
@@ -381,7 +381,7 @@
             <img src="images/icons/spiritswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpiritSwap" />
           </Button>
           <Button
-            on:clicked="{() => goTo('https://spookyswap.fi/#/swap')}"
+            on:clicked="{() => goTo('https://spooky.fi/#/swap')}"
             label="SpookySwap"
             width="w-max"
             py="py-2"

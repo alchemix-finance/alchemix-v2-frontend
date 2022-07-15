@@ -14,6 +14,7 @@
   export let externalMax;
 
   export let selectedToken;
+  export let forcedTokenName;
   let tokenIcon = '/images/token-icons/unknown.svg';
 
   $: tokenData = getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore]);
@@ -106,7 +107,7 @@
       <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
         {$_('available')}:
         {tokenBalance}
-        {selectedToken}
+        {selectedToken?.includes('s_') ? selectedToken.slice(2) : selectedToken}
       </p>
       <!--   input field   -->
       <InputNumber
