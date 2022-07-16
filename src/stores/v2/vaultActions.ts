@@ -209,11 +209,13 @@ export async function depositUnderlying(
         };
       });
     } else {
-      const { instance: gatewayInstance } = contractWrapper(
-        VaultConstants[typeOfVault].gatewayContractSelector[gateway],
-        signerStore,
-        path,
-      );
+      const gatewayIndexCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
+        .map((gates) => {
+          if (gates[1].indexOf(gateway) >= 0) return gates[0];
+        })
+        .filter((gate) => !!gate)[0];
+
+      const { instance: gatewayInstance } = contractWrapper(gatewayIndexCheck, signerStore, path);
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
