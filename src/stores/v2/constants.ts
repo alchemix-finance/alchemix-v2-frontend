@@ -60,7 +60,7 @@ export const VaultTypesInfos = {
     icon: 'images/icons/alusd_med.svg',
     useGateway: false,
     metaConfig: {
-      '0x59417c1b2085e086f1EEB1AF0F40eE1dFD9c097f': {
+      '0xcE4a49d7ed99C7c8746B713EE2f0C9aA631688d8': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
         customTokenName: true,
@@ -72,7 +72,7 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
       },
-      '0xf350C6B7fbe5F6CB53c7D638Dfba9173A5722236': {
+      '0xf591D878608e2e5c7D4f1E499330f4AB9BbaE37a': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
         customTokenName: true,
@@ -84,7 +84,7 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
       },
-      '0xC5c0D3e20DF4CA855281B4b5Bcf3bEf8D8068c75': {
+      '0xBC11De1F20e83F0a6889B8c7A7868E722694E315': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
         customTokenName: true,
@@ -127,7 +127,7 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
       },
-      '0x400509D00888c46903CF01495BB2eeAfD24F0f80': {
+      '0x61134511187a9a2DF38D10DBe07Ba2e8E5563967': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
         customTokenName: true,
