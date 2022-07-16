@@ -36,13 +36,13 @@
   let yieldDeposit = 0;
   let underlyingDeposit = 0;
   let depositEth = false;
+  $: yieldTokenData = initializeTokenDataForAddress(vault.yieldToken);
 
   $: adapterPrice = $adaptersStore[vault.type]?.adapters.filter(
-    (adapter) => adapter.yieldToken === yieldTokenData.address,
+    (adapter) => adapter.yieldToken === vault.address,
   )[0].price;
 
   const onButtonDeposit = async (_yieldDeposit, _underlyingDeposit) => {
-    console.log(_yieldDeposit.toString(), _underlyingDeposit.toString());
     modalReset();
 
     await fetchAdaptersForVaultType(VaultTypes[VaultTypes[vault.type]], [$signer], $networkStore);
@@ -83,17 +83,18 @@
         });
     } else if (_yieldDeposit.gt(0) && _underlyingDeposit.lte(0)) {
       await deposit(
-        vault.address,
+        vault.yieldToken,
         vault.type,
         _yieldDeposit,
         BigNumber.from(adapterPrice),
-        yieldTokenData.decimals,
+        yieldTokenData?.decimals,
         [$addressStore, $signer],
         $networkStore,
+        vault.address,
       )
         .then(() => {
           Promise.all([
-            fetchBalanceByAddress(vault.underlyingAddress, [$signer]),
+            fetchBalanceByAddress(vault.yieldToken, [$signer]),
             fetchBalanceByAddress(vault.address, [$signer]),
             fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
           ]).then(() => {
@@ -117,10 +118,11 @@
         yieldTokens,
         BigNumber.from(maximumLoss),
         BigNumber.from(adapterPrice),
-        yieldTokenData.decimals,
+        yieldTokenData?.decimals,
         [$addressStore, $signer],
         underlyingMinimumIn,
         $networkStore,
+        depositEth ? 'eth' : vault.yieldToken,
         depositEth,
       )
         .then(() => {
@@ -149,7 +151,6 @@
     }
   }
 
-  $: yieldTokenData = initializeTokenDataForAddress(vault.address);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: useGateway = vault.useGateway;
@@ -238,15 +239,17 @@
     !yieldDepositBN.add(underlyingDepositBN).gt(0) ||
     yieldDepositBN.gt(yieldTokenData.balance) ||
     underlyingDepositBN.gt(depositEth ? ethData.balance : underlyingTokenData.balance);
-  $: metaConfig = VaultTypesInfos[vault.type].metaConfig[yieldTokenData.address] || false;
+  $: metaConfig = VaultTypesInfos[vault.type].metaConfig[vault.address] || false;
   $: acceptGateway = metaConfig.acceptGateway;
   $: acceptWETH = metaConfig.acceptWETH;
-  $: supportedTokens = metaConfig
-    ? acceptWETH
-      ? [yieldTokenData.symbol, underlyingTokenData.symbol]
-      : [yieldTokenData.symbol]
-    : [yieldTokenData.symbol, underlyingTokenData.symbol];
+  $: supportedTokens =
+    vault.type === 1 && metaConfig
+      ? acceptWETH
+        ? [yieldTokenData?.symbol, underlyingTokenData.symbol]
+        : [yieldTokenData?.symbol]
+      : [yieldTokenData?.symbol, underlyingTokenData.symbol];
   $: ethTokens = depositEth ? ethData.symbol : underlyingTokenData.symbol;
+  $: yieldTokenSymbol = metaConfig.token || yieldTokenData?.symbol;
   let activeInputs = 1;
   const selection = writable();
   let _selection;
@@ -263,7 +266,7 @@
       }),
     );
   }
-  $: canAddInputs = activeInputs < supportedTokens?.length;
+  $: canAddInputs = metaConfig ? activeInputs < supportedTokens?.length && metaConfig.multicall : true;
   const addInputs = (token) => {
     _selection.find((entry) => entry.token === token).selected = true;
     selection.set(_selection);
@@ -273,13 +276,13 @@
   let inputValues = {};
   $: if (inputValues) {
     if (inputValues[underlyingTokenData.symbol]) underlyingDeposit = inputValues[underlyingTokenData.symbol];
-    if (inputValues[yieldTokenData.symbol]) yieldDeposit = inputValues[yieldTokenData.symbol];
+    if (inputValues[yieldTokenData?.symbol]) yieldDeposit = inputValues[yieldTokenData?.symbol];
   }
   $: capa = capInfo.capacity.value;
 </script>
 
 {#if vault}
-  {#if (metaConfig ? acceptGateway : useGateway) && !capInfo.isFull}
+  {#if (metaConfig ? acceptGateway && vault.type === 1 : useGateway) && !capInfo.isFull}
     <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
       <span>Deposit Type:</span>
       <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
@@ -297,6 +300,7 @@
           )
             ? getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance
             : capa}"
+          forcedTokenName="{yieldTokenSymbol}"
         />
         {#if canAddInputs}
           <Button
@@ -322,7 +326,7 @@
     </div>
 
     <div class="my-4 text-sm text-lightgrey10 hidden">
-      {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData.decimals)}
+      {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData?.decimals)}
       -> {totalDep}<br />
       {$_('modals.borrow_limit')}: {startDebtLimit} ->
       {projDeptLimit || startDebtLimit} <br />

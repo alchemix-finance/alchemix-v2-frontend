@@ -143,9 +143,22 @@ export async function fetchAllVaultsBodies(
 
   const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
-  const fetchVaultPromises = tokens[vaultId].yieldTokens.map((tokenAddress) => {
-    return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress, signer, _network);
-  });
+  // @dev list of vaults to hide from UI
+  const hiddenVaults = [
+    '0x59417c1b2085e086f1EEB1AF0F40eE1dFD9c097f',
+    '0xf350C6B7fbe5F6CB53c7D638Dfba9173A5722236',
+    '0xC5c0D3e20DF4CA855281B4b5Bcf3bEf8D8068c75',
+    '0x400509D00888c46903CF01495BB2eeAfD24F0f80',
+  ];
+  const fetchVaultPromises = tokens[vaultId].yieldTokens
+    // @dev add function to hide vaults from UI
+    .filter((vault) => {
+      console.log(vault);
+      return hiddenVaults.indexOf(vault) < 0;
+    })
+    .map((tokenAddress) => {
+      return fetchDataForVault(vaultId, instance, tokenAddress, accountAddress, signer, _network);
+    });
 
   return Promise.all([...fetchVaultPromises]).then((vaults) => {
     updateAllVaultBody(vaultId, vaults);

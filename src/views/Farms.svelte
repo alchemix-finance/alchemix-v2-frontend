@@ -1,5 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
+  import { utils } from 'ethers';
   import ViewContainer from '../components/elements/ViewContainer.svelte';
   import PageHeader from '../components/elements/PageHeader.svelte';
   import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
@@ -252,7 +253,7 @@
               CellComponent: ClaimableCell,
               rewardAmount: `${farm.body.rewards
                 .map((reward, index) => {
-                  return `${farm.body.userUnclaimed} ${reward.tokenName} ${
+                  return `${utils.formatEther(farm.body.userUnclaimed[index])} ${reward.tokenName} ${
                     index !== farm.body.rewards.length - 1 ? '+' : ''
                   }`;
                 })

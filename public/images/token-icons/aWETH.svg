@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+     y="0px"
+     viewBox="0 0 1080 1080" style="enable-background:new 0 0 1080 1080;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#627EEA;}
+	.st1{fill:#FFFFFF;fill-opacity:0.602;}
+	.st2{fill:#FFFFFF;}
+	.st3{fill:#FFFFFF;fill-opacity:0.2;}
+	.st4{fill:url(#SVGID_1_);}
+</style>
+    <g>
+	<circle class="st0" cx="540" cy="540" r="427.4"/>
+        <g>
+		<path class="st1" d="M553.3,219.4v237l200.3,89.5L553.3,219.4z"/>
+            <path class="st2" d="M553.3,219.4L353,545.9l200.3-89.5L553.3,219.4z"/>
+            <path class="st1" d="M553.3,699.4v161l200.4-277.3L553.3,699.4z"/>
+            <path class="st2" d="M553.3,860.4v-161L353,583.1L553.3,860.4z"/>
+            <path class="st3" d="M553.3,662.1l200.3-116.3l-200.3-89.4V662.1z"/>
+            <path class="st1" d="M353,545.9l200.3,116.3V456.4L353,545.9z"/>
+	</g>
+</g>
+    <g>
+
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="865.4103" y1="1056.0059" x2="1939.1893"
+                        y2="1056.0059" gradientTransform="matrix(-0.8237 0.567 -0.567 -0.8237 2293.8542 614.7583)">
+		<stop offset="0" style="stop-color:#B6509E"/>
+            <stop offset="1" style="stop-color:#2EBAC6"/>
+	</linearGradient>
+        <path class="st4" d="M814.7,939c-53.9,37.1-113.4,62.5-176.9,75.6c-61.3,12.6-123.8,13.2-185.7,1.8c-61.9-11.4-120-34.3-172.8-68
+		c-54.6-34.9-101.1-79.8-138.2-133.7S78.5,701.3,65.4,637.8C52.8,576.4,52.2,514,63.6,452.1s34.3-120,68-172.8
+		c34.9-54.6,79.8-101.1,133.7-138.2c53.9-37.1,113.4-62.5,176.9-75.6c61.3-12.6,123.8-13.2,185.7-1.8c61.9,11.4,120,34.3,172.8,68
+		c54.6,34.9,101.1,79.8,138.2,133.7s62.5,113.4,75.6,176.9c12.6,61.3,13.2,123.8,1.8,185.7c-11.4,61.9-34.3,120-68,172.8
+		C913.5,855.4,868.5,901.9,814.7,939 M844.4,982.2c244.2-168.1,306-502.4,137.8-746.7S479.8-70.4,235.6,97.8s-306,502.4-137.8,746.7
+		S600.2,1150.4,844.4,982.2L844.4,982.2z"/>
+</g>
+</svg>

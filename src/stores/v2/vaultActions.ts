@@ -62,48 +62,89 @@ export async function deposit(
   decimals: number,
   [userAddressStore, signerStore]: [string, Signer],
   _network: string,
+  staticToken?: string,
 ) {
   try {
     const erc20Instance = erc20Contract(tokenAddress, signerStore);
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+    const gatewayIndexCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
+      .map((gates) => {
+        if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
+      })
+      .filter((gate) => !!gate)[0];
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
+    if (!!gatewayIndexCheck) {
+      const staticInstance = erc20Contract(tokenAddress, signerStore);
 
-    const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
-    const yieldPerShare = await alchemistInstance.getYieldTokensPerShare(tokenAddress);
-    const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(tokenAddress);
-    const amountUnderlying = amountYield.mul(underlyingPerShare).div(yieldPerShare);
+      const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
+        gatewayIndexCheck,
+        signerStore,
+        path,
+      );
 
-    await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore], _network);
+      const allowance = await staticInstance.allowanceOf(userAddressStore, gatewayAddress);
 
-    if (BigNumber.from(allowance).lt(amountYield)) {
-      setPendingApproval();
-      const sendApe = (await erc20Instance.approve(alchemistAddress)) as ethers.ContractTransaction;
-      await sendApe.wait();
-    }
+      if (BigNumber.from(allowance).lt(amountYield)) {
+        setPendingApproval();
+        const sendApe = (await staticInstance.approve(gatewayAddress)) as ethers.ContractTransaction;
+        await sendApe.wait();
+      }
 
-    setPendingWallet();
+      setPendingWallet();
 
-    const tx = (await alchemistInstance.deposit(
-      tokenAddress,
-      amountYield,
-      userAddressStore,
-    )) as ethers.ContractTransaction;
+      const tx = (await gatewayInstance.deposit(
+        staticToken,
+        amountYield,
+        userAddressStore,
+      )) as ethers.ContractTransaction;
 
-    setPendingTx();
+      setPendingTx();
 
-    return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        return {
+          typeOfVault,
+          tokenAddress,
+        };
+      });
+    } else {
+      const allowance = await erc20Instance.allowanceOf(userAddressStore, alchemistAddress);
+      const yieldPerShare = await alchemistInstance.getYieldTokensPerShare(tokenAddress);
+      const underlyingPerShare = await alchemistInstance.getUnderlyingTokensPerShare(tokenAddress);
+      const amountUnderlying = amountYield.mul(underlyingPerShare).div(yieldPerShare);
 
-      return {
-        typeOfVault,
+      await limitChecker(amountUnderlying, tokenAddress, typeOfVault, [signerStore], _network);
+
+      if (BigNumber.from(allowance).lt(amountYield)) {
+        setPendingApproval();
+        const sendApe = (await erc20Instance.approve(alchemistAddress)) as ethers.ContractTransaction;
+        await sendApe.wait();
+      }
+
+      setPendingWallet();
+
+      const tx = (await alchemistInstance.deposit(
         tokenAddress,
-      };
-    });
+        amountYield,
+        userAddressStore,
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          typeOfVault,
+          tokenAddress,
+        };
+      });
+    }
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/deposit]: ${error}`);
@@ -123,6 +164,7 @@ export async function depositUnderlying(
   [userAddressStore, signerStore]: [string, Signer],
   minimumAmountOut: BigNumber,
   network: string,
+  gateway: string,
   useGateway = false,
 ) {
   try {
@@ -167,11 +209,13 @@ export async function depositUnderlying(
         };
       });
     } else {
-      const { instance: gatewayInstance } = contractWrapper(
-        VaultConstants[typeOfVault].gatewayContractSelector,
-        signerStore,
-        path,
-      );
+      const gatewayIndexCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
+        .map((gates) => {
+          if (gates[1].indexOf(gateway) >= 0) return gates[0];
+        })
+        .filter((gate) => !!gate)[0];
+
+      const { instance: gatewayInstance } = contractWrapper(gatewayIndexCheck, signerStore, path);
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
@@ -285,34 +329,77 @@ export async function withdraw(
   accountAddress: string,
   [signerStore]: [Signer],
   network: string,
+  staticToken?: string,
 ) {
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
-
+    const gatewayIndexCheck = Object.entries(
+      VaultConstants[typeOfVault].gatewayContractSelector,
+    )[0][1].indexOf(yieldTokenAddress);
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
 
-    setPendingWallet();
+    if (gatewayIndexCheck >= 0) {
+      const gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
 
-    const tx = (await alchemistInstance.withdraw(
-      yieldTokenAddress,
-      yieldAmount,
-      accountAddress,
-    )) as ethers.ContractTransaction;
+      const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
+        gateway,
+        signerStore,
+        path,
+      );
 
-    setPendingTx();
+      const withdrawApproval = await alchemistInstance.withdrawAllowance(
+        accountAddress,
+        gatewayAddress,
+        staticToken,
+      );
+      const canWithdraw = withdrawApproval.gte(yieldAmount);
 
-    return await tx.wait().then((transaction) => {
-      setSuccessTx(transaction.transactionHash);
+      if (!canWithdraw) {
+        setPendingApproval();
+        await alchemistInstance.approveWithdraw(gatewayAddress, staticToken, yieldAmount.mul(2));
+      }
 
-      return {
+      setPendingWallet();
+
+      const tx = (await gatewayInstance.withdraw(
+        staticToken,
+        yieldAmount,
+        accountAddress,
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+        return {
+          yieldTokenAddress,
+          typeOfVault,
+        };
+      });
+    } else {
+      setPendingWallet();
+
+      const tx = (await alchemistInstance.withdraw(
         yieldTokenAddress,
-        typeOfVault,
-      };
-    });
+        yieldAmount,
+        accountAddress,
+      )) as ethers.ContractTransaction;
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+
+        return {
+          yieldTokenAddress,
+          typeOfVault,
+        };
+      });
+    }
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/withdraw]: ${error}`);
@@ -330,6 +417,7 @@ export async function withdrawUnderlying(
   [signerStore]: [Signer],
   minimumAmountOut: BigNumber,
   network: string,
+  gateway: string,
   useGateway = false,
 ) {
   try {
@@ -362,8 +450,9 @@ export async function withdrawUnderlying(
         };
       });
     } else {
+      const _gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
-        VaultConstants[typeOfVault].gatewayContractSelector,
+        _gateway,
         signerStore,
         path,
       );
@@ -642,6 +731,45 @@ export async function liquidate(
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
     console.error(`[vaultActions/liquidate]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function migrateVault(
+  baseVaultToken: string,
+  targetVaultToken: string,
+  shareAmount: BigNumber,
+  minReturnShares: BigNumber,
+  minReturnUnderlying: BigNumber,
+  network: string,
+  [signerStore]: [Signer],
+) {
+  console.log(baseVaultToken, targetVaultToken, shareAmount, minReturnShares, minReturnUnderlying);
+
+  try {
+    const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+
+    const { instance: migratorInstance } = contractWrapper('VaultMigrationTool_USD', signerStore, path);
+
+    setPendingWallet();
+
+    const tx = (await migratorInstance.migrateVaults(
+      baseVaultToken,
+      targetVaultToken,
+      shareAmount,
+      minReturnShares,
+      minReturnUnderlying,
+    )) as ContractTransaction;
+
+    setPendingTx();
+
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return true;
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message);
+    console.error(`[vaultActions/migrateVault]: ${error}`);
     throw Error(error);
   }
 }

@@ -12,7 +12,7 @@
   import Button from '@components/elements/Button.svelte';
   import { routerGuard } from '@helpers/routerGuard';
   import { VaultTypes } from '@stores/v2/types';
-  import makeSelectorStore from '@stores/v2/selectorStore';
+  import { makeSelectorStore } from '@stores/v2/selectorStore';
   import { balancesStore, vaultsStore } from '@stores/v2/alcxStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from '@stores/v2/helpers';
   import global from '@stores/global';

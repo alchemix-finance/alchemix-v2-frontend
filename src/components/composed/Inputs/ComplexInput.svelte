@@ -14,6 +14,7 @@
   export let externalMax;
 
   export let selectedToken;
+  export let forcedTokenName;
   let tokenIcon = '/images/token-icons/unknown.svg';
 
   $: tokenData = getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore]);
@@ -89,7 +90,9 @@
                 : 'hover:bg-grey10 border-grey10'}"
               on:click="{() => setToken(token)}"
             >
-              <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{token}</p>
+              <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
+                {token}
+              </p>
             </li>
           {/each}
         {/if}

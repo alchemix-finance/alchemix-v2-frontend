@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "ISC",
   "scripts": {
-    "abi": "bash ./scripts/updateAbi.sh",
+    "abi:test": "bash ./scripts/updateAbi.sh",
     "abi:main": "bash ./scripts/mainnetAbi.sh",
     "abi:win": "powershell ./scripts/updateAbi.ps1",
     "makeEnv": "bash ./scripts/makeEnv.sh",

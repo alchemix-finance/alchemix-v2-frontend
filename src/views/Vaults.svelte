@@ -22,7 +22,7 @@
   import { balancesStore, vaultsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from 'src/stores/v2/types';
   import { VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
-  import makeSelectorStore from 'src/stores/v2/selectorStore';
+  import { makeSelectorStore } from 'src/stores/v2/selectorStore';
   import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
   import { vaultsLoading } from 'src/stores/v2/loadingStores';
   import YieldCell from '@components/composed/Table/YieldCell';
@@ -200,10 +200,37 @@
     const metaConfig = VaultTypesInfos[vault.type].metaConfig;
     const vaultName = () => {
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
-        return metaConfig[vaultTokenData.address].vaultName + ' ' + vaultTokenData.symbol;
+        const yieldToken = metaConfig[vaultTokenData.address].customTokenName
+          ? metaConfig[vaultTokenData.address].token
+          : vaultTokenData.symbol;
+        return metaConfig[vaultTokenData.address].vaultName + ' ' + yieldToken;
       } else {
         return 'Yearn ' + underlyingTokenData.symbol;
       }
+    };
+
+    const yieldToken = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        if (metaConfig[vaultTokenData.address].customAddress !== '') {
+          return metaConfig[vaultTokenData.address].customAddress;
+        } else {
+          return vaultTokenData.address;
+        }
+      } else {
+        return vaultTokenData.address;
+      }
+    };
+
+    const vaultSubtitle = () => {
+      let appendix;
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        appendix = metaConfig[vaultTokenData.address].customTokenName
+          ? metaConfig[vaultTokenData.address].token
+          : vaultTokenData.symbol;
+      } else {
+        appendix = vaultTokenData.symbol;
+      }
+      return underlyingTokenData.symbol + ' + ' + appendix;
     };
 
     const vaultIcon = () => {
@@ -250,7 +277,7 @@
         col2: {
           CellComponent: FarmNameCell,
           farmName: vaultName(),
-          farmSubtitle: underlyingTokenData.symbol + ' + ' + vaultTokenData.symbol,
+          farmSubtitle: vaultSubtitle(),
           farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
           tokenIcon: `${vaultIcon()}`.toLowerCase(),
           isBeta: betaStatus(),
@@ -303,7 +330,7 @@
         col5: {
           CellComponent: ActionsCell,
           colSize: 3,
-          vault: { ...vault, acceptWETH: acceptWETH() },
+          vault: { ...vault, yieldToken: yieldToken(), acceptWETH: acceptWETH() },
           borrowLimit: vaultDebt,
         },
       },
