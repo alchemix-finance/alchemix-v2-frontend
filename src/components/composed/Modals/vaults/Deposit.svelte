@@ -295,7 +295,11 @@
           supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
           bind:selectedToken="{selectedTokens[i]}"
           bind:inputValue="{inputValues[selectedTokens[i]]}"
-          externalMax="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance}"
+          externalMax="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance.lt(
+            capa,
+          )
+            ? getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance
+            : capa}"
           forcedTokenName="{yieldTokenSymbol}"
         />
         {#if canAddInputs}
