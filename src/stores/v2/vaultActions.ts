@@ -27,7 +27,7 @@ export async function getVaultCapacity(
     return {
       value: yieldTokenParameters.maximumExpectedValue.sub(yieldTokenParameters.expectedValue),
       limit: yieldTokenParameters.maximumExpectedValue,
-      percent: BigNumber.from(10000)
+      percent: yieldTokenParameters.maximumExpectedValue < yieldTokenParameters.expectedValue ? BigNumber.from(10000) : BigNumber.from(10000)
         .mul(
           yieldTokenParameters.maximumExpectedValue
             .sub(yieldTokenParameters.expectedValue)
