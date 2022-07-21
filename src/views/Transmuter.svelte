@@ -215,7 +215,7 @@
     />
   </div>
 
-  <div slot="message">
+  <!-- <div slot="message">
     <div class="flex flex-row space-x-4">
       <p class="self-center">{$_('transmuter_page.disclaimer')}</p>
       <Button
@@ -239,7 +239,7 @@
         }}"
       />
     </div>
-  </div>
+  </div> -->
 
   <div class="w-full mb-8">
     <ContainerWithHeader>
