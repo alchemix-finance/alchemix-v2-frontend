@@ -384,3 +384,16 @@ export async function fetchDataForCrvFarm(
     ],
   };
 }
+
+export async function aaveStaticToDynamicAmount(
+  amount: BigNumber,
+  symbol: string,
+  [signer]: [ethers.Signer],
+) {
+  if (!!amount && symbol?.slice(0, 1) === 'a') {
+    const { instance } = contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
+    return instance.staticToDynamicAmount(amount);
+  } else {
+    return false;
+  }
+}

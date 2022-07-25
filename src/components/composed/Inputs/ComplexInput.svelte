@@ -7,7 +7,8 @@
   import Button from '@components/elements/Button.svelte';
   import settings from '@stores/settings';
   import { balancesStore } from '@stores/v2/alcxStore';
-  import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
+  import { getTokenDataFromBalancesBySymbol, aaveStaticToDynamicAmount } from '@stores/v2/helpers';
+  import { signer } from '@stores/v2/derived';
 
   export let supportedTokens;
   export let inputValue;
@@ -15,12 +16,27 @@
 
   export let selectedToken;
   export let forcedTokenName;
+  export let metaConfig = false;
+  export let vaultAddress;
+
   let tokenIcon = '/images/token-icons/unknown.svg';
+  let externalMaxOverride;
 
   $: tokenData = getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore]);
   $: tokenBalanceRaw = tokenData?.balance || BigNumber.from(0);
   $: tokenDecimals = tokenData?.decimals || 18;
-  $: tokenBalance = utils.formatUnits(!!externalMax ? externalMax : tokenBalanceRaw, tokenDecimals);
+  $: tokenBalance = utils.formatUnits(
+    !!externalMaxOverride ? externalMaxOverride : !!externalMax ? externalMax : tokenBalanceRaw,
+    tokenDecimals,
+  );
+
+  const toDynamic = async () => {
+    if (metaConfig?.rewardAdapter === 'aave') {
+      externalMaxOverride =
+        (await aaveStaticToDynamicAmount(externalMax, selectedToken, [$signer])) || externalMax;
+    }
+  };
+  $: externalMax, toDynamic();
 
   const setMax = () => {
     inputValue =

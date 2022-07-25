@@ -272,7 +272,6 @@
       : '0';
   }
 
-  $: console.log(vault);
   $: yieldTokenData = initializeTokenDataForAddress(vault.yieldToken);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
@@ -321,7 +320,6 @@
     yieldWithdrawAmountShares,
     underlyingTokenData.decimals,
   );
-  $: console.log(yieldTokenData, underlyingTokenData);
   $: supportedTokens = [yieldTokenData?.symbol, underlyingTokenData?.symbol];
   let activeInputs = 1;
   const selection = writable();
@@ -381,6 +379,8 @@
           bind:inputValue="{inputValues[selectedTokens[i]]}"
           externalMax="{$selection.filter((entry) => entry.token === selectedTokens[i])[0]
             ?.maxWithdrawAmount}"
+          metaConfig="{metaConfig}"
+          vaultAddress="{vault.address}"
         />
         {#if canAddInputs}
           <Button
