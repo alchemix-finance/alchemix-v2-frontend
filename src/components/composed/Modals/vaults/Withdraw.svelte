@@ -27,7 +27,7 @@
 
   import { modalReset } from '@stores/modal';
 
-  import { getTokenDataFromBalances, normalizeAmount } from '@stores/v2/helpers';
+  import { getTokenDataFromBalances, aaveDynamicToStaticAmount } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
   import settings from '@stores/settings';
@@ -44,8 +44,9 @@
   let underlyingWithdrawAmount = 0;
 
   let withdrawEth = false;
+  let convertToStatic = false;
+
   $: useGateway = vault.useGateway && vault.type === 1;
-  $: foo = $vaultsAggregatedCoveredDebt;
 
   function switchWithdrawType() {
     withdrawEth = !withdrawEth;
@@ -75,18 +76,8 @@
     }
   };
 
-  const setMaxYield = (max) => {
-    yieldWithdrawAmount = max;
-    clearUnderlying();
-  };
-
   const clearYield = () => {
     yieldWithdrawAmount = '';
-  };
-
-  const setMaxUnderlying = (max) => {
-    underlyingWithdrawAmount = max;
-    clearYield();
   };
 
   const clearUnderlying = () => {
@@ -202,7 +193,6 @@
 
   function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
-
     const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
 
     return (
@@ -348,12 +338,22 @@
     selection.set(_selection);
     activeInputs += 1;
   };
+  const staticConversion = async (amount) => {
+    const amountBN = utils.parseUnits(amount.toString(), yieldTokenData.decimals);
+    yieldWithdrawAmount = utils.formatUnits(
+      await aaveDynamicToStaticAmount(amountBN, yieldTokenData.symbol, [$signer]),
+      yieldTokenData.decimals,
+    );
+  };
   let selectedTokens = [];
   let inputValues = {};
   $: if (inputValues) {
     if (inputValues[underlyingTokenData.symbol])
       underlyingWithdrawAmount = inputValues[underlyingTokenData.symbol];
-    if (inputValues[yieldTokenData.symbol]) yieldWithdrawAmount = inputValues[yieldTokenData.symbol];
+    if (inputValues[yieldTokenData.symbol] && !convertToStatic)
+      yieldWithdrawAmount = inputValues[yieldTokenData.symbol];
+    if (inputValues[yieldTokenData.symbol] && convertToStatic)
+      staticConversion(inputValues[yieldTokenData.symbol]);
   }
 </script>
 
@@ -381,6 +381,7 @@
             ?.maxWithdrawAmount}"
           metaConfig="{metaConfig}"
           vaultAddress="{vault.address}"
+          bind:convertToStatic
         />
         {#if canAddInputs}
           <Button

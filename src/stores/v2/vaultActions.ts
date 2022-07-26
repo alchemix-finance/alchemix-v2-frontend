@@ -360,7 +360,12 @@ export async function withdraw(
 
       if (!canWithdraw) {
         setPendingApproval();
-        await alchemistInstance.approveWithdraw(gatewayAddress, staticToken, yieldAmount.mul(2));
+        const sendApe = (await alchemistInstance.approveWithdraw(
+          gatewayAddress,
+          staticToken,
+          yieldAmount,
+        )) as ContractTransaction;
+        await sendApe.wait();
       }
 
       setPendingWallet();
@@ -421,6 +426,13 @@ export async function withdrawUnderlying(
   useGateway = false,
 ) {
   try {
+    console.log(
+      'vaultActions/withdrawUnderlying',
+      yieldTokenAddress,
+      underlyingTokenAddress,
+      gateway,
+      useGateway,
+    );
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
@@ -430,16 +442,26 @@ export async function withdrawUnderlying(
     );
 
     if (!useGateway) {
+      const gatewayIndexCheck = Object.entries(
+        Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
+      )
+        .map((item) => item[1])
+        .filter((entry) => Object.entries(entry)[0][1] === yieldTokenAddress)[0];
+
+      // @ts-ignore
+      const targetYieldToken = !!gatewayIndexCheck ? gatewayIndexCheck.staticToken : yieldTokenAddress;
+
       setPendingWallet();
 
       const tx = (await alchemistInstance.withdrawUnderlying(
-        yieldTokenAddress,
+        targetYieldToken,
         amountUnderlying,
         accountAddress,
         minimumAmountOut,
       )) as ethers.ContractTransaction;
 
       setPendingTx();
+
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
 

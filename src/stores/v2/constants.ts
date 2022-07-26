@@ -5,9 +5,18 @@ export const VaultConstants = {
     alchemistContractSelector: 'AlchemistV2_alUSD',
     gatewayContractSelector: {
       ATokenGateway_alUSD: [
-        '0x028171bCA77440897B824Ca71D1c56caC55b68A3',
-        '0xBcca60bB61934080951369a648Fb03DF4F96263C',
-        '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
+        {
+          aToken: '0x028171bCA77440897B824Ca71D1c56caC55b68A3',
+          staticToken: '0xcE4a49d7ed99C7c8746B713EE2f0C9aA631688d8',
+        },
+        {
+          aToken: '0xBcca60bB61934080951369a648Fb03DF4F96263C',
+          staticToken: '0xf591D878608e2e5c7D4f1E499330f4AB9BbaE37a',
+        },
+        {
+          aToken: '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
+          staticToken: '0xBC11De1F20e83F0a6889B8c7A7868E722694E315',
+        },
       ],
     },
     alToken: 'AlToken',

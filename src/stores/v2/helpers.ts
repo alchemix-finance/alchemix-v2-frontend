@@ -397,3 +397,16 @@ export async function aaveStaticToDynamicAmount(
     return false;
   }
 }
+
+export async function aaveDynamicToStaticAmount(
+  amount: BigNumber,
+  symbol: string,
+  [signer]: [ethers.Signer],
+) {
+  if (!!amount && symbol?.slice(0, 1) === 'a') {
+    const { instance } = contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
+    return instance.dynamicToStaticAmount(amount);
+  } else {
+    return false;
+  }
+}

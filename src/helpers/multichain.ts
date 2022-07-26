@@ -69,12 +69,17 @@ export async function toCanonical(
       _signer,
       path,
     );
-    setPendingApproval();
-    const sendApe = (await bridgeTokenInstance.approve(
-      canonicalAddress,
-      bridgeBalance,
-    )) as ContractTransaction;
-    await sendApe.wait();
+
+    const allowance = await bridgeTokenInstance.allowanceOf(_userAddress, canonicalAddress);
+
+    if (BigNumber.from(allowance).lt(bridgeBalance)) {
+      setPendingApproval();
+      const sendApe = (await bridgeTokenInstance.approve(
+        canonicalAddress,
+        bridgeBalance,
+      )) as ContractTransaction;
+      await sendApe.wait();
+    }
     setPendingWallet();
     const tx = (await canonicalInstance.exchangeOldForCanonical(
       _bridgeToken,
