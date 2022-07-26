@@ -18,6 +18,7 @@
   export let forcedTokenName;
   export let metaConfig = false;
   export let vaultAddress;
+  export let convertToStatic = false;
 
   let tokenIcon = '/images/token-icons/unknown.svg';
   let externalMaxOverride;
@@ -34,6 +35,7 @@
     if (metaConfig?.rewardAdapter === 'aave') {
       externalMaxOverride =
         (await aaveStaticToDynamicAmount(externalMax, selectedToken, [$signer])) || externalMax;
+      convertToStatic = true;
     }
   };
   $: externalMax, toDynamic();
