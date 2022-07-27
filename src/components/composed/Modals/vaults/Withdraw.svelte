@@ -64,7 +64,6 @@
     if (amount && decimals && sharePrice) {
       const scalar = BigNumber.from(10).pow(decimals);
 
-      const amountToShares = utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice);
       // return vault.balance.sub(amountToShares).eq(BigNumber.from('1')) ? vault.balance : amountToShares;
       return vault.balance
         .sub(utils.parseUnits(amount.toString(), decimals).mul(scalar).div(sharePrice))
