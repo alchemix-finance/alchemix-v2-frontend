@@ -339,15 +339,17 @@ export async function withdraw(
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
     const gatewayIndexCheck = Object.entries(
-      VaultConstants[typeOfVault].gatewayContractSelector,
-    )[0][1].indexOf(yieldTokenAddress);
+      Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
+    )
+      .map((item) => item[1])
+      .filter((entry) => Object.entries(entry)[0][1] === yieldTokenAddress)[0];
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
 
-    if (gatewayIndexCheck >= 0) {
+    if (!!gatewayIndexCheck) {
       const gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
 
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
