@@ -25,15 +25,20 @@ export async function getVaultCapacity(
     );
     const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
     return {
-      value: yieldTokenParameters.maximumExpectedValue.gte(yieldTokenParameters.expectedValue) ? yieldTokenParameters.maximumExpectedValue.sub(yieldTokenParameters.expectedValue) : BigNumber.from(0),
+      value: yieldTokenParameters.maximumExpectedValue.gte(yieldTokenParameters.expectedValue)
+        ? yieldTokenParameters.maximumExpectedValue.sub(yieldTokenParameters.expectedValue)
+        : BigNumber.from(0),
       limit: yieldTokenParameters.maximumExpectedValue,
-      percent: yieldTokenParameters.maximumExpectedValue < yieldTokenParameters.expectedValue ? BigNumber.from(10000) : BigNumber.from(10000)
-        .mul(
-          yieldTokenParameters.maximumExpectedValue
-            .sub(yieldTokenParameters.expectedValue)
-            .mul(BigNumber.from(100)),
-        )
-        .div(yieldTokenParameters.maximumExpectedValue.mul(BigNumber.from(100))),
+      percent:
+        yieldTokenParameters.maximumExpectedValue < yieldTokenParameters.expectedValue
+          ? BigNumber.from(10000)
+          : BigNumber.from(10000)
+              .mul(
+                yieldTokenParameters.maximumExpectedValue
+                  .sub(yieldTokenParameters.expectedValue)
+                  .mul(BigNumber.from(100)),
+              )
+              .div(yieldTokenParameters.maximumExpectedValue.mul(BigNumber.from(100))),
     };
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
@@ -428,13 +433,6 @@ export async function withdrawUnderlying(
   useGateway = false,
 ) {
   try {
-    console.log(
-      'vaultActions/withdrawUnderlying',
-      yieldTokenAddress,
-      underlyingTokenAddress,
-      gateway,
-      useGateway,
-    );
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
