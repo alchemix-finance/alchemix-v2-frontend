@@ -26,7 +26,12 @@ export const VaultConstants = {
     alchemistContractSelector: 'AlchemistV2_alETH',
     gatewayContractSelector: {
       WETHGateway: ['eth'],
-      ATokenGateway_alETH: ['0x030bA81f1c18d280636F32af80b9AAd02Cf0854e'],
+      ATokenGateway_alETH: [
+        {
+          aToken: '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e',
+          staticToken: '0x61134511187a9a2DF38D10DBe07Ba2e8E5563967',
+        },
+      ],
     },
     alToken: 'AlEth',
     legacy: 'AlchemistEth',
@@ -75,6 +80,15 @@ export const VaultTypesInfos = {
     icon: 'images/icons/alusd_med.svg',
     useGateway: false,
     metaConfig: {
+      '0x028171bCA77440897B824Ca71D1c56caC55b68A3': {
+        gateway: 'ATokenGateway_alUSD',
+      },
+      '0xBcca60bB61934080951369a648Fb03DF4F96263C': {
+        gateway: 'ATokenGateway_alUSD',
+      },
+      '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811': {
+        gateway: 'ATokenGateway_alUSD',
+      },
       '0xcE4a49d7ed99C7c8746B713EE2f0C9aA631688d8': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
@@ -86,6 +100,7 @@ export const VaultTypesInfos = {
         acceptGateway: true,
         acceptWETH: false,
         multicall: false,
+        gateway: 'ATokenGateway_alUSD',
       },
       '0xf591D878608e2e5c7D4f1E499330f4AB9BbaE37a': {
         rewardAdapter: 'aave',
@@ -98,6 +113,7 @@ export const VaultTypesInfos = {
         acceptGateway: true,
         acceptWETH: false,
         multicall: false,
+        gateway: 'ATokenGateway_alUSD',
       },
       '0xBC11De1F20e83F0a6889B8c7A7868E722694E315': {
         rewardAdapter: 'aave',
@@ -110,6 +126,7 @@ export const VaultTypesInfos = {
         acceptGateway: true,
         acceptWETH: false,
         multicall: false,
+        gateway: 'ATokenGateway_alUSD',
       },
     },
   },
@@ -129,6 +146,7 @@ export const VaultTypesInfos = {
         acceptGateway: true,
         acceptWETH: true,
         multicall: true,
+        gateway: 'WETHGateway',
       },
       '0xae78736Cd615f374D3085123A210448E74Fc6393': {
         rewardAdapter: 'rocketPool',
@@ -141,6 +159,10 @@ export const VaultTypesInfos = {
         acceptGateway: false,
         acceptWETH: false,
         multicall: false,
+        gateway: '',
+      },
+      '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e': {
+        gateway: 'ATokenGateway_alETH',
       },
       '0x61134511187a9a2DF38D10DBe07Ba2e8E5563967': {
         rewardAdapter: 'aave',
@@ -153,6 +175,7 @@ export const VaultTypesInfos = {
         acceptGateway: true,
         acceptWETH: true,
         multicall: false,
+        gateway: 'ATokenGateway_alETH',
       },
     },
   },

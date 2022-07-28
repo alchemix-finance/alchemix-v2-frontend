@@ -1,7 +1,7 @@
 import { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '@helpers/contractWrapper';
 import { Signer, BigNumber, ethers, ContractTransaction } from 'ethers';
-import { VaultConstants, chainIds } from './constants';
+import { VaultConstants, VaultTypesInfos, chainIds } from './constants';
 import {
   setPendingWallet,
   setPendingTx,
@@ -71,23 +71,24 @@ export async function deposit(
   try {
     const erc20Instance = erc20Contract(tokenAddress, signerStore);
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-    const gatewayIndexCheck = Object.entries(
-      Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
-    )
-      .map((item) => item[1])
-      .filter((entry) => Object.entries(entry)[0][1] === tokenAddress)[0];
+    const selector = VaultTypesInfos[typeOfVault].metaConfig[tokenAddress]?.gateway;
+    const gatewayCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector).map((item) => {
+      return item.filter((entry) => {
+        return entry === selector;
+      })[0];
+    });
+    const gatewayIndexCheck = gatewayCheck.indexOf(selector);
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
-    if (!!gatewayIndexCheck) {
-      const gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
+    if (gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined) {
       const staticInstance = erc20Contract(tokenAddress, signerStore);
 
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
-        gateway,
+        selector,
         signerStore,
         path,
       );
@@ -226,6 +227,7 @@ export async function depositUnderlying(
       } else {
         gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
           .map((gates) => {
+            //@ts-ignore
             if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
           })
           .filter((gate) => !!gate)[0];
@@ -348,22 +350,22 @@ export async function withdraw(
 ) {
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
-    const gatewayIndexCheck = Object.entries(
-      Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
-    )
-      .map((item) => item[1])
-      .filter((entry) => Object.entries(entry)[0][1] === yieldTokenAddress)[0];
+    const selector = VaultTypesInfos[typeOfVault].metaConfig[yieldTokenAddress]?.gateway;
+    const gatewayCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector).map((item) => {
+      return item.filter((entry) => {
+        return entry === selector;
+      })[0];
+    });
+    const gatewayIndexCheck = gatewayCheck.indexOf(selector);
     const { instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
 
-    if (!!gatewayIndexCheck) {
-      const gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
-
+    if (gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined) {
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
-        gateway,
+        selector,
         signerStore,
         path,
       );
@@ -452,14 +454,20 @@ export async function withdrawUnderlying(
     );
 
     if (!useGateway) {
-      const gatewayIndexCheck = Object.entries(
-        Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
-      )
-        .map((item) => item[1])
-        .filter((entry) => Object.entries(entry)[0][1] === yieldTokenAddress)[0];
+      const selector = VaultTypesInfos[typeOfVault].metaConfig[yieldTokenAddress]?.gateway;
+      const pair =
+        VaultConstants[typeOfVault].gatewayContractSelector[selector]?.filter(
+          (item) => item.aToken === yieldTokenAddress,
+        )[0] || undefined;
+      const gatewayCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector).map((item) => {
+        return item.filter((entry) => {
+          return entry === selector;
+        })[0];
+      });
+      const gatewayIndexCheck = gatewayCheck.indexOf(selector);
 
-      // @ts-ignore
-      const targetYieldToken = !!gatewayIndexCheck ? gatewayIndexCheck.staticToken : yieldTokenAddress;
+      const targetYieldToken =
+        gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined ? pair.staticToken : yieldTokenAddress;
 
       setPendingWallet();
 
