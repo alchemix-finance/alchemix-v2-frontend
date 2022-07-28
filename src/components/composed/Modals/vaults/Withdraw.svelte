@@ -331,7 +331,9 @@
     );
   }
   $: metaConfig = VaultTypesInfos[vault.type].metaConfig[vault.address] || false;
-  $: canAddInputs = metaConfig ? activeInputs < supportedTokens?.length && metaConfig.multicall : true;
+  $: canAddInputs = metaConfig
+    ? activeInputs < supportedTokens?.length && metaConfig.multicall
+    : activeInputs < supportedTokens?.length;
   const addInputs = (token) => {
     _selection.find((entry) => entry.token === token).selected = true;
     selection.set(_selection);
