@@ -72,11 +72,11 @@ export async function deposit(
   try {
     const erc20Instance = erc20Contract(tokenAddress, signerStore);
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-    const gatewayIndexCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
-      .map((gates) => {
-        if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
-      })
-      .filter((gate) => !!gate)[0];
+    const gatewayIndexCheck = Object.entries(
+      Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
+    )
+      .map((item) => item[1])
+      .filter((entry) => Object.entries(entry)[0][1] === tokenAddress)[0];
 
     const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
@@ -84,10 +84,11 @@ export async function deposit(
       path,
     );
     if (!!gatewayIndexCheck) {
+      const gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
       const staticInstance = erc20Contract(tokenAddress, signerStore);
 
       const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
-        gatewayIndexCheck,
+        gateway,
         signerStore,
         path,
       );
@@ -214,13 +215,23 @@ export async function depositUnderlying(
         };
       });
     } else {
-      const gatewayIndexCheck = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
-        .map((gates) => {
-          if (gates[1].indexOf(gateway) >= 0) return gates[0];
-        })
-        .filter((gate) => !!gate)[0];
+      const gatewayIndexCheck = Object.entries(
+        Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][1],
+      )
+        .map((item) => item[1])
+        .filter((entry) => Object.entries(entry)[0][1] === tokenAddress);
 
-      const { instance: gatewayInstance } = contractWrapper(gatewayIndexCheck, signerStore, path);
+      let gateway;
+      if (!!gatewayIndexCheck) {
+        gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
+      } else {
+        gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
+          .map((gates) => {
+            if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
+          })
+          .filter((gate) => !!gate)[0];
+      }
+      const { instance: gatewayInstance } = contractWrapper(gateway, signerStore, path);
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
@@ -590,7 +601,6 @@ export async function mint(
   network: string,
 ) {
   try {
-    console.log(amountToBorrow.toString());
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
     const { instance: alchemistInstance } = contractWrapper(
