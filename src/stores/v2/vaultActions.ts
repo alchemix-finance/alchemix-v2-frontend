@@ -29,16 +29,15 @@ export async function getVaultCapacity(
         ? yieldTokenParameters.maximumExpectedValue.sub(yieldTokenParameters.expectedValue)
         : BigNumber.from(0),
       limit: yieldTokenParameters.maximumExpectedValue,
-      percent:
-        yieldTokenParameters.maximumExpectedValue < yieldTokenParameters.expectedValue
-          ? BigNumber.from(10000)
-          : BigNumber.from(10000)
-              .mul(
-                yieldTokenParameters.maximumExpectedValue
-                  .sub(yieldTokenParameters.expectedValue)
-                  .mul(BigNumber.from(100)),
-              )
-              .div(yieldTokenParameters.maximumExpectedValue.mul(BigNumber.from(100))),
+      percent: yieldTokenParameters.maximumExpectedValue.gt(BigNumber.from(0))
+        ? BigNumber.from(10000)
+            .mul(
+              yieldTokenParameters.maximumExpectedValue
+                .sub(yieldTokenParameters.expectedValue)
+                .mul(BigNumber.from(100)),
+            )
+            .div(yieldTokenParameters.maximumExpectedValue.mul(BigNumber.from(100)))
+        : BigNumber.from(10000),
     };
   } catch (error) {
     setError(error.data ? await error.data.message : error.message);
