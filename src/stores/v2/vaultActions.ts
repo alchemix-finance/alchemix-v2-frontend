@@ -1,4 +1,4 @@
-import { VaultTypes } from './types';
+import type { VaultTypes } from './types';
 import { erc20Contract, contractWrapper } from '@helpers/contractWrapper';
 import { Signer, BigNumber, ethers, ContractTransaction } from 'ethers';
 import { VaultConstants, VaultTypesInfos, chainIds } from './constants';
@@ -447,7 +447,7 @@ export async function withdrawUnderlying(
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
+    const { address: alchemistAddress, instance: alchemistInstance } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
