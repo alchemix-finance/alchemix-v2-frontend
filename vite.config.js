@@ -4,8 +4,17 @@ import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { fileURLToPath } from 'url';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 
+const MODE = process.env.NODE_ENV;
+const development = MODE === 'development';
+
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    development &&
+      nodePolyfills({
+        include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
+      }),
+    svelte(),
+  ],
   resolve: {
     alias: {
       crypto: 'crypto-browserify',
@@ -37,6 +46,9 @@ export default defineConfig({
     },
   },
   build: {
+    rollupOptions: {
+      plugins: [nodePolyfills()],
+    },
     commonjsOptions: {
       transformMixedEsModules: true,
     },
