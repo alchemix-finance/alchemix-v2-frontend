@@ -1,5 +1,5 @@
 import { ethers, BigNumber } from 'ethers';
-import { genericAbi } from '../stores/externalContracts';
+import { genericAbi } from '@stores/externalContracts';
 import account from '@stores/account';
 
 let _account;
@@ -8,8 +8,8 @@ account.subscribe((val) => {
   _account = val;
 });
 
-const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
-const provider = ethers.getDefaultProvider(debugging ? process.env.LOCAL_NETWORK_URL : 'homestead');
+const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
+const provider = ethers.getDefaultProvider(debugging ? import.meta.env.VITE_LOCAL_NETWORK_URL : 'homestead');
 
 /*
  * @dev retrieves symbol for a specific token

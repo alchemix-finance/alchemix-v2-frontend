@@ -1,11 +1,13 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
-  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-  import Button from '../../../elements/Button.svelte';
-  import ToggleSwitch from '../../../elements/ToggleSwitch.svelte';
-  import MaxLossController from '@components/composed/MaxLossController';
-  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
+
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import Button from '@components/elements/Button.svelte';
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+  import MaxLossController from '@components/composed/MaxLossController.svelte';
+  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import {
     addressStore,
@@ -27,7 +29,6 @@
   import { modalReset } from '@stores/modal';
   import settings from '@stores/settings';
 
-  export let yieldTokens;
   export let vaults;
   export let selectedVaultsType;
 

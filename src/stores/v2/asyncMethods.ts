@@ -29,8 +29,8 @@ import {
 import { contractWrapper } from '@helpers/contractWrapper';
 import { TransmuterConstants, VaultConstants, chainIds, HiddenVaults } from '@stores/v2/constants';
 import { FarmTypes, VaultTypes } from '@stores/v2/types';
-import { ethers } from 'ethers';
-import { TokensType } from './alcxStore';
+import type { ethers } from 'ethers';
+import type { TokensType } from './alcxStore';
 
 export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Signer], _network: string) {
   if (!signer) {
@@ -39,7 +39,7 @@ export async function fetchVaultTokens(vaultId: VaultTypes, [signer]: [ethers.Si
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance: alchemist } = contractWrapper(
+  const { instance: alchemist } = await contractWrapper(
     VaultConstants[vaultId].alchemistContractSelector,
     signer,
     path,
@@ -91,7 +91,7 @@ export async function fetchVaultDebt(
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+  const { instance } = await contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const rawDebt = await instance.accounts(accountAddress);
 
@@ -105,7 +105,7 @@ export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Sig
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+  const { instance } = await contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const rawRatio = await instance.minimumCollateralization();
 
@@ -123,7 +123,7 @@ export async function fetchVaultDebtTokenAddress(
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+  const { instance } = await contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const debtTokenAddress = await instance.debtToken();
 
@@ -141,7 +141,7 @@ export async function fetchAllVaultsBodies(
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+  const { instance } = await contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const fetchVaultPromises = tokens[vaultId].yieldTokens
     .filter((vault) => {
@@ -168,7 +168,7 @@ export async function fetchUpdateVaultByAddress(
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+  const { instance } = await contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const vaultData = fetchDataForVault(vaultId, instance, vaultAddress, accountAddress, signer, _network);
 
@@ -188,7 +188,7 @@ export async function fetchAdaptersForVaultType(
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const { instance: alchemist } = contractWrapper(
+  const { instance: alchemist } = await contractWrapper(
     VaultConstants[vaultType].alchemistContractSelector,
     signer,
     path,
@@ -266,7 +266,9 @@ export async function fetchInternalFarms([signer]: [ethers.Signer], _network: st
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-  const poolCount = await contractWrapper('StakingPools', signer, path).instance.poolCount();
+  const poolCount = await contractWrapper('StakingPools', signer, path).then((result) => {
+    return result.instance.poolCount();
+  });
 
   const promises = [];
 
@@ -372,7 +374,11 @@ export async function fetchAlchemistSentinelRole(
 ) {
   if (signer) {
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-    const { instance } = contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
+    const { instance } = await contractWrapper(
+      VaultConstants[vaultId].alchemistContractSelector,
+      signer,
+      path,
+    );
     return instance.sentinels(accountAddress).then((_role) => {
       updateSentinelRole(_role);
     });
@@ -386,7 +392,11 @@ export async function fetchTokenEnabledStatus(
   _network: string,
 ) {
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-  const { instance } = contractWrapper(VaultConstants[vaultType].alchemistContractSelector, signer, path);
+  const { instance } = await contractWrapper(
+    VaultConstants[vaultType].alchemistContractSelector,
+    signer,
+    path,
+  );
   const token = (await instance.isSupportedUnderlyingToken(tokenAddress))
     ? await instance.getUnderlyingTokenParameters(tokenAddress)
     : await instance.getYieldTokenParameters(tokenAddress);

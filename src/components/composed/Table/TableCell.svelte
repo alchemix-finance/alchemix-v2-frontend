@@ -7,9 +7,9 @@
   export let fullWidth;
 </script>
 
-<div class:w-full='{fullWidth}'>
+<div class:w-full="{fullWidth}">
   {#if CellComponent}
-    <CellComponent {...$$props} />
+    <svelte:component this="{CellComponent}" {...$$props} />
   {:else}
     <div>
       {value}

@@ -18,7 +18,7 @@ export async function deposit(
 ) {
   try {
     const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
-    const { instance: transmuterInstance, address: transmuterAddress } = contractWrapper(
+    const { instance: transmuterInstance, address: transmuterAddress } = await contractWrapper(
       transmuterSelector,
       signer,
       path,
@@ -59,7 +59,7 @@ export async function withdraw(
   try {
     const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
 
-    const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer, path);
+    const { instance: transmuterInstance } = await contractWrapper(transmuterSelector, signer, path);
     setPendingWallet();
 
     const tx = (await transmuterInstance.withdraw(amountToWithdraw, addressStore)) as ContractTransaction;
@@ -85,7 +85,7 @@ export async function claim(
   try {
     const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
 
-    const { instance: transmuterInstance } = contractWrapper(transmuterSelector, signer, path);
+    const { instance: transmuterInstance } = await contractWrapper(transmuterSelector, signer, path);
 
     setPendingWallet();
 

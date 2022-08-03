@@ -4,8 +4,11 @@
   "include": [
     // repeated from base config's "include" setting
     "src",
-    "src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte", "webpack.config.ts",
+    "src/**/*.d.ts",
+    "src/**/*.js",
+    "src/**/*.ts",
+    "src/**/*.svelte",
     // these are the eslint-only inclusions
-    ".eslintrc.js",
+    ".eslintrc.cjs"
   ]
 }

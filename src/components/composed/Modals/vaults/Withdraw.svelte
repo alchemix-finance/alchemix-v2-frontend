@@ -3,10 +3,9 @@
   import { utils, BigNumber } from 'ethers';
   import { writable } from 'svelte/store';
 
-  import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
-  import Button from '../../../elements/Button.svelte';
-  import MaxLossController from '@components/composed/MaxLossController';
-  import ToggleSwitch from '@components/elements/ToggleSwitch';
+  import Button from '@components/elements/Button.svelte';
+  import MaxLossController from '@components/composed/MaxLossController.svelte';
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
   import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
@@ -17,13 +16,13 @@
     balancesStore,
     adaptersStore,
     networkStore,
-  } from 'src/stores/v2/alcxStore';
-  import { signer, vaultsAggregatedBalances, vaultsAggregatedCoveredDebt } from 'src/stores/v2/derived';
+  } from '@stores/v2/alcxStore';
+  import { signer, vaultsAggregatedCoveredDebt } from '@stores/v2/derived';
   import {
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
     fetchAdaptersForVaultType,
-  } from 'src/stores/v2/asyncMethods';
+  } from '@stores/v2/asyncMethods';
 
   import { modalReset } from '@stores/modal';
 
@@ -381,7 +380,6 @@
           externalMax="{$selection.filter((entry) => entry.token === selectedTokens[i])[0]
             ?.maxWithdrawAmount}"
           metaConfig="{metaConfig}"
-          vaultAddress="{vault.address}"
           bind:convertToStatic
         />
         {#if canAddInputs}

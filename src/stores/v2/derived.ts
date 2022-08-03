@@ -1,8 +1,9 @@
-import { arrayDoubleCheck } from 'src/helpers/arrayHelpers';
 import { derived } from 'svelte/store';
+import { BigNumber } from 'ethers';
+
+import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 import { balancesStore, providerStore, tokensStore, vaultsStore, networkStore } from './alcxStore';
 import { poolLookup, additionalTokens } from '@stores/stakingPools';
-import { BigNumber } from 'ethers';
 import { calculateVaultDebt, getTokenDataFromBalances, normalizeAmount } from './helpers';
 
 export const signer = derived([providerStore], ([$provider]) => $provider?.getSigner());

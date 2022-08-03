@@ -1,6 +1,4 @@
 <script>
-  // eslint-disable-next-line unused-export-let
-  export let type;
   export let depositAmount;
   export let depositAsset;
   export let creditLimit;

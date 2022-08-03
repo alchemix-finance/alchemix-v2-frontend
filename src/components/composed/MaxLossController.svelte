@@ -1,9 +1,9 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
-  import ToggleSwitch from '@components/elements/ToggleSwitch';
-  import InputNumber from '@components/elements/inputs/InputNumber';
-  import Button from '@components/elements/Button';
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+  import Button from '@components/elements/Button.svelte';
   import settings from '@stores/settings';
 
   export let maxLoss;

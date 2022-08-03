@@ -5,7 +5,7 @@ import { utils } from 'ethers';
 
 export async function getLidoApr(signer) {
   try {
-    const { instance: oracle } = externalContractWrapper('Lido', signer);
+    const { instance: oracle } = await externalContractWrapper('Lido', signer);
     const delta = await oracle.getLastCompletedReportDelta();
     const prePool = utils.formatEther(delta.preTotalPooledEther);
     const postPool = utils.formatEther(delta.postTotalPooledEther);

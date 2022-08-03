@@ -11,7 +11,7 @@ import {
 
 export async function getData(_signer: Signer) {
   try {
-    const { instance: galcxInstance } = externalContractWrapper('galcx', _signer);
+    const { instance: galcxInstance } = await externalContractWrapper('galcx', _signer);
     const supply = await galcxInstance.totalSupply();
     const exchangeRate = await galcxInstance.exchangeRate();
     const symbol = await galcxInstance.symbol();
@@ -25,8 +25,8 @@ export async function getData(_signer: Signer) {
 
 export async function getAllowance([_ownerAddress, _signer]: [string, Signer]) {
   try {
-    const { instance: alcxInstance } = contractWrapper('AlchemixToken', _signer, 'ethereum');
-    const { address: galcxAddress } = externalContractWrapper('galcx', _signer);
+    const { instance: alcxInstance } = await await contractWrapper('AlchemixToken', _signer, 'ethereum');
+    const { address: galcxAddress } = await externalContractWrapper('galcx', _signer);
     const allowance = await alcxInstance.allowance(_ownerAddress, galcxAddress);
     return { allowance };
   } catch (error) {
@@ -38,8 +38,8 @@ export async function getAllowance([_ownerAddress, _signer]: [string, Signer]) {
 
 export async function setAllowance(_signer: Signer) {
   try {
-    const { address: alcxAddress } = contractWrapper('AlchemixToken', _signer, 'ethereum');
-    const { address: galcxAddress } = externalContractWrapper('galcx', _signer);
+    const { address: alcxAddress } = await await contractWrapper('AlchemixToken', _signer, 'ethereum');
+    const { address: galcxAddress } = await externalContractWrapper('galcx', _signer);
     setPendingApproval();
     const approval = (await setTokenAllowance(alcxAddress, galcxAddress)) as ContractTransaction;
     setPendingTx();
@@ -52,10 +52,10 @@ export async function setAllowance(_signer: Signer) {
 }
 
 export async function stake(_amount: BigNumber, _allowance: BigNumber, _signer: Signer) {
-  const { instance: galcxInstance, address: galcxAddress } = externalContractWrapper('galcx', _signer);
+  const { instance: galcxInstance, address: galcxAddress } = await externalContractWrapper('galcx', _signer);
   try {
     if (_allowance.lt(_amount)) {
-      const { instance: alcxInstance } = contractWrapper('AlchemixToken', _signer, 'ethereum');
+      const { instance: alcxInstance } = await contractWrapper('AlchemixToken', _signer, 'ethereum');
       setPendingApproval();
       const sendApe = (await alcxInstance.approve(galcxAddress, _amount)) as ContractTransaction;
       await sendApe.wait();
@@ -75,7 +75,7 @@ export async function stake(_amount: BigNumber, _allowance: BigNumber, _signer: 
 }
 
 export async function unstake(_amount: BigNumber, _signer: Signer) {
-  const { instance: galcxInstance } = externalContractWrapper('galcx', _signer);
+  const { instance: galcxInstance } = await externalContractWrapper('galcx', _signer);
   try {
     setPendingWallet();
     const tx = (await galcxInstance.unstake(_amount)) as ContractTransaction;

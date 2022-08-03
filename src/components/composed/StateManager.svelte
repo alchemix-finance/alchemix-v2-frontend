@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { addressStore, networkStore, tokensStore, tokenPriceStore } from '@stores/v2/alcxStore';
+  import { addressStore, networkStore, tokensStore } from '@stores/v2/alcxStore';
   import { fullTokenList, signer } from '@stores/v2/derived';
   import {
     fetchAdaptersForVaultType,
@@ -10,8 +10,8 @@
     fetchVaultDebtTokenAddress,
     fetchVaultRatio,
     fetchVaultTokens,
-  } from 'src/stores/v2/asyncMethods';
-  import { VaultTypes } from 'src/stores/v2/types';
+  } from '@stores/v2/asyncMethods';
+  import { VaultTypes } from '@stores/v2/types';
   import { chainIds } from '@stores/v2/constants';
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { resetStores } from '@stores/v2/methods';

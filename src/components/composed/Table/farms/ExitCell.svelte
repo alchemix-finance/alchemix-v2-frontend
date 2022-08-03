@@ -22,7 +22,7 @@
       if (farmType === FarmTypes.INTERNAL) {
         const castedFarm = castToInternalFarmType(farm);
 
-        const { instance } = contractWrapper('StakingPools', $signer, 'ethereum');
+        const { instance } = await contractWrapper('StakingPools', $signer, 'ethereum');
         setPendingWallet();
         const tx = await instance.exit(castedFarm.poolId);
         setPendingTx();
@@ -33,7 +33,7 @@
       } else if (farmType === FarmTypes.SUSHI) {
         const castedFarm = castToSushiFarmType(farm);
 
-        const { instance } = externalContractWrapper('SushiMasterchefV2', $signer);
+        const { instance } = await externalContractWrapper('SushiMasterchefV2', $signer);
         setPendingWallet();
         const tx = await instance.emergencyWithdraw(0, $addressStore);
         setPendingTx();
@@ -44,7 +44,7 @@
       } else if (farmType === FarmTypes.CRV) {
         const castedFarm = castToCrvFarmType(farm);
 
-        const { instance: crvGaugeInstance, address: crvGaugeAddress } = externalContractWrapper(
+        const { instance: crvGaugeInstance, address: crvGaugeAddress } = await externalContractWrapper(
           'CurveGaugeDeposit',
           $signer,
         );
@@ -79,12 +79,12 @@
 
 {#if farm}
   <Button
-    borderColor='red4'
+    borderColor="red4"
     backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
-    hoverColor='red3'
-    label='Exit'
-    solid='{false}'
-    disabled='{!checkButtonState(farm)}'
-    on:clicked='{() => exitPool()}'
+    hoverColor="red3"
+    label="Exit"
+    solid="{false}"
+    disabled="{!checkButtonState(farm)}"
+    on:clicked="{() => exitPool()}"
   />
 {/if}

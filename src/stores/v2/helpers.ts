@@ -5,8 +5,8 @@ import {
   erc20Contract,
   externalContractWrapper,
 } from '@helpers/contractWrapper';
-import { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
-import { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
+import type { BalanceType, BodyVaultType, TransmuterType, AdapterType } from '@stores/v2/alcxStore';
+import type { CurveFarmType, InternalFarmType, SushiFarmType, VaultTypes } from './types';
 import { getVaultApy } from '@middleware/yearn';
 import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { getLidoApr } from '@middleware/lido';
@@ -19,7 +19,6 @@ import { get } from 'svelte/store';
 
 function getCurrencies(): string[] {
   const globalStore = get(global);
-  // @ts-ignore
   return globalStore.allCurrencies.map((entry) => entry.symbol);
 }
 
@@ -141,7 +140,7 @@ export async function fetchAdapterAddress(
   _network: string,
 ): Promise<any> {
   const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
-  const { instance: alchemist } = contractWrapper(vaultType, signer, path);
+  const { instance: alchemist } = await contractWrapper(vaultType, signer, path);
   const params = await alchemist.getYieldTokenParameters(yieldToken);
 
   return {
@@ -175,7 +174,7 @@ export async function fetchDataForTransmuter(
   _network: string,
 ): Promise<TransmuterType> {
   const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
-  const { instance: transmuterInstance, address: transmuterAddress } = contractWrapper(
+  const { instance: transmuterInstance, address: transmuterAddress } = await contractWrapper(
     contractSelector,
     signer,
     path,
@@ -231,7 +230,7 @@ export async function fetchDataForInternalFarm(
   poolId: number,
   [signer]: [ethers.Signer],
 ): Promise<InternalFarmType> {
-  const { instance: stakingInstance } = contractWrapper('StakingPools', signer, 'ethereum');
+  const { instance: stakingInstance } = await contractWrapper('StakingPools', signer, 'ethereum');
   const accountAddress = await signer.getAddress();
 
   const tokenAddress = await stakingInstance.getPoolToken(poolId);
@@ -271,9 +270,12 @@ export async function fetchDataForSushiFarm(
   onsenContractSelector: string,
   [signer]: [ethers.Signer],
 ): Promise<SushiFarmType> {
-  const { instance: lpInstance, address: lpAddress } = externalContractWrapper(lpContractSelector, signer);
-  const { instance: onsenInstance } = externalContractWrapper(onsenContractSelector, signer);
-  const { instance: masterchefInstance, address: masterchefAddress } = externalContractWrapper(
+  const { instance: lpInstance, address: lpAddress } = await externalContractWrapper(
+    lpContractSelector,
+    signer,
+  );
+  const { instance: onsenInstance } = await externalContractWrapper(onsenContractSelector, signer);
+  const { instance: masterchefInstance, address: masterchefAddress } = await externalContractWrapper(
     masterchefContractSelector,
     signer,
   );
@@ -334,12 +336,12 @@ export async function fetchDataForCrvFarm(
   rewardsContractSelector: string,
   [signer]: [ethers.Signer],
 ): Promise<CurveFarmType> {
-  const { instance: metapoolGaugeInstance, address: metapoolAddress } = externalContractWrapper(
+  const { instance: metapoolGaugeInstance, address: metapoolAddress } = await externalContractWrapper(
     metapoolContractSelector,
     signer,
   );
-  const { instance: depositGaugeInstance } = externalContractWrapper(depositContractSelector, signer);
-  const { instance: rewardsGaugeInstance } = externalContractWrapper(rewardsContractSelector, signer);
+  const { instance: depositGaugeInstance } = await externalContractWrapper(depositContractSelector, signer);
+  const { instance: rewardsGaugeInstance } = await externalContractWrapper(rewardsContractSelector, signer);
 
   const accountAddress = await signer.getAddress();
 
@@ -391,7 +393,7 @@ export async function aaveStaticToDynamicAmount(
   [signer]: [ethers.Signer],
 ) {
   if (!!amount && symbol?.slice(0, 1) === 'a') {
-    const { instance } = contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
+    const { instance } = await contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
     return instance.staticToDynamicAmount(amount);
   } else {
     return false;
@@ -404,7 +406,7 @@ export async function aaveDynamicToStaticAmount(
   [signer]: [ethers.Signer],
 ) {
   if (!!amount && symbol?.slice(0, 1) === 'a') {
-    const { instance } = contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
+    const { instance } = await contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
     return instance.dynamicToStaticAmount(amount);
   } else {
     return false;

@@ -49,7 +49,7 @@
 
   const initTransmuters = () => {
     transmuters.forEach(async (transmuter) => {
-      const contract = getContract(`TransmuterV2_${transmuter.token}`, abiPath);
+      const contract = await getContract(`TransmuterV2_${transmuter.token}`, abiPath);
       const isPaused = await contract.isPaused();
       transmuterList = [...transmuterList, { type: transmuter.transmuter, name: transmuter.token, isPaused }];
     });
@@ -57,7 +57,7 @@
 
   const initAlTokens = () => {
     alTokens.forEach(async (alToken) => {
-      const contract = getContract(alToken.token, abiPath);
+      const contract = await getContract(alToken.token, abiPath);
       const alchemistAddress = await getAddress(`AlchemistV2_${alToken.alchemist}`, abiPath);
       const isPaused = await contract.paused(alchemistAddress);
       const name = await contract.name();

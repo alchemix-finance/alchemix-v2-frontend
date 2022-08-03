@@ -1,7 +1,7 @@
 <script>
   import { _ } from 'svelte-i18n';
   import settings from '@stores/settings';
-  import ContainerWithHeader from '@components/elements/ContainerWithHeader';
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
 
   export let aggregate;
 
