@@ -31,7 +31,12 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      plugins: [nodePolyfills()],
+      plugins: [
+        nodePolyfills({
+          crypto: true,
+          http: true,
+        }),
+      ],
     },
     commonjsOptions: {
       transformMixedEsModules: true,
