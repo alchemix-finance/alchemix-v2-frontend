@@ -29,7 +29,6 @@
   import { modalReset } from '@stores/modal';
   import settings from '@stores/settings';
 
-  export let yieldTokens;
   export let vaults;
   export let selectedVaultsType;
 

@@ -403,6 +403,7 @@
             slot="leftSlot"
             src="images/icons/Icon_Borrow.svg"
             class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+            alt="borrow"
           />
         </Button>
         <Button
@@ -415,6 +416,7 @@
             slot="leftSlot"
             src="images/icons/Icon_Repay.svg"
             class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+            alt="repay"
           />
         </Button>
         <Button
@@ -427,6 +429,7 @@
             slot="leftSlot"
             src="images/icons/Icon_Liquidate.svg"
             class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+            alt="liquidate"
           />
         </Button>
       </div>

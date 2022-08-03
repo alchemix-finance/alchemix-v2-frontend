@@ -3,7 +3,7 @@
   import { getColumnWidth } from '@helpers/table';
   import settings from '@stores/settings';
 
-  export let numberOfColumns = 1;
+  // export let numberOfColumns = 1;
   export let row = {};
   export let index = undefined;
 
@@ -61,6 +61,6 @@
 
 {#if isExpanded && ExpandedRowComponent}
   <tr class="flex min-h-16 grid grid-cols-1 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-    <ExpandedRowComponent {...expandedRowCell} />
+    <svelte:component this="{ExpandedRowComponent}" {...expandedRowCell} />
   </tr>
 {/if}

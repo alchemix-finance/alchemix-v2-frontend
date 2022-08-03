@@ -15,9 +15,7 @@
   export let externalMax;
 
   export let selectedToken;
-  export let forcedTokenName;
   export let metaConfig = false;
-  export let vaultAddress;
   export let convertToStatic = false;
 
   let tokenIcon = '/images/token-icons/unknown.svg';

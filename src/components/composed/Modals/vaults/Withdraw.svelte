@@ -380,7 +380,6 @@
           externalMax="{$selection.filter((entry) => entry.token === selectedTokens[i])[0]
             ?.maxWithdrawAmount}"
           metaConfig="{metaConfig}"
-          vaultAddress="{vault.address}"
           bind:convertToStatic
         />
         {#if canAddInputs}

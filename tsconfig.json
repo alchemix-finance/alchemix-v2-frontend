@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ES6",
     "importsNotUsedAsValues": "error",
-    "isolatedModules": true,
+    "isolatedModules": false,
     "esModuleInterop": true,
     "sourceMap": true,
     "skipLibCheck": true,

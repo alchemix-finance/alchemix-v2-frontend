@@ -7,7 +7,6 @@
 
   export let value;
   export let prefix;
-  export let key;
   export let token;
   let normalizedValue;
 

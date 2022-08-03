@@ -11,7 +11,6 @@
   import { addressStore } from '@stores/v2/alcxStore';
 
   export let farm;
-  export let farmType;
 
   let inputDepositAmount = 0;
   let inputWithdrawAmount = 0;

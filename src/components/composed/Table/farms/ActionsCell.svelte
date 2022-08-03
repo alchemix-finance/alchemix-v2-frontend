@@ -2,7 +2,6 @@
   import Button from '../../../elements/Button.svelte';
   import ExitCell from './ExitCell.svelte';
 
-  export let poolId;
   export let row;
   export let onExpand;
   export let label;

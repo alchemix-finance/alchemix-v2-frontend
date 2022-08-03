@@ -19,7 +19,6 @@
   let isHuman = true;
   let chainCollapsed = true;
 
-  const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
   const provider = getDefaultProvider();
 
   /*
@@ -86,7 +85,7 @@
         label=""
         on:clicked="{() => chainSelectCollapse()}"
       >
-        <img slot="rightSlot" class="h-8 w-8" src="images/icons/{networkIcon}.svg" />
+        <img slot="rightSlot" class="h-8 w-8" src="images/icons/{networkIcon}.svg" alt="{networkIcon}" />
       </Button>
 
       <Button

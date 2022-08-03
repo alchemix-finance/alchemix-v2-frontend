@@ -2,8 +2,8 @@
   import { SORT_ORDERS } from '../../../helpers/table';
   import TableCell from './TableCell.svelte';
 
-  export let onClickSortBy;
-  export let sortOrder = undefined;
+  // export let onClickSortBy;
+  // export let sortOrder = undefined;
   export let header;
 
   // let sortCol = undefined;

@@ -13,25 +13,32 @@ yarn install
 
 Fill the `.env` file with the required secrets.
 
-Start local development server using
+Start local development server using `yarn dev` to fetch latest contract artifacts, or use `yarn dev:noabi` to skip
+that.
 
-```bash
-yarn run dev
-```
+The app should be accessible on [localhost:5005](http://localhost:5005) by default.
 
-The app should be accessible on [localhost:5000](http://localhost:5000) by default.
+[//]: # (## Storybook)
 
-## Storybook
+[//]: # ()
 
-Run storybook using
+[//]: # (Run storybook using)
 
-```bash
-yarn run storybook
-```
+[//]: # ()
 
-The server for storybook runs on a different port than the server for svelte's dev environment, so it's possible to run both simultaneously.
+[//]: # (```bash)
 
-A built version is also available at https://alchemix-v2-storybook.vercel.app
+[//]: # (yarn run storybook)
+
+[//]: # (```)
+
+[//]: # ()
+
+[//]: # (The server for storybook runs on a different port than the server for svelte's dev environment, so it's possible to run both simultaneously.)
+
+[//]: # ()
+
+[//]: # (A built version is also available at https://alchemix-v2-storybook.vercel.app)
 
 ## Codestyle
 
@@ -39,7 +46,8 @@ A built version is also available at https://alchemix-v2-storybook.vercel.app
 
 ### Webstorm
 
-Open Webstorm settings and navigate to `Preferences/Languages & Frameworks/JavaScript/Prettier`, select the Prettier install from the local `node_modules` directory, add `svelte` to the glob pattern and enable `Run on save for files`.
+Open Webstorm settings and navigate to `Preferences/Languages & Frameworks/JavaScript/Prettier`, select the Prettier
+install from the local `node_modules` directory, add `svelte` to the glob pattern and enable `Run on save for files`.
 
 Source: [prettier.io docs](https://prettier.io/docs/en/webstorm.html)
 
@@ -47,7 +55,8 @@ Source: [prettier.io docs](https://prettier.io/docs/en/webstorm.html)
 
 #### Using Svelte extension (recommended)
 
-Install the `svelte-vscode` extension either through the marketplace, or by using the quick open command and pasting `ext install JamesBirtles.svelte-vscode`. Make sure VS Code settings includes
+Install the `svelte-vscode` extension either through the marketplace, or by using the quick open command and
+pasting `ext install JamesBirtles.svelte-vscode`. Make sure VS Code settings includes
 
 ```json
 {
@@ -61,7 +70,8 @@ Source: [svelte-vscode marketplace](https://marketplace.visualstudio.com/items?i
 
 #### Using Prettier extension
 
-Install the `prettier-vscode` extension either through the marketplace, or by using the quick open command and pasting `ext install esbenp.prettier-vscode`. Make sure VS Code settings includes 
+Install the `prettier-vscode` extension either through the marketplace, or by using the quick open command and
+pasting `ext install esbenp.prettier-vscode`. Make sure VS Code settings includes
 
 ```json
 {

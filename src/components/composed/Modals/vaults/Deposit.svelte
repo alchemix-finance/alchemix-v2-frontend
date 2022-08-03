@@ -304,7 +304,6 @@
           )
             ? getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance
             : capa}"
-          forcedTokenName="{yieldTokenSymbol}"
         />
         {#if canAddInputs}
           <Button

@@ -3,16 +3,12 @@
   "version": "1.0.0",
   "license": "ISC",
   "scripts": {
-    "abi:test": "bash ./scripts/updateAbi.sh",
-    "abi:main": "bash ./scripts/mainnetAbi.sh",
-    "abi:win": "powershell ./scripts/updateAbi.ps1",
+    "abi": "bash ./scripts/mainnetAbi.sh",
     "makeEnv": "bash ./scripts/makeEnv.sh",
     "build": "cross-env NODE_ENV=production vite build",
-    "vercel_debug_build": "echo $DEBUG_MODE; yarn makeEnv && cross-env NODE_ENV=production vite build",
+    "vercel_debug_build": "echo $DEBUG_MODE; yarn makeEnv && yarn build",
     "dev:noabi": "yarn format && cross-env NODE_ENV=development vite --port 5005",
-    "dev": "yarn abi:main && yarn format && cross-env NODE_ENV=development vite --port 5005",
-    "dev:win": "yarn abi:win && yarn format && cross-env NODE_ENV=development vite --port 5005",
-    "dev:testnet": "yarn abi && yarn format && cross-env NODE_ENV=development vite --port 5005",
+    "dev": "yarn abi && yarn format && cross-env NODE_ENV=development vite --port 5005",
     "format": "yarn run prettier && yarn run lint",
     "lint": "yarn run eslint ./src/ --ext .js,.ts,.svelte",
     "prettier": "npx prettier --write src/**/*.{js,svelte,ts,html} --write public/*.html --no-error-on-unmatched-pattern"
@@ -22,12 +18,15 @@
     "silent": false
   },
   "devDependencies": {
+    "@babel/core": "^7.18.10",
+    "@babel/helper-compilation-targets": "^7.18.9",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.39",
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^17.0.15",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
-    "eslint": "^8.8.0",
+    "rollup": "^1.20.0",
+    "eslint": "^7.2.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-airbnb-typescript": "^16.1.0",
     "eslint-plugin-import": "^2.22.1",
@@ -89,6 +88,8 @@
     "svelte-i18n": "^3.3.9",
     "svelte-routing": "^1.6.0",
     "tailwindcss": "^2.1.1",
+    "url": "^0.11.0",
+    "util": "^0.12.4",
     "uuid": "^8.3.2"
   },
   "browserslist": [

@@ -55,6 +55,7 @@
       <img
         src="images/icons/{sidebarItem.icon}"
         class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
+        alt="{sidebarItem.label}"
       />
     </li>
   {/each}
@@ -74,6 +75,7 @@
         <img
           src="images/icons/{sidebarItem.icon}"
           class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
+          alt="{sidebarItem.label}"
         />
       </li>
     {/if}
@@ -93,6 +95,7 @@
         <img
           src="images/icons/{sidebarItem.icon}"
           class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
+          alt="{sidebarItem.label}"
         />
       </li>
     {/if}

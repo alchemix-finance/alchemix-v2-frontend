@@ -21,7 +21,6 @@
   import { fetchBalanceByAddress, fetchInternalFarmByUuid } from '@stores/v2/asyncMethods';
 
   export let farm;
-  export let farmType;
 
   const deposit = async (depositBN) => {
     try {

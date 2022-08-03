@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# this script fetches the secrets from vercel and creates a .env
+# TODO debug vercel config so this isn't needed
+
 echo 'VITE_DEBUG_MODE='$DEBUG_MODE >> .env
 echo 'VITE_BLOCKNATIVE_KEY='$BLOCKNATIVE_KEY >> .env
 echo 'VITE_NETWORK_ID='$NETWORK_ID >> .env

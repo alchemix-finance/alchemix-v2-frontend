@@ -1,5 +1,5 @@
 <script>
-  import { getColumnWidth, SORT_ORDERS, sortTableRows } from '../../../helpers/table';
+  import { getColumnWidth, SORT_ORDERS, sortTableRows } from '@helpers/table';
   import settings from '@stores/settings';
 
   import TableBodyRow from './TableBodyRow.svelte';
@@ -35,9 +35,6 @@
 
   export let rows = [];
   export let columns = [];
-  export let key;
-
-  const numberOfColumns = columns.length;
 
   // headerGroups are groups of header
   // TODO: support multiple headers like on https://codesandbox.io/s/github/tannerlinsley/react-table/tree/master/examples/sorting?file=/src/App.js:0-65
@@ -90,7 +87,7 @@
           {#if headerGroup.headers.length > 0}
             {#each headerGroup.headers as header}
               <th>
-                <TableHeaderCell header="{header}" onClickSortBy="{sortBy}" sortOrder="{sortOrder}" />
+                <TableHeaderCell header="{header}" />
               </th>
             {/each}
           {/if}
@@ -102,7 +99,7 @@
   <tbody>
     {#if sortedRows.length > 0}
       {#each sortedRows as row, index}
-        <TableBodyRow index="{index}" row="{row}" numberOfColumns="{numberOfColumns}" />
+        <TableBodyRow index="{index}" row="{row}" />
       {/each}
     {/if}
   </tbody>

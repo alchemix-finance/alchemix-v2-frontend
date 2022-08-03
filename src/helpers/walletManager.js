@@ -1,17 +1,15 @@
 import { ethers } from 'ethers';
 import { navigate } from 'svelte-routing';
+
 import account from '@stores/account';
-import network from '../stores/network';
+import network from '@stores/network';
 import { uninitData } from './uninitData';
-// import getItl from './getItl';
 import { updateAddress, updateProvider, updateNetwork } from '@stores/v2/methods';
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import coinbaseWallet from '@web3-onboard/coinbase';
 import { chainIds } from '@stores/v2/constants';
-// import { getRpcUrl } from '../middleware/figment';
-// import {setLoginSuccess} from './setToast'
 
 // let _toastConfig;
 let _network;
@@ -45,11 +43,6 @@ const infuraKeys = [
 
 const infuraKey = infuraKeys[Math.floor(Math.random() * infuraKeys.length)];
 const randomMainnetRpc = () => `https://mainnet.infura.io/v3/${infuraKey}`;
-
-// @note throws CORS errors due to datahub not supporting cross origin request
-// @note solution from figment: "use a cloudflare worker" => extra dollars
-// const figmentRpc = `https://ethereum-mainnet--rpc.datahub.figment.io/apikey/${process.env.FIGMENT_KEY}/`;
-// console.log(figmentRpc);
 
 const supportedChains = chainIds.map((chain) => {
   return {
