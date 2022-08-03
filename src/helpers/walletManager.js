@@ -4,12 +4,12 @@ import account from '@stores/account';
 import network from '../stores/network';
 import { uninitData } from './uninitData';
 // import getItl from './getItl';
-import { updateAddress, updateProvider, updateNetwork } from '@stores/v2/methods';
+import { updateAddress, updateProvider, updateNetwork } from '../stores/v2/methods';
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
-import coinbaseWallet from '@web3-onboard/coinbase';
-import { chainIds } from '@stores/v2/constants';
+import walletLinkModule from '@web3-onboard/walletlink';
+import { chainIds } from '../stores/v2/constants';
 // import { getRpcUrl } from '../middleware/figment';
 // import {setLoginSuccess} from './setToast'
 
@@ -28,7 +28,7 @@ account.subscribe((val) => {
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
-const coinbase = coinbaseWallet();
+const walletLink = walletLinkModule();
 
 // @dev we're literally cheating infura with this lmfao
 const infuraKeys = [
@@ -61,7 +61,7 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect, coinbase],
+  wallets: [injected, walletConnect, walletLink],
   chains: supportedChains,
 
   appMetadata: {
@@ -76,9 +76,6 @@ const onboard = Onboard({
   },
   accountCenter: {
     desktop: {
-      enabled: false,
-    },
-    mobile: {
       enabled: false,
     },
   },
