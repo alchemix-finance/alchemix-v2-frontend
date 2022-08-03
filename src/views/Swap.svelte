@@ -230,11 +230,12 @@
   };
 
   const swapToken = async (targetNetwork) => {
+    let chain;
     switch (targetNetwork) {
       case '0x1':
         processing = true;
         step = 1;
-        const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
+        chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
         await fromCanonical(
           supportedTokens[selectedToken].address[chain.abiPath].bridge,
           supportedTokens[selectedToken].selector,

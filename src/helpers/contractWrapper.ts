@@ -1,8 +1,13 @@
 import { BigNumber, constants, ethers } from 'ethers';
 import { genericAbi, genericAdapterAbi } from '@stores/externalContracts';
 
-export const contractWrapper = (selector: string, signer: ethers.Signer, _path: string, address?: string) => {
-  const contractData = require(`../abi/${_path}/${selector}.json`);
+export const contractWrapper = async (
+  selector: string,
+  signer: ethers.Signer,
+  _path: string,
+  address?: string,
+) => {
+  const contractData = await import(`../abi/${_path}/${selector}.json`);
   const _instance = new ethers.Contract(address || contractData.address, contractData.abi, signer);
 
   return {
@@ -23,8 +28,8 @@ export const vaultAdapterWrapper = (address: string, signer: ethers.Signer) => {
   }
 };
 
-export const externalContractWrapper = (selector: string, signer: ethers.Signer, address?: string) => {
-  const contractData = require(`../external-abi/${selector}.json`);
+export const externalContractWrapper = async (selector: string, signer: ethers.Signer, address?: string) => {
+  const contractData = await import(`../external-abi/${selector}.json`);
   const _instance = new ethers.Contract(address || contractData.address, contractData.abi, signer);
 
   return {

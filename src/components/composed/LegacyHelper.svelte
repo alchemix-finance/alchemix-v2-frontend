@@ -1,20 +1,22 @@
 <script>
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
-  import { utils, BigNumber } from 'ethers';
   import { slide } from 'svelte/transition';
-  import ContainerWithHeader from '@components/elements/ContainerWithHeader';
-  import settings from '@stores/settings';
-  import Button from '@components/elements/Button';
+  import { utils, BigNumber } from 'ethers';
   import { BarLoader } from 'svelte-loading-spinners';
+
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import Button from '@components/elements/Button.svelte';
+  import MaxLossController from '@components/composed/MaxLossController.svelte';
+  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+
   import { limitCheck, liquidateWrap, withdrawLegacy, flashloanDeposit } from '@stores/v2/flashloanActions';
   import { signer } from '@stores/v2/derived';
   import { addressStore, balancesStore } from '@stores/v2/alcxStore';
-  import MaxLossController from '@components/composed/MaxLossController';
-  import InputNumber from '@components/elements/inputs/InputNumber';
-  import ToggleSwitch from '@components/elements/ToggleSwitch';
   import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
   import { fetchBalanceByAddress, fetchUpdateVaultByAddress } from '@stores/v2/asyncMethods';
+  import settings from '@stores/settings';
 
   let mode = 0;
   let processing = false;
@@ -69,7 +71,12 @@
       ).then((response) => {
         Promise.all([
           fetchBalanceByAddress(response.underlyingToken, [$signer]),
-          fetchUpdateVaultByAddress(response.vaultType, response.alchemistAddress, [$signer, $addressStore], '0x1'),
+          fetchUpdateVaultByAddress(
+            response.vaultType,
+            response.alchemistAddress,
+            [$signer, $addressStore],
+            '0x1',
+          ),
         ]);
       });
       mode = 5;
@@ -216,29 +223,29 @@
   }
 </style>
 
-<ContainerWithHeader canToggle='{true}' isVisible='{canMigrateAlUSD || canMigrateAlETH}'>
-  <div class='text-sm flex flex-row justify-between' slot='header'>
-    <p class='self-center'>{$_('migration.title')}</p>
+<ContainerWithHeader canToggle="{true}" isVisible="{canMigrateAlUSD || canMigrateAlETH}">
+  <div class="text-sm flex flex-row justify-between" slot="header">
+    <p class="self-center">{$_('migration.title')}</p>
   </div>
-  <div slot='body' class='flex flex-col space-y-4 p-4'>
+  <div slot="body" class="flex flex-col space-y-4 p-4">
     {#if processing}
-      <div class='w-full flex flex-row space-x-4' transition:slide|local>
+      <div class="w-full flex flex-row space-x-4" transition:slide|local>
         <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-          <div class='w-full flex flex-row justify-between items-center'>
-            <p class='text-lg'>{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
+          <div class="w-full flex flex-row justify-between items-center">
+            <p class="text-lg">{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
             {#if mode > 1}
               <svg
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-6 w-6'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='#42B792'
-                stroke-width='2'
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#42B792"
+                stroke-width="2"
               >
                 <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
                 ></path>
               </svg>
             {/if}
@@ -246,7 +253,7 @@
           <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
             {$_('migration.liq_explain')}
           </p>
-          <div class='flex flex-row justify-center items-center h-12'>
+          <div class="flex flex-row justify-center items-center h-12">
             <BarLoader
               duration="{mode === 1 ? '2.1s' : '0'}"
               color="{mode > 1 ? '#42B792' : $settings.invertColors ? '#6C93C7' : '#F5C59F'}"
@@ -254,21 +261,21 @@
           </div>
         </div>
         <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-          <div class='w-full flex flex-row justify-between items-center'>
-            <p class='text-lg'>{$_('migration.step')} 2: {$_('migration.withdrawing')}</p>
+          <div class="w-full flex flex-row justify-between items-center">
+            <p class="text-lg">{$_('migration.step')} 2: {$_('migration.withdrawing')}</p>
             {#if mode > 2}
               <svg
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-6 w-6'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='#42B792'
-                stroke-width='2'
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#42B792"
+                stroke-width="2"
               >
                 <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
                 ></path>
               </svg>
             {/if}
@@ -276,7 +283,7 @@
           <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
             {$_('migration.wit_explain')}
           </p>
-          <div class='flex flex-row justify-center items-center h-12'>
+          <div class="flex flex-row justify-center items-center h-12">
             <BarLoader
               duration="{mode === 2 ? '2.1s' : '0'}"
               color="{mode > 2 ? '#42B792' : $settings.invertColors ? '#6C93C7' : '#F5C59F'}"
@@ -284,21 +291,21 @@
           </div>
         </div>
         <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
-          <div class='w-full flex flex-row justify-between items-center'>
-            <p class='text-lg'>{$_('migration.step')} 3: {$_('migration.migrating')}</p>
+          <div class="w-full flex flex-row justify-between items-center">
+            <p class="text-lg">{$_('migration.step')} 3: {$_('migration.migrating')}</p>
             {#if mode > 4}
               <svg
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-6 w-6'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='#42B792'
-                stroke-width='2'
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="#42B792"
+                stroke-width="2"
               >
                 <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
                 ></path>
               </svg>
             {/if}
@@ -306,27 +313,27 @@
           <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
             {$_('migration.mig_explain')}
           </p>
-          <div class='flex flex-col space-y-2 justify-center items-center h-12'>
+          <div class="flex flex-col space-y-2 justify-center items-center h-12">
             {#if mode < 4}
-              <div class='w-full'>
+              <div class="w-full">
                 <ToggleSwitch
                   label="{$_('migration.toggle_default')}"
                   secondLabel="{$_('migration.toggle_custom')}"
-                  useColor='{false}'
-                  forceState='{useCustomValues}'
-                  on:toggleChange='{() => {
+                  useColor="{false}"
+                  forceState="{useCustomValues}"
+                  on:toggleChange="{() => {
                     useCustomValues = !useCustomValues;
-                  }}'
+                  }}"
                 />
               </div>
               <Button
                 label="{mode < 3 ? $_('migration.flashloan_waiting') : $_('migration.flashloan_ready')}"
-                borderColor='green4'
+                borderColor="green4"
                 backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-                hoverColor='green4'
-                fontSize='text-md'
-                disabled='{mode < 3}'
-                on:clicked='{() => flashloan(alchemist)}'
+                hoverColor="green4"
+                fontSize="text-md"
+                disabled="{mode < 3}"
+                on:clicked="{() => flashloan(alchemist)}"
               />
             {:else}
               <BarLoader
@@ -338,13 +345,13 @@
         </div>
       </div>
       {#if mode === 5}
-        <div class='w-full flex flex-row h-12' transition:slide|loca>
+        <div class="w-full flex flex-row h-12" transition:slide|loca>
           <Button
             label="{$_('migration.restart')}"
-            borderColor='green4'
+            borderColor="green4"
             backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-            hoverColor='green4'
-            on:clicked='{() => reset()}'
+            hoverColor="green4"
+            on:clicked="{() => reset()}"
           />
         </div>
       {/if}
@@ -353,76 +360,76 @@
         class="w-full rounded p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
         transition:slide|local
       >
-        <p class='mb-4'>
+        <p class="mb-4">
           {$_('migration.paragraph_1')}
         </p>
-        <p class='mb-4'>
+        <p class="mb-4">
           {$_('migration.paragraph_2')}
         </p>
-        <div class='flex flex-row justify-between space-x-4 mb-4'>
+        <div class="flex flex-row justify-between space-x-4 mb-4">
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-            <p class='text-lg'>{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
+            <p class="text-lg">{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
               {$_('migration.liq_explain')}
             </p>
           </div>
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-            <p class='text-lg'>{$_('migration.step')} 2: {$_('migration.withdrawing')}</p>
+            <p class="text-lg">{$_('migration.step')} 2: {$_('migration.withdrawing')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
               {$_('migration.wit_explain')}
             </p>
           </div>
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
-            <p class='text-lg'>{$_('migration.step')} 3: {$_('migration.migrating')}</p>
+            <p class="text-lg">{$_('migration.step')} 3: {$_('migration.migrating')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
               {$_('migration.mig_explain')}
             </p>
           </div>
         </div>
         <div
-          class='w-full flex flex-row justify-between h-12 mb-4'
-          class:space-x-4='{canMigrateAlUSD || canMigrateAlETH}'
-          class:hidden='{!canMigrateAlUSD && !canMigrateAlETH}'
+          class="w-full flex flex-row justify-between h-12 mb-4"
+          class:space-x-4="{canMigrateAlUSD || canMigrateAlETH}"
+          class:hidden="{!canMigrateAlUSD && !canMigrateAlETH}"
         >
-          <div class:hidden='{!canMigrateAlUSD}' class='w-full'>
+          <div class:hidden="{!canMigrateAlUSD}" class="w-full">
             <Button
-              disabled='{!canMigrateAlUSD}'
+              disabled="{!canMigrateAlUSD}"
               label="{$_('migration.from_alusd')}"
-              borderColor='green4'
+              borderColor="green4"
               backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-              hoverColor='green4'
-              height='h-12'
-              on:clicked='{() => migration(0)}'
+              hoverColor="green4"
+              height="h-12"
+              on:clicked="{() => migration(0)}"
             />
           </div>
-          <div class:hidden='{!canMigrateAlETH}' class='w-full'>
+          <div class:hidden="{!canMigrateAlETH}" class="w-full">
             <Button
-              disabled='{!canMigrateAlETH}'
+              disabled="{!canMigrateAlETH}"
               label="{$_('migration.from_aleth')}"
-              borderColor='green4'
+              borderColor="green4"
               backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-              hoverColor='green4'
-              height='h-12'
-              on:clicked='{() => migration(1)}'
+              hoverColor="green4"
+              height="h-12"
+              on:clicked="{() => migration(1)}"
             />
           </div>
         </div>
-        <div class='w-full flex flex-row justify-between h-12 space-x-4'>
+        <div class="w-full flex flex-row justify-between h-12 space-x-4">
           <Button
             label="{$_('migration.skip_legacy_alusd')}"
-            borderColor='green4'
+            borderColor="green4"
             backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-            hoverColor='green4'
-            height='h-12'
-            on:clicked='{() => skipToFlashloan(0)}'
+            hoverColor="green4"
+            height="h-12"
+            on:clicked="{() => skipToFlashloan(0)}"
           />
           <Button
             label="{$_('migration.skip_legacy_aleth')}"
-            borderColor='green4'
+            borderColor="green4"
             backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-            hoverColor='green4'
-            height='h-12'
-            on:clicked='{() => skipToFlashloan(1)}'
+            hoverColor="green4"
+            height="h-12"
+            on:clicked="{() => skipToFlashloan(1)}"
           />
         </div>
       </div>
@@ -434,13 +441,13 @@
           : 'bg-grey10'}"
         transition:slide|local
       >
-        <div class='w-full'>
-          <p class='mb-4'>
+        <div class="w-full">
+          <p class="mb-4">
             {$_('migration.cus_explain')}
           </p>
         </div>
-        <div class='w-full'>
-          <label for='yieldInput' class='text-sm text-lightgrey10'>
+        <div class="w-full">
+          <label for="yieldInput" class="text-sm text-lightgrey10">
             {$_('available')}
             : {utils.formatEther(alchemist === 0 ? daiData.balance : ethData.balance)}
             {alchemist === 0 ? daiData.symbol : ethData.symbol}
@@ -450,37 +457,37 @@
               ? 'bg-grey3inverse border-grey3inverse'
               : 'bg-grey3 border-grey3'} rounded border"
           >
-            <div class='w-full'>
+            <div class="w-full">
               <InputNumber
-                id='yieldInput'
-                bind:value='{collateralInitial}'
-                placeholder='~0.00 {alchemist === 0 ? daiData.symbol : ethData.symbol}'
+                id="yieldInput"
+                bind:value="{collateralInitial}"
+                placeholder="~0.00 {alchemist === 0 ? daiData.symbol : ethData.symbol}"
                 class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
                   ? 'bg-grey3inverse text-lightgrey5inverse'
                   : 'bg-grey3 text-lightgrey5'}"
               />
             </div>
-            <div class='flex flex-col'>
+            <div class="flex flex-col">
               <Button
-                label='MAX'
-                width='w-full'
-                fontSize='text-xs'
+                label="MAX"
+                width="w-full"
+                fontSize="text-xs"
                 textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                 backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                borderSize='0'
-                height='h-10'
-                on:clicked='{() => {
+                borderSize="0"
+                height="h-10"
+                on:clicked="{() => {
                   collateralInitial = utils.formatEther(alchemist === 0 ? daiData.balance : ethData.balance);
-                }}'
+                }}"
               />
               <Button
-                label='CLEAR'
-                width='w-max'
-                fontSize='text-xs'
+                label="CLEAR"
+                width="w-max"
+                fontSize="text-xs"
                 textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
                 backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-                borderSize='0'
-                height='h-10'
+                borderSize="0"
+                height="h-10"
                 on:clicked="{() => {
                   collateralInitial = '';
                 }}"
@@ -488,24 +495,24 @@
             </div>
           </div>
         </div>
-        <div class='w-full flex flex-row space-x-4 justify-between items-center'>
+        <div class="w-full flex flex-row space-x-4 justify-between items-center">
           <label
-            for='ltvSlider'
+            for="ltvSlider"
             class="text-sm w-32 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
-          >{$_('migration.target_ltv')}: 1.{targetLtv}×</label
+            >{$_('migration.target_ltv')}: 1.{targetLtv}×</label
           >
           <input
-            type='range'
-            id='ltvSlider'
-            class='cursor-pointer w-full ltv-slider'
+            type="range"
+            id="ltvSlider"
+            class="cursor-pointer w-full ltv-slider"
             name="{$_('migration.ltv_ratio')}"
-            min='0'
-            max='95'
-            step='5'
-            bind:value='{targetLtv}'
+            min="0"
+            max="95"
+            step="5"
+            bind:value="{targetLtv}"
           />
         </div>
-        <MaxLossController preset='1' bind:maxLoss='{maximumLoss}' />
+        <MaxLossController preset="1" bind:maxLoss="{maximumLoss}" />
       </div>
     {/if}
   </div>

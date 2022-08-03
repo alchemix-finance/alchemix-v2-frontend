@@ -75,7 +75,7 @@ export async function updateAlusdVault(vaultIndex) {
   setLoading('Updating');
   _alusd.loadingRowData = true;
   alusd.set({ ..._alusd });
-  const contract = getContract('AlchemistV2_alUSD');
+  const contract = await getContract('AlchemistV2_alUSD');
   const vault = _alusd.rows[vaultIndex];
   const params = await contract.getYieldTokenParameters(vault.token);
   const position = await contract.positions(_account.address, vault.token);
@@ -114,7 +114,7 @@ export async function updateAlusdVault(vaultIndex) {
 // @dev updates the alusd aggregate balances
 export async function updateAlusdAggregate() {
   setLoading('Updating');
-  const contract = getContract('AlchemistV2_alUSD');
+  const contract = await getContract('AlchemistV2_alUSD');
   const rawDebt = await contract.accounts(_account.address);
   const newDebt = parseFloat(utils.formatEther(rawDebt.debt.toString()));
   if (newDebt !== _aggregate.totalDebt) {

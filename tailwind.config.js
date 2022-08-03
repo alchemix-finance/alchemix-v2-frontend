@@ -1,5 +1,6 @@
 const plugin = require('tailwindcss/plugin');
 module.exports = {
+  content: ['./index.html', './src/**/*.{html,js,svelte,ts}'],
   theme: {
     'flex-basis': (theme) => ({
       1: '100%',
@@ -140,4 +141,5 @@ module.exports = {
       });
     }),
   ],
+  purge: false,
 };

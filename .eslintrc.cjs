@@ -1,26 +1,20 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  extends: ['plugin:import/recommended', 'airbnb-typescript/base', 'prettier'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   plugins: ['svelte3', '@typescript-eslint'],
   ignorePatterns: ['*.cjs'],
   overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
   settings: {
-    // eslint-disable-next-line global-require
     'svelte3/typescript': () => require('typescript'),
-    'svelte3/ignore-warnings': ({ code }) => code === 'unused-export-let',
-    'import/resolver': {
-      webpack: {
-        config: './webpack.config.ts',
-      },
-    },
-  },
-  parserOptions: {
-    project: './tsconfig.eslint.json',
-    sourceType: 'module',
-    ecmaVersion: 2020,
   },
   rules: {
+    '@typescript-eslint/no-var-requires': 'off',
+    'import/no-dynamic-require': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    'no-prototype-builtins': 'off',
+    'prefer-const': 'off',
+    'no-extra-boolean-cast': 'off',
     'no-console': 0,
     'no-underscore-dangle': 0,
     'no-use-before-define': 0,
@@ -33,7 +27,11 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 0,
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
+  },
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 2020,
+    allowImportExportEverywhere: true,
   },
   env: {
     browser: true,

@@ -6,3 +6,5 @@ public
 scripts
 # don't lint tailwind config
 tailwind.config.js
+# don't lint the secret cow level
+src/views/SecretCowLevel.svelte

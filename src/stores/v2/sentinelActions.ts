@@ -15,7 +15,7 @@ export async function toggleTokenEnabled(
   try {
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-    const { instance: alchemistInstance } = contractWrapper(
+    const { instance: alchemistInstance } = await contractWrapper(
       VaultConstants[vaultType].alchemistContractSelector,
       signerStore,
       path,
@@ -53,7 +53,7 @@ export async function toggleTransmuterStatus(
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
     const transmuters = TransmuterConstants[vaultType].transmuterContractSelectors;
-    const { instance: transmuterInstance } = contractWrapper(
+    const { instance: transmuterInstance } = await contractWrapper(
       transmuters.find((selector) => selector.includes(tokenName)),
       signerStore,
       path,
@@ -77,12 +77,17 @@ export async function toggleTransmuterStatus(
   }
 }
 
-export async function toggleAlchemistStatus(vaultType: VaultTypes, state: boolean, [signerStore]: [Signer], _network: string) {
+export async function toggleAlchemistStatus(
+  vaultType: VaultTypes,
+  state: boolean,
+  [signerStore]: [Signer],
+  _network: string,
+) {
   try {
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
-    const targetAlchemist = getAddress(VaultConstants[VaultTypes[vaultType]].alchemistContractSelector);
-    const { instance: alchemistInstance } = contractWrapper(
+    const targetAlchemist = await getAddress(VaultConstants[VaultTypes[vaultType]].alchemistContractSelector);
+    const { instance: alchemistInstance } = await contractWrapper(
       VaultConstants[VaultTypes[vaultType]].alToken,
       signerStore,
       path,

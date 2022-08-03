@@ -18,7 +18,7 @@ export async function getVaultCapacity(
 ) {
   try {
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-    const { instance: alchemist } = contractWrapper(
+    const { instance: alchemist } = await contractWrapper(
       VaultConstants[_vaultType].alchemistContractSelector,
       _signer,
       path,
@@ -79,7 +79,7 @@ export async function deposit(
     });
     const gatewayIndexCheck = gatewayCheck.indexOf(selector);
 
-    const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
+    const { address: alchemistAddress, instance: alchemistInstance } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -87,7 +87,7 @@ export async function deposit(
     if (gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined) {
       const staticInstance = erc20Contract(tokenAddress, signerStore);
 
-      const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
+      const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
         selector,
         signerStore,
         path,
@@ -177,7 +177,7 @@ export async function depositUnderlying(
     const erc20Instance = erc20Contract(underlyingAddress, signerStore);
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { address: alchemistAddress, instance: alchemistInstance } = contractWrapper(
+    const { address: alchemistAddress, instance: alchemistInstance } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -227,12 +227,12 @@ export async function depositUnderlying(
       } else {
         gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
           .map((gates) => {
-            //@ts-ignore
             if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
           })
           .filter((gate) => !!gate)[0];
       }
-      const { instance: gatewayInstance } = contractWrapper(gateway, signerStore, path);
+      const { instance: gatewayInstance } = await contractWrapper(gateway, signerStore, path);
+      console.log(gateway, gatewayInstance);
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
@@ -285,7 +285,7 @@ export async function multicallDeposit(
       address: alchemistAddress,
       instance: alchemistInstance,
       fragment: alchemistInterface,
-    } = contractWrapper(VaultConstants[typeOfVault].alchemistContractSelector, signerStore, path);
+    } = await contractWrapper(VaultConstants[typeOfVault].alchemistContractSelector, signerStore, path);
 
     const yieldTokenAllowance = await yieldTokenInstance.allowanceOf(userAddressStore, alchemistAddress);
     const underlyingTokenAllowance = await underlyingTokenInstance.allowanceOf(
@@ -357,14 +357,14 @@ export async function withdraw(
       })[0];
     });
     const gatewayIndexCheck = gatewayCheck.indexOf(selector);
-    const { instance: alchemistInstance } = contractWrapper(
+    const { instance: alchemistInstance } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
     );
 
     if (gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined) {
-      const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
+      const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
         selector,
         signerStore,
         path,
@@ -491,7 +491,7 @@ export async function withdrawUnderlying(
       });
     } else {
       const _gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)[0][0];
-      const { instance: gatewayInstance, address: gatewayAddress } = contractWrapper(
+      const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
         _gateway,
         signerStore,
         path,
@@ -557,7 +557,7 @@ export async function multicallWithdraw(
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: alchemistInstance, fragment: alchemistInterface } = contractWrapper(
+    const { instance: alchemistInstance, fragment: alchemistInterface } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -610,7 +610,7 @@ export async function mint(
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: alchemistInstance } = contractWrapper(
+    const { instance: alchemistInstance } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -647,7 +647,7 @@ export async function burn(
 
     const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
 
-    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+    const { instance: alchemistInstance, address: alchemistAddress } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -691,7 +691,7 @@ export async function repay(
 
     const underlyingTokenInstance = erc20Contract(debtToken, signerStore);
 
-    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+    const { instance: alchemistInstance, address: alchemistAddress } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -737,7 +737,7 @@ export async function liquidate(
 
     const yieldTokenInstance = erc20Contract(yieldToken, signerStore);
 
-    const { instance: alchemistInstance, address: alchemistAddress } = contractWrapper(
+    const { instance: alchemistInstance, address: alchemistAddress } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
       path,
@@ -788,7 +788,7 @@ export async function migrateVault(
   try {
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: migratorInstance } = contractWrapper('VaultMigrationTool_USD', signerStore, path);
+    const { instance: migratorInstance } = await contractWrapper('VaultMigrationTool_USD', signerStore, path);
 
     setPendingWallet();
 

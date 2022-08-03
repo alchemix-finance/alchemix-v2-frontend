@@ -2,9 +2,13 @@
   import { writable } from 'svelte/store';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
-  import Button from '../../../elements/Button.svelte';
-  import { deposit, depositUnderlying, multicallDeposit, getVaultCapacity } from '@stores/v2/vaultActions';
+
+  import Button from '@components/elements/Button.svelte';
   import ComplexInput from '../../../composed/Inputs/ComplexInput.svelte';
+  import MaxLossController from '@components/composed/MaxLossController.svelte';
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+
+  import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
   import {
     addressStore,
@@ -12,17 +16,15 @@
     vaultsStore,
     adaptersStore,
     networkStore,
-  } from 'src/stores/v2/alcxStore';
-  import { signer } from 'src/stores/v2/derived';
+  } from '@stores/v2/alcxStore';
+  import { signer } from '@stores/v2/derived';
   import {
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
     fetchAdaptersForVaultType,
-  } from 'src/stores/v2/asyncMethods';
-  import MaxLossController from '@components/composed/MaxLossController';
+  } from '@stores/v2/asyncMethods';
   import { getTokenDataFromBalances, getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
   import { modalReset } from '@stores/modal';
-  import ToggleSwitch from '@components/elements/ToggleSwitch';
   import settings from '@stores/settings';
   import { VaultTypesInfos } from '@stores/v2/constants';
 

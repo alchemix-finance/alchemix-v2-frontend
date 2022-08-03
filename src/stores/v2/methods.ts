@@ -17,8 +17,8 @@ import {
   controllerStore,
   tokenPriceStore,
 } from '@stores/v2/alcxStore';
-import { ethers, providers } from 'ethers';
-import { VaultTypes } from '@stores/v2/types';
+import type { ethers, providers } from 'ethers';
+import type { VaultTypes } from '@stores/v2/types';
 
 export const resetStores = async () => {
   balancesStore.set([]);

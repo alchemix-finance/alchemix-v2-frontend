@@ -1,9 +1,9 @@
 <script>
   import { _ } from 'svelte-i18n';
   import ViewContainer from '@components/elements/ViewContainer.svelte';
-  import PageHeader from '@components/elements/PageHeader';
-  import ContainerWithHeader from '@components/elements/ContainerWithHeader';
-  import Button from '@components/elements/Button';
+  import PageHeader from '@components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import Button from '@components/elements/Button.svelte';
   import secret from '@stores/secret';
 
   const unlock = () => {

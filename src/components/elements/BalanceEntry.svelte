@@ -37,6 +37,8 @@
 
   const addToken = async () => {
     try {
+      // need to suppress error since we're dealing with injected elements
+      // eslint-disable-next-line no-undef
       await ethereum.request({
         method: 'wallet_watchAsset',
         params: {
@@ -45,23 +47,26 @@
             address: tokenAddress,
             symbol: tokenSymbol,
             decimals: tokenDecimals,
-            image: `https://alchemix.fi${tokenIcon}`
-          }
-        }
-      })
+            image: `https://alchemix.fi${tokenIcon}`,
+          },
+        },
+      });
     } catch (error) {
-      console.warn('User aborted wallet action to add a token')
+      console.warn('User aborted wallet action to add a token');
     }
-  }
+  };
 </script>
 
-<div class='flex mt-2 mb-2 flex-row opacity-50 hover:opacity-100 hover:cursor-pointer' on:click={() => addToken()}>
-  <img class='w-6 h-6 mr-2' alt='The logo of {tokenSymbol}' src='{tokenIcon}' />
-  <div class='flex flex-col w-full'>
-    <div class='relative flex items-center justify-between text-sm'>
+<div
+  class="flex mt-2 mb-2 flex-row opacity-50 hover:opacity-100 hover:cursor-pointer"
+  on:click="{() => addToken()}"
+>
+  <img class="w-6 h-6 mr-2" alt="The logo of {tokenSymbol}" src="{tokenIcon}" />
+  <div class="flex flex-col w-full">
+    <div class="relative flex items-center justify-between text-sm">
       <p>{tokenSymbol}</p>
       <p>{truncateBalance(tokenBalance)}</p>
     </div>
-    <p class='text-xs opacity-60'>{tokenName}</p>
+    <p class="text-xs opacity-60">{tokenName}</p>
   </div>
 </div>

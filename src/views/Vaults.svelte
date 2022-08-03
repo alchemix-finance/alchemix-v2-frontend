@@ -1,84 +1,39 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
-  import ViewContainer from '../components/elements/ViewContainer.svelte';
-  import PageHeader from '../components/elements/PageHeader.svelte';
-  import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-  import Button from '../components/elements/Button.svelte';
-  // import AccountsPageBarCharts from '../components/composed/AccountsPageBarCharts.svelte';
   import { BarLoader } from 'svelte-loading-spinners';
-  import { aggregate, alusd } from '@stores/vaults';
-  import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
-  import Table from '../components/composed/Table/Table.svelte';
-  import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
-  import ActionsCell from '../components/composed/Table/vaults/ActionsCell.svelte';
-  import Borrow from '../components/composed/Modals/vaults/Borrow.svelte';
-  import Repay from '../components/composed/Modals/vaults/Repay.svelte';
-  import Liquidate from '../components/composed/Modals/vaults/Liquidate.svelte';
-  import CurrencyCell from '../components/composed/Table/CurrencyCell.svelte';
-  import Metrics from '../components/composed/Metrics.svelte';
+
+  import ViewContainer from '@components/elements/ViewContainer.svelte';
+  import PageHeader from '@components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import Button from '@components/elements/Button.svelte';
+  import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
+  import ActionsCell from '@components/composed/Table/vaults/ActionsCell.svelte';
+  import Borrow from '@components/composed/Modals/vaults/Borrow.svelte';
+  import Repay from '@components/composed/Modals/vaults/Repay.svelte';
+  import Liquidate from '@components/composed/Modals/vaults/Liquidate.svelte';
+  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
+  import Metrics from '@components/composed/Metrics.svelte';
+  import YieldCell from '@components/composed/Table/YieldCell.svelte';
+  import LegacyHelper from '@components/composed/LegacyHelper.svelte';
+  import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell.svelte';
+  import VaultStrategy from '@components/composed/VaultStrategy.svelte';
+
+  import { alusd } from '@stores/vaults';
   import { showModal, modalReset } from '@stores/modal';
   import settings from '@stores/settings';
   import { balancesStore, vaultsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
-  import { VaultTypes } from 'src/stores/v2/types';
-  import { VaultTypesInfos, chainIds } from 'src/stores/v2/constants';
-  import { makeSelectorStore } from 'src/stores/v2/selectorStore';
-  import { calculateVaultDebt, getTokenDataFromBalances } from 'src/stores/v2/helpers';
-  import { vaultsLoading } from 'src/stores/v2/loadingStores';
-  import YieldCell from '@components/composed/Table/YieldCell';
-  import LegacyHelper from '@components/composed/LegacyHelper';
+  import { VaultTypes } from '@stores/v2/types';
+  import { VaultTypesInfos, chainIds } from '@stores/v2/constants';
+  import { makeSelectorStore } from '@stores/v2/selectorStore';
+  import { calculateVaultDebt, getTokenDataFromBalances } from '@stores/v2/helpers';
+  import { vaultsLoading } from '@stores/v2/loadingStores';
   import { signer } from '@stores/v2/derived';
-  import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell';
-  import VaultStrategy from '@components/composed/VaultStrategy.svelte';
 
   $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
   $: vaultsSelector = makeSelectorStore([...vaultTypes]);
 
   const showMetrics = true;
-
-  let rowsAll = [];
-  let colsStrats = [
-    {
-      columnId: 'col2',
-      CellComponent: HeaderCell,
-      value: $_('table.strategy'),
-      colSize: 3,
-    },
-    {
-      columnId: 'deposit',
-      CellComponent: HeaderCell,
-      value: $_('table.deposited'),
-      colSize: 2,
-    },
-
-    {
-      columnId: 'col3',
-      CellComponent: HeaderCell,
-      value: $_('table.tvl'),
-      colSize: 2,
-    },
-    {
-      columnId: 'limit',
-      CellComponent: HeaderCell,
-      value: $_('table.deposit_limit'),
-      colSize: 2,
-    },
-    {
-      columnId: 'col4',
-      CellComponent: HeaderCell,
-      value: $_('table.yield'),
-      colSize: 2,
-    },
-    {
-      columnId: 'col5',
-      CellComponent: HeaderCell,
-      value: $_('table.actions'),
-      colSize: 3,
-    },
-  ];
-
-  let underlyingTokenAlusd = [];
-  let yieldTokenAlusd = [];
 
   // @dev logic for controlling the filtered views
 

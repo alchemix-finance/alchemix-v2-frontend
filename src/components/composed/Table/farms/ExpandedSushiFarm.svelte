@@ -33,13 +33,12 @@
   $: depositAmountBN = useBigNumberForInput(inputDepositAmount);
   $: withdrawAmountBN = useBigNumberForInput(inputWithdrawAmount);
 
-  const { instance: masterchefInstance, address: masterchefAddress } = externalContractWrapper(
-    'SushiMasterchefV2',
-    $signer,
-  );
-
   const deposit = async (amount) => {
     try {
+      const { instance: masterchefInstance, address: masterchefAddress } = await externalContractWrapper(
+        'SushiMasterchefV2',
+        $signer,
+      );
       const tokenContract = erc20Contract(farm.poolTokenAddress, $signer);
 
       const allowance = await tokenContract.allowanceOf($addressStore, masterchefAddress);
@@ -64,6 +63,10 @@
 
   const withdraw = async (amount) => {
     try {
+      const { instance: masterchefInstance, address: masterchefAddress } = await externalContractWrapper(
+        'SushiMasterchefV2',
+        $signer,
+      );
       const tokenContract = erc20Contract(farm.poolTokenAddress, $signer);
       const allowance = await tokenContract.allowanceOf($addressStore, masterchefAddress);
 
@@ -87,6 +90,10 @@
 
   const claim = async () => {
     try {
+      const { instance: masterchefInstance, address: masterchefAddress } = await externalContractWrapper(
+        'SushiMasterchefV2',
+        $signer,
+      );
       setPendingWallet();
       const tx = await masterchefInstance.harvest(0, $addressStore);
       setPendingTx();

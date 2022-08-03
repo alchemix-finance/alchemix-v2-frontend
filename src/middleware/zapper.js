@@ -22,10 +22,12 @@ tokenPrices.subscribe((val) => {
  * */
 function connector(endpoint, timeout, network, version) {
   return {
-    url: `https://api.zapper.fi/${version}/${endpoint}?api_key=${process.env.ZAPPER_KEY}&eip1559=true&network=${network}`,
+    url: `https://api.zapper.fi/${version}/${endpoint}?api_key=${
+      import.meta.env.VITE_ZAPPER_KEY
+    }&eip1559=true&network=${network}`,
     method: 'GET',
     headers: {
-      Authorization: process.env.ZAPPER_KEY,
+      Authorization: import.meta.env.VITE_ZAPPER_KEY,
     },
     timeout: timeout || 0,
   };

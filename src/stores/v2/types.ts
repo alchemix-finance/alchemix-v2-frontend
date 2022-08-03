@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import type { ethers } from 'ethers';
 
 export enum VaultTypes {
   alUSD = 0,
@@ -23,7 +23,7 @@ export interface GenericFarmType {
   isActive: boolean;
   userDeposit: ethers.BigNumber;
   tvl: ethers.BigNumber | ethers.BigNumber[];
-  rewards: {}[];
+  rewards: any[];
   userUnclaimed: ethers.BigNumber[];
 }
 

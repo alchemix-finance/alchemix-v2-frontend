@@ -19,7 +19,7 @@
   let isHuman = true;
   let chainCollapsed = true;
 
-  const debugging = Boolean(parseInt(process.env.DEBUG_MODE, 10));
+  const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
   const provider = getDefaultProvider();
 
   /*

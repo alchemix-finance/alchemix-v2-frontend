@@ -64,7 +64,7 @@ export async function toCanonical(
     const path = chainIds.filter((chain) => chain.legacyId === _network)[0].abiPath;
     const bridgeTokenInstance = erc20Contract(_bridgeToken, _signer);
     const bridgeBalance = await bridgeTokenInstance.balanceOf(_userAddress);
-    const { instance: canonicalInstance, address: canonicalAddress } = contractWrapper(
+    const { instance: canonicalInstance, address: canonicalAddress } = await contractWrapper(
       _canonicalContract,
       _signer,
       path,
@@ -107,7 +107,7 @@ export async function fromCanonical(
 ) {
   try {
     const path = chainIds.filter((chain) => chain.legacyId === _network)[0].abiPath;
-    const { instance: canonicalInstance } = contractWrapper(_canonicalContract, _signer, path);
+    const { instance: canonicalInstance } = await contractWrapper(_canonicalContract, _signer, path);
 
     const tx = (await canonicalInstance.exchangeCanonicalForOld(
       _bridgeToken,

@@ -1,29 +1,52 @@
 {
-  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte", "webpack.config.ts"],
-  "exclude": ["node_modules/*", "dist/*", "public/*", "scripts/*"],
   "compilerOptions": {
-    "moduleResolution": "Node",
-    "target": "ES6",
-    "importsNotUsedAsValues": "remove",
-    "isolatedModules": false,
+    "moduleResolution": "node",
+    "target": "esnext",
+    "module": "esnext",
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "strict": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"],
-      "@stores/*": ["src/stores/*"],
-      "@components/*": ["src/components/*"],
-      "@helpers/*": ["src/helpers/*"],
-      "@locales/*": ["src/locales/*"],
-      "@middleware/*": ["src/middleware/*"],
-      "@views/*": ["src/views/*"],
-      "@styles/*": ["src/styles/*"]
-    }
+      "src/*": [
+        "src/*"
+      ],
+      "@/*": [
+        "src/*"
+      ],
+      "@stores/*": [
+        "src/stores/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@helpers/*": [
+        "src/helpers/*"
+      ],
+      "@locales/*": [
+        "src/locales/*"
+      ],
+      "@middleware/*": [
+        "src/middleware/*"
+      ],
+      "@views/*": [
+        "src/views/*"
+      ],
+      "@styles/*": [
+        "src/styles/*"
+      ]
+    },
+    "allowJs": true,
+    "checkJs": true
   },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs"
-    }
-  }
+  "include": [
+    "globals.d.ts",
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "src/**/*.d.ts"
+  ]
 }

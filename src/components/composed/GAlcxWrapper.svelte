@@ -1,10 +1,11 @@
 <script>
   import { _ } from 'svelte-i18n';
+
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
-  import settings from '@stores/settings';
-  import InputNumber from '@components/elements/inputs/InputNumber';
-  import ToggleSwitch from '@components/elements/ToggleSwitch';
-  import Button from '@components/elements/Button';
+  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+  import Button from '@components/elements/Button.svelte';
+
   import { getData, getAllowance, stake, unstake } from '@stores/v2/wrapperActions';
   import { addressStore, balancesStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
@@ -13,6 +14,7 @@
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { BarLoader } from 'svelte-loading-spinners';
   import { fetchBalanceByAddress } from '@stores/v2/asyncMethods';
+  import settings from '@stores/settings';
 
   let unwrap = false;
   let totalSupply = BigNumber.from(0);

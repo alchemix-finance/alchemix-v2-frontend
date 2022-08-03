@@ -1,26 +1,29 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils } from 'ethers';
-  import ViewContainer from '../components/elements/ViewContainer.svelte';
-  import PageHeader from '../components/elements/PageHeader.svelte';
-  import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-  import Button from '../components/elements/Button.svelte';
-  import Table from '../components/composed/Table/Table.svelte';
-  import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
-  import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
-  import FarmNameCell from '../components/composed/Table/farms/FarmNameCell.svelte';
-  import RewardCell from '../components/composed/Table/farms/RewardCell.svelte';
-  import ActionsCell from '../components/composed/Table/farms/ActionsCell.svelte';
-  import ExternalFarms from '../components/composed/Table/farms/ExternalFarms.svelte';
-  import ExitCell from '../components/composed/Table/farms/ExitCell.svelte';
-  import ExpandedFarm from '../components/composed/Table/farms/ExpandedFarm.svelte';
+  import { BarLoader } from 'svelte-loading-spinners';
+
+  import ViewContainer from '@components/elements/ViewContainer.svelte';
+  import PageHeader from '@components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import Button from '@components/elements/Button.svelte';
+  import Table from '@components/composed/Table/Table.svelte';
+  import HeaderCell from '@components/composed/Table/HeaderCell.svelte';
+  import ExpandRowCell from '@components/composed/Table/ExpandRowCell.svelte';
+  import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
+  import RewardCell from '@components/composed/Table/farms/RewardCell.svelte';
+  import ActionsCell from '@components/composed/Table/farms/ActionsCell.svelte';
+  import ExternalFarms from '@components/composed/Table/farms/ExternalFarms.svelte';
+  import ExitCell from '@components/composed/Table/farms/ExitCell.svelte';
+  import ExpandedFarm from '@components/composed/Table/farms/ExpandedFarm.svelte';
   import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
   import ExpandedCrvFarm from '@components/composed/Table/farms/ExpandedCrvFarm.svelte';
-  import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
-  import StakedCell from '@components/composed/Table/farms/StakedCell';
-  import ClaimableCell from '@components/composed/Table/farms/ClaimableCell';
-  import { BarLoader } from 'svelte-loading-spinners';
-  import tokenPrices from '@stores/tokenPrices';
+  import StakedCell from '@components/composed/Table/farms/StakedCell.svelte';
+  import ClaimableCell from '@components/composed/Table/farms/ClaimableCell.svelte';
+  import GAlcxWrapper from '@components/composed/GAlcxWrapper.svelte';
+  import YieldCell from '@components/composed/Table/YieldCell.svelte';
+  import TvlCell from '@components/composed/Table/farms/TvlCell.svelte';
+
   import { addressStore, farmsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { fetchCrvFarm, fetchInternalFarms, fetchSushiFarm } from '@stores/v2/asyncMethods';
@@ -29,10 +32,7 @@
   import { InternalFarmAdapter } from '@stores/v2/adapters/InternalFarmAdapter';
   import { SushiFarmAdapter } from '@stores/v2/adapters/SushiFarmAdapter';
   import { CRVFarmAdapter } from '@stores/v2/adapters/CRVFarmAdapter';
-  import GAlcxWrapper from '@components/composed/GAlcxWrapper';
-  import YieldCell from '@components/composed/Table/YieldCell';
   import settings from '@stores/settings';
-  import TvlCell from '@components/composed/Table/farms/TvlCell.svelte';
 
   const filterTypes = Object.freeze({
     ACTIVE: 0,

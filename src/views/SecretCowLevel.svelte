@@ -1,4 +1,6 @@
 <script>
+  // eslint-ignore
+  // tslint-ignore
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';

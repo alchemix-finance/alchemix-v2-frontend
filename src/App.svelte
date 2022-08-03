@@ -14,20 +14,20 @@
   import HeaderBar from '@components/composed/HeaderBar.svelte';
   import SideBar from '@components/composed/SideBar.svelte';
   import Footer from '@components/composed/Footer.svelte';
-  import Emergency from '@components/elements/Emergency';
+  import Emergency from '@components/elements/Emergency.svelte';
 
   // router configuration and views
-  import Landing from './views/Landing.svelte';
-  import Error from './views/Error.svelte';
-  // import Accounts from './views/Accounts.svelte';
-  import Vaults from './views/Vaults.svelte';
-  import Transmuter from './views/Transmuter.svelte';
-  import Farms from './views/Farms.svelte';
-  import Governance from './views/Governance.svelte';
-  import Settings from './views/Settings.svelte';
-  import Sentinel from './views/Sentinel.svelte';
-  import SecretCowLevel from './views/SecretCowLevel.svelte';
-  import Swap from './views/Swap.svelte';
+  import Landing from '@views/Landing.svelte';
+  import Error from '@views/Error.svelte';
+  // import Accounts from '@views/Accounts.svelte';
+  import Vaults from '@views/Vaults.svelte';
+  import Transmuter from '@views/Transmuter.svelte';
+  import Farms from '@views/Farms.svelte';
+  import Governance from '@views/Governance.svelte';
+  import Settings from '@views/Settings.svelte';
+  import Sentinel from '@views/Sentinel.svelte';
+  import SecretCowLevel from '@views/SecretCowLevel.svelte';
+  import Swap from '@views/Swap.svelte';
   // import { routerGuard } from '@helpers/routerGuard';
   import { networkStore } from '@stores/v2/alcxStore';
   import { chainIds } from '@stores/v2/constants';
@@ -91,7 +91,7 @@ Twitter:  https://twitter.com/alchemixfi
 Telegram: lmao no
 
 Make sure you're running this on ${
-        process.env.APP_URL ||
+        import.meta.env.VITE_APP_URL ||
         'if you can read this, the site you are visiting right now is probably trying to scam you'
       }
 We will never ask you for your private key or seedphrase.
