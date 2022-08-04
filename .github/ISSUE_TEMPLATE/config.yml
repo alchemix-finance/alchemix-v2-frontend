@@ -1,0 +1,4 @@
+contact_links:
+  - name: Bug Bounty (Immunefi)
+    url: https://immunefi.com/bounty/alchemix/
+    about: Report any security vulnerabilities you found on Immunefi to partake in our bug bounty program

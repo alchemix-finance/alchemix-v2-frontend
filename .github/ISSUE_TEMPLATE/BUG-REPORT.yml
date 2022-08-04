@@ -1,0 +1,50 @@
+name: Bug Report
+description: Create a bug report
+title: "[BUG] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please fill out the form below to file a new bug report.
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we require more info (mail / discord)?
+      placeholder: ex. mail@host.com or name#1234
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug as precise as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: false
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browser were you using?
+      multiple: false
+      options:
+        - Firefox
+        - Chrome
+        - Brave
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: other-browser
+    attributes:
+      label: If you selected "Other" above, fill in the browser you used here.
+      placeholder: ex. Vivaldi
+    validations:
+      required: false
+

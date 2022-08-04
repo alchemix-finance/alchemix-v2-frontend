@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Reem+Kufi&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,400;0,500;0,700;1,100;1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;200;300;400;500;600;700&family=Montserrat:wght@100;200;300;400;500;600;800&display=swap');
+@import url("https://use.typekit.net/dje1rga.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.invertIcons {
+  /*filter: invert(100%) grayscale(40%) saturate(40%);*/
+  /*filter: saturate(60%) grayscale(20%);*/
+  filter: invert(100%);
+}
+
+input {
+  outline: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

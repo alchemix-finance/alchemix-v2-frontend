@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "ES6",
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": false,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": [
+        "src/*"
+      ],
+      "@/*": [
+        "src/*"
+      ],
+      "@stores/*": [
+        "src/stores/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@helpers/*": [
+        "src/helpers/*"
+      ],
+      "@locales/*": [
+        "src/locales/*"
+      ],
+      "@middleware/*": [
+        "src/middleware/*"
+      ],
+      "@views/*": [
+        "src/views/*"
+      ],
+      "@styles/*": [
+        "src/styles/*"
+      ]
+    },
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": [
+    "globals.d.ts",
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "src/**/*.d.ts"
+  ]
+}
