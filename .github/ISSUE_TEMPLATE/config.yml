@@ -1,3 +1,4 @@
+blank_issues_enabled: false
 contact_links:
   - name: Bug Bounty (Immunefi)
     url: https://immunefi.com/bounty/alchemix/
