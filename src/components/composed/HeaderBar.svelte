@@ -23,6 +23,13 @@
     window.open('https://alchemix-finance.gitbook.io/v2/', '_blank');
   };
 
+  const reportBug = () => {
+    window.open(
+      'https://github.com/alchemix-finance/alchemix-v2-frontend/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBUG%5D+',
+      '_blank',
+    );
+  };
+
   const userGas = (selector) => {
     return typeof selector === 'number' ? selector : selector.baseFeePerGas + selector.maxPriorityFeePerGas;
   };
@@ -197,6 +204,14 @@
           on:click="{() => goToHelp()}"
         >
           <p class="text-center">{$_('help')}</p>
+        </li>
+        <li
+          class="cursor-pointer h-8 border-t {$settings.invertColors
+            ? 'hover:bg-grey10inverse border-grey10inverse'
+            : 'hover:bg-grey10 border-grey10'}"
+          on:click="{() => reportBug()}"
+        >
+          <p class="text-center">{$_('report_bug')}</p>
         </li>
         <li
           class="cursor-pointer h-8 {$settings.invertColors

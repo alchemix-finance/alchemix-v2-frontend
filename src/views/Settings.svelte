@@ -22,6 +22,15 @@
     setSuccess('Error copied to clipboard');
   };
 
+  const createBugReport = (bug) => {
+    const title = `${bug.message.slice(0, 64)}${bug.message.length > 64 ? '...' : ''}`;
+    window.open(
+      `https://github.com/alchemix-finance/alchemix-v2-frontend/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBUG%5D+${title}&description=${bug.message}`,
+      '_blank',
+    );
+    setSuccess('Generated Bug Report');
+  };
+
   const clearErrors = () => {
     $errorLog.length = 0;
   };
@@ -173,24 +182,65 @@
               on:clicked="{() => clearErrors()}"
             />
             {#each $errorLog as error}
-              <div
-                on:click="{() => {
-                  copyError(error.message);
-                }}"
-                class="grid grid-cols-12 rounded border border-red1 py-4 px-6
-                 cursor-pointer hover:{$settings.invertColors ? 'bg-grey1inverse' : 'bg-grey1'}"
-              >
-                <div class="col-span-2">
-                  <p class="text-sm">{$_('settings_page.timestamp')}:</p>
-                  <code class="mb-4">{error.timeStamp}</code>
-                  <p class="text-sm">
-                    ({new Date(error.timeStamp).toLocaleDateString($settings.userLanguage.locale)})
-                  </p>
+              <div class="flex flex-row space-x-4">
+                <div class="flex flex-col space-y-4">
+                  <div
+                    class="rounded border border-white2 p-2 cursor-pointer hover:{$settings.invertColors
+                      ? 'bg-grey1inverse'
+                      : 'bg-grey1'}"
+                    on:click="{() => copyError(error)}"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div
+                    class="rounded border border-red1 p-2 cursor-pointer hover:{$settings.invertColors
+                      ? 'bg-grey1inverse'
+                      : 'bg-grey1'}"
+                    on:click="{() => createBugReport(error)}"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6 text-red1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"
+                      ></path>
+                    </svg>
+                  </div>
                 </div>
-                <div class="col-span-10">
-                  <p class="text-sm">{$_('settings_page.error_msg')}:</p>
-                  <div class="w-full overflow-x-scroll">
-                    <code>{error.message}</code>
+
+                <div class="w-full grid grid-cols-12 rounded border border-red1 py-4 px-6">
+                  <div class="col-span-2">
+                    <p class="text-sm">{$_('settings_page.timestamp')}:</p>
+                    <code class="mb-4">{error.timeStamp}</code>
+                    <p class="text-sm">
+                      ({new Date(error.timeStamp).toLocaleDateString($settings.userLanguage.locale)})
+                    </p>
+                  </div>
+                  <div class="col-span-10">
+                    <p class="text-sm">{$_('settings_page.error_msg')}:</p>
+                    <div class="w-full overflow-x-scroll">
+                      <code>{error.message}</code>
+                    </div>
                   </div>
                 </div>
               </div>
