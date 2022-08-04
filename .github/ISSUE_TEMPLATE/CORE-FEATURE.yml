@@ -1,7 +1,7 @@
-name: Core Feature
-description: Describe a core feature that needs to be built
-title: "[CORE] "
-labels: [core feature]
+name: Feature
+description: Describe a feature you would like to see
+title: "[REQ] "
+labels: [ feature request ]
 body:
   - type: textarea
     id: description
@@ -14,18 +14,6 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Add links to figma or screenshots.
+      description: Provide links or screenshots to further illustrate your idea.
     validations:
       required: false
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Prioritize the Feature
-      description: Features will be worked on in order High > Medium > Low
-      multiple: false
-      options:
-        - High
-        - Medium
-        - Low
-    validations:
-      required: true

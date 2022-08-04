@@ -1,5 +1,5 @@
 ---
-name: Bug Report
+name: Bug Report Legacy
 about: File a bug report
 title: ''
 labels: bug
@@ -8,11 +8,13 @@ assignees: ''
 ---
 
 #### Describe the bug
+
 <!--
 A clear and concise description of what the bug is.
 -->
 
 #### Steps to Reproduce
+
 <!--
 Steps to reproduce the behavior:
 1. Go to '...'
@@ -22,22 +24,26 @@ Steps to reproduce the behavior:
 -->
 
 #### What do you believe the expected behavior is
+
 <!--
 A clear and concise description of what you expected to happen.
 -->
 
 #### Relevant screenshots
+
 <!--
 If applicable, add screenshots to help explain your problem.
 -->
 
 #### Platform details
+
 <!--
 Where is this occurring and more details about the environment 
 (computer / mobile / wallet setup).
 -->
 
 ## Additional context
+
 <!--
 Add any other context about the problem here.
 -->
