@@ -53,7 +53,7 @@
         });
       });
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };
@@ -82,7 +82,7 @@
         });
       });
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };
@@ -107,7 +107,7 @@
         ]);
       });
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };

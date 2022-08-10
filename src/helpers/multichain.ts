@@ -36,7 +36,7 @@ export async function bridge(
     });
   } catch (error) {
     const message = error.data ? await error.data.message : error.message;
-    setError(message);
+    setError(message, error);
     console.error(`[bridge]: ${message}`);
     throw Error(error);
   }
@@ -48,7 +48,7 @@ export async function bridgeBalance(_bridgeToken: string, [_userAddress, _signer
     return await bridgeTokenInstance.balanceOf(_userAddress);
   } catch (e) {
     const message = e.data ? await e.data.message : e.message;
-    setError(message);
+    setError(message, e);
     console.error(`[bridgeBalance]: ${message}`);
     throw Error(e);
   }
@@ -92,7 +92,7 @@ export async function toCanonical(
     });
   } catch (error) {
     const message = error.data ? await error.data.message : error.message;
-    setError(message);
+    setError(message, error);
     console.error(`[toCanonical]: ${message}`);
     throw Error(error);
   }
@@ -120,7 +120,7 @@ export async function fromCanonical(
     });
   } catch (error) {
     const message = error.data ? await error.data.message : error.message;
-    setError(message);
+    setError(message, error);
     console.error(`[fromCanonical]: ${message}`);
     throw Error(error);
   }

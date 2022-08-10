@@ -57,7 +57,7 @@
         });
       }
     } catch (e) {
-      setError(e.message);
+      setError(e.message, e);
       console.error(e);
     }
   };

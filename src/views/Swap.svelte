@@ -184,6 +184,7 @@
           quoteTry = 0;
           setError(
             toChain.id === $networkStore ? 'Target network is not different from current network' : error,
+            error,
           );
         }
       });

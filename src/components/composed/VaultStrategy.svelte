@@ -135,18 +135,16 @@
               borderSize="0"
               on:clicked="{() => toggleMode(1)}"
             />
-            {#if aipPassed}
-              <Button
-                label="{$_('actions.migrate')}"
-                solid="{false}"
-                width="w-full"
-                height="h-8"
-                selected="{mode === 2}"
-                canToggle="{true}"
-                borderSize="0"
-                on:clicked="{() => toggleMode(2)}"
-              />
-            {/if}
+            <Button
+              label="{$_('actions.migrate')}"
+              solid="{false}"
+              width="w-full"
+              height="h-8"
+              selected="{mode === 2}"
+              canToggle="{true}"
+              borderSize="0"
+              on:clicked="{() => toggleMode(2)}"
+            />
           </div>
         </div>
         <div class="transition-fix">

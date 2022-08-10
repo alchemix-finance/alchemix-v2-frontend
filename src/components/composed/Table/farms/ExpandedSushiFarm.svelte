@@ -56,7 +56,7 @@
         inputDepositAmount = 0;
       });
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };
@@ -83,7 +83,7 @@
         inputWithdrawAmount = 0;
       });
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };
@@ -102,7 +102,7 @@
         setSuccessTx(transaction.transactionHash);
       });
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };

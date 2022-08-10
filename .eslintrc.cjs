@@ -27,6 +27,7 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 0,
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
   parserOptions: {
     sourceType: 'module',

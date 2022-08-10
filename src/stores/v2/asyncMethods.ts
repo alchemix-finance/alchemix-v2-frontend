@@ -402,3 +402,30 @@ export async function fetchTokenEnabledStatus(
     : await instance.getYieldTokenParameters(tokenAddress);
   return token.enabled;
 }
+
+export async function convertTokenUnits(
+  vaultType: number,
+  tokenAddress: string,
+  amount: ethers.BigNumber,
+  functionSelector: number,
+  signer: ethers.Signer,
+  _network: string,
+) {
+  enum functions {
+    'convertSharesToUnderlyingTokens',
+    'convertSharesToYieldTokens',
+    'convertUnderlyingTokensToShares',
+    'convertUnderlyingTokensToYieldTokens',
+    'convertYieldTokensToShares',
+    'convertYieldTokensToUnderlyingTokens',
+  }
+
+  const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+  const { instance: alchemist } = await contractWrapper(
+    VaultConstants[vaultType].alchemistContractSelector,
+    signer,
+    path,
+  );
+  const convertedValue = await alchemist[functions[functionSelector]](tokenAddress, amount);
+  return convertedValue;
+}

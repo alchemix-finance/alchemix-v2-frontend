@@ -1,19 +1,12 @@
-name: Auto Assign to Core Project
+name: Pinata Deployment
 
 on:
-  issues:
-    types: [opened, labeled]
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  push:
+    branches: [ prod ]
 
 jobs:
-  assign_one_project:
+  build:
     runs-on: ubuntu-latest
-    name: Assign to One Project
     steps:
-      - name: Assign issue to core project board
-        uses: srggrs/assign-one-project-github-action@1.2.1
-        if: contains(github.event.issue.labels.*.name, 'core feature')
-        with:
-          project: 'https://github.com/alchemix-finance/alchemix-v2-frontend/projects/1'
+      - name: Start Docker & Yarn
+        uses: cubetiq/starter-docker-yarn-action

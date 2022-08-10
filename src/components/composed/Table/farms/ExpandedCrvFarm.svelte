@@ -54,7 +54,7 @@
 
       return await tx.wait().then(() => {});
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };
@@ -74,7 +74,7 @@
 
       return await tx.wait().then(() => {});
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };
@@ -95,7 +95,7 @@
 
       return await tx.wait().then(() => {});
     } catch (error) {
-      setError(error.message);
+      setError(error.message, error);
       console.debug(error);
     }
   };

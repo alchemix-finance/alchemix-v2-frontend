@@ -40,7 +40,7 @@ export async function getVaultCapacity(
         : BigNumber.from(10000),
     };
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.error.data ? await error.error.data.originalError.message : error.error.message, error);
     console.error(`[vaultActions/getVaultCapacity]: ${error}`);
     throw Error(error);
   }
@@ -152,7 +152,7 @@ export async function deposit(
       });
     }
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/deposit]: ${error}`);
     throw Error(error);
   }
@@ -227,6 +227,7 @@ export async function depositUnderlying(
       } else {
         gateway = Object.entries(VaultConstants[typeOfVault].gatewayContractSelector)
           .map((gates) => {
+            // @ts-ignore
             if (gates[1].indexOf(tokenAddress) >= 0) return gates[0];
           })
           .filter((gate) => !!gate)[0];
@@ -259,8 +260,8 @@ export async function depositUnderlying(
       });
     }
   } catch (error) {
-    setError(error.data ? await error.data.data : error.message);
-    console.error(`[vaultActions/depositUnderlying]: ${await error.data}`);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
+    console.error(`[vaultActions/depositUnderlying]: ${error}`);
     throw Error(error);
   }
 }
@@ -333,7 +334,7 @@ export async function multicallDeposit(
       return { yieldTokenAddress, underlyingTokenAddress, typeOfVault };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/multicallDeposit]: ${error}`);
     throw Error(error);
   }
@@ -425,7 +426,7 @@ export async function withdraw(
       });
     }
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/withdraw]: ${error}`);
     throw Error(error);
   }
@@ -536,7 +537,7 @@ export async function withdrawUnderlying(
       });
     }
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.trace(`[vaultActions/withdraw]: ${error}`);
     throw Error(error.data);
   }
@@ -594,7 +595,7 @@ export async function multicallWithdraw(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/multicallWithdraw]: ${error}`);
     throw Error(error);
   }
@@ -629,7 +630,7 @@ export async function mint(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/mint]:`, error);
     throw Error(error);
   }
@@ -673,7 +674,7 @@ export async function burn(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/burn]: ${error}`);
     throw Error(error);
   }
@@ -717,7 +718,7 @@ export async function repay(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/repay]: ${error}`);
     throw Error(error);
   }
@@ -768,7 +769,7 @@ export async function liquidate(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/liquidate]: ${error}`);
     throw Error(error);
   }
@@ -807,7 +808,7 @@ export async function migrateVault(
       return true;
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.error.data ? await error.error.data.originalError.message : error.error.message, error);
     console.error(`[vaultActions/migrateVault]: ${error}`);
     throw Error(error);
   }
