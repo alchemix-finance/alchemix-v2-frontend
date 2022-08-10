@@ -60,6 +60,7 @@
     );
     console.log(underlyingAmount.toString());
     await migrateVault(
+      vault.type,
       vault.address,
       selectedVault.vault,
       utils.parseUnits(migrateAmount, 18),

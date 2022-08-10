@@ -776,6 +776,7 @@ export async function liquidate(
 }
 
 export async function migrateVault(
+  vaultType: number,
   baseVaultToken: string,
   targetVaultToken: string,
   shareAmount: BigNumber,
@@ -787,9 +788,14 @@ export async function migrateVault(
   console.log(baseVaultToken, targetVaultToken, shareAmount, minReturnShares, minReturnUnderlying);
 
   try {
+    enum migrator {
+      'VaultMigrationTool_USD',
+      'VaultMigrationTool_ETH',
+    }
+
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: migratorInstance } = await contractWrapper('VaultMigrationTool_USD', signerStore, path);
+    const { instance: migratorInstance } = await contractWrapper(migrator[vaultType], signerStore, path);
 
     setPendingWallet();
 
