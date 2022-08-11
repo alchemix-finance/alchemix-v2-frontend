@@ -783,7 +783,7 @@ export async function migrateVault(
   minReturnShares: BigNumber,
   minReturnUnderlying: BigNumber,
   network: string,
-  [signerStore]: [Signer],
+  [signerStore, addressStore]: [Signer, string],
 ) {
   console.log(baseVaultToken, targetVaultToken, shareAmount, minReturnShares, minReturnUnderlying);
 
@@ -795,7 +795,31 @@ export async function migrateVault(
 
     const path = chainIds.filter((chain) => chain.id === network)[0].abiPath;
 
-    const { instance: migratorInstance } = await contractWrapper(migrator[vaultType], signerStore, path);
+    const { instance: alchemistInstance } = await contractWrapper(
+      VaultConstants[vaultType].alchemistContractSelector,
+      signerStore,
+      path,
+    );
+    const { instance: migratorInstance, address: migratorAddress } = await contractWrapper(
+      migrator[vaultType],
+      signerStore,
+      path,
+    );
+    const allowanceAmount = await alchemistInstance.withdrawAllowance(
+      addressStore,
+      migratorAddress,
+      baseVaultToken,
+    );
+
+    if (shareAmount.gt(allowanceAmount)) {
+      setPendingApproval();
+      const sendApe = (await alchemistInstance.approveWithdraw(
+        migratorAddress,
+        baseVaultToken,
+        shareAmount,
+      )) as ethers.ContractTransaction;
+      await sendApe.wait();
+    }
 
     setPendingWallet();
 
@@ -814,7 +838,8 @@ export async function migrateVault(
       return true;
     });
   } catch (error) {
-    setError(error.error.data ? await error.error.data.originalError.message : error.error.message, error);
+    console.log(error);
+    setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/migrateVault]: ${error}`);
     throw Error(error);
   }

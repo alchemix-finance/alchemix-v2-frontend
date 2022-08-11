@@ -2,16 +2,15 @@
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
 
   import settings from '@stores/settings';
   import { migrateVault } from '@stores/v2/vaultActions';
   import { convertTokenUnits } from '@stores/v2/asyncMethods';
-  import { vaultsStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
+  import { vaultsStore, balancesStore, networkStore, addressStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
-  import { getTokenDecimals } from '@helpers/getTokenData';
 
   import Button from '@components/elements/Button.svelte';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
@@ -28,6 +27,7 @@
     vault: '',
   };
   let vaultNames = [];
+  let vaultDecimals;
 
   $: targetVaults = $vaultsStore[vaultType].vaultBody
     .filter((body) => body.underlyingAddress === vault.underlyingAddress)
@@ -47,27 +47,42 @@
   };
 
   const beginMigration = async () => {
-    console.log(vault);
-    const decimals = await getTokenDataFromBalances(vault.address, [$balancesStore]);
-    console.log(decimals);
+    console.log(vault, migrateAmount);
+    const sharesBase = utils.parseUnits(migrateAmount.toString(), vaultDecimals || 18);
+    const underlyingBase = sharesBase.mul(BigNumber.from(10)).div(100000);
+    const minimumUnderlying = sharesBase.sub(underlyingBase);
     const underlyingAmount = await convertTokenUnits(
       vault.type,
       vault.address,
-      utils.parseUnits(migrateAmount, 18),
+      minimumUnderlying,
       0,
       $signer,
       $networkStore,
     );
-    console.log(underlyingAmount.toString());
+    const minimumSharesOut = await convertTokenUnits(
+      vault.type,
+      vault.address,
+      underlyingAmount,
+      2,
+      $signer,
+      $networkStore,
+    );
+    console.log(
+      sharesBase.toString(),
+      underlyingAmount.toString(),
+      minimumSharesOut.toString(),
+      'diff:',
+      sharesBase.sub(minimumSharesOut).toString(),
+    );
     await migrateVault(
       vault.type,
       vault.address,
       selectedVault.vault,
-      utils.parseUnits(migrateAmount, 18),
-      utils.parseUnits(migrateAmount, 18),
+      sharesBase,
+      minimumSharesOut,
       underlyingAmount,
       $networkStore,
-      [$signer],
+      [$signer, $addressStore],
     );
   };
 
@@ -85,8 +100,9 @@
         vaultNames = [...result];
         setVault(result[0]);
       })
-      .finally(() => {
+      .finally(async () => {
         loadingTargets = false;
+        vaultDecimals = await getTokenDataFromBalances(vault.address, [$balancesStore])?.decimals;
       });
   });
 </script>
@@ -137,6 +153,7 @@
   <ComplexInput
     bind:inputValue="{migrateAmount}"
     externalMax="{vault?.balance}"
+    externalDecimals="{vaultDecimals}"
     supportedTokens="{['Shares']}"
   />
 

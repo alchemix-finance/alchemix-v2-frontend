@@ -13,6 +13,7 @@
   export let supportedTokens;
   export let inputValue;
   export let externalMax;
+  export let externalDecimals;
 
   export let selectedToken;
   export let metaConfig = false;
@@ -23,7 +24,7 @@
 
   $: tokenData = getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore]);
   $: tokenBalanceRaw = tokenData?.balance || BigNumber.from(0);
-  $: tokenDecimals = tokenData?.decimals || 18;
+  $: tokenDecimals = !!externalDecimals ? externalDecimals : tokenData?.decimals || 18;
   $: tokenBalance = utils.formatUnits(
     !!externalMaxOverride ? externalMaxOverride : !!externalMax ? externalMax : tokenBalanceRaw,
     tokenDecimals,
@@ -40,7 +41,9 @@
 
   const setMax = () => {
     inputValue =
-      !!externalMax && tokenBalanceRaw.gt(externalMax) ? utils.formatEther(externalMax) : tokenBalance;
+      !!externalMax && tokenBalanceRaw.gt(externalMax)
+        ? utils.formatUnits(externalMax, tokenDecimals)
+        : tokenBalance;
   };
 
   const clear = () => {
