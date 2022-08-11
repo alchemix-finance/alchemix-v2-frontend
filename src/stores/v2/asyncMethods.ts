@@ -415,9 +415,9 @@ export async function convertTokenUnits(
     'convertSharesToUnderlyingTokens',
     'convertSharesToYieldTokens',
     'convertUnderlyingTokensToShares',
-    'convertUnderlyingTokensToYieldTokens',
+    'convertUnderlyingTokensToYield',
     'convertYieldTokensToShares',
-    'convertYieldTokensToUnderlyingTokens',
+    'convertYieldTokensToUnderlying',
   }
 
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;

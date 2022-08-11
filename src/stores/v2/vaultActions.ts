@@ -785,7 +785,7 @@ export async function migrateVault(
   network: string,
   [signerStore, addressStore]: [Signer, string],
 ) {
-  console.log(baseVaultToken, targetVaultToken, shareAmount, minReturnShares, minReturnUnderlying);
+  console.log({ baseVaultToken, targetVaultToken });
 
   try {
     enum migrator {
@@ -805,18 +805,31 @@ export async function migrateVault(
       signerStore,
       path,
     );
-    const allowanceAmount = await alchemistInstance.withdrawAllowance(
+    const withdrawAllowance = await alchemistInstance.withdrawAllowance(
       addressStore,
       migratorAddress,
       baseVaultToken,
     );
+    const mintAllowance = await alchemistInstance.mintAllowance(addressStore, migratorAddress);
 
-    if (shareAmount.gt(allowanceAmount)) {
+    console.log(withdrawAllowance.toString(), mintAllowance.toString());
+    console.log(shareAmount.toString(), minReturnShares.toString(), minReturnUnderlying.toString());
+
+    if (shareAmount.gt(withdrawAllowance)) {
       setPendingApproval();
       const sendApe = (await alchemistInstance.approveWithdraw(
         migratorAddress,
         baseVaultToken,
         shareAmount,
+      )) as ethers.ContractTransaction;
+      await sendApe.wait();
+    }
+
+    if (minReturnUnderlying.gt(mintAllowance)) {
+      setPendingApproval();
+      const sendApe = (await alchemistInstance.approveMint(
+        migratorAddress,
+        minReturnUnderlying,
       )) as ethers.ContractTransaction;
       await sendApe.wait();
     }
@@ -827,8 +840,8 @@ export async function migrateVault(
       baseVaultToken,
       targetVaultToken,
       shareAmount,
-      minReturnShares,
-      minReturnUnderlying,
+      minReturnShares.sub(minReturnShares),
+      minReturnUnderlying.sub(minReturnUnderlying),
     )) as ContractTransaction;
 
     setPendingTx();
@@ -838,7 +851,6 @@ export async function migrateVault(
       return true;
     });
   } catch (error) {
-    console.log(error);
     setError(error.data ? await error.data.originalError.message : error.message, error);
     console.error(`[vaultActions/migrateVault]: ${error}`);
     throw Error(error);

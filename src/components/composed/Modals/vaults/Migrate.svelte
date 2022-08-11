@@ -6,7 +6,11 @@
 
   import settings from '@stores/settings';
   import { migrateVault } from '@stores/v2/vaultActions';
-  import { convertTokenUnits } from '@stores/v2/asyncMethods';
+  import {
+    convertTokenUnits,
+    fetchBalanceByAddress,
+    fetchUpdateVaultByAddress,
+  } from '@stores/v2/asyncMethods';
   import { vaultsStore, balancesStore, networkStore, addressStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { VaultTypesInfos } from '@stores/v2/constants';
@@ -47,9 +51,8 @@
   };
 
   const beginMigration = async () => {
-    console.log(vault, migrateAmount);
     const sharesBase = utils.parseUnits(migrateAmount.toString(), vaultDecimals || 18);
-    const underlyingBase = sharesBase.mul(BigNumber.from(10)).div(100000);
+    const underlyingBase = sharesBase.mul(BigNumber.from(300)).div(100000);
     const minimumUnderlying = sharesBase.sub(underlyingBase);
     const underlyingAmount = await convertTokenUnits(
       vault.type,
@@ -63,16 +66,9 @@
       vault.type,
       vault.address,
       underlyingAmount,
-      2,
+      3,
       $signer,
       $networkStore,
-    );
-    console.log(
-      sharesBase.toString(),
-      underlyingAmount.toString(),
-      minimumSharesOut.toString(),
-      'diff:',
-      sharesBase.sub(minimumSharesOut).toString(),
     );
     await migrateVault(
       vault.type,
@@ -83,7 +79,21 @@
       underlyingAmount,
       $networkStore,
       [$signer, $addressStore],
-    );
+    ).then(() => {
+      Promise.all([
+        fetchBalanceByAddress(vault.yieldToken, [$signer]),
+        fetchBalanceByAddress(vault.address, [$signer]),
+        fetchBalanceByAddress(selectedVault.vault, [$signer]),
+        fetchUpdateVaultByAddress(vault.type, vault.address, [$signer, $addressStore], $networkStore),
+        fetchUpdateVaultByAddress(vault.type, selectedVault.vault, [$signer, $addressStore], $networkStore),
+      ])
+        .catch((e) => {
+          console.error(e);
+        })
+        .finally(() => {
+          migrateAmount = '';
+        });
+    });
   };
 
   onMount(async () => {
