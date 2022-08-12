@@ -1,4 +1,4 @@
-import { ContractTransaction, ethers } from 'ethers';
+import type { ContractTransaction, ethers } from 'ethers';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import {
   setPendingWallet,
@@ -44,7 +44,7 @@ export async function deposit(
       setSuccessTx(transaction.transactionHash);
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[vaultActions/deposit]:`, error);
     throw Error(error);
   }
@@ -70,7 +70,7 @@ export async function withdraw(
       setSuccessTx(transaction.transactionHash);
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[vaultActions/withdraw]:`, error);
     throw Error(error);
   }
@@ -97,7 +97,7 @@ export async function claim(
       setSuccessTx(transaction.transactionHash);
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[vaultActions/claim]:`, error);
     throw Error(error);
   }

@@ -3,6 +3,7 @@
   import { getVaultCapacity } from '@stores/v2/vaultActions';
   import numeral from 'numeral';
   import { networkStore } from '@stores/v2/alcxStore';
+  import settings from '@stores/settings';
 
   export let yieldTokenAddress;
   export let underlyingPerShare;
@@ -32,9 +33,15 @@
 
 <div class="w-full self-start pt-2">
   <div class="relative">
-    <div class="overflow-hidden h-2 text-xs flex rounded bg-bronze4 border border-bronze1">
+    <div
+      class="overflow-hidden h-2 text-xs flex rounded border {$settings.invertColors
+        ? 'bg-bronze4inverse border-bronze1inverse'
+        : 'bg-bronze4 border-bronze1'}"
+    >
       <div
-        class="shadow-none flex flex-col text-left whitespace-nowrap text-white justify-center bg-bronze1"
+        class="shadow-none flex flex-col text-left whitespace-nowrap text-white justify-center {$settings.invertColors
+          ? 'bg-bronze1inverse'
+          : 'bg-bronze1'}"
         style="width: {100 - parseFloat(capacity?.percent.toString()) / 100 || 0}%"
       ></div>
     </div>

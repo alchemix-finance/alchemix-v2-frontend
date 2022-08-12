@@ -33,7 +33,7 @@
           setSuccessVote();
         }
       } catch (e) {
-        setError(e.message);
+        setError(e.message, e);
         console.trace(e);
       }
     }

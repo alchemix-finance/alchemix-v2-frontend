@@ -92,7 +92,8 @@ export function setSuccess(message) {
   toastConfig.set({ ..._toastConfig });
 }
 
-export function setError(message) {
+export function setError(message, fullError) {
+  const errorMsg = typeof fullError === 'object' ? JSON.stringify(fullError) : fullError;
   _toastConfig.kind = 'error';
   _toastConfig.title = getItl('toast.error');
   _toastConfig.subtitle = message;
@@ -103,7 +104,7 @@ export function setError(message) {
   _toastConfig.closeTimeout = 10000;
   _errorLog.push({
     timeStamp: Date.now(),
-    message: message,
+    message: errorMsg,
   });
   toastConfig.set({ ..._toastConfig });
   errorLog.set([..._errorLog]);
