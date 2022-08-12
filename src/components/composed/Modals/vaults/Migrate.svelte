@@ -52,7 +52,7 @@
 
   const beginMigration = async () => {
     const sharesBase = utils.parseUnits(migrateAmount.toString(), vaultDecimals || 18);
-    const underlyingBase = sharesBase.mul(BigNumber.from(300)).div(100000);
+    const underlyingBase = sharesBase.mul(BigNumber.from(15000)).div(100000);
     const minimumUnderlying = sharesBase.sub(underlyingBase);
     const underlyingAmount = await convertTokenUnits(
       vault.type,

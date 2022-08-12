@@ -785,8 +785,6 @@ export async function migrateVault(
   network: string,
   [signerStore, addressStore]: [Signer, string],
 ) {
-  console.log({ baseVaultToken, targetVaultToken });
-
   try {
     enum migrator {
       'VaultMigrationTool_USD',
@@ -812,16 +810,13 @@ export async function migrateVault(
     );
     const mintAllowance = await alchemistInstance.mintAllowance(addressStore, migratorAddress);
 
-    console.log(withdrawAllowance.toString(), mintAllowance.toString());
-    console.log(shareAmount.toString(), minReturnShares.toString(), minReturnUnderlying.toString());
-
     if (shareAmount.gt(withdrawAllowance)) {
       setPendingApproval();
       const sendApe = (await alchemistInstance.approveWithdraw(
         migratorAddress,
         baseVaultToken,
         shareAmount,
-      )) as ethers.ContractTransaction;
+      )) as ContractTransaction;
       await sendApe.wait();
     }
 
@@ -830,19 +825,35 @@ export async function migrateVault(
       const sendApe = (await alchemistInstance.approveMint(
         migratorAddress,
         minReturnUnderlying,
-      )) as ethers.ContractTransaction;
+      )) as ContractTransaction;
       await sendApe.wait();
     }
 
     setPendingWallet();
-
-    const tx = (await migratorInstance.migrateVaults(
-      baseVaultToken,
-      targetVaultToken,
-      shareAmount,
-      minReturnShares.sub(minReturnShares),
-      minReturnUnderlying.sub(minReturnUnderlying),
-    )) as ContractTransaction;
+    let tx;
+    await migratorInstance.estimateGas
+      .migrateVaults(baseVaultToken, targetVaultToken, shareAmount, minReturnShares, minReturnUnderlying)
+      .then(async () => {
+        tx = (await migratorInstance.migrateVaults(
+          baseVaultToken,
+          targetVaultToken,
+          shareAmount,
+          minReturnShares,
+          minReturnUnderlying,
+        )) as ContractTransaction;
+      })
+      .catch(async () => {
+        tx = (await migratorInstance.migrateVaults(
+          baseVaultToken,
+          targetVaultToken,
+          shareAmount,
+          minReturnShares,
+          minReturnUnderlying,
+          {
+            gasLimit: '2323232',
+          },
+        )) as ContractTransaction;
+      });
 
     setPendingTx();
 
