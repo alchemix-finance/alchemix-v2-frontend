@@ -8,7 +8,9 @@ account.subscribe((val) => {
   _account = val;
 });
 
+// @ts-ignore
 const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
+// @ts-ignore
 const provider = ethers.getDefaultProvider(debugging ? import.meta.env.VITE_LOCAL_NETWORK_URL : 'homestead');
 
 /*

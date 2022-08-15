@@ -1,4 +1,4 @@
-import { VaultTypes } from './types';
+import type { VaultTypes } from './types';
 import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
 import { Signer, BigNumber, ContractTransaction, utils } from 'ethers';
 import { VaultConstants } from './constants';
@@ -57,7 +57,7 @@ export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: 
       liquidationLimit,
     };
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[flashloanActions/limitCheck]: ${error}`);
     throw Error(error);
   }
@@ -78,7 +78,7 @@ async function mintLegacy(_vaultType: VaultTypes, _interest: BigNumber, [signer]
       return _interest;
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[flashloanActions/mintLegacy]: ${error}`);
     throw Error(error);
   }
@@ -101,7 +101,7 @@ async function liquidateLegacy(_vaultType: VaultTypes, _debt: BigNumber, [signer
       return true;
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[flashloanActions/liquidateLegacy]: ${error}`);
     throw Error(error);
   }
@@ -130,7 +130,7 @@ export async function liquidateWrap(_vaultType: VaultTypes, [userAddress, signer
 
     return true;
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[flashloanActions/liquidateWrap]: ${error}`);
     throw Error(error);
   }
@@ -167,7 +167,7 @@ export async function withdrawLegacy(_vaultType: VaultTypes, [userAddress, signe
     }
     return true;
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[flashloanActions/withdrawLegacy]: ${error}`);
     throw Error(error);
   }
@@ -238,7 +238,7 @@ export async function flashloanDeposit(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[flashloanActions/flashloanDeposit]: ${error}`);
     throw Error(error);
   }

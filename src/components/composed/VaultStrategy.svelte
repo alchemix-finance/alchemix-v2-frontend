@@ -20,7 +20,6 @@
   let mode = 0;
   let prevMode = 0;
   let _capInfo;
-  const aipPassed = false;
 
   $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
 
@@ -49,7 +48,9 @@
 
 <div class="flex flex-row relative items-center">
   <div
-    class="flex flex-col pr-8 border rounded bg-grey10 border-grey3 py-4 w-full relative"
+    class="flex flex-col pr-8 border rounded {$settings.invertColors
+      ? 'bg-grey10inverse border-grey3inverse'
+      : 'bg-grey10 border-grey3'}  py-4 w-full relative"
     on:mouseenter="{() => (isHovered = true)}"
     on:mouseleave="{() => (isHovered = false)}"
   >
@@ -112,7 +113,11 @@
     </div>
     {#if isExpanded}
       <div class="w-full flex flex-col ml-4 mt-4 overflow-hidden" transition:slide|local>
-        <div class="flex flex-row border rounded bg-black2 border-grey1 mb-4">
+        <div
+          class="flex flex-row border rounded {$settings.invertColors
+            ? 'bg-grey3inverse border-grey1inverse'
+            : 'bg-black2 border-grey1'} mb-4"
+        >
           <div class="flex justify-between space-x-2 w-full p-2">
             <Button
               label="{$_('actions.deposit')}"
@@ -135,18 +140,16 @@
               borderSize="0"
               on:clicked="{() => toggleMode(1)}"
             />
-            {#if aipPassed}
-              <Button
-                label="{$_('actions.migrate')}"
-                solid="{false}"
-                width="w-full"
-                height="h-8"
-                selected="{mode === 2}"
-                canToggle="{true}"
-                borderSize="0"
-                on:clicked="{() => toggleMode(2)}"
-              />
-            {/if}
+            <Button
+              label="{$_('actions.migrate')}"
+              solid="{false}"
+              width="w-full"
+              height="h-8"
+              selected="{mode === 2}"
+              canToggle="{true}"
+              borderSize="0"
+              on:clicked="{() => toggleMode(2)}"
+            />
           </div>
         </div>
         <div class="transition-fix">

@@ -1,5 +1,5 @@
 import { contractWrapper } from '@helpers/contractWrapper';
-import { Signer, ContractTransaction } from 'ethers';
+import type { Signer, ContractTransaction } from 'ethers';
 import { VaultTypes } from './types';
 import { VaultConstants, TransmuterConstants, chainIds } from './constants';
 import { setPendingWallet, setPendingTx, setError, setSuccessTx } from '@helpers/setToast';
@@ -36,7 +36,7 @@ export async function toggleTokenEnabled(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[sentinelActions/toggleTokenEnabled]: ${error}`);
     throw Error(error);
   }
@@ -71,7 +71,7 @@ export async function toggleTransmuterStatus(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[sentinelActions/toggleTransmuterStatus]: ${error}`);
     throw Error(error);
   }
@@ -104,7 +104,7 @@ export async function toggleAlchemistStatus(
       };
     });
   } catch (error) {
-    setError(error.data ? await error.data.message : error.message);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[sentinelActions/toggleAlchemist]: ${error}`);
     throw Error(error);
   }

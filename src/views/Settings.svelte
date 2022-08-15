@@ -181,7 +181,9 @@
               fontSize="text-md"
               on:clicked="{() => clearErrors()}"
             />
-            {#each $errorLog as error}
+            {#each $errorLog.sort((a, b) => {
+              return b.timeStamp - a.timeStamp;
+            }) as error}
               <div class="flex flex-row space-x-4">
                 <div class="flex flex-col space-y-4">
                   <div
