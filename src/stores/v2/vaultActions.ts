@@ -84,7 +84,7 @@ export async function deposit(
       signerStore,
       path,
     );
-    if (gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined) {
+    if (gatewayIndexCheck >= 0 && gatewayCheck[gatewayIndexCheck] !== undefined) {
       const staticInstance = erc20Contract(tokenAddress, signerStore);
 
       const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
