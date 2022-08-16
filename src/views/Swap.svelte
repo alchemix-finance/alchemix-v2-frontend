@@ -139,8 +139,19 @@
         $multichainPendingTx.toChain,
         $multichainPendingTx.txHash,
       ).then((response) => {
+        if (response.status === 'PENDING') bridgeReceived = true;
         if (response.status === 'DONE') {
-          bridgeReceived = true;
+          step = 0;
+          processing = false;
+          txData = '';
+          approvalTarget = '';
+          tool = '';
+          pendingTx = false;
+          bridgeToken = '';
+          autoCheck = false;
+          bridgeReceived = false;
+          $multichainPendingTx.txHash = undefined;
+          localStorage.removeItem('multichainPendingTx');
           clearInterval(statusTimer);
         }
       });
@@ -287,11 +298,13 @@
   const checkForBridgeAssets = async () => {
     Object.keys(supportedTokens).map(async (token) => {
       const chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
-      const bridgeToken = supportedTokens[token].address[chain.abiPath].bridge;
-      const balance = await bridgeBalance(bridgeToken, [$addressStore, $signer]);
-      if (balance.gt(BigNumber.from(0))) {
-        unbridgedAssets = true;
-        unbridgedAddresses.push({ symbol: token, address: bridgeToken });
+      const bridgeToken = supportedTokens[token].address[chain.abiPath]?.bridge;
+      if (bridgeToken !== undefined) {
+        const balance = await bridgeBalance(bridgeToken, [$addressStore, $signer]);
+        if (balance.gt(BigNumber.from(0))) {
+          unbridgedAssets = true;
+          unbridgedAddresses.push({ symbol: token, address: bridgeToken });
+        }
       }
     });
   };
@@ -425,6 +438,7 @@
                 return entry[1].name;
               })}"
               bind:selectedToken
+              externalMax="{tokenBalanceRaw}"
             />
           </div>
 
