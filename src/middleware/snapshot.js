@@ -25,6 +25,7 @@ account.subscribe((val) => {
   _account = val;
 });
 
+// @ts-ignore
 const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
 
 function gqlConnector(queryBody) {
@@ -89,6 +90,7 @@ export async function getOpenProposals() {
       snapshot
       state
       author
+      discussion
     }
   }`;
   axios(gqlConnector(query))

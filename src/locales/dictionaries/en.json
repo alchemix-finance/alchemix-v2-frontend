@@ -94,6 +94,7 @@
         "openAllOnSnapshot": "All proposals",
         "openOnSnapshot": "Open on Snapshot",
         "openOnForum": "All discussions",
+        "openDiscussion": "View Discussion",
         "noOpenVotes": "There are no open proposals at the moment.",
         "noTranslation": "The results are fetched through external APIs and are not translated from their original language.",
         "description": "Description",
