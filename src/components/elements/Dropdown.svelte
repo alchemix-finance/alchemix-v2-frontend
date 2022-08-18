@@ -9,6 +9,7 @@ For a dropdown that opens on hover see /DropdownOnClick
   export let borderColor = $settings.invertColors ? 'grey5inverse' : 'grey5';
   export let backgroundColor = $settings.invertColors ? 'grey15inverse' : 'grey15';
   export let borderSize = '1';
+  export let position = 'right-0'
 </script>
 
 <style>
@@ -27,7 +28,7 @@ For a dropdown that opens on hover see /DropdownOnClick
     hidden
     border{borderSize === '1' ? '' : `-${borderSize}`}
     border-{borderColor}
-    right-0
+    {position}
     rounded-lg
     select-none
     font-alcxTitles

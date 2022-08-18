@@ -137,7 +137,7 @@ Use at your own risk.
       <Router url="{url}">
         <div class="grid grid-cols-12 font-alcxFlow">
           <div
-            class="col-span-12 pl-8 pt-5 pb-5 {$settings.invertColors
+            class="col-span-12 pl-4 pr-4 sm:pr-0 sm:pl-8 pt-5 pb-5 {$settings.invertColors
               ? 'bg-grey30inverse border-grey5inverse'
               : 'bg-grey30 border-grey5'} border-b"
           >
@@ -153,7 +153,7 @@ Use at your own risk.
             <div
               class="border-l {$settings.invertColors
                 ? 'border-grey5inverse'
-                : 'border-grey5'} w-full hidden lg:block"
+                : 'border-grey5'} w-full block"
             >
               {#if walletChecked}
                 <!--                <Route path='/accounts' component='{Accounts}' />-->
@@ -170,12 +170,6 @@ Use at your own risk.
                 <Route path="/get-out" component="{SecretCowLevel}" />
               {/if}
             </div>
-          </div>
-          <div class="block lg:hidden col-span-12">
-            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
-            <p class="text-center mb-12">
-              {$_('small_screen.message')}
-            </p>
           </div>
           <div
             class="col-span-12 pl-8 py-12 border-t {$settings.invertColors

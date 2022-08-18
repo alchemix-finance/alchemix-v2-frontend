@@ -53,17 +53,23 @@
       <div class="flex-shrink-0 flex items-center">
         <img
           src="images/icons/ALCX_Std_logo.svg"
-          class="h-11 {$settings.invertColors ? 'invertIcons' : ''}"
+          class="h-11 {$settings.invertColors ? 'invertIcons' : ''} hidden sm:block"
           alt="The Alchemix logo"
         />
+        <img
+        src="images/icons/alcx_thin.svg"
+        class="h-11 {$settings.invertColors ? 'invertIcons' : ''} block sm:hidden"
+        alt="The Alchemix logo"
+      />
       </div>
     </Link>
   </div>
-  <div class="absolute inset-y-0 right-0 flex flex-row items-center gap-2 pr-8">
+  <div class="sm:absolute inset-y-0 sm:right-0 flex flex-row items-center gap-2 sm:pr-8">
     {#if $backgroundLoading.active}
       <LoadingIndicator />
     {/if}
-    <Dropdown>
+    <!-- Fix pos on desktop -->
+    <Dropdown position='left-0 sm:right-0'>
       <div
         slot="label"
         class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors

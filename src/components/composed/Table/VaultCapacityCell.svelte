@@ -48,7 +48,7 @@
   </div>
 </div>
 <div class="flex flex-col items-center mt-2">
-  <p class="text-sm text-lightgrey10">
+  <p class="text-xs text-center lg:text-sm text-lightgrey10">
     {#if isFull}
       Vault Full ({valueFormatted} {symbol})
     {:else}

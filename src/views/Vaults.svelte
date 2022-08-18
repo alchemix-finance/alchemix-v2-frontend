@@ -332,7 +332,7 @@
   </div>
   <div slot="message">
     <div class="flex flex-row space-x-4">
-      <p class="self-center">{$_('vaults_page.legacy_redirect')}</p>
+      <p class="text-xs sm:text-sm self-center">{$_('vaults_page.legacy_redirect')}</p>
       <Button label="Go To Legacy UI" width="w-max" on:clicked="{() => goToLegacy()}" />
     </div>
   </div>
@@ -348,15 +348,15 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    <div class="w-full mb-8 h-10 grid grid-cols-2 gap-8">
-      <div class="col-span-1">
+    <div class="w-full mb-8 md:h-10 grid grid-cols-2 gap-8">
+      <div class="col-span-2 md:col-span-1">
         <ContainerWithHeader>
           <div slot="body">
-            <div class=" items-center flex space-x-2 h-10 px-2">
+            <div class="items-center flex space-x-2 h-10 px-2">
               {#if vaultTypes.length > 1}
                 <Button
                   label="All Vaults"
-                  width="w-max"
+                  width="w-max sm:w-1/3 md:w-max"
                   canToggle="{true}"
                   selected="{vaultsSelector.isSelectedAll($vaultsSelector, vaultTypes)}"
                   solid="{false}"
@@ -371,7 +371,7 @@
               {#each vaultTypes as vaultType}
                 <Button
                   label="{VaultTypesInfos[vaultType].name}"
-                  width="w-max"
+                  width="w-max sm:w-1/3 md:w-max"
                   canToggle="{true}"
                   selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
                   solid="{false}"
@@ -391,7 +391,7 @@
           </div>
         </ContainerWithHeader>
       </div>
-      <div class="col-span-1 flex space-x-4">
+      <div class="col-span-2 md:col-span-1 flex space-x-2 md:space-x-4">
         <Button
           borderColor="bronze3"
           textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
@@ -402,7 +402,7 @@
           <img
             slot="leftSlot"
             src="images/icons/Icon_Borrow.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-4 sm:h-5"
             alt="borrow"
           />
         </Button>
@@ -415,7 +415,7 @@
           ><img
             slot="leftSlot"
             src="images/icons/Icon_Repay.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-4 sm:h-5"
             alt="repay"
           />
         </Button>
@@ -428,7 +428,7 @@
           ><img
             slot="leftSlot"
             src="images/icons/Icon_Liquidate.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
+            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-4 sm:h-5"
             alt="liquidate"
           />
         </Button>

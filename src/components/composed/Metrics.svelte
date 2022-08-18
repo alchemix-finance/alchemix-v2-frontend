@@ -37,14 +37,14 @@
 <div class="w-full flex flex-row space-x-4">
   <div class="grow w-full">
     <ContainerWithHeader fullWidth="{true}">
-      <div slot="header" class="py-4 px-6">
-        <div class="flex font-alcxTitles text-lg tracking-wide justify-between">
-          <div class="flex-col">
-            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
+      <div slot="header" class="py-4 px-2 sm:px-6">
+        <div class="grid-cols-12 grid sm:flex font-alcxTitles text-sm md:text-lg tracking-wide justify-between">
+          <div class="flex-col col-span-4">
+            <div class="text-bronze3 sm:mr-2 uppercase text-xs md:text-sm whitespace-nowrap text-center sm:text-left">
               {$_('metrics.total_deposit')}
             </div>
             <div class="flex">
-              <div class="flex mr-2">
+              <div class="flex justify-center w-full sm:mr-2 ">
                 {totalDepositFiat}
               </div>
               <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
@@ -54,32 +54,34 @@
             </div>
           </div>
 
-          <div class="flex-col">
-            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">{$_('metrics.open_debt')}</div>
+          <div class="flex-col col-span-4">
+            <div class="text-bronze3 sm:mr-2 uppercase text-xs md:text-sm whitespace-nowrap text-center sm:text-left">
+              {$_('metrics.open_debt')}
+            </div>
             <div class="flex">
-              <div class="flex mr-2">
+              <div class="flex justify-center w-full sm:mr-2 ">
                 {openDebtFiat}
               </div>
             </div>
           </div>
 
-          <div class="flex-col">
-            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
+          <div class="flex-col col-span-4">
+            <div class="text-bronze3 sm:mr-2 uppercase text-xs md:text-sm whitespace-nowrap text-center sm:text-left">
               {$_('metrics.open_credit')}
             </div>
             <div class="flex">
-              <div class="flex mr-2">
+              <div class="flex justify-center w-full sm:mr-2 ">
                 {openCreditFiat}
               </div>
             </div>
           </div>
 
-          <div class="flex-col pl-6 border-l border-dashed border-bronze3">
-            <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
+          <div class="flex-col sm:pl-6 sm:border-l border-dashed border-bronze3 col-span-12 mt-3 sm:mt-0">
+            <div class="text-bronze3 sm:mr-2 uppercase text-xs md:text-sm whitespace-nowrap text-center sm:text-left">
               {$_('metrics.global_tvl')}
             </div>
             <div class="flex">
-              <div class="flex mr-2">
+              <div class="flex justify-center w-full sm:mr-2 ">
                 {tvlFiat}
               </div>
             </div>

@@ -27,13 +27,13 @@
 
 <div class="flex flex-col items-center">
   {#if token}
-    <p>
+  <p class="text-sm lg:text-base">
       {#if prefix}{prefix}{/if}{parseFloat(tokenFormatted) === 0
         ? tokenFormatted
         : numeral(parseFloat(tokenFormatted).toFixed(2)).format('0.00a')}
       {token.symbol}
     </p>{/if}
-  <p class="{token ? 'text-sm text-lightgrey10' : ''}">
+    <p class="{token ? 'text-xs lg:text-sm text-lightgrey10' : ''}">
     {#if prefix}{prefix}{/if}{normalizedValue}
   </p>
 </div>

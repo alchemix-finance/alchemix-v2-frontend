@@ -48,19 +48,19 @@
 
 <div class="flex flex-row relative items-center">
   <div
-    class="flex flex-col pr-8 border rounded {$settings.invertColors
+  class="flex flex-col pl-2 pr-2 md:pl-0 md:pr-8 border rounded {$settings.invertColors
       ? 'bg-grey10inverse border-grey3inverse'
       : 'bg-grey10 border-grey3'}  py-4 w-full relative"
     on:mouseenter="{() => (isHovered = true)}"
     on:mouseleave="{() => (isHovered = false)}"
   >
-    <div class="absolute -left-2 top-8">
+    <div class="absolute -left-3 top-10 lg:-left-2 lg:top-8">
       <div class="flex justify-center items-center w-6">
         <Button
           borderColor="bronze3"
           selected="{isHovered}"
           borderSize="1"
-          fontSize="text-md"
+          fontSize="text-base"
           py="py-0"
           label="{isExpanded ? '-' : '+'}"
           on:clicked="{() => toggleExpanded()}"
@@ -71,7 +71,7 @@
       class="w-full grid grid-cols-12 justify-between items-center hover:cursor-pointer"
       on:click="{() => toggleExpanded()}"
     >
-      <div class="col-span-3">
+      <div class="col-span-6 md:col-span-3 mb-4 md:mb-0">
         <FarmNameCell
           farmIcon="{strategy.col2.farmIcon}"
           farmName="{strategy.col2.farmName}"
@@ -81,16 +81,16 @@
           isHalted="{false}"
         />
       </div>
-      <div class="col-span-2">
-        <p class="text-center text-sm text-lightgrey10">Deposit</p>
+      <div class="col-span-4 sm:col-span-3 md:col-span-2 order-3 md:order-none">
+        <p class="text-center text-xs text-xs lg:text-sm text-lightgrey10">Deposit</p>
         <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
       </div>
-      <div class="col-span-2">
-        <p class="text-center text-sm text-lightgrey10">TVL</p>
+      <div class="col-span-4 sm:col-span-3 md:col-span-2 order-4 md:order-none">
+        <p class="text-center text-xs lg:text-sm text-lightgrey10">TVL</p>
         <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
       </div>
-      <div class="flex flex-col px-8 col-span-3">
-        <p class="text-center text-sm text-lightgrey10">Utilization</p>
+      <div class="flex flex-col px-2 md:px-8 col-span-6 md:col-span-3 mb-4 md:mb-0">
+        <p class=" text-center text-xs lg:text-sm text-lightgrey10">Utilization</p>
         <VaultCapacityCell
           vaultType="{strategy.limit.vaultType}"
           signer="{strategy.limit.signer}"
@@ -102,17 +102,17 @@
           bind:capInfo="{_capInfo}"
         />
       </div>
-      <div class="self-start col-span-1">
-        <p class="text-center text-sm text-lightgrey10">LTV</p>
+      <div class="self-start col-span-2 sm:col-span-3 md:col-span-1 flex items-center flex-col justify-center h-full  order-5 md:order-none">
+        <p class="text-center text-xs lg:text-sm text-lightgrey10">LTV</p>
         <YieldCell yieldRate="{ltv}" yieldType="" />
       </div>
-      <div class="self-start col-span-1">
-        <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
+      <div class="self-start col-span-2 sm:col-span-3 md:col-span-1 flex items-center flex-col justify-center h-full order-6 md:order-none">
+        <p class="text-center text-xs lg:text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
         <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
       </div>
     </div>
     {#if isExpanded}
-      <div class="w-full flex flex-col ml-4 mt-4 overflow-hidden" transition:slide|local>
+      <div class="w-full flex flex-col md:ml-4 mt-4 overflow-hidden" transition:slide|local>
         <div
           class="flex flex-row border rounded {$settings.invertColors
             ? 'bg-grey3inverse border-grey1inverse'

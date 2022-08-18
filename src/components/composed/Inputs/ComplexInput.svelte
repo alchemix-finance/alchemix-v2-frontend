@@ -89,13 +89,13 @@
     <Dropdown>
       <div
         slot="label"
-        class="flex flex-row space-x-4 items-center pl-4 {supportedTokens.length > 1
+        class="flex flex-row space-x-1 sm:space-x-4 items-center pl-4 {supportedTokens.length > 1
           ? 'pr-6'
           : 'pr-2'} py-4 rounded border {$settings.invertColors
           ? 'border-grey3inverse bg-grey3inverse'
           : 'border-grey3 bg-grey3'}"
       >
-        <img src="{tokenIcon}" class="h-12 w-12" alt="Selected Token {selectedToken}" />
+      <img src="{tokenIcon}" class="h-8 w-8 sm:h-12 sm:w-12" alt="Selected Token {selectedToken}" />
         {#if supportedTokens.length > 1}
           <p>▾</p>
         {/if}
@@ -125,7 +125,7 @@
   >
     <div class="relative w-full">
       <!--   token balance   -->
-      <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
+      <p class="absolute text-xs sm:text-sm p-2 left-2 pointer-events-none text-lightgrey10">
         {$_('available')}:
         {tokenBalance}
         {selectedToken}

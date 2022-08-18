@@ -3,5 +3,5 @@
   export let yieldType;
 </script>
 
-<p class="text-center">{yieldRate}%</p>
-<p class="text-sm text-center text-lightgrey10">{yieldType}</p>
+<p class="text-center text-sm lg:text-base">{yieldRate}%</p>
+<p class="text-xs lg:text-sm text-center text-lightgrey10">{yieldType}</p>

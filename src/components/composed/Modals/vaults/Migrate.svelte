@@ -119,17 +119,17 @@
 
 <div class="flex flex-col space-y-4">
   <div class="flex flex-row space-x-4 h-8">
-    <p class="text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
+    <p class="text-xs sm:text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
 
     <Dropdown>
       <div
         slot="label"
-        class="h-8 px-3 py-1 flex justify-between items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+        class="h-10 sm:h-8 px-1 sm:px-3 py-1 flex justify-between items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
           ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
           : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
       >
         {#if !loadingTargets}
-          <div class="flex flex-row space-x-4">
+        <div class="flex flex-row space-x-2 sm:space-x-4 items-center">
             <img src="/images/token-icons/{selectedVault.symbol}.svg" alt="Vault Icon" class="h-4" />
             <p>{selectedVault.name}</p>
           </div>
@@ -149,9 +149,9 @@
                 : 'hover:bg-grey10 border-grey10'}"
               on:click="{() => setVault(vault)}"
             >
-              <div class="flex flex-row space-x-4 items-center opacity-50 group-hover:opacity-100">
-                <img src="/images/token-icons/{vault.symbol}.svg" alt="Network Icon" class="h-8" />
-                <p>{vault.name}</p>
+            <div class="flex flex-row space-x-2 sm:space-x-4 items-center opacity-50 group-hover:opacity-100">
+              <img src="/images/token-icons/{vault.symbol}.svg" alt="Network Icon" class="h-4 sm:h-8" />
+              <p class="text-xs sm:text-sm">{vault.name}</p>
               </div>
             </li>
           {/each}
