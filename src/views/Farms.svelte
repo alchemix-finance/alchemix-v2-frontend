@@ -337,7 +337,7 @@
           on:clicked="{() => (currentFilter = filterTypes.EXTERNAL)}"
         />
       </div>
-      <div slot="body">
+      <div slot="body" class="overflow-scroll">
         {#if currentFilter === filterTypes.ACTIVE}
           {#if loadingVaults}
             <div class="flex justify-center my-4">

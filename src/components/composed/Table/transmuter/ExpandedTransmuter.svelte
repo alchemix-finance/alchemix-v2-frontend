@@ -118,15 +118,15 @@
 
 {#if transmuterData}
   <div
-    class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b {$settings.invertColors
+    class="grid grid-cols-3 gap-8 pr-2 pl-8 sm:pr-4 py-4 border-b max-w-xs {$settings.invertColors
       ? 'border-grey10inverse'
       : 'border-grey10'}"
     transition:slide
   >
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-3 sm:col-span-1"
     >
-      <label for="depositInput" class="text-sm text-lightgrey10">
+      <label for="depositInput" class="text-xs sm:text-sm text-lightgrey10">
         {$_('available')}: {utils.formatUnits(synthTokenData.balance, synthTokenData.decimals)}
         {synthTokenData.symbol}
       </label>
@@ -140,7 +140,7 @@
             id="depositInput"
             placeholder="~0.00 {synthTokenData.symbol}"
             bind:value="{inputDepositAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+            class="w-full rounded appearance-none md:text-xl text-right h-full p-4 {$settings.invertColors
               ? 'bg-grey3inverse'
               : 'bg-grey3'}"
           />
@@ -153,7 +153,7 @@
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
-            height="h-10"
+            height="h-8 md:h-10"
             on:clicked="{() =>
               (inputDepositAmount = utils.formatUnits(synthTokenData.balance, synthTokenData.decimals))}"
           />
@@ -164,7 +164,7 @@
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
-            height="h-10"
+            height="h-8 md:h-10"
             on:clicked="{() => (inputDepositAmount = '')}"
           />
         </div>
@@ -175,16 +175,16 @@
         borderColor="green4"
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
-        height="h-12"
+        height="h-8 md:h-12"
         fontSize="text-md"
         disabled="{!checkButtonState(inputDepositBN, synthTokenData.balance, synthTokenData.decimals)}"
         on:clicked="{() => onDepositButton(synthTokenData.address, inputDepositBN, synthTokenData.decimals)}"
       />
     </div>
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-3 sm:col-span-1"
     >
-      <label for="withdrawInput" class="text-sm text-lightgrey10">
+      <label for="withdrawInput" class="text-xs sm:text-sm text-lightgrey10">
         {$_('table.withdrawable')}: {utils.formatUnits(
           transmuterData.unexchangedBalanceBN,
           synthTokenData.decimals,
@@ -201,7 +201,7 @@
             id="withdrawInput"
             placeholder="~0.00 {synthTokenData.symbol}"
             bind:value="{inputWithdrawAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+            class="w-full rounded appearance-none md:text-xl text-right h-full p-4 {$settings.invertColors
               ? 'bg-grey3inverse'
               : 'bg-grey3'}"
           />
@@ -214,7 +214,7 @@
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
-            height="h-10"
+            height="h-8 md:h-10"
             on:clicked="{() =>
               (inputWithdrawAmount = utils.formatUnits(
                 transmuterData.unexchangedBalanceBN,
@@ -228,7 +228,7 @@
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
-            height="h-10"
+            height="h-8 md:h-10"
             on:clicked="{() => (inputWithdrawAmount = '')}"
           />
         </div>
@@ -239,7 +239,7 @@
         borderColor="green4"
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
-        height="h-12"
+        height="h-8 md:h-12"
         fontSize="text-md"
         disabled="{!checkButtonState(
           inputWithdrawBN,
@@ -251,9 +251,9 @@
       />
     </div>
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-3 sm:col-span-1"
     >
-      <label for="claimInput" class="text-sm text-lightgrey10">
+      <label for="claimInput" class="text-xs sm:text-sm text-lightgrey10">
         {$_('expanded.transmuted')}
         : {utils.formatUnits(transmuterData.exchangedBalanceBN, underlyingTokenData.decimals)}
         {underlyingTokenData.symbol}
@@ -268,7 +268,7 @@
             id="claimInput"
             placeholder="~0.00 {underlyingTokenData.symbol}"
             bind:value="{inputClaimAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
+            class="w-full rounded appearance-none md:text-xl text-right h-full p-4 {$settings.invertColors
               ? 'bg-grey3inverse'
               : 'bg-grey3'}"
           />
@@ -281,7 +281,7 @@
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
-            height="h-10"
+            height="h-8 md:h-10"
             on:clicked="{() =>
               (inputClaimAmount = utils.formatUnits(
                 transmuterData.exchangedBalanceBN,
@@ -295,7 +295,7 @@
             textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
             backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
             borderSize="0"
-            height="h-10"
+            height="h-8 md:h-10"
             on:clicked="{() => (inputClaimAmount = '')}"
           />
         </div>
@@ -306,7 +306,7 @@
         borderColor="green4"
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
         hoverColor="green4"
-        height="h-12"
+        height="h-8 md:h-12"
         fontSize="text-md"
         disabled="{!checkButtonState(
           inputClaimBN,

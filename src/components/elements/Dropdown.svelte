@@ -10,6 +10,7 @@ For a dropdown that opens on hover see /DropdownOnClick
   export let backgroundColor = $settings.invertColors ? 'grey15inverse' : 'grey15';
   export let borderSize = '1';
   export let position = 'right-0'
+  export let specialAlign = ''
 </script>
 
 <style>
@@ -19,7 +20,7 @@ For a dropdown that opens on hover see /DropdownOnClick
   }
 </style>
 
-<div class="dropdown inline-block relative w-full">
+<div class="dropdown inline-block relative w-full {specialAlign}">
   <slot name="label" />
   <div
     class="
@@ -38,6 +39,7 @@ For a dropdown that opens on hover see /DropdownOnClick
     z-30
     min-w-full
     max-w-max
+    
     "
   >
     <slot name="options" />

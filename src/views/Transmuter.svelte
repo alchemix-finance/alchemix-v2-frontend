@@ -285,7 +285,7 @@
           {/each}
         {/if}
       </div>
-      <div slot="body">
+      <div slot="body" class="overflow-scroll">
         {#if transmutersLoading}
           <div class="flex justify-center my-4">
             <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />

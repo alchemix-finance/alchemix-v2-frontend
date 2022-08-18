@@ -39,6 +39,6 @@
 <!--  })}-->
 <!--</button>-->
 
-<div>
+<div >
   <TableCell {...header} />
 </div>

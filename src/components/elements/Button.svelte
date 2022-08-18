@@ -19,6 +19,7 @@
   export let py = 'py-1';
   export let canToggle = false;
   export let selected = false;
+  export let gridCols = '';
 
   const dispatch = createEventDispatcher();
 
@@ -52,6 +53,7 @@
     hover:text-opacity-100
     disabled:opacity-50
     transition-all
+    {gridCols}
     "
   disabled="{disabled}"
   on:click="{clickEvent}"

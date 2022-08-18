@@ -10,7 +10,7 @@
   const defaultIcon = 'alcx_med.svg';
 </script>
 
-<div class="flex flex-row space-x-3.5 lg:space-x-8 pl-4 md:{pl}">
+<div class="flex flex-row space-x-3.5 lg:space-x-8 sm:pl-4 md:{pl}">
   <div class="relative">
     {#if isBeta}
       <img src="images/icons/beta.svg" alt="Experimental Vault" class="absolute left-0 top-0 w-8" />

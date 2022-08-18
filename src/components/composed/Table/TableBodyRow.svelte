@@ -46,7 +46,7 @@
 </style>
 
 <tr
-  class="flex justify-items-center items-center {$settings.invertColors
+  class="flex justify-items-center items-center relative {$settings.invertColors
     ? 'bg-grey15inverse'
     : 'bg-grey15'} {isExpanded
     ? 'pt-4'

@@ -11,7 +11,7 @@
   };
 </script>
 
-<div class="flex justify-center items-center w-6">
+<div class="flex justify-center items-center w-6 relative">
   <Button
     borderSize="1"
     fontSize="text-md"

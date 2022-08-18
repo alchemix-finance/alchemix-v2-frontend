@@ -340,6 +340,11 @@
   };
   $: selectedToken, updateNetworks();
 </script>
+<style>
+  .bridge-row {
+    max-width: 190px
+  }
+</style>
 
 <ViewContainer>
   <div slot="head" class="flex justify-between">
@@ -369,55 +374,77 @@
 
   <div class="w-full mb-8">
     <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
+      <div slot="header" class="py-4 px-3 md:px-6 text-sm flex justify-between">
         <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
       </div>
-      <div slot="body" class="py-4 px-6 flex space-x-4">
+      <div slot="body" class="py-4 px-3 md:px-6 flex gap-2 md:gap-0 md:space-x-4 grid-cols-12 grid md:flex">
         {#if $networkStore === '0xfa'}
           <Button
             on:clicked="{() => goTo('https://beets.fi/#/trade')}"
             label="Beethovenx"
-            width="w-max"
+            width="md:w-max"
             py="py-2"
+            gridCols="col-span-6 sm:col-span-4"
           >
             <img src="images/icons/beethovenx.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of BeethovenX" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" width="w-max" py="py-2">
+        <Button
+          on:clicked="{() => goTo('https://curve.fi')}"
+          label="Curve"
+          width="md:w-max"
+          py="py-2"
+          gridCols="col-span-6 sm:col-span-4"
+        >
           <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
         </Button>
         {#if $networkStore === '0xfa'}
           <Button
             on:clicked="{() => goTo('https://app.spiritswap.finance/#/exchange/swap/FTM/SPIRIT')}"
             label="SpiritSwap"
-            width="w-max"
+            width="md:w-max"
             py="py-2"
+            gridCols="col-span-6 sm:col-span-4"
           >
             <img src="images/icons/spiritswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpiritSwap" />
           </Button>
           <Button
             on:clicked="{() => goTo('https://spooky.fi/#/swap')}"
             label="SpookySwap"
-            width="w-max"
+            width="md:w-max"
             py="py-2"
+            gridCols="col-span-6 sm:col-span-4"
           >
             <img src="images/icons/spookyswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpookySwap" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('http://app.paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
+        <Button
+          on:clicked="{() => goTo('http://app.paraswap.io')}"
+          label="Paraswap"
+          width="md:w-max"
+          py="py-2"
+          gridCols="col-span-6 sm:col-span-4"
+        >
           <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
         </Button>
         {#if $networkStore === '0xa'}
           <Button
             on:clicked="{() => goTo('https://app.velodrome.finance/swap')}"
             label="Velodrome"
-            width="w-max"
+            width="md:w-max"
             py="py-2"
+            gridCols="col-span-6 sm:col-span-4"
           >
             <img src="images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('http://zapper.fi')}" label="Zapper" width="w-max" py="py-2">
+        <Button
+          on:clicked="{() => goTo('http://zapper.fi')}"
+          label="Zapper"
+          width="md:w-max"
+          py="py-2"
+          gridCols="col-span-6 sm:col-span-4"
+        >
           <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
         </Button>
       </div>
@@ -442,59 +469,70 @@
             />
           </div>
 
-          <div class="flex flex-row space-x-4 h-8" transition:slide|local>
-            <p class="text-sm text-lightgrey10 min-w-max self-center">Target Network</p>
-
-            <Dropdown>
-              <div
-                slot="label"
-                class="flex flex-row space-x-4 justify-between items-center px-2 w-full h-full rounded bg-{toChain.abiPath}"
-              >
-                <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
-                <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
-                <p>▾</p>
-              </div>
-              <ul slot="options" class="w-full">
-                {#each targetNetworks as chain}
-                  <li
-                    class="cursor-pointer h-8 border-t {$settings.invertColors
-                      ? 'hover:bg-grey10inverse border-grey10inverse'
-                      : 'hover:bg-grey10 border-grey10'}"
-                    on:click="{() => setToChain(chain.id)}"
-                  >
-                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{chain.name}</p>
-                  </li>
-                {/each}
-              </ul>
-            </Dropdown>
-
-            <p class="pl-4 text-sm text-lightgrey10 min-w-max self-center">Bridge Fees</p>
-            <div
-              class="w-full rounded text-xl text-center flex p-4 {$settings.invertColors
-                ? 'bg-grey3inverse'
-                : 'bg-grey3'}"
-            >
-              <p class="self-center w-full text-sm text-lightgrey10 text-right">
-                {bridgeFees}
-                {selectedToken}
-              </p>
+          <div
+            class="grid grid-cols-12 md:flex flex-row md:space-x-4 md:h-8 gap-2 md:gap-0"
+            transition:slide|local
+          >
+            <div class="flex flex-row col-span-12 sm:col-span-4 gap-4 md:gap-0">
+              <p class="text-xs md:text-sm text-lightgrey10 min-w-max self-center">Target Network</p>
+              <Dropdown specialAlign="flex justify-end md:block">
+                <div
+                  slot="label"
+                  class="flex flex-row space-x-2 md:space-x-4 justify-between items-center pl-2 pr-7 md:px-2 w-full h-full rounded bg-{toChain.abiPath} w-[170px] md:max-w-none bridge-row"
+                >
+                  <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
+                  <p class="text-xs md:text-base">
+                    {toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}
+                  </p>
+                  <p>▾</p>
+                </div>
+                <ul slot="options" class="w-full">
+                  {#each targetNetworks as chain}
+                    <li
+                      class="cursor-pointer h-8 border-t {$settings.invertColors
+                        ? 'hover:bg-grey10inverse border-grey10inverse'
+                        : 'hover:bg-grey10 border-grey10'}"
+                      on:click="{() => setToChain(chain.id)}"
+                    >
+                      <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{chain.name}</p>
+                    </li>
+                  {/each}
+                </ul>
+              </Dropdown>
             </div>
-            <p class="pl-4 text-sm text-lightgrey10 min-w-max self-center">Receive</p>
-            <div
-              class="w-full rounded text-xl text-center flex p-4 {$settings.invertColors
-                ? 'bg-grey3inverse'
-                : 'bg-grey3'}"
-            >
-              <p class="self-center w-full text-sm text-lightgrey10 text-right">
-                {estimateOutAmount}
-                {selectedToken}
+            <div class="flex flex-row justify-between md:justify-start col-span-12 sm:col-span-4 gap-4 md:gap-0">
+              <p class="pl-0 md:pl-4 text-lightgrey10 min-w-max self-center text-xs md:text-sm">
+                Bridge Fees
               </p>
+              <div
+                class="w-full rounded text-xl text-center h-8 md:h-auto flex p-4 bridge-row {$settings.invertColors
+                  ? 'bg-grey3inverse'
+                  : 'bg-grey3'}"
+              >
+                <p class="self-center w-full text-xs md:text-sm text-lightgrey10 text-right">
+                  {bridgeFees}
+                  {selectedToken}
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-row justify-between md:justify-start col-span-12 sm:col-span-4 gap-4 md:gap-0">
+              <p class="pl-0 md:pl-4 text-lightgrey10 min-w-max self-center text-xs md:text-sm">Receive</p>
+              <div
+                class="w-full rounded text-xl text-center h-8 md:h-auto flex p-4 bridge-row {$settings.invertColors
+                  ? 'bg-grey3inverse'
+                  : 'bg-grey3'}"
+              >
+                <p class="self-center w-full text-xs md:text-sm text-lightgrey10 text-right">
+                  {estimateOutAmount}
+                  {selectedToken}
+                </p>
+              </div>
             </div>
           </div>
         {/if}
         {#if toChain.id !== '0x1'}
-          <div class="w-full flex flex-row space-x-4">
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+          <div class="w-full grid md:flex flex-row grid-cols-12 md:space-x-4 gap-2">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 1: Bridge</p>
                 {#if step > 1 || pendingTx}
@@ -547,7 +585,7 @@
               {/if}
             </div>
 
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 2: Wait</p>
                 {#if step > 2 || bridgeReceived}
@@ -586,7 +624,7 @@
               {/if}
             </div>
 
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 3: Change</p>
                 {#if step > 3 || onTargetNetwork}
@@ -635,7 +673,7 @@
               {/if}
             </div>
 
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 4: Swap</p>
                 {#if step > 4}
@@ -682,8 +720,8 @@
           </div>
         {/if}
         {#if toChain.id === '0x1'}
-          <div class="w-full flex flex-row space-x-4">
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+          <div class="w-full grid md:flex flex-row grid-cols-12 md:space-x-4 gap-2 md:gap-0">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 1: Swap</p>
                 {#if step > 1 || pendingTx}
@@ -704,7 +742,7 @@
                 {/if}
               </div>
               <p
-                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}"
+                class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'} "
               >
                 Swap the canonical token for it's bridge counterpart before sending it to the target network.
               </p>
@@ -736,7 +774,7 @@
               {/if}
             </div>
 
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 2: Bridge</p>
                 {#if step > 2 || bridgeReceived}
@@ -775,7 +813,7 @@
               {/if}
             </div>
 
-            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
+            <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} col-span-12">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 3: Wait</p>
                 {#if step > 3 || bridgeReceived}
