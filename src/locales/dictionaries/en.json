@@ -202,7 +202,8 @@
     "borrow": "Borrow",
     "borrow_and_transfer": "Borrow and Transfer",
     "swap": "Swap",
-    "migrate": "Migrate"
+    "migrate": "Migrate",
+    "info": "Info"
   },
   "toast": {
     "welcome_back": "Welcome back",
@@ -307,3 +308,4 @@
   },
   "report_bug": "Report bug"
 }
+

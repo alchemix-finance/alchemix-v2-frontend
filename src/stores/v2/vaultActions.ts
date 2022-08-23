@@ -233,7 +233,6 @@ export async function depositUnderlying(
           .filter((gate) => !!gate)[0];
       }
       const { instance: gatewayInstance } = await contractWrapper(gateway, signerStore, path);
-      console.log(gateway, gatewayInstance);
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
@@ -364,7 +363,12 @@ export async function withdraw(
       path,
     );
 
-    if (gatewayIndexCheck >= 0 && gatewayCheck[0] !== undefined) {
+    if (
+      gatewayIndexCheck >= 0 &&
+      gatewayCheck.filter((entry) => {
+        return !!entry;
+      })[0] !== undefined
+    ) {
       const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
         selector,
         signerStore,
@@ -390,11 +394,9 @@ export async function withdraw(
 
       setPendingWallet();
 
-      const tx = (await gatewayInstance.withdraw(
-        staticToken,
-        yieldAmount,
-        accountAddress,
-      )) as ethers.ContractTransaction;
+      const tx = (await gatewayInstance.withdraw(staticToken, yieldAmount, accountAddress, {
+        gasLimit: BigNumber.from(1500000),
+      })) as ethers.ContractTransaction;
 
       setPendingTx();
 

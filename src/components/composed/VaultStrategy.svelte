@@ -11,6 +11,7 @@
   import Deposit from '@components/composed/Modals/vaults/Deposit.svelte';
   import Withdraw from '@components/composed/Modals/vaults/Withdraw.svelte';
   import Migrate from '@components/composed/Modals/vaults/Migrate.svelte';
+  import Info from '@components/composed/Modals/vaults/Info.svelte';
   import { vaultsStore } from '@stores/v2/alcxStore';
 
   export let strategy;
@@ -150,6 +151,16 @@
               borderSize="0"
               on:clicked="{() => toggleMode(2)}"
             />
+            <Button
+              label="{$_('actions.info')}"
+              solid="{false}"
+              width="w-full"
+              height="h-8"
+              selected="{mode === 3}"
+              canToggle="{true}"
+              borderSize="0"
+              on:clicked="{() => toggleMode(3)}"
+            />
           </div>
         </div>
         <div class="transition-fix">
@@ -169,8 +180,15 @@
               <Withdraw vault="{strategy.col5.vault}" borrowLimit="{strategy.col5.borrowLimit}" />
             </div>
           {:else if mode === 2}
-            <div in:fly|local="{{ x: 200 }}" out:fly|local="{{ x: 200 }}">
+            <div
+              in:fly|local="{{ x: prevMode < 2 ? 200 : -200 }}"
+              out:fly|local="{{ x: mode < 2 ? 200 : -200 }}"
+            >
               <Migrate vault="{strategy.col5.vault}" vaultType="{strategy.limit.vaultType}" />
+            </div>
+          {:else if mode === 3}
+            <div in:fly|local="{{ x: 200 }}" out:fly|local="{{ x: 200 }}">
+              <Info vault="{strategy.col5.vault}" />
             </div>
           {/if}
         </div>

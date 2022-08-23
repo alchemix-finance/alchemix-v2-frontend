@@ -190,7 +190,9 @@
 
     const vaultIcon = () => {
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
-        return vaultTokenData.symbol;
+        return metaConfig[vaultTokenData.address].customTokenName
+          ? metaConfig[vaultTokenData.address].token
+          : vaultTokenData.symbol;
       } else {
         return underlyingTokenData.symbol;
       }
