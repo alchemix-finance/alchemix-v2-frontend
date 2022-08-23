@@ -80,6 +80,48 @@ export const VaultTypesInfos = {
     icon: 'images/icons/alusd_med.svg',
     useGateway: false,
     metaConfig: {
+      '0xdA816459F1AB5631232FE5e97a05BBBb94970c95': {
+        rewardAdapter: '',
+        rewardType: 'APY',
+        customTokenName: true,
+        token: 'yvDAI',
+        customAddress: '',
+        vaultName: 'Yearn',
+        beta: false,
+        acceptGateway: false,
+        acceptWETH: false,
+        multicall: true,
+        gateway: '',
+        strategy: 'https://yearn.finance/#/vault/0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
+      },
+      '0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE': {
+        rewardAdapter: '',
+        rewardType: 'APY',
+        customTokenName: true,
+        token: 'yvUSDC',
+        customAddress: '',
+        vaultName: 'Yearn',
+        beta: false,
+        acceptGateway: false,
+        acceptWETH: false,
+        multicall: true,
+        gateway: '',
+        strategy: 'https://yearn.finance/#/vault/0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE',
+      },
+      '0x7Da96a3891Add058AdA2E826306D812C638D87a7': {
+        rewardAdapter: '',
+        rewardType: 'APY',
+        customTokenName: true,
+        token: 'yvUSDT',
+        customAddress: '',
+        vaultName: 'Yearn',
+        beta: false,
+        acceptGateway: false,
+        acceptWETH: false,
+        multicall: true,
+        gateway: '',
+        strategy: 'https://yearn.finance/#/vault/0x3B27F92C0e212C671EA351827EDF93DB27cc0c65',
+      },
       '0x028171bCA77440897B824Ca71D1c56caC55b68A3': {
         gateway: 'ATokenGateway_alUSD',
       },
@@ -101,6 +143,8 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
         gateway: 'ATokenGateway_alUSD',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0x6b175474e89094c44da98b954eedeac495271d0f&marketName=proto_mainnet',
       },
       '0xf591D878608e2e5c7D4f1E499330f4AB9BbaE37a': {
         rewardAdapter: 'aave',
@@ -114,6 +158,8 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
         gateway: 'ATokenGateway_alUSD',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&marketName=proto_mainnet',
       },
       '0xBC11De1F20e83F0a6889B8c7A7868E722694E315': {
         rewardAdapter: 'aave',
@@ -127,6 +173,8 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
         gateway: 'ATokenGateway_alUSD',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0xdac17f958d2ee523a2206206994597c13d831ec7&marketName=proto_mainnet',
       },
     },
   },
@@ -135,6 +183,20 @@ export const VaultTypesInfos = {
     icon: 'images/icons/aleth_med.svg',
     useGateway: true,
     metaConfig: {
+      '0xa258C4606Ca8206D8aA700cE2143D7db854D168c': {
+        rewardAdapter: '',
+        rewardType: 'APY',
+        customTokenName: true,
+        token: 'yvWETH',
+        customAddress: '',
+        vaultName: 'Yearn',
+        beta: false,
+        acceptGateway: true,
+        acceptWETH: true,
+        multicall: true,
+        gateway: 'WETHGateway',
+        strategy: 'https://yearn.finance/#/vault/0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
+      },
       '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0': {
         rewardAdapter: 'lido',
         rewardType: 'APR',
@@ -147,6 +209,7 @@ export const VaultTypesInfos = {
         acceptWETH: true,
         multicall: true,
         gateway: 'WETHGateway',
+        strategy: 'https://etherscan.io/token/0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
       },
       '0xae78736Cd615f374D3085123A210448E74Fc6393': {
         rewardAdapter: 'rocketPool',
@@ -160,6 +223,7 @@ export const VaultTypesInfos = {
         acceptWETH: false,
         multicall: false,
         gateway: '',
+        strategy: 'https://stake.rocketpool.net/',
       },
       '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e': {
         gateway: 'ATokenGateway_alETH',
@@ -176,6 +240,8 @@ export const VaultTypesInfos = {
         acceptWETH: true,
         multicall: false,
         gateway: 'ATokenGateway_alETH',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&marketName=proto_mainnet',
       },
     },
   },

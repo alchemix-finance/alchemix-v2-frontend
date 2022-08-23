@@ -89,7 +89,10 @@ export async function fetchDataForVault(
   const useGateway = VaultTypesInfos[vaultType].useGateway;
   const debtToken = await contractInstance.debtToken();
   let apy;
-  if (VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress)) {
+  if (
+    VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress) &&
+    !!VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter
+  ) {
     apy = await rewardAdapter(
       VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter,
       signer,
@@ -129,7 +132,7 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer, token: stri
     case 'aave':
       return getAaveApr(token);
     default:
-      return 0;
+      return getVaultApy();
   }
 }
 

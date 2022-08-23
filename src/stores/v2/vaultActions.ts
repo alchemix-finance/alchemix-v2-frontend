@@ -233,7 +233,6 @@ export async function depositUnderlying(
           .filter((gate) => !!gate)[0];
       }
       const { instance: gatewayInstance } = await contractWrapper(gateway, signerStore, path);
-      console.log(gateway, gatewayInstance);
       setPendingWallet();
       const tx = (await gatewayInstance.depositUnderlying(
         alchemistAddress,
