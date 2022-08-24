@@ -16,7 +16,7 @@
   import * as LottiePlayer from '@lottiefiles/lottie-player';
 
   function goToSettings() {
-    navigate(`/settings`, { replace: false });
+    navigate(`settings`, { replace: false });
   }
 
   const goToHelp = () => {

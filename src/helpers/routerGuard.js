@@ -16,13 +16,13 @@ async function routerGuard(path) {
   if (!_account.signer) {
     try {
       await connect();
-      navigate(`/${path}`, { replace: true });
+      navigate(`${path}`, { replace: true });
     } catch (e) {
       console.error(e);
       navigate('/', { replace: true });
     }
   } else {
-    navigate(`/${path}`, { replace: true });
+    navigate(`${path}`, { replace: true });
   }
 }
 
