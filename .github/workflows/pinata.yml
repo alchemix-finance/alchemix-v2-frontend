@@ -1,38 +1,76 @@
-# This is a basic workflow to help you get started with Actions
+name: Pinata CD
 
-name: Pinata CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "prod" branch
   push:
     branches: [ "prod" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    name: Build
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      - name: Build
-        uses: CultureHQ/actions-yarn@v1.0.1
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Node
+        uses: actions/setup-node@v1
         with:
-          args: vercel_debug_build
+          node-version: 16
           
-      - name: Pinata Deployment
+      - name: Install
+        uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: install
+          
+      - name: Make env
+        run: |
+            echo "VITE_DEBUG_MODE="${{secrets.DEBUG_MODE}} >> .env
+            echo "VITE_BLOCKNATIVE_KEY="${{secrets.BLOCKNATIVE_KEY}} >> .env
+            echo "VITE_NETWORK_ID="${{secrets.NETWORK_ID}} >> .env
+            echo "VITE_NETWORK_NAME="${{secrets.NETWORK_NAME}} >> .env
+            echo "VITE_LOCAL_NETWORK_ID="${{secrets.LOCAL_NETWORK_ID}} >> .env
+            echo "VITE_LOCAL_NETWORK_NAME="${{secrets.LOCAL_NETWORK_NAME}} >> .env
+            echo "VITE_LOCAL_NETWORK_URL="${{secrets.LOCAL_NETWORK_URL}} >> .env
+            echo "VITE_ZAPPER_KEY="${{secrets.ZAPPER_KEY}} >> .env
+            echo "VITE_APP_URL="${{secrets.APP_URL}} >> .env
+      
+      - name: Build
+        uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: build
+          
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: production-files
+          path: ./dist
+          
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Fetch artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: production-files
+          path: ./dist
+          
+      - name: Upload to IPFS
         uses: aquiladev/ipfs-action@v0.3.0-alpha.1
         with:
           path: ./dist
           service: pinata
-          pinataKey: ${{ secrets.PINATA_KEY }}
-          pinataSecret: ${{ secrets.PINATA_SECRET }}
-          pinataPinName: 'Alchemix v2'
+          pinataKey: ${{secrets.PINATA_KEY}}
+          pinataSecret: ${{secrets.PINATA_SECRET}}
+          pinataPinName: "Alchemix v2"
+      
+      # cleanup
+      - name: Remove artifact
+        uses: GeekyEggo/delete-artifact@v1.0.0
+        with:
+          name: production-files
