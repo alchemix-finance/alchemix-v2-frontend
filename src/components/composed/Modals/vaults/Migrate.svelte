@@ -130,7 +130,7 @@
       >
         {#if !loadingTargets}
           <div class="flex flex-row space-x-4">
-            <img src="/images/token-icons/{selectedVault.symbol}.svg" alt="Vault Icon" class="h-4" />
+            <img src="images/token-icons/{selectedVault.symbol}.svg" alt="Vault Icon" class="h-4" />
             <p>{selectedVault.name}</p>
           </div>
           <p>▾</p>
@@ -150,7 +150,7 @@
               on:click="{() => setVault(vault)}"
             >
               <div class="flex flex-row space-x-4 items-center opacity-50 group-hover:opacity-100">
-                <img src="/images/token-icons/{vault.symbol}.svg" alt="Network Icon" class="h-8" />
+                <img src="images/token-icons/{vault.symbol}.svg" alt="Network Icon" class="h-8" />
                 <p>{vault.name}</p>
               </div>
             </li>

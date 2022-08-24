@@ -19,7 +19,7 @@
   export let metaConfig = false;
   export let convertToStatic = false;
 
-  let tokenIcon = '/images/token-icons/unknown.svg';
+  let tokenIcon = 'images/token-icons/unknown.svg';
   let externalMaxOverride;
 
   $: tokenData = getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore]);
@@ -60,13 +60,13 @@
   const getSource = async (filename) => {
     if (!!filename) {
       const xhr = new XMLHttpRequest();
-      xhr.open('HEAD', `/images/token-icons/${filename}.svg`);
+      xhr.open('HEAD', `images/token-icons/${filename}.svg`);
       xhr.responseType = 'blob';
       xhr.send();
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 404) {
           if (xhr.response && xhr.response.type === 'image/svg+xml')
-            tokenIcon = `/images/token-icons/${filename + '.svg'}`;
+            tokenIcon = `images/token-icons/${filename + '.svg'}`;
         }
       };
     }

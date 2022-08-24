@@ -4,7 +4,7 @@
   export let tokenBalance;
   export let tokenAddress;
   export let tokenDecimals;
-  let tokenIcon = '/images/token-icons/unknown.svg';
+  let tokenIcon = 'images/token-icons/unknown.svg';
 
   // @dev truncates long balances to keep them readable
   const truncateBalance = (balance) => {
@@ -22,13 +22,13 @@
    * */
   const getSource = async (filename) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('HEAD', `/images/token-icons/${filename}.svg`);
+    xhr.open('HEAD', `images/token-icons/${filename}.svg`);
     xhr.responseType = 'blob';
     xhr.send();
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 404) {
         if (xhr.response && xhr.response.type === 'image/svg+xml')
-          tokenIcon = `/images/token-icons/${filename + '.svg'}`;
+          tokenIcon = `images/token-icons/${filename + '.svg'}`;
       }
     };
   };

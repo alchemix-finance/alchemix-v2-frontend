@@ -450,7 +450,7 @@
                 slot="label"
                 class="flex flex-row space-x-4 justify-between items-center px-2 w-full h-full rounded bg-{toChain.abiPath}"
               >
-                <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
+                <img src="images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
                 <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
                 <p>▾</p>
               </div>
