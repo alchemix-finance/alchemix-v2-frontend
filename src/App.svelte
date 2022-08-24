@@ -157,17 +157,17 @@ Use at your own risk.
             >
               {#if walletChecked}
                 <!--                <Route path='/accounts' component='{Accounts}' />-->
-                <Route path="vaults" component="{Vaults}" />
-                <Route path="transmuter" component="{Transmuter}" />
-                <Route path="swap" component="{Swap}" />
+                <Route path="/vaults" component="{Vaults}" />
+                <Route path="/transmuter" component="{Transmuter}" />
+                <Route path="/swap" component="{Swap}" />
 
-                <Route path="farms" component="{Farms}" />
-                <Route path="governance" component="{Governance}" />
-                <Route path="settings" component="{Settings}" />
+                <Route path="/farms" component="{Farms}" />
+                <Route path="/governance" component="{Governance}" />
+                <Route path="/settings" component="{Settings}" />
                 <Route path="/" component="{Landing}" />
-                <Route path="*" component="{Error}" />
-                <Route path="sentinel" component="{Sentinel}" />
-                <Route path="get-out" component="{SecretCowLevel}" />
+                <Route path="/*" component="{Error}" />
+                <Route path="/sentinel" component="{Sentinel}" />
+                <Route path="/get-out" component="{SecretCowLevel}" />
               {/if}
             </div>
           </div>
