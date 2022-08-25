@@ -53,15 +53,6 @@ jobs:
         with:
           name: production-files
           path: ./dist
-          
-      #- name: Upload to IPFS
-      #  uses: aquiladev/ipfs-action@v0.3.0-alpha.1
-      #  with:
-      #    path: ./dist
-      #    service: pinata
-      #    pinataKey: ${{secrets.PINATA_KEY}}
-      #    pinataSecret: ${{secrets.PINATA_SECRET}}
-      #    pinataPinName: "Alchemix v2"
       
       - name: Managa Pinata pin and gateway
         uses: n4n0GH/pinata-manager@main
@@ -71,8 +62,12 @@ jobs:
           key: ${{secrets.PINATA_KEY}}
           pinName: "Alchemix v2"
           gatewayName: "alchemix"
-      
-      # cleanup
+
+  cleanup:
+    name: Cleanup
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    steps:
       - name: Remove artifact
         uses: GeekyEggo/delete-artifact@v1.0.0
         with:
