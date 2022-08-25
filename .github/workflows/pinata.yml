@@ -60,6 +60,7 @@ jobs:
           path: ./dist
           secret: ${{secrets.PINATA_SECRET}}
           key: ${{secrets.PINATA_KEY}}
+          token: ${{secrets.PINATA_TOKEN}}
           pinName: "Alchemix v2"
           unpinOld: "true"
           gatewayName: "alchemix"
