@@ -62,6 +62,7 @@ jobs:
           key: ${{secrets.PINATA_KEY}}
           pinName: "Alchemix v2"
           gatewayName: "alchemix"
+          gatewayId: ${{secrets.PINATA_GATEWAY_ID}}
 
   cleanup:
     name: Cleanup
