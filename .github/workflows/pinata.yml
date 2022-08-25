@@ -56,8 +56,6 @@ jobs:
       
       - name: Managa Pinata pin and gateway
         uses: n4n0GH/pinata-manager@main
-        env:
-          GATEWAY_ID: ${{secrets.PINATA_GATEWAY_ID}}
         with:
           path: ./dist
           secret: ${{secrets.PINATA_SECRET}}
@@ -65,7 +63,7 @@ jobs:
           pinName: "Alchemix v2"
           unpinOld: "true"
           gatewayName: "alchemix"
-          gatewayId: ${{env.GATEWAY_ID}}
+          gatewayId: ${{secrets.PINATA_GATEWAY_ID}}
 
   cleanup:
     name: Cleanup
