@@ -55,6 +55,7 @@ jobs:
           path: ./dist
       
       - name: Managa Pinata pin and gateway
+        id: pinata-manager
         uses: n4n0GH/pinata-manager@main
         with:
           path: ./dist
@@ -65,6 +66,12 @@ jobs:
           unpinOld: "true"
           gatewayName: "alchemix"
           gatewayId: ${{secrets.PINATA_GATEWAY_ID}}
+          
+      - name: Notify Discord Channel
+        uses: sebastianpopp/discord-action@releases/v1
+        with:
+          webhook: ${{secrets.DISCORD_WEBHOOK}}
+          message: New IPFS deployment with CID ${{steps.pinata-manager.outputs.cid}}
 
   cleanup:
     name: Cleanup
