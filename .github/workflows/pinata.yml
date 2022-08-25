@@ -61,6 +61,7 @@ jobs:
           secret: ${{secrets.PINATA_SECRET}}
           key: ${{secrets.PINATA_KEY}}
           pinName: "Alchemix v2"
+          unpinOld: "true"
           gatewayName: "alchemix"
           gatewayId: ${{secrets.PINATA_GATEWAY_ID}}
 
