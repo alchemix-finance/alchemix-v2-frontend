@@ -42,7 +42,7 @@
         class="shadow-none flex flex-col text-left whitespace-nowrap text-white justify-center {$settings.invertColors
           ? 'bg-bronze1inverse'
           : 'bg-bronze1'}"
-        style="width: {100 - parseFloat(capacity?.percent.toString()) / 100 || 0}%"
+        style="width: {isFull ? 100 : 100 - parseFloat(capacity?.percent.toString()) / 100 || 0}%"
       ></div>
     </div>
   </div>
@@ -50,7 +50,7 @@
 <div class="flex flex-col items-center mt-2">
   <p class="text-sm text-lightgrey10">
     {#if isFull}
-      Vault Full ({valueFormatted} {symbol})
+      Vault Full
     {:else}
       {valueFormatted} / {limitFormatted}
       {symbol}

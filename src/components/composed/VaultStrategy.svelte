@@ -2,7 +2,13 @@
   import { _ } from 'svelte-i18n';
   import { slide, fly } from 'svelte/transition';
   import { utils } from 'ethers';
+  import { fetchTokenEnabledStatus } from '@stores/v2/asyncMethods';
+
   import settings from '@stores/settings';
+  import { vaultsStore, networkStore } from '@stores/v2/alcxStore';
+  import { signer } from '@stores/v2/derived';
+  import { vaultMessages, VaultConstants } from '@stores/v2/constants';
+
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell.svelte';
@@ -12,7 +18,7 @@
   import Withdraw from '@components/composed/Modals/vaults/Withdraw.svelte';
   import Migrate from '@components/composed/Modals/vaults/Migrate.svelte';
   import Info from '@components/composed/Modals/vaults/Info.svelte';
-  import { vaultsStore } from '@stores/v2/alcxStore';
+  import VaultMessage from '@components/elements/VaultMessage.svelte';
 
   export let strategy;
 
@@ -21,8 +27,23 @@
   let mode = 0;
   let prevMode = 0;
   let _capInfo;
+  let isPaused = false;
 
   $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
+  $: messages = vaultMessages.filter((item) => item.vault === strategy.limit.yieldTokenAddress);
+  $: hasMessage = messages.length > 0;
+  $: alToken = VaultConstants[strategy?.limit.vaultType].alToken;
+
+  const getPausedStatus = async () => {
+    isPaused = !(await fetchTokenEnabledStatus(
+      strategy.limit.vaultType,
+      strategy.limit.yieldTokenAddress,
+      $signer,
+      $networkStore,
+    ));
+  };
+
+  $: if (alToken !== undefined) getPausedStatus();
 
   const toggleExpanded = () => {
     isExpanded = !isExpanded;
@@ -113,11 +134,16 @@
       </div>
     </div>
     {#if isExpanded}
-      <div class="w-full flex flex-col ml-4 mt-4 overflow-hidden" transition:slide|local>
+      <div class="w-full flex flex-col ml-4 mt-4 space-y-4 overflow-hidden" transition:slide|local>
+        {#if hasMessage}
+          {#each messages as message}
+            <VaultMessage message="{message.message}" level="{message.level}" />
+          {/each}
+        {/if}
         <div
           class="flex flex-row border rounded {$settings.invertColors
             ? 'bg-grey3inverse border-grey1inverse'
-            : 'bg-black2 border-grey1'} mb-4"
+            : 'bg-black2 border-grey1'}"
         >
           <div class="flex justify-between space-x-2 w-full p-2">
             <Button
@@ -170,6 +196,7 @@
                 vault="{strategy.col5.vault}"
                 borrowLimit="{strategy.col5.borrowLimit}"
                 capInfo="{_capInfo}"
+                isPaused="{isPaused}"
               />
             </div>
           {:else if mode === 1}
