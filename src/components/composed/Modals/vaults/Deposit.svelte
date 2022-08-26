@@ -7,6 +7,7 @@
   import ComplexInput from '../../../composed/Inputs/ComplexInput.svelte';
   import MaxLossController from '@components/composed/MaxLossController.svelte';
   import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+  import VaultMessage from '@components/elements/VaultMessage.svelte';
 
   import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
@@ -32,6 +33,7 @@
 
   export let vault;
   export let capInfo;
+  export let isPaused;
 
   let maximumLoss;
 
@@ -286,14 +288,14 @@
 </script>
 
 {#if vault}
-  {#if (metaConfig ? acceptGateway && vault.type === 1 : useGateway) && !capInfo.isFull}
+  {#if metaConfig ? acceptGateway && vault.type === 1 : useGateway}
     <div class="text-sm text-lightgrey10 w-full flex flex-row justify-between mb-3">
       <span>Deposit Type:</span>
       <ToggleSwitch label="WETH" secondLabel="ETH" on:toggleChange="{() => switchDepositType()}" />
     </div>
   {/if}
   <div class="flex flex-col space-y-4">
-    {#if !depositEth && !capInfo.isFull}
+    {#if !depositEth}
       {#each Array(activeInputs) as o, i}
         <ComplexInput
           supportedTokens="{$selection.filter((entry) => !entry.selected).map((item) => item.token)}"
@@ -313,28 +315,27 @@
           />
         {/if}
       {/each}
-    {:else if depositEth && !capInfo.isFull}
+    {:else if depositEth}
       <ComplexInput supportedTokens="{[ethData.symbol]}" bind:inputValue="{underlyingDeposit}" />
-    {/if}
-    {#if capInfo.isFull}
-      <div class="w-full">
-        <p class="text-center mx-3 text-red3 opacity-75">Vault deposit capacity reached.</p>
-      </div>
     {/if}
   </div>
 
-  {#if !capInfo.isFull}
-    <div class="my-4">
-      <MaxLossController bind:maxLoss="{maximumLoss}" />
-    </div>
+  <div class="my-4">
+    <MaxLossController bind:maxLoss="{maximumLoss}" />
+  </div>
 
-    <div class="my-4 text-sm text-lightgrey10 hidden">
-      {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData?.decimals)}
-      -> {totalDep}<br />
-      {$_('modals.borrow_limit')}: {startDebtLimit} ->
-      {projDeptLimit || startDebtLimit} <br />
-    </div>
+  <div class="my-4 text-sm text-lightgrey10 hidden">
+    {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData?.decimals)}
+    -> {totalDep}<br />
+    {$_('modals.borrow_limit')}: {startDebtLimit} ->
+    {projDeptLimit || startDebtLimit} <br />
+  </div>
 
+  {#if capInfo.isFull}
+    <VaultMessage level="1" message="Vault deposit capacity reached." />
+  {:else if isPaused}
+    <VaultMessage level="2" message="Vault deposits currently paused." />
+  {:else}
     <Button
       label="{$_('actions.deposit')}"
       borderColor="green4"
@@ -344,7 +345,7 @@
       borderSize="1"
       fontSize="text-md"
       on:clicked="{() => onButtonDeposit(yieldDepositBN, underlyingDepositBN)}"
-      disabled="{depositButtonDisabled}"
+      disabled="{isPaused || depositButtonDisabled}"
     />
   {/if}
 {/if}

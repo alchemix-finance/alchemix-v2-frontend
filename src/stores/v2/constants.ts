@@ -261,6 +261,15 @@ export const VaultTypesInfos = {
   },
 };
 
+export const vaultMessages = [
+  {
+    vault: '0x7Da96a3891Add058AdA2E826306D812C638D87a7',
+    level: 0,
+    message:
+      'Deposit on this vault is paused. Yearn is deprecating this Vault in favor of their new yvUSDT vault. Please migrate your position.',
+  },
+];
+
 export const chainIds = [
   {
     id: '0x1',
