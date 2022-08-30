@@ -91,6 +91,7 @@ export async function getOpenProposals() {
       state
       author
       discussion
+      type
     }
   }`;
   axios(gqlConnector(query))
@@ -98,6 +99,30 @@ export async function getOpenProposals() {
       if (debugging) console.table(result.data.data.proposals);
       _governance.proposals = result.data.data.proposals;
       _governance.fetching = false;
+      governance.set({ ..._governance });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export async function queryOpenProposals() {
+  const query = `{
+    proposals(
+      skip: 0
+      where: {
+        space_in: ["${space}"],
+        state: "active"
+      }
+      orderBy: "created"
+      orderDirection: desc
+    ) {
+      id
+    }
+  }`;
+  axios(gqlConnector(query))
+    .then((result) => {
+      _governance.hasActiveVotes = result.data.data.proposals.length > 0;
       governance.set({ ..._governance });
     })
     .catch((error) => {

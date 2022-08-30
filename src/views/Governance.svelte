@@ -1,22 +1,18 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
-  import ViewContainer from '../components/elements/ViewContainer.svelte';
-  import PageHeader from '../components/elements/PageHeader.svelte';
-  import ContainerWithHeader from '../components/elements/ContainerWithHeader.svelte';
-  import { getOpenProposals, getVotesForAddress } from '../middleware/snapshot';
-  import governance from '../stores/governance';
-  import settings from '../stores/settings';
-  import Button from '../components/elements/Button.svelte';
-  import DetailView from '../components/composed/Table/governance/DetailView.svelte';
   import { BarLoader } from 'svelte-loading-spinners';
-  import Table from '../components/composed/Table/Table.svelte';
-  import HeaderCell from '../components/composed/Table/HeaderCell.svelte';
-  import ExpandRowCell from '../components/composed/Table/ExpandRowCell.svelte';
-  import IpfsCell from '../components/composed/Table/governance/IpfsCell.svelte';
-  import SnapshotCell from '../components/composed/Table/governance/SnapshotCell.svelte';
-  import GenericCell from '../components/composed/Table/governance/GenericCell.svelte';
-  import StatusCell from '../components/composed/Table/governance/StatusCell.svelte';
+
+  import { getOpenProposals, getVotesForAddress } from '@middleware/snapshot';
+
+  import governance from '@/stores/governance';
+  import settings from '@/stores/settings';
+
+  import ViewContainer from '@/components/elements/ViewContainer.svelte';
+  import PageHeader from '@/components/elements/PageHeader.svelte';
+  import ContainerWithHeader from '@/components/elements/ContainerWithHeader.svelte';
+  import Button from '@/components/elements/Button.svelte';
+  import ProposalEntry from '@components/composed/ProposalEntry.svelte';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -25,120 +21,33 @@
     window.open('https://forum.alchemix.fi/public/t/aip', '_blank');
   };
 
-  /*
-   * @dev transforms snapshot's block notation to human readable date
-   * @param snapshotBlock the block number
-   * */
-  const snapshotToDate = (snapshotBlock) => {
-    return new Date(snapshotBlock * 1e3).toLocaleDateString($settings.userLanguage.locale);
-  };
-
-  // set up columns for table
-  const columns = [
-    {
-      columnId: 'col0',
-      value: '',
-      colSize: 1,
-    },
-    {
-      columnId: 'col1',
-      CellComponent: HeaderCell,
-      value: $_('table.title'),
-      colSize: 8,
-    },
-    {
-      columnId: 'col2',
-      CellComponent: HeaderCell,
-      value: $_('table.status'),
-      colSize: 2,
-    },
-    {
-      columnId: 'col3',
-      CellComponent: HeaderCell,
-      value: $_('table.start'),
-      colSize: 2,
-    },
-    {
-      columnId: 'col4',
-      CellComponent: HeaderCell,
-      value: $_('table.end'),
-      colSize: 2,
-    },
-    {
-      columnId: 'col5',
-      CellComponent: HeaderCell,
-      value: $_('table.snapshot'),
-      colSize: 3,
-    },
-    {
-      columnId: 'col6',
-      CellComponent: HeaderCell,
-      value: $_('table.ipfs'),
-      colSize: 3,
-    },
-  ];
-
-  // initialize rows, fill with data later
-  let rows = [];
-
-  $: if ($governance.proposals.length > 0) {
-    $governance.proposals.forEach((proposal) => {
-      const payload = {
-        col0: {
-          CellComponent: ExpandRowCell,
-          expandedRow: {
-            ExpandedRowComponent: DetailView,
-            proposalEntry: proposal,
-          },
-          colSize: 1,
-        },
-        col1: {
-          value: proposal.title,
-          colSize: 8,
-          alignment: 'justify-self-start',
-          CellComponent: GenericCell,
-          state: proposal.state,
-        },
-        col2: {
-          value: proposal.state,
-          colSize: 2,
-          CellComponent: StatusCell,
-          state: proposal.state,
-        },
-        col3: {
-          value: snapshotToDate(proposal.start),
-          colSize: 2,
-          CellComponent: GenericCell,
-          state: proposal.state,
-        },
-        col4: {
-          value: snapshotToDate(proposal.end),
-          colSize: 2,
-          CellComponent: GenericCell,
-          state: proposal.state,
-        },
-        col5: {
-          snapshot: proposal.snapshot,
-          colSize: 3,
-          CellComponent: SnapshotCell,
-          state: proposal.state,
-        },
-        col6: {
-          ipfsShort: proposal.ipfs.slice(0, 8),
-          ipfsId: proposal.ipfs,
-          colSize: 3,
-          CellComponent: IpfsCell,
-          state: proposal.state,
-        },
-      };
-      rows.push(payload);
-    });
+  enum FilterTypes {
+    'ALL',
+    'ACTIVE',
+    'CLOSED',
   }
 
-  onMount(() => {
+  let currentFilter = FilterTypes.ALL;
+
+  $: countByFilter = {
+    ALL: $governance.proposals.length,
+    ACTIVE: $governance.proposals.filter((_prop) => _prop.state === 'active').length,
+    CLOSED: $governance.proposals.filter((_prop) => _prop.state === 'closed').length,
+  };
+
+  $: if (countByFilter.ACTIVE > 0) currentFilter = FilterTypes.ACTIVE;
+
+  $: filteredProposals =
+    currentFilter === FilterTypes.ALL
+      ? $governance.proposals
+      : $governance.proposals.filter(
+          (_proposal) => _proposal.state.toUpperCase() === FilterTypes[currentFilter],
+        );
+
+  onMount(async () => {
     if ($governance.proposals.length === 0) {
-      getOpenProposals();
-      getVotesForAddress();
+      await getOpenProposals();
+      await getVotesForAddress();
     }
   });
 </script>
@@ -157,35 +66,38 @@
     </p>
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
-        <!--        <div class="flex space-x-4">-->
-        <!--          <Button-->
-        <!--            label="{$_('governance_page.all')}"-->
-        <!--            width="w-max"-->
-        <!--            canToggle="{true}"-->
-        <!--            selected="{true}"-->
-        <!--            solid="{false}"-->
-        <!--            borderSize="0"-->
-        <!--          />-->
+        <div class="flex space-x-4">
+          <Button
+            label="{$_('governance_page.all')} ({countByFilter.ALL})"
+            width="w-max"
+            canToggle="{true}"
+            selected="{currentFilter === FilterTypes.ALL}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => (currentFilter = FilterTypes.ALL)}"
+          />
 
-        <!--          <Button-->
-        <!--            label="{$_('governance_page.active')}"-->
-        <!--            width="w-max"-->
-        <!--            canToggle="{true}"-->
-        <!--            selected="{false}"-->
-        <!--            solid="{false}"-->
-        <!--            borderSize="0"-->
-        <!--          />-->
+          <Button
+            label="{$_('governance_page.active')} ({countByFilter.ACTIVE})"
+            width="w-max"
+            canToggle="{true}"
+            selected="{currentFilter === FilterTypes.ACTIVE}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => (currentFilter = FilterTypes.ACTIVE)}"
+          />
 
-        <!--          <Button-->
-        <!--            label="{$_('governance_page.closed')}"-->
-        <!--            width="w-max"-->
-        <!--            canToggle="{true}"-->
-        <!--            selected="{false}"-->
-        <!--            solid="{false}"-->
-        <!--            borderSize="0"-->
-        <!--          />-->
-        <!--        </div>-->
-        <p>{$_('governance_page.proposals')}</p>
+          <Button
+            label="{$_('governance_page.closed')} ({countByFilter.CLOSED})"
+            width="w-max"
+            canToggle="{true}"
+            selected="{currentFilter === FilterTypes.CLOSED}"
+            solid="{false}"
+            borderSize="0"
+            on:clicked="{() => (currentFilter = FilterTypes.CLOSED)}"
+          />
+        </div>
+        <!--        <p>{$_('governance_page.proposals')}</p>-->
 
         <div>
           <Button
@@ -242,7 +154,11 @@
             <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
           </div>
         {:else if $governance.proposals.length > 0}
-          <Table rows="{rows}" columns="{columns}" />
+          <div class="flex flex-col space-y-4 py-4">
+            {#each filteredProposals as proposal}
+              <ProposalEntry proposal="{proposal}" />
+            {/each}
+          </div>
         {:else}
           <p class="text-center opacity-50">
             {$_('governance_page.noOpenVotes')}

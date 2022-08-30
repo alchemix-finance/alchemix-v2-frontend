@@ -4,6 +4,7 @@ const defaults = {
   fetching: true,
   proposals: [],
   userVotes: [],
+  hasActiveVotes: false,
 };
 
 const governance = writable({
