@@ -17,6 +17,7 @@
   import { resetStores } from '@stores/v2/methods';
   import { reservesStore } from '@stores/aaveReserves';
   import { getReserves } from '@middleware/aave';
+  import { queryOpenProposals } from '@middleware/snapshot';
 
   let lastConnection = {
     chainId: '',
@@ -82,6 +83,8 @@
         lastConnection.address = $addressStore;
         initStarted = false;
       });
+
+      await queryOpenProposals();
 
       console.log(`[StateManager]: Connected with address ${$addressStore}`);
     }

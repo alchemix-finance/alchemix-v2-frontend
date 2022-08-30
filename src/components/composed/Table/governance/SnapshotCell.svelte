@@ -3,8 +3,8 @@
   export let state;
 </script>
 
-<div class="py-3 {state === 'closed' ? 'opacity-50' : 'opacity-100'}">
-  <a href="https://etherscan.io/block/{snapshot}" target="_blank">
+<div class="{state === 'closed' ? 'opacity-50' : 'opacity-100'}">
+  <a href="https://etherscan.io/block/{snapshot}" target="_blank" on:click|stopPropagation>
     {snapshot}
     <svg
       xmlns="http://www.w3.org/2000/svg"

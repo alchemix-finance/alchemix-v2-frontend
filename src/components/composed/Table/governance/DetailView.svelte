@@ -1,19 +1,20 @@
 <script>
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
+
   import { sendVote } from '@middleware/snapshot';
-  import governance from '@stores/governance';
-  import settings from '@stores/settings';
   import { setPendingVote, setSuccessVote, setError, setRejectedVote } from '@helpers/setToast';
-  import Button from '../../../elements/Button.svelte';
-  import { getProvider } from '@helpers/walletManager';
 
-  export let expandedRow = {};
+  import settings from '@stores/settings';
+
+  import Button from '@components/elements/Button.svelte';
+
+  export let proposalEntry = {};
   let value = '';
-  let proposal;
-  let vote;
-
-  const provider = getProvider();
+  export let proposal;
+  export let vote;
+  const supportedTypes = ['basic', 'single-choice'];
+  $: isSupported = supportedTypes.indexOf(proposalEntry.type) >= 0;
 
   /*
    * @dev constructs a payload and initiates snapshot voting
@@ -21,7 +22,7 @@
   const initVote = async () => {
     if (proposal.state !== 'closed' && !vote) {
       const payload = {
-        proposal: expandedRow.proposalEntry.id,
+        proposal: proposalEntry.id,
         choice: value,
       };
       try {
@@ -57,30 +58,32 @@
   const openOnForum = () => {
     window.open(`${proposal.discussion}`, '_blank');
   };
-
-  $: proposal = $governance.proposals?.find((proposal) => proposal.id === expandedRow.proposalEntry.id);
-  $: proposal, (vote = $governance.userVotes?.find((vote) => vote.proposal.id === proposal.id));
 </script>
 
-<div
-  class="p-4 border-b {$settings.invertColors ? 'border-grey10inverse' : 'border-grey10'}"
-  transition:slide|local
->
+<div class="px-4 mb-4 " transition:slide|local>
   <div class="flex flex-row space-x-4">
-    <div class="w-full {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} rounded p-4">
-      <p class="mb-3 opacity-50">{$_('governance_page.description')}</p>
+    <div
+      class="w-full border {$settings.invertColors
+        ? 'border-grey3inverse bg-grey15inverse'
+        : 'border-grey3 bg-grey15'} rounded p-4"
+    >
+      <p class="mb-3 text-sm opacity-50">{$_('governance_page.description')}</p>
       <p class="text-justify whitespace-pre-wrap w-full">
         {@html replaceUrl()}
       </p>
     </div>
     <div
-      class="flex flex-col min-w-max {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} rounded p-4"
+      class="flex flex-col min-w-max border {$settings.invertColors
+        ? 'border-grey3inverse bg-grey15inverse'
+        : 'border-grey3 bg-grey15'} rounded p-4"
     >
       <p class="mb-3 opacity-50">
         {$_('governance_page.choose')}
       </p>
       <div id="selection" class="mb-6 w-auto">
-        {#if proposal.state !== 'closed' && !vote}
+        {#if proposal.state !== 'closed' && !isSupported}
+          <p>This voting type is not yet supported.</p>
+        {:else if proposal.state !== 'closed' && !vote}
           <select
             bind:value
             class="border {$settings.invertColors
@@ -96,28 +99,39 @@
           </select>
         {/if}
         <div class="flex flex-col space-y-3">
-          <Button
-            label="{proposal.state === 'closed'
-              ? $_('governance_page.closedVote')
-              : vote
-              ? $_('governance_page.alreadyVoted')
-              : $_('governance_page.castVote')}"
-            borderSize="1"
-            height="h-8"
-            width="w-full"
-            fontSize="text-md"
-            borderColor="{proposal.state === 'closed' ? 'red4' : 'green4'}"
-            hoverColor="{proposal.state === 'closed' ? '' : 'green4'}"
-            backgroundColor="{proposal.state === 'closed'
-              ? $settings.invertColors
-                ? 'red5'
-                : 'red2'
-              : $settings.invertColors
-              ? 'green7'
-              : 'black2'}"
-            noHoverEffect="{proposal.state === 'closed' || vote}"
-            on:clicked="{() => initVote()}"
-          />
+          {#if proposal.state !== 'closed' && !isSupported}
+            <Button
+              label="{proposal.state === 'closed'
+                ? $_('governance_page.closedVote')
+                : vote
+                ? $_('governance_page.alreadyVoted')
+                : $_('governance_page.castVote')}"
+              height="h-8"
+              width="w-full"
+              fontSize="text-md"
+              borderColor="{proposal.state === 'closed' ? 'red4' : 'green4'}"
+              hoverColor="{proposal.state === 'closed' ? '' : 'green4'}"
+              backgroundColor="{proposal.state === 'closed'
+                ? $settings.invertColors
+                  ? 'red5'
+                  : 'red2'
+                : $settings.invertColors
+                ? 'green7'
+                : 'black2'}"
+              noHoverEffect="{proposal.state === 'closed' || vote}"
+              on:clicked="{() => initVote()}"
+            />
+          {:else if proposal.state === 'closed'}
+            <Button
+              label="{$_('governance_page.closedVote')}"
+              height="h-8"
+              width="w-full"
+              fontSize="text-md"
+              borderColor="red4"
+              backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
+              noHoverEffect="{proposal.state === 'closed'}"
+            />
+          {/if}
           {#if !!proposal.discussion}
             <Button
               label="{$_('governance_page.openDiscussion')}"

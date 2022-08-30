@@ -4,8 +4,8 @@
   export let state;
 </script>
 
-<div class="py-3 {state === 'closed' ? 'opacity-50' : 'opacity-100'}">
-  <a href="https://cloudflare-ipfs.com/ipfs/{ipfsId}" target="_blank">
+<div class="{state === 'closed' ? 'opacity-50' : 'opacity-100'}">
+  <a href="https://cloudflare-ipfs.com/ipfs/{ipfsId}" target="_blank" on:click|stopPropagation>
     {ipfsShort}
     <svg
       xmlns="http://www.w3.org/2000/svg"
