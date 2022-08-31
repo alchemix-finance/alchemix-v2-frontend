@@ -20,7 +20,7 @@
    * @dev constructs a payload and initiates snapshot voting
    * */
   const initVote = async () => {
-    if (proposal.state !== 'closed' && !vote) {
+    if (proposal.state !== 'closed' && !isSupported && !vote) {
       const payload = {
         proposal: proposalEntry.id,
         choice: value,
@@ -82,7 +82,7 @@
       </p>
       <div id="selection" class="mb-6 w-auto">
         {#if proposal.state !== 'closed' && !isSupported}
-          <p>This voting type is not yet supported.</p>
+          <p>{$_('governance_page.unsupported_explain')}</p>
         {:else if proposal.state !== 'closed' && !vote}
           <select
             bind:value
@@ -99,10 +99,10 @@
           </select>
         {/if}
         <div class="flex flex-col space-y-3">
-          {#if proposal.state !== 'closed' && !isSupported}
+          {#if proposal.state !== 'closed'}
             <Button
-              label="{proposal.state === 'closed'
-                ? $_('governance_page.closedVote')
+              label="{!isSupported
+                ? $_('governance_page.unsupported_label')
                 : vote
                 ? $_('governance_page.alreadyVoted')
                 : $_('governance_page.castVote')}"
@@ -118,7 +118,7 @@
                 : $settings.invertColors
                 ? 'green7'
                 : 'black2'}"
-              noHoverEffect="{proposal.state === 'closed' || vote}"
+              noHoverEffect="{!isSupported || proposal.state === 'closed' || vote}"
               on:clicked="{() => initVote()}"
             />
           {:else if proposal.state === 'closed'}

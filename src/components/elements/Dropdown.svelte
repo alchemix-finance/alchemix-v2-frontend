@@ -18,7 +18,7 @@ For a dropdown that opens on hover see /DropdownOnClick
   }
 </style>
 
-<div class="dropdown inline-block relative w-full">
+<div class="dropdown inline-block relative w-max">
   <slot name="label" />
   <div
     class="
