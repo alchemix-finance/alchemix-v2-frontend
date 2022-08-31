@@ -107,7 +107,9 @@
     "proposals": "Proposals",
     "all": "All",
     "active": "Active",
-    "closed": "Closed"
+    "closed": "Closed",
+    "unsupported_explain": "This voting type is not yet supported.",
+    "unsupported_label": "Unsupported"
   },
   "farm_page": {
     "title": "Farms",
