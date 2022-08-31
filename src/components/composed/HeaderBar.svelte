@@ -4,6 +4,7 @@
   import { setCurrency, setGas } from '@helpers/userSettings';
   import { _ } from 'svelte-i18n';
 
+  import governance from '@stores/governance';
   import account from '@stores/account';
   import settings from '../../stores/settings';
   import global from '../../stores/global';
@@ -15,8 +16,15 @@
   import LoadingIndicator from '../elements/LoadingIndicator.svelte';
   import * as LottiePlayer from '@lottiefiles/lottie-player';
 
+  let _governance;
+  governance.subscribe((val) => {
+    _governance = val;
+  });
+
   function goToSettings() {
-    navigate(`/settings`, { replace: false });
+    if (window.location.pathname.slice(1) !== 'settings') {
+      navigate(`/settings`, { replace: false });
+    }
   }
 
   const goToHelp = () => {
@@ -33,6 +41,23 @@
   const userGas = (selector) => {
     return typeof selector === 'number' ? selector : selector.baseFeePerGas + selector.maxPriorityFeePerGas;
   };
+
+  const goToVote = () => {
+    _governance.activeVotes = $governance.activeVotes
+      .filter((prop) => !prop.mute)
+      .map((prop) => {
+        return {
+          id: prop.id,
+          mute: true,
+        };
+      });
+    governance.set({ ..._governance });
+    if (window.location.pathname.slice(1) !== 'governance') {
+      navigate('/governance', { replace: false });
+    }
+  };
+
+  $: hasActiveVotes = $governance.activeVotes.filter((prop) => !prop.mute).length > 0;
 </script>
 
 <Toast
@@ -63,6 +88,63 @@
     {#if $backgroundLoading.active}
       <LoadingIndicator />
     {/if}
+
+    <div
+      class="h-8
+        pl-3
+        pr-1
+        flex
+        flex-row
+        items-center
+        text-opacity-50
+        hover:text-opacity-100
+        {hasActiveVotes ? 'hover:cursor-pointer' : ''}
+        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+        ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+        : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
+      on:click="{() => goToVote()}"
+    >
+      <div class="relative">
+        {#if hasActiveVotes}
+          <div class="absolute w-2.5 h-2.5 rounded-full bg-red3 left-0 animate-ping"></div>
+          <div
+            class="absolute w-2.5 h-2.5 rounded-full bg-red3 left-0 border-2 {$settings.invertColors
+              ? 'border-grey10inverse'
+              : 'border-grey10'}"
+          ></div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="#DC1D1D"
+            class="h-5 w-5 mr-2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+            ></path>
+          </svg>
+        {:else}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="h-5 w-5 mr-2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+            ></path>
+          </svg>
+        {/if}
+      </div>
+    </div>
+
     <Dropdown>
       <div
         slot="label"

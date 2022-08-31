@@ -35,6 +35,7 @@ export function setVerbose(state) {
  * */
 export function setInvert(state) {
   _settings.invertColors = state;
+  // @ts-ignore
   if (settings.invertColors !== _settings.invertColors) settings.set({ ..._settings });
 }
 
