@@ -20,7 +20,7 @@
    * @dev constructs a payload and initiates snapshot voting
    * */
   const initVote = async () => {
-    if (proposal.state !== 'closed' && !isSupported && !vote) {
+    if (proposal.state !== 'closed' && isSupported && !vote) {
       const payload = {
         proposal: proposalEntry.id,
         choice: value,
