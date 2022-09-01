@@ -1,6 +1,5 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { slide } from 'svelte/transition';
   import Button from '../../../elements/Button.svelte';
   import { BigNumber, utils } from 'ethers';
   import InputNumber from '../../../elements/inputs/InputNumber.svelte';
@@ -118,10 +117,9 @@
 
 {#if transmuterData}
   <div
-    class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b {$settings.invertColors
+    class="grid grid-cols-3 gap-4 border-b {$settings.invertColors
       ? 'border-grey10inverse'
       : 'border-grey10'}"
-    transition:slide
   >
     <div
       class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"

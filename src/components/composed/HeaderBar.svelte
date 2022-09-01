@@ -43,14 +43,12 @@
   };
 
   const goToVote = () => {
-    _governance.activeVotes = $governance.activeVotes
-      .filter((prop) => !prop.mute)
-      .map((prop) => {
-        return {
-          id: prop.id,
-          mute: true,
-        };
-      });
+    _governance.activeVotes = $governance.activeVotes.map((prop) => {
+      return {
+        id: prop.id,
+        mute: prop.mute ? prop.mute : true,
+      };
+    });
     governance.set({ ..._governance });
     if (window.location.pathname.slice(1) !== 'governance') {
       navigate('/governance', { replace: false });
