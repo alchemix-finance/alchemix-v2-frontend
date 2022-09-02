@@ -150,11 +150,7 @@ Use at your own risk.
             <div class="pl-8 pr-9 pt-8 w-96 hidden lg:block">
               <SideBar />
             </div>
-            <div
-              class="border-l {$settings.invertColors
-                ? 'border-grey5inverse'
-                : 'border-grey5'} w-full hidden lg:block"
-            >
+            <div class="border-l {$settings.invertColors ? 'border-grey5inverse' : 'border-grey5'} w-full">
               {#if walletChecked}
                 <!--                <Route path='/accounts' component='{Accounts}' />-->
                 <Route path="/vaults" component="{Vaults}" />
@@ -171,12 +167,12 @@ Use at your own risk.
               {/if}
             </div>
           </div>
-          <div class="block lg:hidden col-span-12">
-            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>
-            <p class="text-center mb-12">
-              {$_('small_screen.message')}
-            </p>
-          </div>
+          <!--          <div class="block lg:hidden col-span-12">-->
+          <!--            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>-->
+          <!--            <p class="text-center mb-12">-->
+          <!--              {$_('small_screen.message')}-->
+          <!--            </p>-->
+          <!--          </div>-->
           <div
             class="col-span-12 pl-8 py-12 border-t {$settings.invertColors
               ? 'border-grey5inverse'
