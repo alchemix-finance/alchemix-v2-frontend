@@ -1,6 +1,5 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { slide } from 'svelte/transition';
   import { utils, BigNumber } from 'ethers';
   import { setError, setPendingApproval, setPendingTx, setPendingWallet } from '@helpers/setToast';
   import Button from '@components/elements/Button.svelte';
@@ -101,7 +100,7 @@
   };
 </script>
 
-<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 border-b border-grey10" transition:slide|local>
+<div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4">
   <div class="p-4 flex flex-col space-y-4">
     <label for="borrowInput" class="text-sm text-lightgrey10">
       {$_('available')}: {utils.formatEther(farm.tokenBalance)}

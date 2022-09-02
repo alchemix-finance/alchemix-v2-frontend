@@ -7,22 +7,9 @@
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import Button from '@components/elements/Button.svelte';
-  import Table from '@components/composed/Table/Table.svelte';
-  import HeaderCell from '@components/composed/Table/HeaderCell.svelte';
-  import ExpandRowCell from '@components/composed/Table/ExpandRowCell.svelte';
-  import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
-  import RewardCell from '@components/composed/Table/farms/RewardCell.svelte';
-  import ActionsCell from '@components/composed/Table/farms/ActionsCell.svelte';
   import ExternalFarms from '@components/composed/Table/farms/ExternalFarms.svelte';
-  import ExitCell from '@components/composed/Table/farms/ExitCell.svelte';
-  import ExpandedFarm from '@components/composed/Table/farms/ExpandedFarm.svelte';
-  import ExpandedSushiFarm from '@components/composed/Table/farms/ExpandedSushiFarm.svelte';
-  import ExpandedCrvFarm from '@components/composed/Table/farms/ExpandedCrvFarm.svelte';
-  import StakedCell from '@components/composed/Table/farms/StakedCell.svelte';
-  import ClaimableCell from '@components/composed/Table/farms/ClaimableCell.svelte';
   import GAlcxWrapper from '@components/composed/GAlcxWrapper.svelte';
-  import YieldCell from '@components/composed/Table/YieldCell.svelte';
-  import TvlCell from '@components/composed/Table/farms/TvlCell.svelte';
+  import FarmEntry from '@components/composed/FarmEntry.svelte';
 
   import { addressStore, farmsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
@@ -42,112 +29,10 @@
 
   let currentFilter = filterTypes.ACTIVE;
 
-  const colsDefinition = {
-    [filterTypes.ACTIVE]: [
-      {
-        columnId: 'col0',
-        value: '',
-        colSize: 1,
-      },
-      {
-        columnId: 'col1',
-        CellComponent: HeaderCell,
-        value: $_('table.pool'),
-        colSize: '3',
-      },
-      {
-        columnId: 'staked',
-        CellComponent: HeaderCell,
-        value: $_('table.staked_token'),
-        colSize: 2,
-      },
-      {
-        columnId: 'col2',
-        CellComponent: HeaderCell,
-        value: $_('table.tvl'),
-        colSize: 2,
-      },
-      {
-        columnId: 'col3',
-        CellComponent: HeaderCell,
-        value: $_('table.rewards'),
-        colSize: 3,
-      },
-      {
-        columnId: 'col4',
-        CellComponent: HeaderCell,
-        value: $_('table.yield'),
-        colSize: 1,
-      },
-      {
-        columnId: 'col5',
-        CellComponent: HeaderCell,
-        value: $_('table.action'),
-        colSize: 3,
-      },
-    ],
-    [filterTypes.RETIRED]: [
-      {
-        columnId: 'col1',
-        CellComponent: HeaderCell,
-        value: $_('table.pool'),
-        colSize: 7,
-      },
-      {
-        columnId: 'col2',
-        CellComponent: HeaderCell,
-        value: $_('table.staked_token'),
-        colSize: 4,
-      },
-      {
-        columnId: 'col3',
-        CellComponent: HeaderCell,
-        value: $_('table.claimable_rewards'),
-        colSize: 4,
-      },
-      {
-        columnId: 'col4',
-        CellComponent: HeaderCell,
-        value: $_('table.action'),
-        colSize: 5,
-      },
-    ],
-    [filterTypes.EXTERNAL]: [
-      {
-        columnId: 'col1',
-        CellComponent: HeaderCell,
-        value: $_('table.pool'),
-        colSize: 7,
-      },
-      {
-        columnId: 'col2',
-        CellComponent: HeaderCell,
-        value: $_('table.staked_token'),
-        colSize: 4,
-      },
-      {
-        columnId: 'col3',
-        CellComponent: HeaderCell,
-        value: $_('table.claimable_rewards'),
-        colSize: 4,
-      },
-      {
-        columnId: 'col4',
-        CellComponent: HeaderCell,
-        value: $_('table.action'),
-        colSize: 5,
-      },
-    ],
-  };
-
-  const goTo = (url) => {
-    window.open(url, '_blank');
-  };
-
   const filterFuncs = {
     [filterTypes.ACTIVE]: (value) => value.body.isActive,
     [filterTypes.RETIRED]: (value) => !value.body.isActive,
-    [filterTypes.EXTERNAL]: (value) => false,
+    [filterTypes.EXTERNAL]: () => false,
   };
 
   const registeredFarmAdapters = {
@@ -156,123 +41,111 @@
     [FarmTypes.CRV]: CRVFarmAdapter,
   };
 
-  const registeredFarmComponents = {
-    [FarmTypes.INTERNAL]: ExpandedFarm,
-    [FarmTypes.SUSHI]: ExpandedSushiFarm,
-    [FarmTypes.CRV]: ExpandedCrvFarm,
-  };
+  $: filteredRows = $farmsStore
+    .filter(
+      (val) =>
+        InternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined ||
+        ExternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined,
+    )
+    .filter(filterFuncs[currentFilter])
+    .map((farm) => {
+      const farmMetadata =
+        farm.type === FarmTypes.INTERNAL
+          ? InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()]
+          : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
 
-  const renderRows = (farmsStore, _tokenPrices, currentFilter) => {
-    return farmsStore
-      .filter(
-        (val) =>
-          InternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined ||
-          ExternalFarmsMetadata[`${val.body.tokenAddress}`.toLowerCase()] !== undefined,
-      )
-      .filter(filterFuncs[currentFilter])
-      .map((farm) => {
-        const farmMetadata =
-          farm.type === FarmTypes.INTERNAL
-            ? InternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()]
-            : ExternalFarmsMetadata[`${farm.body.tokenAddress}`.toLowerCase()];
+      let adapter = {};
+      if (farm.body.isActive) adapter = new registeredFarmAdapters[farm.type](farm.body, $tokenPriceStore);
 
-        if (farm.body.isActive) {
-          const adapter = new registeredFarmAdapters[farm.type](farm.body, _tokenPrices);
+      return {
+        body: farm.body,
+        metadata: {
+          tokenIcon: farmMetadata.tokenIcon,
+          farmIcon: farmMetadata.farmIcon,
+          farmName: farmMetadata.title,
+          farmSubtitle: farmMetadata.subtitle,
+          poolId: farm.body.isActive ? adapter.getFarm().poolId : null,
+          type: farm.type,
+        },
+        staked: {
+          amount: farm.body.userDeposit,
+          tokenSymbol: farm.body.tokenSymbol,
+        },
+        tvl: farm.body.isActive ? adapter.getTvl() : null,
+        rewards: farm.body.rewards,
+        yield: {
+          rate: farm.body.isActive ? (adapter.getApy() > 0 ? adapter.getApy() : 'N/A') : null,
+          type: 'APY',
+        },
+        adapter: farm.body.isActive ? adapter.getFarm() : null,
+        retired: {
+          rewardToken: '',
+          rewardAmount: `${farm.body.rewards
+            .map((reward, index) => {
+              return `${utils.formatEther(farm.body.userUnclaimed[index])} ${reward.tokenName} ${
+                index !== farm.body.rewards.length - 1 ? '+' : ''
+              }`;
+            })
+            .join(' ')}`,
+        },
+      };
+    });
 
-          return {
-            col0: {
-              CellComponent: ExpandRowCell,
-              expandedRow: {
-                ExpandedRowComponent: registeredFarmComponents[farm.type],
-              },
-              farm: adapter.getFarm(),
-              farmType: farm.type,
-              colSize: 1,
-            },
-            col1: {
-              CellComponent: FarmNameCell,
-              farmName: farmMetadata.title,
-              farmSubtitle: farmMetadata.subtitle,
-              farmIcon: farmMetadata.farmIcon,
-              tokenIcon: farmMetadata.tokenIcon,
-              colSize: 3,
-              alignment: 'justify-self-start',
-            },
-            staked: {
-              CellComponent: StakedCell,
-              amount: farm.body.userDeposit,
-              tokenSymbol: farm.body.tokenSymbol,
-              colSize: 2,
-            },
-            col2: {
-              CellComponent: TvlCell,
-              tvl: adapter.getTvl(),
-              colSize: 2,
-            },
-            col3: {
-              CellComponent: RewardCell,
-              rewards: farm.body.rewards,
-              colSize: 3,
-            },
-            col4: {
-              CellComponent: YieldCell,
-              yieldRate: adapter.getApy() > 0 ? adapter.getApy() : 'N/A',
-              yieldType: 'APY',
-              colSize: 1,
-            },
-            col5: {
-              CellComponent: ActionsCell,
-              label: $_('table.manage'),
-              expandedRow: {
-                ExpandedRowComponent: registeredFarmComponents[farm.type],
-              },
-              poolId: adapter.getFarm().poolId,
-              farmType: farm.type,
-              farm: adapter.getFarm(),
-              colSize: 3,
-            },
-          };
-        } else {
-          return {
-            col1: {
-              CellComponent: FarmNameCell,
-              tokenIcon: farmMetadata.tokenIcon,
-              farmIcon: farmMetadata.farmIcon,
-              farmName: farmMetadata.title,
-              farmSubtitle: farmMetadata.subtitle,
-              colSize: 7,
-              alignment: 'justify-self-start',
-            },
-            col2: {
-              CellComponent: StakedCell,
-              amount: farm.body.userDeposit,
-              tokenSymbol: farm.body.tokenSymbol,
-              colSize: 4,
-            },
-            col3: {
-              CellComponent: ClaimableCell,
-              rewardAmount: `${farm.body.rewards
-                .map((reward, index) => {
-                  return `${utils.formatEther(farm.body.userUnclaimed[index])} ${reward.tokenName} ${
-                    index !== farm.body.rewards.length - 1 ? '+' : ''
-                  }`;
-                })
-                .join(' ')}`,
-              rewardToken: '',
-              colSize: 4,
-            },
-            col4: {
-              CellComponent: ExitCell,
-              farmType: farm.type,
-              farm: farm.body,
-              colSize: 5,
-            },
-          };
-        }
-      });
-  };
-
-  $: filteredRows = renderRows($farmsStore, $tokenPriceStore, currentFilter);
+  const staticExternalFarms = [
+    {
+      icon: 'saddle.svg',
+      name: 'Saddle d4',
+      subtitle: $_('farm_page.saddle_text'),
+      actions: [
+        {
+          label: $_('actions.deposit'),
+          url: 'https://saddle.exchange/#/pools/d4/deposit',
+        },
+        {
+          label: $_('actions.stake'),
+          url: 'https://app.frax.finance/staking#Saddle_alUSD_FEI_FRAX_LUSD',
+        },
+        {
+          label: $_('actions.swap'),
+          url: 'https://saddle.exchange/#/',
+        },
+      ],
+    },
+    {
+      icon: 'sushi.svg',
+      name: 'alUSD/ETH Onsen',
+      subtitle: $_('farm_page.sushi_text'),
+      actions: [
+        {
+          label: $_('actions.deposit'),
+          url: 'https://app.sushi.com/add/ETH/0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9',
+        },
+        {
+          label: $_('actions.stake'),
+          url: 'https://app.sushi.com/farm',
+        },
+        {
+          label: $_('actions.swap'),
+          url: 'https://app.sushi.com/swap#/swap?inputCurrency=0xbc6da0fe9ad5f3b0d58160288917aa56653660e9&outputCurrency=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        },
+      ],
+    },
+    {
+      icon: 'mstable.svg',
+      name: 'mStable alUSD Feeder',
+      subtitle: $_('farm_page.mstable_text'),
+      actions: [
+        {
+          label: `${$_('actions.deposit')} & ${$_('actions.stake')}`,
+          url: 'https://mstable.app/#/musd/pools/0x4eaa01974b6594c0ee62ffd7fee56cf11e6af936',
+        },
+        {
+          label: $_('actions.swap'),
+          url: 'https://mstable.app/#/musd/swap',
+        },
+      ],
+    },
+  ];
 
   let loadingVaults = true;
 
@@ -344,7 +217,11 @@
               <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
             </div>
           {:else}
-            <Table columns="{colsDefinition[filterTypes.ACTIVE]}" rows="{filteredRows}" />
+            <div class="flex flex-col space-y-4 py-4">
+              {#each filteredRows as row}
+                <FarmEntry farm="{row}" filter="ACTIVE" />
+              {/each}
+            </div>
           {/if}
         {:else if currentFilter === filterTypes.RETIRED}
           {#if loadingVaults}
@@ -352,10 +229,18 @@
               <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
             </div>
           {:else}
-            <Table columns="{colsDefinition[filterTypes.RETIRED]}" rows="{filteredRows}" />
+            <div class="flex flex-col space-y-4 py-4">
+              {#each filteredRows as row}
+                <FarmEntry farm="{row}" filter="RETIRED" />
+              {/each}
+            </div>
           {/if}
         {:else}
-          <ExternalFarms />
+          <div class="flex flex-col space-y-4 py-4">
+            {#each staticExternalFarms as externalFarm}
+              <ExternalFarms externalFarm="{externalFarm}" />
+            {/each}
+          </div>
         {/if}
       </div>
     </ContainerWithHeader>
