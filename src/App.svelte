@@ -138,7 +138,7 @@ Use at your own risk.
         <Router url="{url}">
           <div class="grid grid-cols-12 font-alcxFlow">
             <div
-              class="col-span-12 pl-8 pt-5 pb-5 {$settings.invertColors
+              class="col-span-12 md:pl-8 md:pt-5 md:pb-5 {$settings.invertColors
                 ? 'bg-grey30inverse border-grey5inverse'
                 : 'bg-grey30 border-grey5'} border-b"
             >
