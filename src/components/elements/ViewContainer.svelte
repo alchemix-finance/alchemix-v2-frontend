@@ -23,7 +23,7 @@
     </div>
   {/if}
   <div class="px-8 pt-8 pb-36">
-    <div class="container mx-auto">
+    <div class="container flex flex-col mx-auto">
       <slot />
     </div>
   </div>
