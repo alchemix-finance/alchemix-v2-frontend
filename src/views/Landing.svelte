@@ -183,10 +183,10 @@
         : 'border-grey5'} flex flex-col space-y-4 py-8"
     >
       <p class="text-center font-alcxTitles text-3xl opacity-75">{$_('landing.leverage_headline')}</p>
-      <div class="flex flex-row space-x-4 justify-center">
+      <div class="flex flex-col lg:flex-row gap-2 justify-center">
         {#each assets as asset}
           <div
-            class="flex flex-row space-x-4 w-max border {$settings.invertColors
+            class="flex flex-row space-x-4 lg:w-max w-full border {$settings.invertColors
               ? 'border-grey1inverse bg-grey15inverse'
               : 'border-grey1 bg-grey15'} p-4 rounded-lg"
           >
@@ -208,7 +208,7 @@
 
     <div class="w-full flex flex-col space-y-4">
       <p class="text-center font-alcxTitles text-3xl opacity-75">{$_('landing.benefits_headline')}</p>
-      <div class="flex flex-row w-full">
+      <div class="flex flex-col md:flex-row w-full">
         <div
           class="flex-1 p-4 pb-16 border {$settings.invertColors
             ? 'border-grey1inverse bg-grey15inverse'
