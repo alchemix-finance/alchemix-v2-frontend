@@ -333,7 +333,7 @@
     />
   </div>
   <div slot="message">
-    <div class="flex flex-row space-x-4">
+    <div class="flex flex-col md:flex-row gap-2 items-center md:space-x-4">
       <p class="self-center">{$_('vaults_page.legacy_redirect')}</p>
       <Button label="Go To Legacy UI" width="w-max" on:clicked="{() => goToLegacy()}" />
     </div>
@@ -350,8 +350,8 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    <div class="w-full mb-8 h-10 grid grid-cols-2 gap-8">
-      <div class="col-span-1">
+    <div class="w-full mb-8 md:h-10 flex flex-col md:flex-row gap-8">
+      <div class="w-full">
         <ContainerWithHeader>
           <div slot="body">
             <div class=" items-center flex space-x-2 h-10 px-2">
@@ -393,7 +393,7 @@
           </div>
         </ContainerWithHeader>
       </div>
-      <div class="col-span-1 flex space-x-4">
+      <div class="w-full flex flex-col md:flex-row gap-4">
         <Button
           borderColor="bronze3"
           textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
