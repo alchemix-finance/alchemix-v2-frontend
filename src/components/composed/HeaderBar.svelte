@@ -70,7 +70,7 @@
   closeOnMount="{$toastConfig.closeOnMount}"
   forceCloseToast="{$toastConfig.forceClose}"
 />
-<div class="relative flex items-center justify-between">
+<div class="flex flex-col md:flex-row gap-5 p-4 md:p-0 items-center justify-center md:justify-between">
   <div class="flex-1 flex items-center">
     <Link to="/">
       <div class="flex-shrink-0 flex items-center">
@@ -82,7 +82,7 @@
       </div>
     </Link>
   </div>
-  <div class="absolute inset-y-0 right-0 flex flex-row items-center gap-2 pr-8">
+  <div class="inset-y-0 right-0 flex flex-row items-center gap-2 p-3 md:p-0 md:pr-8">
     {#if $backgroundLoading.active}
       <LoadingIndicator />
     {/if}
