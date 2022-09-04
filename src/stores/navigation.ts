@@ -1,23 +1,23 @@
-import { writable } from 'svelte/store'
+import { writable } from 'svelte/store';
 
 import { globalHistory } from 'svelte-routing/src/history';
 
 const navigationStore = writable({
-    currentPathname: window.location.pathname.slice(1)
-})
+  currentPathname: window.location.pathname.slice(1),
+});
 
 export function updatePath(pathname: string, onUpdatePath?: (pathname: string) => void) {
-    navigationStore.set({
-        currentPathname: pathname,
-    });
+  navigationStore.set({
+    currentPathname: pathname,
+  });
 
-    onUpdatePath?.(pathname)
+  onUpdatePath?.(pathname);
 }
 
 globalHistory.listen(({ location }) => {
-    navigationStore.set({
-        currentPathname: location.pathname.slice(1),
-    });
+  navigationStore.set({
+    currentPathname: location.pathname.slice(1),
+  });
 });
 
-export default navigationStore
+export default navigationStore;
