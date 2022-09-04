@@ -366,7 +366,7 @@
         <p class="mb-4">
           {$_('migration.paragraph_2')}
         </p>
-        <div class="flex flex-row justify-between space-x-4 mb-4">
+        <div class="flex flex-col md:flex-row justify-between gap-4 mb-4">
           <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}">
             <p class="text-lg">{$_('migration.step')} 1: {$_('migration.liquidating')}</p>
             <p class="text-sm mb-4 {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'}">
