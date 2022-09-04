@@ -372,25 +372,25 @@
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
         <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
       </div>
-      <div slot="body" class="py-4 px-6 flex space-x-4">
+      <div slot="body" class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-scroll">
         {#if $networkStore === '0xfa'}
           <Button
             on:clicked="{() => goTo('https://beets.fi/#/trade')}"
             label="Beethovenx"
-            width="w-max"
+            class="w-full lg:w-max"
             py="py-2"
           >
             <img src="images/icons/beethovenx.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of BeethovenX" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" width="w-max" py="py-2">
+        <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" class="w-full lg:w-max" py="py-2">
           <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
         </Button>
         {#if $networkStore === '0xfa'}
           <Button
             on:clicked="{() => goTo('https://app.spiritswap.finance/#/exchange/swap/FTM/SPIRIT')}"
             label="SpiritSwap"
-            width="w-max"
+            class="w-full lg:w-max"
             py="py-2"
           >
             <img src="images/icons/spiritswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpiritSwap" />
@@ -398,26 +398,36 @@
           <Button
             on:clicked="{() => goTo('https://spooky.fi/#/swap')}"
             label="SpookySwap"
-            width="w-max"
+            class="w-full lg:w-max"
             py="py-2"
           >
             <img src="images/icons/spookyswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpookySwap" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('http://app.paraswap.io')}" label="Paraswap" width="w-max" py="py-2">
+        <Button
+          on:clicked="{() => goTo('http://app.paraswap.io')}"
+          label="Paraswap"
+          class="w-full lg:w-max"
+          py="py-2"
+        >
           <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
         </Button>
         {#if $networkStore === '0xa'}
           <Button
             on:clicked="{() => goTo('https://app.velodrome.finance/swap')}"
             label="Velodrome"
-            width="w-max"
+            class="w-full lg:w-max"
             py="py-2"
           >
             <img src="images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
           </Button>
         {/if}
-        <Button on:clicked="{() => goTo('http://zapper.fi')}" label="Zapper" width="w-max" py="py-2">
+        <Button
+          on:clicked="{() => goTo('http://zapper.fi')}"
+          label="Zapper"
+          class="w-full lg:w-max"
+          py="py-2"
+        >
           <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
         </Button>
       </div>
@@ -442,58 +452,65 @@
             />
           </div>
 
-          <div class="flex flex-row space-x-4 h-8" transition:slide|local>
-            <p class="text-sm text-lightgrey10 min-w-max self-center">Target Network</p>
+          <div class="flex flex-col lg:flex-row gap-4" transition:slide|local>
+            <div class="flex gap-2">
+              <p class="text-sm text-lightgrey10 min-w-max self-center">Target Network:</p>
 
-            <Dropdown>
-              <div
-                slot="label"
-                class="flex flex-row space-x-4 justify-between items-center px-2 w-full h-full rounded bg-{toChain.abiPath}"
-              >
-                <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
-                <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
-                <p>▾</p>
-              </div>
-              <ul slot="options" class="w-full">
-                {#each targetNetworks as chain}
-                  <li
-                    class="cursor-pointer h-8 border-t {$settings.invertColors
-                      ? 'hover:bg-grey10inverse border-grey10inverse'
-                      : 'hover:bg-grey10 border-grey10'}"
-                    on:click="{() => setToChain(chain.id)}"
-                  >
-                    <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{chain.name}</p>
-                  </li>
-                {/each}
-              </ul>
-            </Dropdown>
-
-            <p class="pl-4 text-sm text-lightgrey10 min-w-max self-center">Bridge Fees</p>
-            <div
-              class="w-full rounded text-xl text-center flex p-4 {$settings.invertColors
-                ? 'bg-grey3inverse'
-                : 'bg-grey3'}"
-            >
-              <p class="self-center w-full text-sm text-lightgrey10 text-right">
-                {bridgeFees}
-                {selectedToken}
-              </p>
+              <Dropdown>
+                <div
+                  slot="label"
+                  class="flex flex-row space-x-4 justify-between items-center px-2 w-full h-full rounded bg-{toChain.abiPath}"
+                >
+                  <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
+                  <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
+                  <p>▾</p>
+                </div>
+                <ul slot="options" class="w-full">
+                  {#each targetNetworks as chain}
+                    <li
+                      class="cursor-pointer h-8 border-t {$settings.invertColors
+                        ? 'hover:bg-grey10inverse border-grey10inverse'
+                        : 'hover:bg-grey10 border-grey10'}"
+                      on:click="{() => setToChain(chain.id)}"
+                    >
+                      <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">{chain.name}</p>
+                    </li>
+                  {/each}
+                </ul>
+              </Dropdown>
             </div>
-            <p class="pl-4 text-sm text-lightgrey10 min-w-max self-center">Receive</p>
-            <div
-              class="w-full rounded text-xl text-center flex p-4 {$settings.invertColors
-                ? 'bg-grey3inverse'
-                : 'bg-grey3'}"
-            >
-              <p class="self-center w-full text-sm text-lightgrey10 text-right">
-                {estimateOutAmount}
-                {selectedToken}
-              </p>
+
+            <div class="flex w-full gap-2">
+              <p class="text-sm text-lightgrey10 min-w-max self-center flex-1">Bridge Fees:</p>
+              <div
+                class="w-full rounded text-xl text-center flex flex-1 p-4 {$settings.invertColors
+                  ? 'bg-grey3inverse'
+                  : 'bg-grey3'}"
+              >
+                <p class="self-center w-full text-sm text-lightgrey10 text-right">
+                  {bridgeFees}
+                  {selectedToken}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex w-full gap-2">
+              <p class="text-sm text-lightgrey10 min-w-max self-center flex-1">Receive:</p>
+              <div
+                class="w-full rounded text-xl text-center flex flex-1 p-4 {$settings.invertColors
+                  ? 'bg-grey3inverse'
+                  : 'bg-grey3'}"
+              >
+                <p class="self-center w-full text-sm text-lightgrey10 text-right">
+                  {estimateOutAmount}
+                  {selectedToken}
+                </p>
+              </div>
             </div>
           </div>
         {/if}
         {#if toChain.id !== '0x1'}
-          <div class="w-full flex flex-row space-x-4">
+          <div class="w-full flex flex-col lg:flex-row gap-4">
             <div class="rounded w-full p-4 {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}">
               <div class="w-full flex flex-row justify-between items-center">
                 <p class="text-lg">Step 1: Bridge</p>
