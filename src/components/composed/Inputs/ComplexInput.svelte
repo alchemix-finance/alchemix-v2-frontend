@@ -119,13 +119,13 @@
     </Dropdown>
   </div>
   <div
-    class="flex justify-end rounded border w-full {$settings.invertColors
+    class="flex flex-col lg:flex-row justify-end rounded border w-full {$settings.invertColors
       ? 'border-grey3inverse bg-grey3inverse'
       : 'border-grey3 bg-grey3'}"
   >
     <div class="relative w-full">
       <!--   token balance   -->
-      <p class="absolute text-sm p-2 left-2 pointer-events-none text-lightgrey10">
+      <p class="absolute text-xs lg:text-sm p-2 left-2 pointer-events-none text-lightgrey10">
         {$_('available')}:
         {tokenBalance}
         {selectedToken}
@@ -141,7 +141,30 @@
     </div>
 
     <!--   max/clear buttons   -->
-    <div class="flex flex-col w-max">
+    <div class="hidden lg:flex flex-col w-max">
+      <Button
+        label="{$_('max').toUpperCase()}"
+        width="w-full"
+        fontSize="text-xs"
+        textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+        backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+        borderSize="0"
+        height="h-10"
+        on:clicked="{() => setMax()}"
+      />
+      <Button
+        label="{$_('clear').toUpperCase()}"
+        width="w-full"
+        fontSize="text-xs"
+        textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+        backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+        borderSize="0"
+        height="h-10"
+        on:clicked="{() => clear()}"
+      />
+    </div>
+
+    <div class="lg:hidden flex flex-row w-full">
       <Button
         label="{$_('max').toUpperCase()}"
         width="w-full"
