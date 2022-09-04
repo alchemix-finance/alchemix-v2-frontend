@@ -33,6 +33,7 @@
   import { chainIds } from '@stores/v2/constants';
 
   import { connect } from '@helpers/walletManager';
+  import MenuNavbar from './components/composed/MenuNavbar.svelte';
 
   export let url = '';
   const deploymentUrl = window.location.host.split('.');
@@ -132,7 +133,7 @@ Use at your own risk.
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 <div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'} min-h-screen">
-  <div class=" fixed inset-0 overflow-auto">
+  <div class=" fixed inset-0 overflow-auto pb-10 lg:pb-0">
     <StateManager>
       <Modal>
         <Router url="{url}">
@@ -147,6 +148,9 @@ Use at your own risk.
             {#if showBanner}
               <Emergency />
             {/if}
+
+            <MenuNavbar />
+
             <div class="col-span-12 flex">
               <div class="pl-8 pr-9 pt-8 w-96 hidden lg:block">
                 <SideBar />
