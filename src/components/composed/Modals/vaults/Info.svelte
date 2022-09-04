@@ -65,7 +65,9 @@
   >
     {#each Object.entries(info) as item}
       {#if !!item[1].address}
-        <div class="flex flex-col lg:flex-row w-full gap-4 justify-center items-center hover:bg-black2 px-2 rounded">
+        <div
+          class="flex flex-col lg:flex-row w-full gap-4 justify-center items-center hover:bg-black2 px-2 rounded"
+        >
           <p class="flex-1">{item[1].label}:</p>
           <p class="font-alcxMono flex-2">
             <a
