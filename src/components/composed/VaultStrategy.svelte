@@ -90,10 +90,10 @@
       </div>
     </div>
     <div
-      class="w-full grid grid-cols-12 justify-between items-center hover:cursor-pointer"
+      class="w-full flex flex-col flex-wrap lg:flex-row gap-5 lg:gap-2 justify-between lg:items-center hover:cursor-pointer"
       on:click="{() => toggleExpanded()}"
     >
-      <div class="col-span-3">
+      <div class="w-full lg:w-1/4 flex-2">
         <FarmNameCell
           farmIcon="{strategy.col2.farmIcon}"
           farmName="{strategy.col2.farmName}"
@@ -103,15 +103,25 @@
           isHalted="{false}"
         />
       </div>
-      <div class="col-span-2">
+      <div class="lg:hidden flex">
+        <div class="w-full lg:w-1/6 flex-2">
+          <p class="text-center text-sm text-lightgrey10">Deposit</p>
+          <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
+        </div>
+        <div class="w-full lg:w-1/6 flex-2">
+          <p class="text-center text-sm text-lightgrey10">TVL</p>
+          <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
+        </div>
+      </div>
+      <div class="hidden lg:block w-full lg:w-1/6 flex-2">
         <p class="text-center text-sm text-lightgrey10">Deposit</p>
         <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
       </div>
-      <div class="col-span-2">
+      <div class="hidden lg:block w-full lg:w-1/6 flex-2">
         <p class="text-center text-sm text-lightgrey10">TVL</p>
         <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
       </div>
-      <div class="flex flex-col px-8 col-span-3">
+      <div class="flex flex-col px-8 lg:w-1/4 flex-2">
         <p class="text-center text-sm text-lightgrey10">Utilization</p>
         <VaultCapacityCell
           vaultType="{strategy.limit.vaultType}"
@@ -124,11 +134,21 @@
           bind:capInfo="{_capInfo}"
         />
       </div>
-      <div class="self-start col-span-1">
+      <div class="flex lg:hidden">
+        <div class="self-start w-full flex-1">
+          <p class="text-center text-sm text-lightgrey10">LTV</p>
+          <YieldCell yieldRate="{ltv}" yieldType="" />
+        </div>
+        <div class="self-start w-full flex-1">
+          <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
+          <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
+        </div>
+      </div>
+      <div class="self-start hidden lg:block w-full flex-1">
         <p class="text-center text-sm text-lightgrey10">LTV</p>
         <YieldCell yieldRate="{ltv}" yieldType="" />
       </div>
-      <div class="self-start col-span-1">
+      <div class="self-start hidden lg:block w-full flex-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
         <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
       </div>
@@ -145,7 +165,7 @@
             ? 'bg-grey3inverse border-grey1inverse'
             : 'bg-black2 border-grey1'}"
         >
-          <div class="flex justify-between space-x-2 w-full p-2">
+          <div class="flex justify-between space-x-2 w-full overflow-x-scroll p-2">
             <Button
               label="{$_('actions.deposit')}"
               solid="{false}"

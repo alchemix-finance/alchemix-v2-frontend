@@ -22,8 +22,8 @@
       </div>
     </div>
   {/if}
-  <div class="px-8 pt-8 pb-36">
-    <div class="container flex flex-col mx-auto">
+  <div class="px-4 pt-4 md:px-8 md:pt-8 pb-36">
+    <div class="container flex flex-col  md:mx-auto">
       <slot />
     </div>
   </div>
