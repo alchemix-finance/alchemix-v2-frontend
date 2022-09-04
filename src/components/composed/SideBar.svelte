@@ -48,7 +48,7 @@
     .filter((key) => key.supportedChains.includes($networkStore)) as sidebarItem}
     {#if $sentinelStore}
       <li
-        class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname ===
+        class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {$navigationStore.currentPathname ===
         `${sidebarItem.path}`
           ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
           : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
@@ -67,7 +67,7 @@
   {#each sidebarSetup().filter((key) => key.label === 'Cows') as sidebarItem}
     {#if $secret.unlocked}
       <li
-        class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {pathname.slice(
+        class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {$navigationStore.currentPathname.slice(
           1,
         ) === `${sidebarItem.path}`
           ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
