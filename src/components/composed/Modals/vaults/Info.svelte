@@ -57,17 +57,17 @@
 </script>
 
 <div class="flex flex-col space-y-4">
-  <p class="text-sm text-lightgrey10 min-w-max self-center">List of contracts associated with this vault:</p>
+  <p class="text-sm text-lightgrey10 w-full self-center">List of contracts associated with this vault:</p>
   <div
-    class="flex flex-col space-y-2 p-4 rounded {$settings.invertColors
+    class="flex flex-col flex-wrap gap-2 items-center justify-center break-all p-4 rounded {$settings.invertColors
       ? 'border-grey5inverse bg-grey1inverse text-white2inverse'
       : 'border-grey5 bg-grey1 text-white2'}"
   >
     {#each Object.entries(info) as item}
       {#if !!item[1].address}
-        <div class="flex flex-row space-x-4 justify-center items-center">
-          <p>{item[1].label}:</p>
-          <p class="font-alcxMono">
+        <div class="flex flex-col lg:flex-row w-full gap-4 justify-center items-center hover:bg-black2 px-2 rounded">
+          <p class="flex-1">{item[1].label}:</p>
+          <p class="font-alcxMono flex-2">
             <a
               href="{item[1].vanity ? item[1].address : `${explorerUrl}address/${item[1].address}`}"
               target="_blank"
