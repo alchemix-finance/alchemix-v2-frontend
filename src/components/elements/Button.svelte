@@ -51,7 +51,7 @@
     hover:{disabled ? 'cursor-not-allowed' : noHoverEffect ? 'cursor-default' : 'cursor-pointer'}
     hover:text-opacity-100
     disabled:opacity-50
-    transition-all
+    transition-all {$$props.class}
     "
   disabled="{disabled}"
   on:click="{clickEvent}"
