@@ -61,7 +61,7 @@
 </script>
 
 <div class="px-4 mb-4 " transition:slide|local>
-  <div class="flex flex-row space-x-4">
+  <div class="flex flex-col lg:flex-row gap-4">
     <div
       class="w-full border {$settings.invertColors
         ? 'border-grey3inverse bg-grey15inverse'
