@@ -98,13 +98,13 @@
       <p>{$_('galcx.title')}</p>
     </div>
   </div>
-  <div slot="body" class="py-4 px-6 flex space-y-8 flex-col">
+  <div slot="body" class="py-4 px-6 flex flex-col space-y-8">
     {#if $vaultsLoading}
       <div class="flex justify-center my-4">
         <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
       </div>
     {:else}
-      <div class="flex flex-row space-x-8">
+      <div class="flex flex-col lg:flex-row gap-8">
         <div
           class="flex flex-col space-y-4 p-4 rounded border w-full {$settings.invertColors
             ? 'border-grey10inverse bg-grey10inverse'
@@ -210,7 +210,7 @@
           </div>
 
           <div
-            class="flex flex-row justify-between space-x-6 rounded {$settings.invertColors
+            class="flex flex-col lg:flex-row justify-between gap-6 rounded {$settings.invertColors
               ? 'border-grey10inverse bg-grey10inverse'
               : 'border-grey10 bg-grey10'} w-full p-4"
           >
