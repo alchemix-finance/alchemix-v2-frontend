@@ -139,9 +139,11 @@
 </script>
 
 {#if farm}
-  <div class="grid grid-cols-3 gap-8 pl-8 pr-4 py-4 ">
+  <div class="flex flex-col lg:flex-row gap-2 lg:gap-8 lg:pl-8 lg:pr-4 lg:py-4 ">
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 w-full flex flex-col space-y-4 rounded {$settings.invertColors
+        ? 'bg-grey10inverse'
+        : 'bg-grey10'}"
     >
       <label for="borrowInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatEther(tokenInfo.balance)}
@@ -198,7 +200,9 @@
       />
     </div>
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 w-full flex flex-col space-y-4 rounded {$settings.invertColors
+        ? 'bg-grey10inverse'
+        : 'bg-grey10'}"
     >
       <label for="withdrawInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatEther(farm.userDeposit)}
@@ -256,7 +260,9 @@
     </div>
 
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 w-full flex flex-col space-y-4 rounded {$settings.invertColors
+        ? 'bg-grey10inverse'
+        : 'bg-grey10'}"
     >
       <label for="borrowInput" class="text-sm text-lightgrey10"> {$_('table.rewards')}: </label>
       <div
