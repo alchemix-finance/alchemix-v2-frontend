@@ -118,7 +118,7 @@
 </script>
 
 <div class="flex flex-col space-y-4">
-  <div class="flex flex-row space-x-4 h-8">
+  <div class="flex flex-col lg:flex-row space-x-4 ">
     <p class="text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
 
     <Dropdown>

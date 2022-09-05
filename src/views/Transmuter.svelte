@@ -143,10 +143,10 @@
 
   <div class="w-full mb-8">
     <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm flex gap-1">
+      <div slot="header" class="py-4 px-6 text-sm flex flex-col lg:flex-row gap-1">
         <Button
           label="{$_('transmuter_page.all_transmuter')}"
-          width="w-max"
+          class="w-full lg:w-max"
           canToggle="{true}"
           selected="{currentTransmuterCategories.isSelectedAll(
             $currentTransmuterCategories,
@@ -164,7 +164,7 @@
           {#each allowedVaultTypes as transmuterType}
             <Button
               label="{VaultTypesInfos[transmuterType].name}"
-              width="w-max"
+              class="w-full lg:w-max"
               canToggle="{true}"
               selected="{currentTransmuterCategories.isSelected(
                 $currentTransmuterCategories,
@@ -178,7 +178,7 @@
                 <img
                   src="{VaultTypesInfos[transmuterType].icon}"
                   alt="{VaultTypesInfos[transmuterType].name} transmuters"
-                  class="w-5 h-5"
+                  class=" w-5 h-5"
                 />
               </p>
             </Button>

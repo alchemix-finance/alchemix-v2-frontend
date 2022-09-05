@@ -33,6 +33,7 @@
   import { chainIds } from '@stores/v2/constants';
 
   import { connect } from '@helpers/walletManager';
+  import MenuNavbar from './components/composed/MenuNavbar.svelte';
 
   export let url = '';
   const deploymentUrl = window.location.host.split('.');
@@ -132,56 +133,61 @@ Use at your own risk.
 
 <svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 <div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'} min-h-screen">
-  <StateManager>
-    <Modal>
-      <Router url="{url}">
-        <div class="grid grid-cols-12 font-alcxFlow">
-          <div
-            class="col-span-12 pl-8 pt-5 pb-5 {$settings.invertColors
-              ? 'bg-grey30inverse border-grey5inverse'
-              : 'bg-grey30 border-grey5'} border-b"
-          >
-            <HeaderBar />
-          </div>
-          {#if showBanner}
-            <Emergency />
-          {/if}
-          <div class="col-span-12 flex">
-            <div class="pl-8 pr-9 pt-8 w-96 hidden lg:block">
-              <SideBar />
+  <div class=" fixed inset-0 overflow-auto pb-20 lg:pb-0">
+    <StateManager>
+      <Modal>
+        <Router url="{url}">
+          <div class="grid grid-cols-12 font-alcxFlow">
+            <div
+              class="col-span-12 md:pl-8 md:pt-5 md:pb-5 {$settings.invertColors
+                ? 'bg-grey30inverse border-grey5inverse'
+                : 'bg-grey30 border-grey5'} border-b"
+            >
+              <HeaderBar />
             </div>
-            <div class="border-l {$settings.invertColors ? 'border-grey5inverse' : 'border-grey5'} w-full">
-              {#if walletChecked}
-                <!--                <Route path='/accounts' component='{Accounts}' />-->
-                <Route path="/vaults" component="{Vaults}" />
-                <Route path="/transmuter" component="{Transmuter}" />
-                <Route path="/swap" component="{Swap}" />
+            {#if showBanner}
+              <Emergency />
+            {/if}
 
-                <Route path="/farms" component="{Farms}" />
-                <Route path="/governance" component="{Governance}" />
-                <Route path="/settings" component="{Settings}" />
-                <Route path="/" component="{Landing}" />
-                <Route path="/*" component="{Error}" />
-                <Route path="/sentinel" component="{Sentinel}" />
-                <Route path="/get-out" component="{SecretCowLevel}" />
-              {/if}
+            <MenuNavbar />
+
+            <div class="col-span-12 flex">
+              <div class="pl-8 pr-9 pt-8 w-96 hidden lg:block">
+                <SideBar />
+              </div>
+              <div class="border-l {$settings.invertColors ? 'border-grey5inverse' : 'border-grey5'} w-full">
+                {#if walletChecked}
+                  <!--                <Route path='/accounts' component='{Accounts}' />-->
+                  <Route path="/vaults" component="{Vaults}" />
+                  <Route path="/transmuter" component="{Transmuter}" />
+                  <Route path="/swap" component="{Swap}" />
+
+                  <Route path="/farms" component="{Farms}" />
+                  <Route path="/governance" component="{Governance}" />
+                  <Route path="/settings" component="{Settings}" />
+                  <Route path="/" component="{Landing}" />
+                  <Route path="/*" component="{Error}" />
+                  <Route path="/sentinel" component="{Sentinel}" />
+                  <Route path="/get-out" component="{SecretCowLevel}" />
+                {/if}
+              </div>
+            </div>
+            <!--          <div class="block lg:hidden col-span-12">-->
+            <!--            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>-->
+            <!--            <p class="text-center mb-12">-->
+            <!--              {$_('small_screen.message')}-->
+            <!--            </p>-->
+            <!--          </div>-->
+            <div
+              class="col-span-12 pl-8 py-12 border-t {$settings.invertColors
+                ? 'border-grey5inverse'
+                : 'border-grey5'}"
+            >
+              <Footer />
             </div>
           </div>
-          <!--          <div class="block lg:hidden col-span-12">-->
-          <!--            <p class="text-center text-lg my-12">{$_('small_screen.title')}</p>-->
-          <!--            <p class="text-center mb-12">-->
-          <!--              {$_('small_screen.message')}-->
-          <!--            </p>-->
-          <!--          </div>-->
-          <div
-            class="col-span-12 pl-8 py-12 border-t {$settings.invertColors
-              ? 'border-grey5inverse'
-              : 'border-grey5'}"
-          >
-            <Footer />
-          </div>
-        </div>
-      </Router>
-    </Modal>
-  </StateManager>
+        </Router>
+      </Modal>
+    </StateManager>
+  </div>
 </div>

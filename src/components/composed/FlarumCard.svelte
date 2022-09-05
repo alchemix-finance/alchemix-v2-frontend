@@ -15,27 +15,27 @@
 </script>
 
 <div
-  class="relative border rounded w-full {$settings.invertColors
+  class="border rounded w-full flex flex-col {$settings.invertColors
     ? 'bg-grey10inverse border-grey3inverse'
     : 'bg-grey10 border-grey3'}"
 >
-  <div class="flex flex-col p-2 mb-10">
-    <p class="mb-2">{postData.title.slice(8)}</p>
-    <div class="flex flex-row justify-between text-sm">
+  <div class="flex flex-col p-2 mb-10 w-52 lg:w-full flex-1">
+    <p class="mb-2 text-xs lg:text-base flex-1">{postData.title.slice(8)}</p>
+    <div class="flex flex-row justify-between text-xs lg:text-sm">
       <p class="text-lightgrey5">Created:</p>
       <p>{toDate(postData.created)}</p>
     </div>
-    <div class="flex flex-row justify-between text-sm">
+    <div class="flex flex-row justify-between text-xs lg:text-sm">
       <p class="text-lightgrey5">Last post:</p>
       <p>{toDate(postData.lastPost)}</p>
     </div>
-    <div class="flex flex-row justify-between text-sm">
+    <div class="flex flex-row justify-between text-xs lg:text-sm">
       <p class="text-lightgrey5">Posts:</p>
       <p>{postData.posts}</p>
     </div>
   </div>
 
-  <div class="w-full p-2 absolute bottom-0">
+  <div class="w-full p-1">
     <Button
       label="Read {postData.title.slice(0, 8)}"
       borderColor="green4"
@@ -43,7 +43,7 @@
       hoverColor="green4"
       height="h-8"
       borderSize="1"
-      fontSize="text-md"
+      class="text-xs lg:text-md"
       on:clicked="{() => openOnForum(postData.url)}"
     />
   </div>

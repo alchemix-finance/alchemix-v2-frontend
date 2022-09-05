@@ -64,7 +64,7 @@
     </div>
     <div
       on:click="{() => toggleExpanded()}"
-      class="w-full px-8 py-4 flex flex-col space-y-4 hover:cursor-pointer"
+      class="w-full px-8 py-4 flex flex-col gap-4 hover:cursor-pointer"
     >
       <div class="w-full flex flex-row space-x-4">
         <svg
@@ -83,28 +83,28 @@
         </svg>
         <GenericCell value="{proposal.title}" state="{proposal.state}" />
       </div>
-      <div class="w-full grid grid-cols-6">
-        <div class="flex flex-col items-center">
+      <div class="w-full flex flex-row flex-wrap gap-2 lg:gap-0 lg:flex-nowrap">
+        <div class="flex flex-col items-start lg:items-center w-full flex-1">
           <p class="text-center text-sm text-lightgrey10">Status</p>
           <StatusCell value="{proposal.state}" state="{proposal.state}" />
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-start lg:items-center w-full flex-1">
           <p class="text-center text-sm text-lightgrey10">Type</p>
           <GenericCell value="{VotingType[proposal.type]}" state="{proposal.state}" />
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-start lg:items-center w-full flex-1">
           <p class="text-center text-sm text-lightgrey10">Start</p>
           <GenericCell value="{snapshotToDate(proposal.start)}" state="{proposal.state}" />
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-start lg:items-center w-full flex-1">
           <p class="text-center text-sm text-lightgrey10">End</p>
           <GenericCell value="{snapshotToDate(proposal.end)}" state="{proposal.state}" />
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-start lg:items-center w-full flex-1">
           <p class="text-center text-sm text-lightgrey10">Snapshot</p>
           <SnapshotCell snapshot="{proposal.snapshot}" state="{proposal.state}" />
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-start lg:items-center w-full flex-1">
           <p class="text-center text-sm text-lightgrey10">IPFS</p>
           <IpfsCell
             ipfsShort="{proposal.ipfs.slice(0, 8)}"

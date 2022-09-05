@@ -23,7 +23,7 @@
     transition:fade
     on:outrostart="{onOutroStart}"
   >
-    <div class="w-1/3" transition:fly="{{ y: -200, duration: 350 }}">
+    <div class="p-2 lg:p-0 lg:w-1/3" transition:fly="{{ y: -200, duration: 350 }}">
       <svelte:component this="{$modal.component}" {...$modal.props} />
     </div>
   </div>

@@ -38,7 +38,7 @@
   <div class="grow w-full">
     <ContainerWithHeader fullWidth="{true}">
       <div slot="header" class="py-4 px-6">
-        <div class="flex font-alcxTitles text-lg tracking-wide justify-between">
+        <div class="flex gap-2 flex-col md:flex-row font-alcxTitles text-lg tracking-wide justify-between">
           <div class="flex-col">
             <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
               {$_('metrics.total_deposit')}
@@ -74,7 +74,9 @@
             </div>
           </div>
 
-          <div class="flex-col pl-6 border-l border-dashed border-bronze3">
+          <div
+            class="flex-col border-t md:border-t-0 md:pt-0 md:pl-6 md:border-l border-dashed border-bronze3"
+          >
             <div class="text-bronze3 mr-2 uppercase text-sm whitespace-nowrap">
               {$_('metrics.global_tvl')}
             </div>
