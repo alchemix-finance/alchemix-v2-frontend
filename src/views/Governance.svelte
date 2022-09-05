@@ -70,13 +70,16 @@
     </p>
 
     <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm flex justify-between items-center">
-        <p>Recently Active Discussions</p>
+      <div
+        slot="header"
+        class="py-4 px-6 text-sm flex flex-col gap-2 lg:gap-0 lg:flex-row lg:justify-between lg:items-center"
+      >
+        <p class=" text-left">Recently Active Discussions</p>
         <Button
           label="{$_('governance_page.openOnForum')}"
           borderSize="1"
           height="h-8"
-          width="w-max"
+          class="w-full lg:w-max"
           fontSize="text-md"
           on:clicked="{() => openDiscussions()}"
         >
@@ -96,13 +99,13 @@
           </svg>
         </Button>
       </div>
-      <div slot="body">
+      <div slot="body" class=" overflow-x-auto lg:overflow-x-hidden">
         {#if $flarum.fetching}
           <div class="flex justify-center my-4">
             <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
           </div>
         {:else if $flarum.posts.length > 0}
-          <div class="flex flex-row space-x-4 m-4">
+          <div class="flex flex-row justify-start gap-4 m-4">
             {#each $flarum.posts as post}
               <FlarumCard postData="{post}" />
             {/each}
@@ -112,7 +115,7 @@
     </ContainerWithHeader>
 
     <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
+      <div slot="header" class="py-4 px-6 text-sm flex flex-wrap lg:flex-nowrap justify-between">
         <div class="flex space-x-4">
           <Button
             label="{$_('governance_page.all')} ({countByFilter.ALL})"
@@ -146,7 +149,7 @@
         </div>
         <!--        <p>{$_('governance_page.proposals')}</p>-->
 
-        <div>
+        <div class=" py-2 self-stretch">
           <Button
             label="{$_('governance_page.openAllOnSnapshot')}"
             borderSize="1"
@@ -178,7 +181,7 @@
             <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
           </div>
         {:else if $governance.proposals.length > 0}
-          <div class="flex flex-col space-y-4 py-4">
+          <div class="flex flex-col gap-4 py-4">
             {#each filteredProposals as proposal}
               <ProposalEntry proposal="{proposal}" />
             {/each}

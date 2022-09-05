@@ -117,12 +117,14 @@
 
 {#if transmuterData}
   <div
-    class="grid grid-cols-3 gap-4 border-b {$settings.invertColors
+    class="flex flex-col lg:flex-row justify-evenly gap-4 border-b {$settings.invertColors
       ? 'border-grey10inverse'
       : 'border-grey10'}"
   >
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 flex flex-col space-y-4 w-full rounded {$settings.invertColors
+        ? 'bg-grey10inverse'
+        : 'bg-grey10'}"
     >
       <label for="depositInput" class="text-sm text-lightgrey10">
         {$_('available')}: {utils.formatUnits(synthTokenData.balance, synthTokenData.decimals)}
@@ -180,7 +182,9 @@
       />
     </div>
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 flex flex-col space-y-4 w-full rounded {$settings.invertColors
+        ? 'bg-grey10inverse'
+        : 'bg-grey10'}"
     >
       <label for="withdrawInput" class="text-sm text-lightgrey10">
         {$_('table.withdrawable')}: {utils.formatUnits(
@@ -249,7 +253,9 @@
       />
     </div>
     <div
-      class="p-4 flex flex-col space-y-4 rounded {$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'}"
+      class="p-4 flex flex-col space-y-4 w-full rounded {$settings.invertColors
+        ? 'bg-grey10inverse'
+        : 'bg-grey10'}"
     >
       <label for="claimInput" class="text-sm text-lightgrey10">
         {$_('expanded.transmuted')}

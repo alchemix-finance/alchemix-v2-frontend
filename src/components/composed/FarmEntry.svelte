@@ -67,12 +67,12 @@
     {/if}
 
     <div
-      class="w-full px-8 py-4 grid {RenderType[filter]} justify-between {filter === 'ACTIVE'
-        ? 'hover:cursor-pointer'
-        : 'hover:cursor-default'}"
+      class="w-full px-8 py-4 flex flex-row flex-wrap space-y-5 lg:space-y-0 lg:flex-nowrap {RenderType[
+        filter
+      ]} justify-between {filter === 'ACTIVE' ? 'hover:cursor-pointer' : 'hover:cursor-default'}"
       on:click="{() => toggleExpanded()}"
     >
-      <div class="col-span-2">
+      <div class="w-full flex-2">
         <FarmNameCell
           tokenIcon="{farm.metadata.tokenIcon}"
           farmIcon="{farm.metadata.farmIcon}"
@@ -82,24 +82,24 @@
           pl="pl-0"
         />
       </div>
-      <div class="col-span-1">
+      <div class="w-1/2 flex-2">
         <p class="text-center text-sm text-lightgrey10">{$_('table.staked_token')}</p>
         <StakedCell amount="{farm.staked.amount}" tokenSymbol="{farm.staked.tokenSymbol}" />
       </div>
       {#if filter === 'ACTIVE'}
-        <div class="col-span-1">
+        <div class="w-1/2 flex-2">
           <p class="text-center text-sm text-lightgrey10">{$_('table.tvl')}</p>
           <TvlCell tvl="{farm.tvl}" />
         </div>
-        <div class="col-span-1">
+        <div class="w-1/2 flex-2">
           <p class="text-center text-sm text-lightgrey10">{$_('table.rewards')}</p>
           <RewardCell rewards="{farm.rewards}" />
         </div>
-        <div class="col-span-1">
+        <div class="w-1/2 flex-2">
           <p class="text-center text-sm text-lightgrey10">{$_('table.yield')}</p>
           <YieldCell yieldRate="{farm.yield.rate}" yieldType="{farm.yield.type}" />
         </div>
-        <div class="col-span-1">
+        <div class="w-full lg:w-1/2 flex-2">
           <p class="text-center text-sm text-lightgrey10">{$_('table.action')}</p>
           <ActionsCell
             label="{$_('table.manage')}"
@@ -109,14 +109,14 @@
           />
         </div>
       {:else}
-        <div class="col-span-1">
+        <div class="w-1/2 flex-2">
           <p class="text-center text-sm text-lightgrey10">{$_('table.claimable_rewards')}</p>
           <ClaimableCell
             rewardAmount="{farm.retired.rewardAmount}"
             rewardToken="{farm.retired.rewardToken}"
           />
         </div>
-        <div class="col-span-1">
+        <div class="w-1/2 flex-2">
           <p class="text-center text-sm text-lightgrey10">{$_('table.action')}</p>
           <ExitCell farmType="{farm.metadata.type}" farm="{farm.body}" />
         </div>

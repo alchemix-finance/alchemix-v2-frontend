@@ -48,10 +48,10 @@
       </div>
     </div>
     <div
-      class="w-full px-8 py-4 grid grid-cols-4 justify-between hover:cursor-pointer"
+      class="w-full px-8 py-4 flex flex-wrap max-w-full lg:flex-nowrap lg:flex-row lg:justify-between hover:cursor-pointer"
       on:click="{() => toggleExpanded()}"
     >
-      <div class="col-span-1">
+      <div class="flex-2 w-full pb-3 lg:pb-0">
         <FarmNameCell
           farmIcon="{nameConf.farmIcon}"
           tokenIcon="{nameConf.tokenIcon}"
@@ -60,15 +60,15 @@
           alignment="{nameConf.alignment}"
         />
       </div>
-      <div class="col-span-1">
+      <div class="lg:flex-2 w-1/2 lg:w-full">
         <p class="text-center text-sm text-lightgrey10">Deposited</p>
         <CurrencyCell value="{depositConf.value}" token="{depositConf.token}" />
       </div>
-      <div class="col-span-1">
+      <div class="lg:flex-2 w-1/2 lg:w-full">
         <p class="text-center text-sm text-lightgrey10">Withdrawable</p>
         <CurrencyCell value="{withdrawConf.value}" token="{withdrawConf.token}" />
       </div>
-      <div class="col-span-1">
+      <div class="flex-2 w-full">
         <p class="text-center text-sm text-lightgrey10">Claimable</p>
         <CurrencyCell value="{claimConf.value}" token="{claimConf.token}" />
       </div>

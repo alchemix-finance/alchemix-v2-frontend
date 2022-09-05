@@ -24,9 +24,10 @@
   $: aggregate = vaults.map((vault, index) => {
     const vaultTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
-    const tokenPrice = $global.tokenPrices.find(
-      (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
-    )?.price || 0;
+    const tokenPrice =
+      $global.tokenPrices.find(
+        (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
+      )?.price || 0;
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
@@ -124,15 +125,21 @@
   $: fiatDeposit = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((totalDeposit || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+  }).format(
+    parseFloat(((totalDeposit || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)),
+  );
   $: fiatWithdraw = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((totalWithdraw || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+  }).format(
+    parseFloat(((totalWithdraw || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)),
+  );
   $: fiatDebtLimit = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((debtLimit || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+  }).format(
+    parseFloat(((debtLimit || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)),
+  );
   $: fiatDebt = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
@@ -140,7 +147,9 @@
   $: fiatInterest = new Intl.NumberFormat($settings.userLanguage.locale, {
     style: 'currency',
     currency: $settings.baseCurrency.symbol,
-  }).format(parseFloat(((totalInterest || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)));
+  }).format(
+    parseFloat(((totalInterest || 0) * ($global.fiatRates[$settings.baseCurrency.symbol] || 1)).toFixed(2)),
+  );
 
   $: data = {
     labels: [[$_('table.withdrawable')], [$_('chart.debt')], [$_('chart.interest')]],
@@ -193,7 +202,7 @@
             size: 16,
             family: MONTSERRAT,
           },
-          callback: function(val, index, c) {
+          callback: function (val, index, c) {
             // this sets the numerical values and labels for the bars
             if (this.getLabelForValue(val)[0].toUpperCase() === $_('table.withdrawable').toUpperCase()) {
               return [...this.getLabelForValue(val), `${fiatWithdraw}`];
@@ -213,7 +222,7 @@
         ticks: {
           stepSize: 1,
           padding: 10,
-          callback: function(value) {
+          callback: function (value) {
             // this iterates over _all_ ticks and should return ticks that match 0, debtLimit and totalDeposit
             // it also generates the labels on the y axis and creates a callback for each label
 
@@ -271,30 +280,30 @@
   };
 </script>
 
-<div class='h-96'>
-  <div class='px-8 py-8 rounded-md h-full pb-24'>
-    <div class='flex justify-between font-alcxFlow pb-4 pl-2'>
-      <div class='flex'>
-        <div class='mr-8 flex items-center'>
-          <span class='text-orange2 mr-05'>
+<div class="h-96">
+  <div class="px-8 py-8 rounded-md h-full pb-24">
+    <div class="flex justify-between font-alcxFlow pb-4 pl-2">
+      <div class="flex">
+        <div class="mr-8 flex items-center">
+          <span class="text-orange2 mr-05">
             <span>-</span>
-            <span class='mx'>-</span>
+            <span class="mx">-</span>
             <span>-</span>
           </span>
-          <span class='mx-2 text-grey2'>{$_('chart.total_deposit')}</span>
-          <span class='text-lg'>{fiatDeposit}</span>
+          <span class="mx-2 text-grey2">{$_('chart.total_deposit')}</span>
+          <span class="text-lg">{fiatDeposit}</span>
         </div>
-        <div class='mr-8 flex items-center'>
-          <span class='text-green1 mr-05'>
+        <div class="mr-8 flex items-center">
+          <span class="text-green1 mr-05">
             <span>-</span>
-            <span class='mx'>-</span>
+            <span class="mx">-</span>
             <span>-</span>
           </span>
-          <span class='mx-2 text-grey2'>{$_('table.debt_limit')}</span>
-          <span class='text-lg'>{fiatDebtLimit}</span>
+          <span class="mx-2 text-grey2">{$_('table.debt_limit')}</span>
+          <span class="text-lg">{fiatDebtLimit}</span>
         </div>
       </div>
     </div>
-    <BarChart data='{data}' options='{options}' />
+    <BarChart data="{data}" options="{options}" />
   </div>
 </div>
