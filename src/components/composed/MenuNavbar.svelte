@@ -10,7 +10,7 @@
   import Wallet from './Wallet.svelte';
 </script>
 
-<div class="lg:hidden flex flex-col w-full fixed bottom-0 z-20 bg-grey20">
+<div class="lg:hidden flex flex-col w-full fixed bottom-0 z-10 bg-grey20">
   <div class="border-t border-grey30">
     <Wallet />
   </div>
