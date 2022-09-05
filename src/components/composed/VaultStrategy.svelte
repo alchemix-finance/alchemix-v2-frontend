@@ -165,7 +165,7 @@
             ? 'bg-grey3inverse border-grey1inverse'
             : 'bg-black2 border-grey1'}"
         >
-          <div class="flex justify-between space-x-2 w-full overflow-x-scroll p-2">
+          <div class="flex justify-between space-x-2 w-full overflow-x-scroll lg:overflow-x-hidden p-2">
             <Button
               label="{$_('actions.deposit')}"
               solid="{false}"

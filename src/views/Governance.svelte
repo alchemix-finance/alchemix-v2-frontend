@@ -99,7 +99,7 @@
           </svg>
         </Button>
       </div>
-      <div slot="body" class=" overflow-scroll">
+      <div slot="body" class=" overflow-x-auto lg:overflow-x-hidden">
         {#if $flarum.fetching}
           <div class="flex justify-center my-4">
             <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />

@@ -372,7 +372,10 @@
       <div slot="header" class="py-4 px-6 text-sm flex justify-between">
         <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
       </div>
-      <div slot="body" class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-scroll">
+      <div
+        slot="body"
+        class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-y-visible lg:overflow-y-hidden"
+      >
         {#if $networkStore === '0xfa'}
           <Button
             on:clicked="{() => goTo('https://beets.fi/#/trade')}"
