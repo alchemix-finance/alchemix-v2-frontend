@@ -12,7 +12,7 @@
     </div>
   {/if}
   {#if $$slots.message}
-    <div class="container mx-auto px-8 pt-8">
+    <div class="container mx-auto lg:px-8 px-4 pt-8">
       <div
         class="border-y-1 py-2 rounded text-sm border border-green4 {$settings.invertColors
           ? 'bg-green7 text-white2inverse'
