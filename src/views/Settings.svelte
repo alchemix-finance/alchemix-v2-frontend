@@ -22,10 +22,20 @@
     setSuccess('Error copied to clipboard');
   };
 
+  function escapeSemicolon(msg) {
+    let newString = '';
+    for (const sChar of msg) {
+      newString += sChar === ';' ? '%3B' : sChar;
+    }
+    return newString;
+  }
+
   const createBugReport = (bug) => {
     const title = `${bug.message.slice(0, 64)}${bug.message.length > 64 ? '...' : ''}`;
     window.open(
-      `https://github.com/alchemix-finance/alchemix-v2-frontend/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBUG%5D+${title}&description=${bug.message}`,
+      `https://github.com/alchemix-finance/alchemix-v2-frontend/issues/new?assignees=&labels=bug&template=BUG-REPORT.yml&title=%5BBUG%5D+${escapeSemicolon(
+        title,
+      )}&description=${escapeSemicolon(bug.message)}`,
       '_blank',
     );
     setSuccess('Generated Bug Report');
