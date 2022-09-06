@@ -239,6 +239,20 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://stake.rocketpool.net/',
       },
+      '0x80Ca99D65A8855Cb20e44A5e9B6C6AbF71E3739d': {
+        rewardAdapter: 'rocketPool',
+        rewardType: 'APR',
+        customTokenName: false,
+        token: '',
+        customAddress: '',
+        vaultName: 'Rocket',
+        beta: false,
+        acceptGateway: false,
+        acceptWETH: false,
+        multicall: false,
+        gateway: '',
+        strategy: 'https://stake.rocketpool.net/',
+      },
       '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e': {
         gateway: 'ATokenGateway_alETH',
       },
@@ -267,6 +281,12 @@ export const vaultMessages = [
     level: 0,
     message:
       'Deposit on this vault is paused. Yearn is deprecating this Vault in favor of their new yvUSDT vault. Please migrate your position.',
+  },
+  {
+    vault: '0xae78736Cd615f374D3085123A210448E74Fc6393',
+    level: 1,
+    message:
+      'The updated vault uses Uniswap, so will be subject to the rETH/ETH spread when the rETH buffer does not contain enough ETH for a direct withdrawal.',
   },
 ];
 
