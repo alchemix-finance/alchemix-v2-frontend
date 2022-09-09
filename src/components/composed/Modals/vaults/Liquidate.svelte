@@ -110,22 +110,28 @@
 
     const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
 
-    return [
-      ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
-        const yieldTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
+    const tokensArr = [];
 
-        return {
-          address: yieldTokenData.address,
-          yieldAddress: bodyVault.address,
-          balance: bodyVault.balance,
-          symbol: yieldTokenData.symbol,
-          decimals: yieldTokenData.decimals,
-          yieldPerShare: bodyVault.yieldPerShare,
-          underlyingPerShare: bodyVault.underlyingPerShare,
-          debtToken: debtTokenData.symbol,
-        };
-      }),
-    ];
+    for (const vaultBody of vaultsStore[vaultType].vaultBody) {
+      const yieldTokenData = getTokenDataFromBalances(vaultBody.underlyingAddress, [$balancesStore]);
+
+      if (tokensArr.findIndex((token) => token.address === vaultBody.underlyingAddress) !== -1) {
+        continue;
+      }
+
+      tokensArr.push({
+        address: yieldTokenData.address,
+        yieldAddress: vaultBody.address,
+        balance: vaultBody.balance,
+        symbol: yieldTokenData.symbol,
+        decimals: yieldTokenData.decimals,
+        yieldPerShare: vaultBody.yieldPerShare,
+        underlyingPerShare: vaultBody.underlyingPerShare,
+        debtToken: debtTokenData.symbol,
+      });
+    }
+
+    return tokensArr;
   };
 
   const useCurrentBalance = (yieldTokenData) => {
