@@ -68,7 +68,7 @@
 
     const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
 
-    return [
+    let tokensArr = [
       {
         address: debtTokenData.address,
         balance: debtTokenData.balance,
@@ -77,19 +77,26 @@
         underlyingPerShare: BigNumber.from(1),
         debtToken: debtTokenData.symbol,
       },
-      ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
-        const underlyingTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
-
-        return {
-          address: underlyingTokenData.address,
-          balance: underlyingTokenData.balance,
-          symbol: underlyingTokenData.symbol,
-          decimals: underlyingTokenData.decimals,
-          underlyingPerShare: bodyVault.underlyingPerShare,
-          debtToken: debtTokenData.symbol,
-        };
-      }),
     ];
+
+    for (const vaultBody of vaultsStore[vaultType].vaultBody) {
+      if (tokensArr.findIndex((token) => token.address === vaultBody.underlyingAddress) !== -1) {
+        continue;
+      }
+
+      const underlyingTokenData = getTokenDataFromBalances(vaultBody.underlyingAddress, [$balancesStore]);
+
+      tokensArr.push({
+        address: underlyingTokenData.address,
+        balance: underlyingTokenData.balance,
+        symbol: underlyingTokenData.symbol,
+        decimals: underlyingTokenData.decimals,
+        underlyingPerShare: vaultBody.underlyingPerShare,
+        debtToken: debtTokenData.symbol,
+      });
+    }
+
+    return tokensArr;
   };
 
   const setInputMax = (underlyingTokenData, debt) => {
