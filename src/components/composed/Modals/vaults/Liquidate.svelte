@@ -113,18 +113,26 @@
     const tokensArr = [];
 
     for (const vaultBody of vaultsStore[vaultType].vaultBody) {
-      const yieldTokenData = getTokenDataFromBalances(vaultBody.underlyingAddress, [$balancesStore]);
+      const tokenData = getTokenDataFromBalances(vaultBody.address, [$balancesStore]);
 
-      if (tokensArr.findIndex((token) => token.address === vaultBody.underlyingAddress) !== -1) {
-        continue;
-      }
+      const tokenSymbol = (() => {
+        if (VaultTypesInfos[selectedVaultType]?.metaConfig[vaultBody.address] === undefined) {
+          return tokenData.symbol;
+        }
+
+        if (VaultTypesInfos[selectedVaultType]?.metaConfig[vaultBody.address].token.length <= 0) {
+          return tokenData.symbol;
+        }
+
+        return VaultTypesInfos[selectedVaultType].metaConfig[vaultBody.address].token;
+      })();
 
       tokensArr.push({
-        address: yieldTokenData.address,
+        address: vaultBody.address,
         yieldAddress: vaultBody.address,
         balance: vaultBody.balance,
-        symbol: yieldTokenData.symbol,
-        decimals: yieldTokenData.decimals,
+        symbol: tokenSymbol,
+        decimals: tokenData.decimals,
         yieldPerShare: vaultBody.yieldPerShare,
         underlyingPerShare: vaultBody.underlyingPerShare,
         debtToken: debtTokenData.symbol,
