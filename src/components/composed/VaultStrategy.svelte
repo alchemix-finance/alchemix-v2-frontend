@@ -187,16 +187,16 @@
               borderSize="0"
               on:clicked="{() => toggleMode(1)}"
             />
-            <Button
-              label="{$_('actions.migrate')}"
-              solid="{false}"
-              width="w-full"
-              height="h-8"
-              selected="{mode === 2}"
-              canToggle="{true}"
-              borderSize="0"
-              on:clicked="{() => toggleMode(2)}"
-            />
+            <!--            <Button-->
+            <!--              label="{$_('actions.migrate')}"-->
+            <!--              solid="{false}"-->
+            <!--              width="w-full"-->
+            <!--              height="h-8"-->
+            <!--              selected="{mode === 2}"-->
+            <!--              canToggle="{true}"-->
+            <!--              borderSize="0"-->
+            <!--              on:clicked="{() => toggleMode(2)}"-->
+            <!--            />-->
             <Button
               label="{$_('actions.info')}"
               solid="{false}"
