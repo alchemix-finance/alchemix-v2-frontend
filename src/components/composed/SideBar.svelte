@@ -52,7 +52,7 @@
         `${sidebarItem.path}`
           ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
           : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
-        on:click="{() => updatePath(sidebarItem.path)}"
+        on:click="{() => updatePath(sidebarItem.path, (pathname) => routerGuard(pathname))}"
         transition:fade|local
       >
         <span>{$_(sidebarItem.label)}</span>
@@ -72,7 +72,7 @@
         ) === `${sidebarItem.path}`
           ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
           : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
-        on:click="{() => routerGuard(sidebarItem.path)}"
+        on:click="{() => updatePath(sidebarItem.path, (pathname) => routerGuard(pathname))}"
         transition:fade|local
       >
         <span>{$_(sidebarItem.label)}</span>
