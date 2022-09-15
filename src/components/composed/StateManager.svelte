@@ -16,7 +16,7 @@
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { resetStores } from '@stores/v2/methods';
   import { reservesStore } from '@stores/aaveReserves';
-  import { getReserves } from '@middleware/aave';
+  import { getReservesEth, getReservesOpt } from '@middleware/aave';
   import { queryOpenProposals } from '@middleware/snapshot';
 
   let lastConnection = {
@@ -33,8 +33,9 @@
       initStarted = true;
       const execute = chainIds.filter((entry) => entry.id === netId)[0];
 
-      const aaveReserves = await getReserves();
-      reservesStore.set([...aaveReserves.data.data.reserves]);
+      const aaveReservesEth = await getReservesEth();
+      const aaveReservesOpt = await getReservesOpt();
+      reservesStore.set([...aaveReservesEth.data.data.reserves, ...aaveReservesOpt.data.data.reserves]);
 
       let vaultTokens = [];
       execute.vaultTypes.forEach((type) => {

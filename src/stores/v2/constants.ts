@@ -17,6 +17,18 @@ export const VaultConstants = {
           aToken: '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
           staticToken: '0xBC11De1F20e83F0a6889B8c7A7868E722694E315',
         },
+        {
+          aToken: '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE',
+          staticToken: '0x43A502D7e947c8A2eBBaf7627E104Ddcc253aBc6',
+        },
+        {
+          aToken: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
+          staticToken: '0x4186Eb285b1efdf372AC5896a08C346c7E373cC4',
+        },
+        {
+          aToken: '0x6ab707Aca953eDAeFBc4fD23bA73294241490620',
+          staticToken: '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B',
+        },
       ],
     },
     alToken: 'AlToken',
@@ -190,6 +202,51 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xdac17f958d2ee523a2206206994597c13d831ec7&marketName=proto_mainnet',
       },
+      '0x43A502D7e947c8A2eBBaf7627E104Ddcc253aBc6': {
+        rewardAdapter: 'aave',
+        rewardType: 'APR',
+        customTokenName: true,
+        token: 'aDAI',
+        customAddress: '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE',
+        vaultName: 'AAVE',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: false,
+        multicall: false,
+        gateway: 'ATokenGateway_alUSD',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0xda10009cbd5d07dd0cecc66161fc93d7c9000da1&marketName=proto_optimism_v3',
+      },
+      '0x4186Eb285b1efdf372AC5896a08C346c7E373cC4': {
+        rewardAdapter: 'aave',
+        rewardType: 'APR',
+        customTokenName: true,
+        token: 'aUSDC',
+        customAddress: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
+        vaultName: 'AAVE',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: false,
+        multicall: false,
+        gateway: 'ATokenGateway_alUSD',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0x7f5c764cbc14f9669b88837ca1490cca17c31607&marketName=proto_optimism_v3',
+      },
+      '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B': {
+        rewardAdapter: 'aave',
+        rewardType: 'APR',
+        customTokenName: true,
+        token: 'aUSDT',
+        customAddress: '0x6ab707Aca953eDAeFBc4fD23bA73294241490620',
+        vaultName: 'AAVE',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: false,
+        multicall: false,
+        gateway: 'ATokenGateway_alUSD',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0x94b008aa00579c1307b0ef2c499ad98a8ce58e58&marketName=proto_optimism_v3',
+      },
     },
   },
   [VaultTypes.alETH]: {
@@ -349,6 +406,6 @@ export const chainIds = [
       name: 'Optimism',
       decimals: 18,
     },
-    vaultTypes: [],
+    vaultTypes: [VaultTypes.alUSD],
   },
 ];
