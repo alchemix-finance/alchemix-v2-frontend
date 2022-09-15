@@ -85,8 +85,10 @@ export async function toggleAlchemistStatus(
 ) {
   try {
     const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
-
-    const targetAlchemist = await getAddress(VaultConstants[VaultTypes[vaultType]].alchemistContractSelector);
+    const targetAlchemist = await getAddress(
+      VaultConstants[VaultTypes[vaultType]].alchemistContractSelector,
+      path,
+    );
     const { instance: alchemistInstance } = await contractWrapper(
       VaultConstants[VaultTypes[vaultType]].alToken,
       signerStore,
