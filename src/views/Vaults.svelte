@@ -79,7 +79,7 @@
     //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
     // )?.price;
     const currency = $settings.baseCurrency.symbol;
-    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
+    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()] || 1;
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
     const depositValue = calculateBalanceValue(
       vault.balance,
