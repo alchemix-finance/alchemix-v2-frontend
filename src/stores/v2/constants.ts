@@ -29,6 +29,10 @@ export const VaultConstants = {
           aToken: '0x6ab707Aca953eDAeFBc4fD23bA73294241490620',
           staticToken: '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B',
         },
+        {
+          aToken: '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8',
+          staticToken: '0x337B4B933d60F40CB57DD19AE834Af103F049810',
+        },
       ],
     },
     alToken: 'AlToken',
@@ -328,6 +332,21 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&marketName=proto_mainnet',
       },
+      '0x337B4B933d60F40CB57DD19AE834Af103F049810': {
+        rewardAdapter: 'aave',
+        rewardType: 'APR',
+        customTokenName: true,
+        token: 'aWETH',
+        customAddress: '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8',
+        vaultName: 'AAVE',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: true,
+        multicall: false,
+        gateway: 'ATokenGateway_alETH',
+        strategy:
+          'https://app.aave.com/reserve-overview/?underlyingAsset=0x4200000000000000000000000000000000000006&marketName=proto_optimism_v3',
+      },
     },
   },
 };
@@ -406,6 +425,6 @@ export const chainIds = [
       name: 'Optimism',
       decimals: 18,
     },
-    vaultTypes: [VaultTypes.alUSD],
+    vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
   },
 ];
