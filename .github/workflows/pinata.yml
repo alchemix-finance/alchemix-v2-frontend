@@ -68,10 +68,11 @@ jobs:
           gatewayId: ${{secrets.PINATA_GATEWAY_ID}}
           
       - name: Notify Discord Channel
-        uses: sebastianpopp/discord-action@releases/v1
+        uses: n4n0GH/discord-ipfs-action@v1.0.0
         with:
           webhook: ${{secrets.DISCORD_WEBHOOK}}
-          message: New IPFS deployment with CID ${{steps.pinata-manager.outputs.cid}}
+          cid: ${{steps.pinata-manager.outputs.cid}}
+          commit: ${{github.sha}}
 
   cleanup:
     name: Cleanup
