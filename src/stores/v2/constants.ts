@@ -29,10 +29,6 @@ export const VaultConstants = {
           aToken: '0x6ab707Aca953eDAeFBc4fD23bA73294241490620',
           staticToken: '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B',
         },
-        {
-          aToken: '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8',
-          staticToken: '0x337B4B933d60F40CB57DD19AE834Af103F049810',
-        },
       ],
     },
     alToken: 'AlToken',
@@ -46,6 +42,10 @@ export const VaultConstants = {
         {
           aToken: '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e',
           staticToken: '0x61134511187a9a2DF38D10DBe07Ba2e8E5563967',
+        },
+        {
+          aToken: '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8',
+          staticToken: '0x337B4B933d60F40CB57DD19AE834Af103F049810',
         },
       ],
     },
@@ -109,6 +109,7 @@ export const VaultTypesInfos = {
         multicall: true,
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
+        bonusType: '',
       },
       '0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE': {
         rewardAdapter: '',
@@ -123,6 +124,7 @@ export const VaultTypesInfos = {
         multicall: true,
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE',
+        bonusType: '',
       },
       '0x7Da96a3891Add058AdA2E826306D812C638D87a7': {
         rewardAdapter: '',
@@ -137,6 +139,7 @@ export const VaultTypesInfos = {
         multicall: true,
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0x7Da96a3891Add058AdA2E826306D812C638D87a7',
+        bonusType: '',
       },
       '0x3B27F92C0e212C671EA351827EDF93DB27cc0c65': {
         rewardAdapter: '',
@@ -151,6 +154,7 @@ export const VaultTypesInfos = {
         multicall: true,
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0x3B27F92C0e212C671EA351827EDF93DB27cc0c65',
+        bonusType: '',
       },
       '0x028171bCA77440897B824Ca71D1c56caC55b68A3': {
         gateway: 'ATokenGateway_alUSD',
@@ -175,6 +179,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x6b175474e89094c44da98b954eedeac495271d0f&marketName=proto_mainnet',
+        bonusType: '',
       },
       '0xf591D878608e2e5c7D4f1E499330f4AB9BbaE37a': {
         rewardAdapter: 'aave',
@@ -190,6 +195,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&marketName=proto_mainnet',
+        bonusType: '',
       },
       '0xBC11De1F20e83F0a6889B8c7A7868E722694E315': {
         rewardAdapter: 'aave',
@@ -205,6 +211,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xdac17f958d2ee523a2206206994597c13d831ec7&marketName=proto_mainnet',
+        bonusType: '',
       },
       '0x43A502D7e947c8A2eBBaf7627E104Ddcc253aBc6': {
         rewardAdapter: 'aave',
@@ -220,6 +227,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xda10009cbd5d07dd0cecc66161fc93d7c9000da1&marketName=proto_optimism_v3',
+        bonusType: 'aaveOptimism',
       },
       '0x4186Eb285b1efdf372AC5896a08C346c7E373cC4': {
         rewardAdapter: 'aave',
@@ -235,6 +243,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x7f5c764cbc14f9669b88837ca1490cca17c31607&marketName=proto_optimism_v3',
+        bonusType: 'aaveOptimism',
       },
       '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B': {
         rewardAdapter: 'aave',
@@ -250,6 +259,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x94b008aa00579c1307b0ef2c499ad98a8ce58e58&marketName=proto_optimism_v3',
+        bonusType: 'aaveOptimism',
       },
     },
   },
@@ -271,6 +281,7 @@ export const VaultTypesInfos = {
         multicall: true,
         gateway: 'WETHGateway',
         strategy: 'https://yearn.finance/#/vault/0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
+        bonusType: '',
       },
       '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0': {
         rewardAdapter: 'lido',
@@ -285,6 +296,7 @@ export const VaultTypesInfos = {
         multicall: true,
         gateway: 'WETHGateway',
         strategy: 'https://etherscan.io/token/0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
+        bonusType: '',
       },
       '0xae78736Cd615f374D3085123A210448E74Fc6393': {
         rewardAdapter: 'rocketPool',
@@ -299,6 +311,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: '',
         strategy: 'https://stake.rocketpool.net/',
+        bonusType: '',
       },
       '0x80Ca99D65A8855Cb20e44A5e9B6C6AbF71E3739d': {
         rewardAdapter: 'rocketPool',
@@ -313,6 +326,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: '',
         strategy: 'https://stake.rocketpool.net/',
+        bonusType: '',
       },
       '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e': {
         gateway: 'ATokenGateway_alETH',
@@ -331,6 +345,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alETH',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&marketName=proto_mainnet',
+        bonusType: '',
       },
       '0x337B4B933d60F40CB57DD19AE834Af103F049810': {
         rewardAdapter: 'aave',
@@ -346,6 +361,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alETH',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x4200000000000000000000000000000000000006&marketName=proto_optimism_v3',
+        bonusType: 'aaveOptimism',
       },
     },
   },
@@ -421,8 +437,8 @@ export const chainIds = [
     rpcUrl: 'https://mainnet.optimism.io/',
     explorer: 'https://optimistic.etherscan.io/',
     token: {
-      symbol: 'OP',
-      name: 'Optimism',
+      symbol: 'ETH',
+      name: 'Optimism ETH',
       decimals: 18,
     },
     vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],

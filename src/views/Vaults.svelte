@@ -228,6 +228,14 @@
         .div(BigNumber.from(10).pow(underlyingTokenData.decimals));
     };
 
+    const incentives = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].bonusType;
+      } else {
+        return true;
+      }
+    };
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
@@ -282,6 +290,7 @@
           CellComponent: YieldCell,
           yieldRate: vaultApy,
           yieldType: rewardType(),
+          incentives: incentives(),
           colSize: 2,
         },
         col5: {
