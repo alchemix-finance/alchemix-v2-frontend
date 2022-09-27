@@ -1,7 +1,7 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { slide, fly } from 'svelte/transition';
-  import { utils, FixedNumber } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { fetchTokenEnabledStatus } from '@stores/v2/asyncMethods';
 
   import settings from '@stores/settings';
@@ -70,7 +70,8 @@
   $: if (bonusYieldType !== '') getIncentives();
   $: bonusYieldRate;
 
-  $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
+  $: ltv =
+    100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio || BigNumber.from(0)));
   $: messages = vaultMessages.filter((item) => item.vault === strategy.limit.yieldTokenAddress);
   $: hasMessage = messages.length > 0;
   $: alToken = VaultConstants[strategy?.limit.vaultType].alToken;

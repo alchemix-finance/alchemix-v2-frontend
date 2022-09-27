@@ -520,7 +520,7 @@
           />
         </div>
         <div slot="body">
-          {#if currentRowsOnCurrentStrategyType.length > 0}
+          {#if currentRowsOnCurrentStrategyType.length > 0 && !$vaultsLoading}
             <div class="flex flex-col space-y-4 px-4 py-4">
               {#each currentRowsOnCurrentStrategyType.map((obj) => obj.row) as strategy}
                 <VaultStrategy strategy="{strategy}" />
