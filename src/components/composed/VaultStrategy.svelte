@@ -84,6 +84,8 @@
     ));
   };
 
+  $: totalYield = ((strategy.col4.yieldRate * 100 + bonusYieldRate * 100) / 100).toFixed(2);
+
   $: if (alToken !== undefined) getPausedStatus();
 
   const toggleExpanded = () => {
@@ -191,12 +193,7 @@
       </div>
       <div class="self-start hidden lg:block w-full flex-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
-        <YieldCell
-          yieldRate="{strategy.col4.yieldRate}"
-          bonusYield="{bonusYield}"
-          bonusYieldTokenSymbol="{bonusYieldToken}"
-          bonusYieldRate="{Math.round(bonusYieldRate * 100) / 100}"
-        />
+        <YieldCell yieldRate="{totalYield}" />
       </div>
     </div>
     {#if isExpanded}
@@ -233,16 +230,16 @@
               borderSize="0"
               on:clicked="{() => toggleMode(1)}"
             />
-            <!--            <Button-->
-            <!--              label="{$_('actions.migrate')}"-->
-            <!--              solid="{false}"-->
-            <!--              width="w-full"-->
-            <!--              height="h-8"-->
-            <!--              selected="{mode === 2}"-->
-            <!--              canToggle="{true}"-->
-            <!--              borderSize="0"-->
-            <!--              on:clicked="{() => toggleMode(2)}"-->
-            <!--            />-->
+            <Button
+              label="{$_('actions.migrate')}"
+              solid="{false}"
+              width="w-full"
+              height="h-8"
+              selected="{mode === 2}"
+              canToggle="{true}"
+              borderSize="0"
+              on:clicked="{() => toggleMode(2)}"
+            />
             <Button
               label="{$_('actions.info')}"
               solid="{false}"
