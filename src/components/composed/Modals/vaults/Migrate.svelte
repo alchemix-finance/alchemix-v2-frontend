@@ -118,62 +118,86 @@
 </script>
 
 <div class="flex flex-col space-y-4">
-  <div class="flex flex-col lg:flex-row space-x-4 ">
-    <p class="text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
+  {#if targetVaults.length > 0}
+    <div class="flex flex-col lg:flex-row space-x-4 ">
+      <p class="text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
 
-    <Dropdown>
-      <div
-        slot="label"
-        class="h-8 px-3 py-1 flex justify-between items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
-          ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
-          : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
+      <Dropdown>
+        <div
+          slot="label"
+          class="h-8 px-3 py-1 flex justify-between items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
+            ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
+            : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
+        >
+          {#if !loadingTargets}
+            <div class="flex flex-row space-x-4">
+              <img src="/images/token-icons/{selectedVault.symbol}.svg" alt="Vault Icon" class="h-4" />
+              <p>{selectedVault.name}</p>
+            </div>
+            <p>▾</p>
+          {:else}
+            <div class="flex flex-row items-center mx-auto">
+              <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
+            </div>
+          {/if}
+        </div>
+        <ul slot="options" class="w-full">
+          {#if vaultNames.length > 0}
+            {#each vaultNames as vault}
+              <li
+                class="cursor-pointer h-12 border-t flex flex-row items-center pl-4 group {$settings.invertColors
+                  ? 'hover:bg-grey10inverse border-grey10inverse'
+                  : 'hover:bg-grey10 border-grey10'}"
+                on:click="{() => setVault(vault)}"
+              >
+                <div class="flex flex-row space-x-4 items-center opacity-50 group-hover:opacity-100">
+                  <img src="/images/token-icons/{vault.symbol}.svg" alt="Network Icon" class="h-8" />
+                  <p>{vault.name}</p>
+                </div>
+              </li>
+            {/each}
+          {/if}
+        </ul>
+      </Dropdown>
+    </div>
+
+    <ComplexInput
+      bind:inputValue="{migrateAmount}"
+      externalMax="{vault?.balance}"
+      externalDecimals="{vaultDecimals}"
+      supportedTokens="{['Shares']}"
+    />
+
+    <Button
+      label="{$_('actions.migrate')}"
+      borderColor="green4"
+      backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+      hoverColor="green4"
+      height="h-12"
+      fontSize="text-md"
+      on:clicked="{() => beginMigration()}"
+    />
+  {:else}
+    <div
+      class="flex flex-row space-x-4 p-2 pl-4 items-center w-full border text-grey15
+    text-l rounded bg-orange1 border-orange2"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-8 h-8"
       >
-        {#if !loadingTargets}
-          <div class="flex flex-row space-x-4">
-            <img src="/images/token-icons/{selectedVault.symbol}.svg" alt="Vault Icon" class="h-4" />
-            <p>{selectedVault.name}</p>
-          </div>
-          <p>▾</p>
-        {:else}
-          <div class="flex flex-row items-center mx-auto">
-            <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
-          </div>
-        {/if}
-      </div>
-      <ul slot="options" class="w-full">
-        {#if vaultNames.length > 0}
-          {#each vaultNames as vault}
-            <li
-              class="cursor-pointer h-12 border-t flex flex-row items-center pl-4 group {$settings.invertColors
-                ? 'hover:bg-grey10inverse border-grey10inverse'
-                : 'hover:bg-grey10 border-grey10'}"
-              on:click="{() => setVault(vault)}"
-            >
-              <div class="flex flex-row space-x-4 items-center opacity-50 group-hover:opacity-100">
-                <img src="/images/token-icons/{vault.symbol}.svg" alt="Network Icon" class="h-8" />
-                <p>{vault.name}</p>
-              </div>
-            </li>
-          {/each}
-        {/if}
-      </ul>
-    </Dropdown>
-  </div>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 10.5v3.75m-9.303 3.376C1.83 19.126 2.914 21 4.645 21h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 4.88c-.866-1.501-3.032-1.501-3.898 0L2.697 17.626zM12 17.25h.007v.008H12v-.008z"
+        ></path>
+      </svg>
 
-  <ComplexInput
-    bind:inputValue="{migrateAmount}"
-    externalMax="{vault?.balance}"
-    externalDecimals="{vaultDecimals}"
-    supportedTokens="{['Shares']}"
-  />
-
-  <Button
-    label="{$_('actions.migrate')}"
-    borderColor="green4"
-    backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-    hoverColor="green4"
-    height="h-12"
-    fontSize="text-md"
-    on:clicked="{() => beginMigration()}"
-  />
+      <p>There's currently no other vault to migrate to.</p>
+    </div>
+  {/if}
 </div>
