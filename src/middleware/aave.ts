@@ -51,6 +51,16 @@ export async function getReservesOpt() {
               emissionsPerSecond
             }
           }
+          vToken {
+            rewards {
+              rewardToken
+              emissionsPerSecond
+            }
+          }
+          price {
+            priceInEth
+          }
+          decimals
       }
     }`,
   });
@@ -63,3 +73,5 @@ export async function getAaveApr(underlyingAsset: string) {
   const RAY = 10 ** 27;
   return reserve.liquidityRate / RAY;
 }
+
+export async function getOptimismBonus(underlyingAsset: string) {}

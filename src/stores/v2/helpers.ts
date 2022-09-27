@@ -394,9 +394,12 @@ export async function aaveStaticToDynamicAmount(
   amount: BigNumber,
   symbol: string,
   [signer]: [ethers.Signer],
+  network: string,
 ) {
   if (!!amount && symbol?.slice(0, 1) === 'a') {
-    const { instance } = await contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
+    const networkName = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+    const slicer = networkName === 'optimism' ? 4 : 1;
+    const { instance } = await contractWrapper(`StaticAToken_${symbol.slice(slicer)}`, signer, networkName);
     return instance.staticToDynamicAmount(amount);
   } else {
     return false;
@@ -407,9 +410,12 @@ export async function aaveDynamicToStaticAmount(
   amount: BigNumber,
   symbol: string,
   [signer]: [ethers.Signer],
+  network: string,
 ) {
   if (!!amount && symbol?.slice(0, 1) === 'a') {
-    const { instance } = await contractWrapper(`StaticAToken_${symbol.slice(1)}`, signer, 'ethereum');
+    const networkName = chainIds.filter((chain) => chain.id === network)[0].abiPath;
+    const slicer = networkName === 'optimism' ? 4 : 1;
+    const { instance } = await contractWrapper(`StaticAToken_${symbol.slice(slicer)}`, signer, networkName);
     return instance.dynamicToStaticAmount(amount);
   } else {
     return false;
