@@ -79,7 +79,7 @@
     //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
     // )?.price;
     const currency = $settings.baseCurrency.symbol;
-    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
+    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()] || 1;
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
     const depositValue = calculateBalanceValue(
       vault.balance,
@@ -228,6 +228,14 @@
         .div(BigNumber.from(10).pow(underlyingTokenData.decimals));
     };
 
+    const incentives = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].bonusType;
+      } else {
+        return true;
+      }
+    };
+
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
@@ -282,6 +290,7 @@
           CellComponent: YieldCell,
           yieldRate: vaultApy,
           yieldType: rewardType(),
+          incentives: incentives(),
           colSize: 2,
         },
         col5: {
@@ -511,7 +520,7 @@
           />
         </div>
         <div slot="body">
-          {#if currentRowsOnCurrentStrategyType.length > 0}
+          {#if currentRowsOnCurrentStrategyType.length > 0 && !$vaultsLoading}
             <div class="flex flex-col space-y-4 px-4 py-4">
               {#each currentRowsOnCurrentStrategyType.map((obj) => obj.row) as strategy}
                 <VaultStrategy strategy="{strategy}" />

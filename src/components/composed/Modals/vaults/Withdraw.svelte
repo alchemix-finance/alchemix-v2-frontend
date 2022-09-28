@@ -341,7 +341,7 @@
   const staticConversion = async (amount) => {
     const amountBN = utils.parseUnits(amount.toString(), yieldTokenData.decimals);
     yieldWithdrawAmount = utils.formatUnits(
-      await aaveDynamicToStaticAmount(amountBN, yieldTokenData.symbol, [$signer]),
+      await aaveDynamicToStaticAmount(amountBN, yieldTokenData.symbol, [$signer], $networkStore),
       yieldTokenData.decimals,
     );
   };

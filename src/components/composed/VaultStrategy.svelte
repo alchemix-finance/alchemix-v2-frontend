@@ -1,13 +1,15 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { slide, fly } from 'svelte/transition';
-  import { utils } from 'ethers';
+  import { utils, BigNumber } from 'ethers';
   import { fetchTokenEnabledStatus } from '@stores/v2/asyncMethods';
 
   import settings from '@stores/settings';
   import { vaultsStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { vaultMessages, VaultConstants } from '@stores/v2/constants';
+  import { getTokenPriceInEth } from '@middleware/llama';
+  import { reservesStore } from '@stores/aaveReserves';
 
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
@@ -29,7 +31,47 @@
   let _capInfo;
   let isPaused = false;
 
-  $: ltv = 100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio));
+  let bonusYield = false;
+  let bonusYieldRate = '0';
+  let bonusYieldValue = '0';
+  let bonusYieldToken = '';
+  let aaveReserve;
+  let tokenPriceInEth = 0;
+  const WEI_DEC = 10 ** 18;
+  const SPY = 31536000;
+  let CHAIN_DEC;
+
+  const getAaveReserveOpt = (_underlying) => {
+    return $reservesStore
+      .filter((reserve) => reserve.underlyingAsset.toLowerCase() === _underlying.toLowerCase())
+      .filter((entry) => entry.aToken.rewards.emissionsPerSecond !== '0')[0];
+  };
+
+  $: bonusYieldType = strategy?.col4.incentives;
+  const getIncentives = async () => {
+    bonusYield = true;
+    switch (bonusYieldType) {
+      case 'aaveOptimism':
+        aaveReserve = getAaveReserveOpt(strategy?.col3.token.address);
+        bonusYieldValue = await getTokenPriceInEth('optimism', '0x4200000000000000000000000000000000000042');
+        bonusYieldToken = 'OP';
+        tokenPriceInEth = await getTokenPriceInEth('optimism', strategy?.col3.token.address);
+        CHAIN_DEC = aaveReserve.decimals;
+        bonusYieldRate =
+          100 *
+          ((aaveReserve.aToken.rewards[0].emissionsPerSecond * SPY * WEI_DEC * bonusYieldValue) /
+            (aaveReserve.totalATokenSupply * tokenPriceInEth * WEI_DEC));
+        if (CHAIN_DEC === 6) bonusYieldRate = bonusYieldRate / 10 ** 12;
+        break;
+      default:
+        break;
+    }
+  };
+  $: if (bonusYieldType !== '') getIncentives();
+  $: bonusYieldRate;
+
+  $: ltv =
+    100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio || BigNumber.from(0)));
   $: messages = vaultMessages.filter((item) => item.vault === strategy.limit.yieldTokenAddress);
   $: hasMessage = messages.length > 0;
   $: alToken = VaultConstants[strategy?.limit.vaultType].alToken;
@@ -42,6 +84,8 @@
       $networkStore,
     ));
   };
+
+  $: totalYield = ((strategy.col4.yieldRate * 100 + bonusYieldRate * 100) / 100).toFixed(2);
 
   $: if (alToken !== undefined) getPausedStatus();
 
@@ -150,7 +194,7 @@
       </div>
       <div class="self-start hidden lg:block w-full flex-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
-        <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
+        <YieldCell yieldRate="{totalYield}" />
       </div>
     </div>
     {#if isExpanded}
@@ -187,16 +231,16 @@
               borderSize="0"
               on:clicked="{() => toggleMode(1)}"
             />
-            <!--            <Button-->
-            <!--              label="{$_('actions.migrate')}"-->
-            <!--              solid="{false}"-->
-            <!--              width="w-full"-->
-            <!--              height="h-8"-->
-            <!--              selected="{mode === 2}"-->
-            <!--              canToggle="{true}"-->
-            <!--              borderSize="0"-->
-            <!--              on:clicked="{() => toggleMode(2)}"-->
-            <!--            />-->
+            <Button
+              label="{$_('actions.migrate')}"
+              solid="{false}"
+              width="w-full"
+              height="h-8"
+              selected="{mode === 2}"
+              canToggle="{true}"
+              borderSize="0"
+              on:clicked="{() => toggleMode(2)}"
+            />
             <Button
               label="{$_('actions.info')}"
               solid="{false}"
