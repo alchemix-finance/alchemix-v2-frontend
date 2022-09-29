@@ -499,25 +499,33 @@ export async function withdrawUnderlying(
         signerStore,
         path,
       );
+      let yieldToken = yieldTokenAddress;
+      const selector = VaultTypesInfos[typeOfVault].metaConfig[yieldTokenAddress]?.gateway;
+      const pair =
+        VaultConstants[typeOfVault].gatewayContractSelector[selector]?.filter(
+          (item) => item.aToken === yieldTokenAddress,
+        )[0] || undefined;
+      if (!!pair) yieldToken = pair.staticToken;
+
       // check withdrawAllowance on alchemist
       // if insufficient, call approveWithdraw for amount on alchemist with spender gateway
 
       const withdrawApproval = await alchemistInstance.withdrawAllowance(
         accountAddress,
         gatewayAddress,
-        yieldTokenAddress,
+        yieldToken,
       );
       const canWithdraw = withdrawApproval.gte(amountUnderlying);
 
       if (!canWithdraw) {
         setPendingApproval();
-        await alchemistInstance.approveWithdraw(gatewayAddress, yieldTokenAddress, amountUnderlying);
+        await alchemistInstance.approveWithdraw(gatewayAddress, yieldToken, amountUnderlying);
       }
       setPendingWallet();
 
       const tx = (await gatewayInstance.withdrawUnderlying(
         alchemistAddress,
-        yieldTokenAddress,
+        yieldToken,
         amountUnderlying,
         accountAddress,
         minimumAmountOut,

@@ -347,6 +347,9 @@ export const VaultTypesInfos = {
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&marketName=proto_mainnet',
         bonusType: '',
       },
+      '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8': {
+        gateway: 'ATokenGateway_alETH',
+      },
       '0x337B4B933d60F40CB57DD19AE834Af103F049810': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
