@@ -72,6 +72,7 @@
       {
         address: debtTokenData.address,
         balance: debtTokenData.balance,
+        listSymbol: debtTokenData.symbol,
         symbol: debtTokenData.symbol,
         decimals: debtTokenData.decimals,
         underlyingPerShare: BigNumber.from(1),
@@ -81,24 +82,30 @@
 
     for (const vaultBody of vaultsStore[vaultType].vaultBody) {
       const tokenData = getTokenDataFromBalances(vaultBody.address, [$balancesStore]);
+      const underlyingTokenData = getTokenDataFromBalances(vaultBody.underlyingAddress, [$balancesStore]);
 
-      const tokenSymbol = (() => {
-        if (VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.address] === undefined) {
-          return tokenData.symbol;
-        }
-
-        if (VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.address].token.length <= 0) {
+      const yieldTokenSymbol = (() => {
+        if (!VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.address]) {
           return tokenData.symbol;
         }
 
         return VaultTypesInfos[currentSelectedVaultType].metaConfig[vaultBody.address].token;
       })();
 
+      const underlyingTokenSymbol = (() => {
+        if (!VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.underlyingAddress]) {
+          return underlyingTokenData.symbol;
+        }
+
+        return VaultTypesInfos[currentSelectedVaultType].metaConfig[vaultBody.underlyingAddress].token;
+      })();
+
       tokensArr.push({
         address: vaultBody.underlyingAddress,
-        balance: tokenData.balance,
-        symbol: tokenSymbol,
-        decimals: tokenData.decimals,
+        balance: underlyingTokenData.balance,
+        listSymbol: yieldTokenSymbol + '/' + underlyingTokenSymbol,
+        symbol: underlyingTokenSymbol,
+        decimals: underlyingTokenData.decimals,
         underlyingPerShare: vaultBody.underlyingPerShare,
         debtToken: debtTokenData.symbol,
       });
@@ -175,7 +182,7 @@
         bind:value="{currentSelectedUnderlyingToken}"
       >
         {#each tokensForVaultType as token, index}
-          <option value="{index}">{token.symbol}</option>
+          <option value="{index}">{token.listSymbol}</option>
         {/each}
       </select>
     </div>
