@@ -39,7 +39,7 @@ export async function fetchDataForToken(tokenAddress: string, signer: ethers.Sig
       balance,
     };
   } catch (error) {
-    console.error('[fetchDataForToken]:', tokenAddress, error);
+    console.error('[fetchDataForToken]:', tokenAddress, signer, error);
 
     return {
       address: tokenAddress,

@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_LOCAL_NETWORK_URL: string;
   readonly VITE_ZAPPER_KEY: string;
   readonly VITE_APP_URL: string;
+  readonly VITE_INFURA_KEY: string;
 }
 
 interface ImportMeta {

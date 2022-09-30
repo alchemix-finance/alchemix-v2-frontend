@@ -57,7 +57,7 @@ export async function fetchAllBalances([signer, fullTokenList]: [ethers.Signer, 
     return Promise.reject(`[fetchAllBalances]: signer is undefined`);
   }
 
-  const fetchETHPromise = fetchDataForETH(signer, network);
+  const fetchETHPromise = await fetchDataForETH(signer, network);
   const fetchTokensPromises = generateTokenPromises(fullTokenList, signer, network);
   //
   return Promise.all([fetchETHPromise, ...fetchTokensPromises]).then((balances) => {

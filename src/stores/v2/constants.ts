@@ -385,6 +385,7 @@ export const vaultMessages = [
   },
 ];
 
+// @ts-ignore
 export const chainIds = [
   {
     id: '0x1',
@@ -392,7 +393,8 @@ export const chainIds = [
     name: 'Ethereum Mainnet',
     icon: 'ethereum',
     abiPath: 'ethereum',
-    rpcUrl: null,
+    rpcUrl: 'https://rpc.ankr.com/eth',
+    apiUrl: 'https://mainnet.infura.io/v3/',
     explorer: 'https://etherscan.io/',
     token: {
       symbol: 'ETH',
@@ -407,7 +409,8 @@ export const chainIds = [
     name: 'Fantom Opera',
     icon: 'fantom',
     abiPath: 'fantom',
-    rpcUrl: 'https://rpc.ftm.tools',
+    rpcUrl: 'https://rpc.ankr.com/fantom',
+    apiUrl: '',
     explorer: 'https://ftmscan.com/',
     token: {
       symbol: 'FTM',
@@ -422,7 +425,8 @@ export const chainIds = [
     name: 'Arbitrum One',
     icon: 'arbitrum',
     abiPath: 'arbitrum',
-    rpcUrl: 'https://arb1.arbitrum.io/rpc',
+    rpcUrl: 'https://rpc.ankr.com/arbitrum',
+    apiUrl: '',
     explorer: 'https://arbiscan.io/',
     token: {
       symbol: 'ETH',
@@ -437,7 +441,8 @@ export const chainIds = [
     name: 'Optimism',
     icon: 'optimism',
     abiPath: 'optimism',
-    rpcUrl: 'https://mainnet.optimism.io/',
+    rpcUrl: 'https://rpc.ankr.com/optimism',
+    apiUrl: 'https://optimism-mainnet.infura.io/v3/',
     explorer: 'https://optimistic.etherscan.io/',
     token: {
       symbol: 'ETH',

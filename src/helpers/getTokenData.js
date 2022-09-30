@@ -1,17 +1,22 @@
 import { ethers, BigNumber } from 'ethers';
 import { genericAbi } from '@stores/externalContracts';
 import account from '@stores/account';
+import network from '@stores/network';
+import { getProvider } from '@helpers/walletManager';
 
 let _account;
+let _network;
 
 account.subscribe((val) => {
   _account = val;
 });
 
+network.subscribe((val) => {
+  _network = val;
+});
+
 // @ts-ignore
-const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
-// @ts-ignore
-const provider = ethers.getDefaultProvider(debugging ? import.meta.env.VITE_LOCAL_NETWORK_URL : 'homestead');
+const provider = getProvider(_network.id);
 
 /*
  * @dev retrieves symbol for a specific token

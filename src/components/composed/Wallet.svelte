@@ -1,8 +1,7 @@
 <script>
-  import { getDefaultProvider } from 'ethers';
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
-  import { connect, switchChain } from '@helpers/walletManager';
+  import { connect, switchChain, getProvider } from '@helpers/walletManager';
   import Button from '../elements/Button.svelte';
   import BorderContainer from '../elements/BorderContainer.svelte';
   import WalletBalance from './WalletBalance.svelte';
@@ -19,7 +18,7 @@
   let isHuman = true;
   let chainCollapsed = true;
 
-  const provider = getDefaultProvider();
+  $: provider = getProvider($network.id);
 
   /*
    * @dev returns ENS or truncates the long address string for better visuals
@@ -27,7 +26,7 @@
    * @returns the formatted address
    * */
   const resolveAddress = (address) => {
-    return $account.ens || `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return $account?.ens || `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   /*

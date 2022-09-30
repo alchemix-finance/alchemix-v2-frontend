@@ -110,22 +110,36 @@
 
     const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
 
-    return [
-      ...vaultsStore[vaultType].vaultBody.map((bodyVault) => {
-        const yieldTokenData = getTokenDataFromBalances(bodyVault.underlyingAddress, [$balancesStore]);
+    const tokensArr = [];
 
-        return {
-          address: yieldTokenData.address,
-          yieldAddress: bodyVault.address,
-          balance: bodyVault.balance,
-          symbol: yieldTokenData.symbol,
-          decimals: yieldTokenData.decimals,
-          yieldPerShare: bodyVault.yieldPerShare,
-          underlyingPerShare: bodyVault.underlyingPerShare,
-          debtToken: debtTokenData.symbol,
-        };
-      }),
-    ];
+    for (const vaultBody of vaultsStore[vaultType].vaultBody) {
+      const tokenData = getTokenDataFromBalances(vaultBody.address, [$balancesStore]);
+
+      const tokenSymbol = (() => {
+        if (VaultTypesInfos[selectedVaultType]?.metaConfig[vaultBody.address] === undefined) {
+          return tokenData.symbol;
+        }
+
+        if (VaultTypesInfos[selectedVaultType]?.metaConfig[vaultBody.address].token.length <= 0) {
+          return tokenData.symbol;
+        }
+
+        return VaultTypesInfos[selectedVaultType].metaConfig[vaultBody.address].token;
+      })();
+
+      tokensArr.push({
+        address: vaultBody.address,
+        yieldAddress: vaultBody.address,
+        balance: vaultBody.balance,
+        symbol: tokenSymbol,
+        decimals: tokenData.decimals,
+        yieldPerShare: vaultBody.yieldPerShare,
+        underlyingPerShare: vaultBody.underlyingPerShare,
+        debtToken: debtTokenData.symbol,
+      });
+    }
+
+    return tokensArr;
   };
 
   const useCurrentBalance = (yieldTokenData) => {
