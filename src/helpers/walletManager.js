@@ -121,7 +121,11 @@ function getProvider(chainId) {
     let rpc = `${chainIds.filter((entry) => entry.id === chainId)[0].apiUrl}${
       import.meta.env.VITE_INFURA_KEY
     }`;
-    if (rpc === '') rpc = 'homestead';
+    if (rpc === '' && chainId === '0x1') {
+      rpc = 'homestead';
+    } else {
+      rpc = chainIds.filter((entry) => entry.id === chainId)[0].rpcUrl;
+    }
     return ethers.getDefaultProvider(rpc, { infura: import.meta.env.VITE_INFURA_KEY });
   }
 }
