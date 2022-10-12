@@ -2,7 +2,7 @@ import { utils, BigNumber } from 'ethers';
 import backgroundLoading from '../stores/backgroundLoading';
 import account from '@stores/account';
 import walletBalance from '../stores/walletBalance';
-import { alusd, aggregate } from '../stores/vaults';
+import { alusd, aggregate } from '@stores/vaults';
 import { getTokenBalance } from './getTokenData';
 import getContract from './getContract';
 
@@ -55,7 +55,7 @@ const setLoading = (msg) => {
  * @param token the address of the token to update
  * */
 export async function updateWalletBalance(token) {
-  setLoading('Updating', token);
+  setLoading('Updating');
   const index = _walletBalance.tokens.findIndex((entry) => entry.address === token);
   const uToken = _walletBalance.tokens[index];
   const balance = utils.formatUnits(await getTokenBalance(uToken.address), uToken.decimals);
