@@ -341,12 +341,6 @@
       pageSubtitle="{$_('vaults_page.subtitle')}"
     />
   </div>
-  <div slot="message">
-    <div class="flex flex-col md:flex-row gap-2 items-center md:space-x-4">
-      <p class="self-center">{$_('vaults_page.legacy_redirect')}</p>
-      <Button label="Go To Legacy UI" width="w-max" on:clicked="{() => goToLegacy()}" />
-    </div>
-  </div>
   {#if $vaultsLoading}
     <ContainerWithHeader>
       <div slot="header" class="py-4 px-6 flex space-x-4">
