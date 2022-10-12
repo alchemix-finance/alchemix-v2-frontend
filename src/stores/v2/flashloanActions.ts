@@ -107,6 +107,35 @@ async function liquidateLegacy(_vaultType: VaultTypes, _debt: BigNumber, [signer
   }
 }
 
+export async function sweepLegacy(_vaultType: VaultTypes, [signer]: [Signer]) {
+  try {
+    const { instance: alchemistInstance } = await contractWrapper(
+      VaultConstants[_vaultType].legacy,
+      signer,
+      'ethereum',
+    );
+    const param = paramLookup[_vaultType];
+    setPendingWallet();
+    let tx;
+    if (_vaultType === 0) {
+      tx = (await alchemistInstance.withdraw(BigNumber.from(1))) as ContractTransaction;
+    } else {
+      tx = (await alchemistInstance.withdraw(BigNumber.from(1), false)) as ContractTransaction;
+    }
+    setPendingTx();
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return {
+        underlying: param.underlyingToken,
+        yield: param.yieldToken,
+      };
+    });
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message, error);
+    console.error(`[flashloanActions/sweepLegacy]: ${error}`);
+  }
+}
+
 export async function liquidateWrap(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
   try {
     const { instance: alchemistInstance } = await contractWrapper(
