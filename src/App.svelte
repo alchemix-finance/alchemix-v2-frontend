@@ -8,7 +8,7 @@
   import settings from '@stores/settings';
 
   // middleware
-  import { getGasPrices } from '@middleware/zapper';
+  import { getGasPrices, getFiatRates } from '@middleware/zapper';
 
   // composed components
   import HeaderBar from '@components/composed/HeaderBar.svelte';
@@ -66,7 +66,7 @@
   }
 
   onMount(async () => {
-    await Promise.all([getGasPrices()]);
+    await Promise.all([getGasPrices(), getFiatRates()]);
     if (preselect.length > 0) {
       await connect(preselect);
       // if (location.pathname === '/') routerGuard('accounts');
