@@ -11,7 +11,9 @@
   let normalizedValue;
 
   $: currency = $settings.baseCurrency.symbol;
-  $: tokenPrice = $tokenPriceStore[token?.address.toLowerCase()][currency.toLowerCase()];
+  $: tokenPrice = $tokenPriceStore[token?.address.toLowerCase()]
+    ? $tokenPriceStore[token?.address.toLowerCase()][currency.toLowerCase()]
+    : 1;
   $: tokenFormatted = utils.formatUnits(token?.balance || 0, token?.decimals || 18);
 
   const normalize = async () => {

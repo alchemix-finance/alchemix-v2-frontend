@@ -6,6 +6,7 @@ function connector(endpoint, network, queryString) {
   return {
     url: `https://api.coingecko.com/api/v3/${endpoint}/${network}${queryString ? '?' + queryString : null}`,
     method: 'GET',
+    crossDomain: true,
   };
 }
 

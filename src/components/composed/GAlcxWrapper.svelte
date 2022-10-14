@@ -23,15 +23,20 @@
   let userInput = '';
   let alcxData;
   let galcxData;
+  let infiniteAllowance = false;
 
   const switchMode = () => {
     userInput = '';
     unwrap = !unwrap;
   };
 
+  const switchAllowance = () => {
+    infiniteAllowance = !infiniteAllowance;
+  };
+
   const initStake = async () => {
     const userInputBN = utils.parseEther(userInput.toString());
-    await stake(userInputBN, allowanceAmount, $signer).then(() => {
+    await stake(userInputBN, allowanceAmount, infiniteAllowance, $signer).then(() => {
       Promise.all([
         fetchBalanceByAddress(alcxData.address, [$signer]),
         fetchBalanceByAddress(galcxData.address, [$signer]),
@@ -175,6 +180,20 @@
                   : `${projectedGalcx() || 0} ${galcxData?.symbol}`}
               </p>
             </div>
+          </div>
+          <div class="flex flex-row justify-between">
+            <p
+              class="flex-auto {$settings.invertColors
+                ? 'text-lightgrey10inverse'
+                : 'text-lightgrey10'} text-sm"
+            >
+              {$_('approval')}:
+            </p>
+            <ToggleSwitch
+              label="{$_('exact')}"
+              secondLabel="{$_('infinite')}"
+              on:toggleChange="{() => switchAllowance()}"
+            />
           </div>
           {#if unwrap}
             <Button

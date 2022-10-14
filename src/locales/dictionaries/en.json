@@ -51,6 +51,9 @@
   "wrap": "Wrap",
   "unwrap": "Unwrap",
   "external": "External",
+  "approval": "Approval",
+  "infinite": "Infinite",
+  "exact": "Exact",
   "landing": {
     "intro_title": "Alchemix Self-Repaying Loans allow you to leverage a range of tokens without risk of liquidation.",
     "intro_subtitle_0": "Borrow up to 50% of your deposited collateral",
