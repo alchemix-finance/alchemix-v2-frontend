@@ -84,7 +84,13 @@ export async function deposit(
       signerStore,
       path,
     );
-    if (gatewayIndexCheck >= 0 && gatewayCheck[gatewayIndexCheck] !== undefined) {
+    if (
+      // @dev we're literally just removing yearn's vault from the equation
+      // @dev this is a temporary fix until we can properly refactor the vaults
+      tokenAddress !== '0xa258C4606Ca8206D8aA700cE2143D7db854D168c' &&
+      gatewayIndexCheck >= 0 &&
+      gatewayCheck[gatewayIndexCheck] !== undefined
+    ) {
       const staticInstance = erc20Contract(tokenAddress, signerStore);
 
       const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
@@ -364,6 +370,9 @@ export async function withdraw(
     );
 
     if (
+      // @dev we're literally just removing yearn's vault from the equation
+      // @dev this is a temporary fix until we can properly refactor the vaults
+      yieldTokenAddress !== '0xa258C4606Ca8206D8aA700cE2143D7db854D168c' &&
       gatewayIndexCheck >= 0 &&
       gatewayCheck.filter((entry) => {
         return !!entry;
