@@ -34,7 +34,7 @@ export const updateAddress = (address: string) => {
   addressStore.set(address);
 };
 
-export const updateProvider = (provider: providers.Web3Provider) => {
+export const updateProvider = (provider: providers.JsonRpcProvider) => {
   providerStore.set(provider);
 };
 
