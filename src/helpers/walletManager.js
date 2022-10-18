@@ -65,8 +65,6 @@ const onboard = Onboard({
   },
 });
 
-console.log(onboard.state.get());
-
 const connect = async (preselect) => {
   try {
     if (preselect && preselect.length !== 0) {
