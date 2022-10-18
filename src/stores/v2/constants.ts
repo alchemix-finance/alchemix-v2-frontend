@@ -394,7 +394,7 @@ export const chainIds = [
     icon: 'ethereum',
     abiPath: 'ethereum',
     rpcUrl: 'https://rpc.ankr.com/eth',
-    apiUrl: 'https://mainnet.infura.io/v3/',
+    apiUrl: `https://mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`,
     explorer: 'https://etherscan.io/',
     token: {
       symbol: 'ETH',
@@ -426,7 +426,7 @@ export const chainIds = [
     icon: 'arbitrum',
     abiPath: 'arbitrum',
     rpcUrl: 'https://rpc.ankr.com/arbitrum',
-    apiUrl: '',
+    apiUrl: `https://arbitrum-mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`,
     explorer: 'https://arbiscan.io/',
     token: {
       symbol: 'ETH',
@@ -442,7 +442,7 @@ export const chainIds = [
     icon: 'optimism',
     abiPath: 'optimism',
     rpcUrl: 'https://rpc.ankr.com/optimism',
-    apiUrl: 'https://optimism-mainnet.infura.io/v3/',
+    apiUrl: `https://optimism-mainnet.infura.io/v3/${import.meta.env.VITE_INFURA_KEY}`,
     explorer: 'https://optimistic.etherscan.io/',
     token: {
       symbol: 'ETH',
