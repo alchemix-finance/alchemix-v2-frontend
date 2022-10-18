@@ -29,6 +29,7 @@
   import { calculateVaultDebt, getTokenDataFromBalances } from '@stores/v2/helpers';
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { signer } from '@stores/v2/derived';
+  import { setError } from '@helpers/setToast';
 
   $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
   $: vaultsSelector = makeSelectorStore([...vaultTypes]);
@@ -79,7 +80,14 @@
     //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
     // )?.price;
     const currency = $settings.baseCurrency.symbol;
-    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()] || 1;
+    let tokenPrice;
+    try {
+      tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
+    } catch {
+      setError('Token price not found');
+
+      tokenPrice = 1;
+    }
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
     const depositValue = calculateBalanceValue(
       vault.balance,
@@ -120,7 +128,13 @@
     //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
     // )?.price;
     const currency = $settings.baseCurrency.symbol;
-    const tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
+    let tokenPrice;
+    try {
+      tokenPrice = $tokenPriceStore[vault.underlyingAddress.toLowerCase()][currency.toLowerCase()];
+    } catch {
+      setError('Token price not found');
+      tokenPrice = 1;
+    }
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,

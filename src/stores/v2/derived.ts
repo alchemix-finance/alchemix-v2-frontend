@@ -3,10 +3,16 @@ import { BigNumber } from 'ethers';
 
 import { arrayDoubleCheck } from '@helpers/arrayHelpers';
 import { balancesStore, providerStore, tokensStore, vaultsStore, networkStore } from './alcxStore';
+import account from '../account';
 import { poolLookup, additionalTokens } from '@stores/stakingPools';
 import { calculateVaultDebt, getTokenDataFromBalances, normalizeAmount } from './helpers';
 
-export const signer = derived([providerStore], ([$provider]) => $provider?.getSigner());
+let _account;
+account.subscribe((val) => {
+  _account = val;
+});
+
+export const signer = derived([providerStore], ([$provider]) => $provider?.getSigner(_account.address));
 
 export const fullTokenList = derived([tokensStore, networkStore], ([$tokensStore, $network]) => {
   if (!$tokensStore) {

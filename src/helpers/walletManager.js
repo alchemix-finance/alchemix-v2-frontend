@@ -33,7 +33,11 @@ const supportedChains = chainIds.map((chain) => {
     id: chain.id,
     token: chain.token.symbol,
     label: chain.name,
-    rpcUrl: chain.rpcUrl,
+    publicRpcUrl: chain.rpcUrl,
+    rpcUrl: chain.apiUrl || chain.rpcUrl,
+    providerConnectionInfo: {
+      url: chain.apiUrl || chain.rpcUrl,
+    },
   };
 });
 
@@ -60,6 +64,8 @@ const onboard = Onboard({
     },
   },
 });
+
+console.log(onboard.state.get());
 
 const connect = async (preselect) => {
   try {
@@ -91,12 +97,14 @@ const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
   if (!!wallets && wallets.length > 0) {
     const connectedWallets = wallets.map(({ label }) => label);
     window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
-    const ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider, 'any');
+    const chainConfig = chainIds.filter((entry) => entry.id === wallets[0].chains[0].id)[0];
+    const providerUrl = chainConfig.apiUrl === '' ? chainConfig.rpcUrl : chainConfig.apiUrl;
+    const ethersProvider = new ethers.providers.JsonRpcProvider(providerUrl, 'any');
     updateNetwork(wallets[0].chains[0].id === '0x539' ? '0x1' : wallets[0].chains[0].id);
     updateProvider(ethersProvider);
     updateAddress(wallets[0].accounts[0].address);
     _account.provider = ethersProvider;
-    _account.signer = ethersProvider.getSigner();
+    _account.signer = ethersProvider.getSigner(wallets[0].accounts[0].address);
     _account.address = wallets[0].accounts[0].address;
     _account.ens = wallets[0].accounts[0].ens?.name || null;
     _network.id = wallets[0].chains[0].id;
@@ -117,12 +125,16 @@ const disconnect = async () => {
 
 function getProvider(chainId) {
   if (!!chainId) {
-    const networkish =
-      chainId === '0x1' ? 'homestead' : chainIds.filter((entry) => entry.id === chainId)[0].abiPath;
-    return ethers.getDefaultProvider(networkish, {
-      infura: import.meta.env.VITE_INFURA_KEY,
-      alchemy: import.meta.env.VITE_ALCHEMY_KEY,
-    });
+    const defaults = ['0xfa', '0xa4b1'];
+    if (defaults.includes(chainId)) {
+      return ethers.getDefaultProvider();
+    } else {
+      const networkish =
+        chainId === '0x1' ? 'homestead' : chainIds.filter((entry) => entry.id === chainId)[0].abiPath;
+      return ethers.getDefaultProvider(networkish, {
+        infura: import.meta.env.VITE_INFURA_KEY,
+      });
+    }
   }
 }
 
