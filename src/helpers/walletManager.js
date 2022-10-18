@@ -95,9 +95,11 @@ const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
   if (!!wallets && wallets.length > 0) {
     const connectedWallets = wallets.map(({ label }) => label);
     window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
-    const chainConfig = chainIds.filter((entry) => entry.id === wallets[0].chains[0].id)[0];
-    const providerUrl = chainConfig.apiUrl === '' ? chainConfig.rpcUrl : chainConfig.apiUrl;
-    const ethersProvider = new ethers.providers.JsonRpcProvider(providerUrl, 'any');
+    // const chainConfig = chainIds.filter((entry) => entry.id === wallets[0].chains[0].id)[0];
+    // const providerUrl = chainConfig.apiUrl === '' ? chainConfig.rpcUrl : chainConfig.apiUrl;
+    // console.log(wallets[0].provider);
+    const ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider, 'any');
+    // const ethersProvider = new ethers.providers.JsonRpcProvider(providerUrl, 'any');
     updateNetwork(wallets[0].chains[0].id === '0x539' ? '0x1' : wallets[0].chains[0].id);
     updateProvider(ethersProvider);
     updateAddress(wallets[0].accounts[0].address);
