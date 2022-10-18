@@ -81,7 +81,6 @@
     "qs": "^6.10.1",
     "regenerator-runtime": "^0.13.7",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "serve": "^13.0.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "svelte-eventbus": "^0.1.1",
