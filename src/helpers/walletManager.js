@@ -15,7 +15,6 @@ import { chainIds } from '@stores/v2/constants';
 // let _toastConfig;
 let _network;
 let _account;
-let ethersProvider;
 
 network.subscribe((val) => {
   _network = val;
@@ -92,12 +91,12 @@ const { unsubscribe } = walletsSub.subscribe(async (wallets) => {
   if (!!wallets && wallets.length > 0) {
     const connectedWallets = wallets.map(({ label }) => label);
     window.localStorage.setItem('connectedWallets', JSON.stringify(connectedWallets));
-    ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider);
+    const ethersProvider = new ethers.providers.Web3Provider(wallets[0].provider, 'any');
     updateNetwork(wallets[0].chains[0].id === '0x539' ? '0x1' : wallets[0].chains[0].id);
-    updateProvider(await ethersProvider);
+    updateProvider(ethersProvider);
     updateAddress(wallets[0].accounts[0].address);
-    _account.provider = await ethersProvider;
-    _account.signer = await ethersProvider.getSigner();
+    _account.provider = ethersProvider;
+    _account.signer = ethersProvider.getSigner();
     _account.address = wallets[0].accounts[0].address;
     _account.ens = wallets[0].accounts[0].ens?.name || null;
     _network.id = wallets[0].chains[0].id;
@@ -118,15 +117,12 @@ const disconnect = async () => {
 
 function getProvider(chainId) {
   if (!!chainId) {
-    let rpc = `${chainIds.filter((entry) => entry.id === chainId)[0].apiUrl}${
-      import.meta.env.VITE_INFURA_KEY
-    }`;
-    if (rpc === '' && chainId === '0x1') {
-      rpc = 'homestead';
-    } else {
-      rpc = chainIds.filter((entry) => entry.id === chainId)[0].rpcUrl;
-    }
-    return ethers.getDefaultProvider(rpc, { infura: import.meta.env.VITE_INFURA_KEY });
+    const networkish =
+      chainId === '0x1' ? 'homestead' : chainIds.filter((entry) => entry.id === chainId)[0].abiPath;
+    return ethers.getDefaultProvider(networkish, {
+      infura: import.meta.env.VITE_INFURA_KEY,
+      alchemy: import.meta.env.VITE_ALCHEMY_KEY,
+    });
   }
 }
 

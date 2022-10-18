@@ -29,4 +29,5 @@ export function uninitData() {
   walletBalanceReset();
   getFiatRates();
   getTokenPrices();
+  localStorage.setItem('connectedWallets', JSON.stringify([]));
 }
