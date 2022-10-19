@@ -42,6 +42,8 @@ Use descriptive language in your commit messages. Nobody likes to chase down cha
 
 To make it easier for all contributors, please respect the codestyle rules.
 
+Disable hard wrapping on save in your editor for markdown files.
+
 **Note:** this requires you to have done the steps in `Setup` first.
 
 #### Webstorm
@@ -49,6 +51,8 @@ To make it easier for all contributors, please respect the codestyle rules.
 Open Webstorm settings and navigate to `Preferences/Languages & Frameworks/JavaScript/Prettier`, select the Prettier install from the local `node_modules` directory, add `svelte` to the glob pattern and enable `Run on save for files`.
 
 Source: [prettier.io docs](https://prettier.io/docs/en/webstorm.html)
+
+Next, navigate to `Editor & Code Style`, select `Project` in the scheme dropdown, click the `Formatter` tab and add `*.md` to the 'Do not Format' list.
 
 #### VS Code
 
