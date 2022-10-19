@@ -9,6 +9,7 @@ export const contractWrapper = async (
 ) => {
   const contractData = await import(`../abi/${_path}/${selector}.json`);
   const _instance = new ethers.Contract(address || contractData.address, contractData.abi, signer);
+  _instance.connect(signer);
 
   return {
     fragment: new ethers.utils.Interface(contractData.abi),
@@ -31,6 +32,7 @@ export const vaultAdapterWrapper = (address: string, signer: ethers.Signer) => {
 export const externalContractWrapper = async (selector: string, signer: ethers.Signer, address?: string) => {
   const contractData = await import(`../external-abi/${selector}.json`);
   const _instance = new ethers.Contract(address || contractData.address, contractData.abi, signer);
+  _instance.connect(signer);
 
   return {
     fragment: new ethers.utils.Interface(contractData.abi),
@@ -52,6 +54,7 @@ export const externalContractWrapper = async (selector: string, signer: ethers.S
 
 export const erc20Contract = (address: string, signer: ethers.Signer) => {
   const _contract = new ethers.Contract(address, genericAbi, signer);
+  _contract.connect(signer);
 
   return {
     name: async () => _contract.name(),

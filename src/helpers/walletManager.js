@@ -9,7 +9,8 @@ import { updateAddress, updateProvider, updateNetwork } from '@stores/v2/methods
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
-import coinbaseWallet from '@web3-onboard/coinbase';
+import coinbaseWalletModule from '@web3-onboard/coinbase';
+import trezorModule from '@web3-onboard/trezor';
 import { chainIds } from '@stores/v2/constants';
 
 // let _toastConfig;
@@ -26,7 +27,11 @@ account.subscribe((val) => {
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
-const coinbase = coinbaseWallet();
+const coinbase = coinbaseWalletModule();
+const trezor = trezorModule({
+  email: 'zosimos@mail.alchemix.fi',
+  appUrl: 'https://alchemix.fi/',
+});
 
 const supportedChains = chainIds.map((chain) => {
   return {
@@ -42,9 +47,8 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect, coinbase],
+  wallets: [injected, walletConnect, coinbase, trezor],
   chains: supportedChains,
-
   appMetadata: {
     name: 'Alchemix',
     icon: 'https://alchemix.fi/images/icons/alcx_med.svg',
