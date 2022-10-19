@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import { fileURLToPath } from 'url';
 
 const MODE = process.env.NODE_ENV;
@@ -21,6 +22,10 @@ export default defineConfig({
       crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       assert: 'assert',
+      util: 'util',
+      buffer: 'buffer',
+      https: 'https-browserify',
+      os: 'os-browserify',
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
       '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
@@ -33,7 +38,12 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      plugins: [nodePolyfills({ crypto: true, http: true })],
+      plugins: [
+        nodePolyfills(),
+        nodeResolve({
+          preferBuiltins: false,
+        }),
+      ],
     },
     commonjsOptions: {
       transformMixedEsModules: true,
