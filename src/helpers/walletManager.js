@@ -40,9 +40,6 @@ const supportedChains = chainIds.map((chain) => {
     label: chain.name,
     publicRpcUrl: chain.rpcUrl,
     rpcUrl: chain.apiUrl || chain.rpcUrl,
-    providerConnectionInfo: {
-      url: chain.apiUrl || chain.rpcUrl,
-    },
   };
 });
 

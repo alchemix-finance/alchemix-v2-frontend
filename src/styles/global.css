@@ -28,3 +28,27 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+/* web3-onboard styling */
+:root {
+  --background-color: #292d3a;
+  --text-color: #f5f5f5;
+  --border-color: #232834;
+  --accent-background: #11141a;
+  --accent-color: #ffdfc9;
+  --accent-color-hover: #4d5466;
+  --secondary-text-color: #707481;
+  --onboard-connect-sidebar-background: var(--accent-background);
+  --onboard-close-button-background: var(--accent-background);
+  --onboard-connect-sidebar-color: var(--text-color);
+  --onboard-connect-sidebar-progress-background: var(--secondary-text-color);
+  --onboard-connect-sidebar-progress-color: var(--accent-color);
+  --onboard-connect-header-background: var(--background-color);
+  --onboard-connect-header-color: var(--text-color);
+  --onboard-main-scroll-container-background: var(--background-color);
+  --onboard-link-color: var(--accent-color);
+  --onboard-wallet-button-background: var(--background-color);
+  --onboard-wallet-button-background-hover: var(--accent-color-hover);
+  --onboard-wallet-button-border-color: var(--border-color);
+  --onboard-wallet-app-icon-border-color: var(--border-color);
+}
