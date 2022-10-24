@@ -6,8 +6,7 @@ import account from '@stores/account';
 
 const snapshotHubUrl = 'https://hub.snapshot.org';
 const space = 'alchemixstakers.eth';
-const client = new snapshot.Client(snapshotHubUrl);
-// const archiveProvider = snapshot.utils.getProvider(process.env.NETWORK_ID);
+const client = new snapshot.Client712(snapshotHubUrl);
 
 // let _global;
 let _governance;
@@ -150,8 +149,15 @@ export async function queryOpenProposals() {
 
 export async function sendVote(voteData) {
   if (debugging) console.log(_account.signer);
+  console.log(voteData);
   try {
-    await client.vote(_account.signer.provider, _account.address, space, voteData);
+    await client.vote(_account.provider, _account.address, {
+      app: 'alchemix',
+      proposal: voteData.proposal,
+      choice: voteData.choice,
+      space: space,
+      type: voteData.type,
+    });
     await getVotesForAddress();
     return true;
   } catch (e) {

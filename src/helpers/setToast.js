@@ -145,10 +145,10 @@ export function setSuccessVote() {
   toastConfig.set({ ..._toastConfig });
 }
 
-export function setRejectedVote() {
+export function setRejectedVote(customMessage) {
   _toastConfig.kind = 'error';
   _toastConfig.title = getItl('toast.error');
-  _toastConfig.subtitle = getItl('toast.vote_rejected');
+  _toastConfig.subtitle = customMessage || getItl('toast.vote_rejected');
   _toastConfig.closeOnMount = true;
   _toastConfig.spinner = false;
   _toastConfig.visible = true;
