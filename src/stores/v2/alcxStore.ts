@@ -90,7 +90,7 @@ export interface AdaptersType {
 }
 
 export const addressStore = writable<string>(undefined);
-export const providerStore = writable<providers.JsonRpcProvider>(undefined);
+export const providerStore = writable<providers.Web3Provider>(undefined);
 export const balancesStore = writable<BalanceType[]>([]);
 export const tokensStore = writable<TokensType>({});
 export const vaultsStore = writable<VaultsType>({});
