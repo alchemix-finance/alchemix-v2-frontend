@@ -3,6 +3,7 @@ import snapshot from '@snapshot-labs/snapshot.js';
 // import global from '../stores/global';
 import governance from '@stores/governance';
 import account from '@stores/account';
+import { utils } from 'ethers';
 
 const snapshotHubUrl = 'https://hub.snapshot.org';
 const space = 'alchemixstakers.eth';
@@ -151,7 +152,7 @@ export async function sendVote(voteData) {
   if (debugging) console.log(_account.signer);
   console.log(voteData);
   try {
-    await client.vote(_account.provider, _account.address, {
+    await client.vote(_account.provider, utils.getAddress(_account.address), {
       app: 'alchemix',
       proposal: voteData.proposal,
       choice: voteData.choice,
