@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@lottiefiles/lottie-player": "^1.5.7",
-    "@snapshot-labs/snapshot.js": "^0.4.18",
+    "@snapshot-labs/snapshot.js": "^0.4.41",
     "@tkh/tailwind-plugin-flex-basis": "^1.4.0",
     "@web3-onboard/coinbase": "^2.0.10",
     "@web3-onboard/core": "^2.7.0",

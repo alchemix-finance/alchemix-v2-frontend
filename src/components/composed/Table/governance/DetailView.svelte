@@ -24,12 +24,13 @@
       const payload = {
         proposal: proposalEntry.id,
         choice: value,
+        type: proposalEntry.type,
       };
       try {
         setPendingVote();
         const pendingVote = await sendVote(payload);
-        if (pendingVote.code == 4001) {
-          setRejectedVote();
+        if (pendingVote !== true) {
+          setRejectedVote(pendingVote.error_description ? pendingVote.error_description : undefined);
         } else {
           setSuccessVote();
         }

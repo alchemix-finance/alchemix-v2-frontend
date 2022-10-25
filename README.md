@@ -13,8 +13,7 @@ yarn install
 
 Fill the `.env` file with the required secrets.
 
-Start local development server using `yarn dev` to fetch latest contract artifacts, or use `yarn dev:noabi` to skip
-that.
+Start local development server using `yarn dev` to fetch latest contract artifacts, or use `yarn dev:noabi` to skip that.
 
 The app should be accessible on [localhost:5005](http://localhost:5005) by default.
 
@@ -27,8 +26,7 @@ This repository is using two main branches for deployments:
 - The [production deployment](https://alchemix.fi/) is built using `prod` branch codebase
 - The [staging deployment](https://staging.alchemix.fi/) is built using `staging` branch codebase
 
-New branches, when pushed, will also be built using our Vercel CI/CD pipeline, so minimize unneccessary pushes to
-tracked branches.
+New branches, when pushed, will also be built using our Vercel CI/CD pipeline, so minimize unneccessary pushes to tracked branches.
 
 In general the process to contribute to the codebase looks like this:
 
@@ -38,28 +36,29 @@ In general the process to contribute to the codebase looks like this:
 
 With the next deployment cycle, `staging` and all changes in it will be merged into `prod`.
 
-Use descriptive language in your commit messages. Nobody likes to chase down changes to understand what is supposed to
-be changed.
+Use descriptive language in your commit messages. Nobody likes to chase down changes to understand what is supposed to be changed.
 
 ### Codestyle
 
 To make it easier for all contributors, please respect the codestyle rules.
 
+Disable hard wrapping on save in your editor for markdown files.
+
 **Note:** this requires you to have done the steps in `Setup` first.
 
 #### Webstorm
 
-Open Webstorm settings and navigate to `Preferences/Languages & Frameworks/JavaScript/Prettier`, select the Prettier
-install from the local `node_modules` directory, add `svelte` to the glob pattern and enable `Run on save for files`.
+Open Webstorm settings and navigate to `Preferences/Languages & Frameworks/JavaScript/Prettier`, select the Prettier install from the local `node_modules` directory, add `svelte` to the glob pattern and enable `Run on save for files`.
 
 Source: [prettier.io docs](https://prettier.io/docs/en/webstorm.html)
+
+Next, navigate to `Editor & Code Style`, select `Project` in the scheme dropdown, click the `Formatter` tab and add `*.md` to the 'Do not Format' list.
 
 #### VS Code
 
 ##### Using Svelte extension (recommended)
 
-Install the `svelte-vscode` extension either through the marketplace, or by using the quick open command and
-pasting `ext install JamesBirtles.svelte-vscode`. Make sure VS Code settings includes
+Install the `svelte-vscode` extension either through the marketplace, or by using the quick open command and pasting `ext install JamesBirtles.svelte-vscode`. Make sure VS Code settings includes
 
 ```json
 {
@@ -73,8 +72,7 @@ Source: [svelte-vscode marketplace](https://marketplace.visualstudio.com/items?i
 
 ##### Using Prettier extension
 
-Install the `prettier-vscode` extension either through the marketplace, or by using the quick open command and
-pasting `ext install esbenp.prettier-vscode`. Make sure VS Code settings includes
+Install the `prettier-vscode` extension either through the marketplace, or by using the quick open command and pasting `ext install esbenp.prettier-vscode`. Make sure VS Code settings includes
 
 ```json
 {
