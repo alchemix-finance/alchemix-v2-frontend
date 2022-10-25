@@ -150,7 +150,6 @@ export async function queryOpenProposals() {
 
 export async function sendVote(voteData) {
   if (debugging) console.log(_account.signer);
-  console.log(voteData);
   try {
     await client.vote(_account.provider, utils.getAddress(_account.address), {
       app: 'alchemix',
