@@ -133,6 +133,7 @@ function getProvider(chainId) {
         chainId === '0x1' ? 'homestead' : chainIds.filter((entry) => entry.id === chainId)[0].abiPath;
       return ethers.getDefaultProvider(networkish, {
         infura: import.meta.env.VITE_INFURA_KEY,
+        alchemy: import.meta.env.VITE_ALCHEMY_KEY,
       });
     }
   }
