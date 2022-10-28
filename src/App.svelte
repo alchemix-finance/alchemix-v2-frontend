@@ -28,6 +28,7 @@
   import Sentinel from '@views/Sentinel.svelte';
   import SecretCowLevel from '@views/SecretCowLevel.svelte';
   import Swap from '@views/Swap.svelte';
+  import Utilities from '@views/Utilities.svelte';
   // import { routerGuard } from '@helpers/routerGuard';
   import { networkStore } from '@stores/v2/alcxStore';
   import { chainIds } from '@stores/v2/constants';
@@ -169,6 +170,7 @@ Use at your own risk.
                   <Route path="/*" component="{Error}" />
                   <Route path="/sentinel" component="{Sentinel}" />
                   <Route path="/get-out" component="{SecretCowLevel}" />
+                  <Route path="/utilities" component="{Utilities}" />
                 {/if}
               </div>
             </div>

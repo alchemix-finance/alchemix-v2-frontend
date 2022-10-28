@@ -15,6 +15,7 @@ const settings = writable(
     defaultGas: 'standard',
     verboseConsole: false,
     invertColors: false,
+    embedStats: false,
   },
 );
 
