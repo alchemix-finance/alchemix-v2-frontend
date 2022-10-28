@@ -84,4 +84,18 @@
       </li>
     {/if}
   {/each}
+  <li
+    class="p-4 rounded-xl mb-5 cursor-pointer flex justify-between transition-opacity {$navigationStore.currentPathname ===
+    'utilities'
+      ? `${$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} opacity-100`
+      : 'opacity-40'} hover:{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} hover:opacity-100"
+    on:click="{() => updatePath('utilities', (pathname) => routerGuard(pathname))}"
+  >
+    <span>{$_('utilities')}</span>
+    <img
+      src="images/icons/alcx_med.svg"
+      class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
+      alt="{$_('utilities')}"
+    />
+  </li>
 </ul>
