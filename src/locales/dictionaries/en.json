@@ -80,10 +80,10 @@
   "utilities_page": {
     "title": "Utilities",
     "subtitle": "A collection of useful tools",
-    "stats_widget_title": "Protocol Stats",
-    "stats_widget_button": "Open Page",
-    "embed_stats_explainer": "This widget embeds an iFrame using https://alchemix-stats.com as a source. The page is developed and maintained by community member Barree. If you trust that page, you can enable this widget.",
-    "embed_stats_button": "Enable Stats Widget"
+    "community_widget_title": "Awesome Alchemix",
+    "community_widget_button_open": "Open {page}",
+    "community_widget_explainer": "These tools are developed and maintained by our awesome community members.",
+    "stats_page": "Protocol Stats"
   },
   "settings_page": {
     "locale": "Locale",
