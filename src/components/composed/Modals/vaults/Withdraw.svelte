@@ -22,7 +22,6 @@
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
     fetchAdaptersForVaultType,
-    convertTokenUnits,
   } from '@stores/v2/asyncMethods';
 
   import { modalReset } from '@stores/modal';
@@ -192,15 +191,8 @@
 
   function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
-    // const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
-    const maxAmountToShares = convertTokenUnits(
-      vault.type,
-      vault.underlyingAddress,
-      maxWithdrawAmountForUnderlying,
-      2,
-      $signer,
-      $networkStore,
-    );
+    const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
+
     return (
       sharesWithdrawAmount.gt(BigNumber.from(0)) &&
       sharesWithdrawAmount.lte(vault.balance) &&
@@ -253,14 +245,6 @@
     const maxWithdrawAmount = freeCover.sub(vaultCover);
 
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    console.log({
-      ratio: ratio.toString(),
-      requiredCover: requiredCover.toString(),
-      freeCover: freeCover.toString(),
-      vaultCover: vaultCover.toString(),
-      maxWithdrawAmount: maxWithdrawAmount.toString(),
-      maxAmount: maxAmount,
-    });
     const vaultCoverAmount = vaultCover.lte(BigNumber.from(0))
       ? '0'
       : utils.formatUnits(
