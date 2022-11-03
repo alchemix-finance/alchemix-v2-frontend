@@ -249,16 +249,23 @@
       .div(scalar(_decimals))
       .mul(scalar(BigNumber.from(18).sub(_decimals)));
     // amount of tokens available for withdrawal
-    const maxWithdrawAmount = vaultCover.sub(freeCover);
+    const maxWithdrawAmount = freeCover.sub(vaultCover);
 
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    const vaultCoverAmount =
-      vaultCover.lte(BigNumber.from(0)) || vaultCover.sub(requiredCover).lte(BigNumber.from(0))
-        ? '0'
-        : utils.formatUnits(
-            vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
-            _decimals,
-          );
+    console.log({
+      ratio: ratio.toString(),
+      requiredCover: requiredCover.toString(),
+      freeCover: freeCover.toString(),
+      vaultCover: vaultCover.toString(),
+      maxWithdrawAmount: maxWithdrawAmount.toString(),
+      maxAmount: maxAmount,
+    });
+    const vaultCoverAmount = vaultCover.lte(BigNumber.from(0))
+      ? '0'
+      : utils.formatUnits(
+          vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
+          _decimals,
+        );
 
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
