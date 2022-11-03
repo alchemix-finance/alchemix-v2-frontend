@@ -78,7 +78,6 @@ export async function deposit(
       })[0];
     });
     const gatewayIndexCheck = gatewayCheck.indexOf(selector);
-
     const { address: alchemistAddress, instance: alchemistInstance } = await contractWrapper(
       VaultConstants[typeOfVault].alchemistContractSelector,
       signerStore,
@@ -437,7 +436,7 @@ export async function withdraw(
       });
     }
   } catch (error) {
-    setError(error.data ? await error.data.originalError.message : error.message, error);
+    setError(error.data ? await error.data.message : error.message, error);
     console.error(`[vaultActions/withdraw]: ${error}`);
     throw Error(error);
   }
