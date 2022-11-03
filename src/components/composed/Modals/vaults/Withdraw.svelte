@@ -256,8 +256,8 @@
       ? _openDebtAmount.gt(BigNumber.from(0))
         ? maxWithdrawAmount.lte(BigNumber.from(0))
           ? freeCoverAmount
-          : vaultCoverAmount
-        : maxAmount
+          : maxAmount
+        : vaultCoverAmount
       : '0';
   }
 
