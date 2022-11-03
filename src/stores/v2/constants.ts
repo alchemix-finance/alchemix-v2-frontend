@@ -261,6 +261,15 @@ export const VaultTypesInfos = {
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x94b008aa00579c1307b0ef2c499ad98a8ce58e58&marketName=proto_optimism_v3',
         bonusType: 'aaveOptimism',
       },
+      '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE': {
+        gateway: 'ATokenGateway_alUSD',
+      },
+      '0x625E7708f30cA75bfd92586e17077590C60eb4cD': {
+        gateway: 'ATokenGateway_alUSD',
+      },
+      '0x6ab707Aca953eDAeFBc4fD23bA73294241490620': {
+        gateway: 'ATokenGateway_alUSD',
+      },
     },
   },
   [VaultTypes.alETH]: {
