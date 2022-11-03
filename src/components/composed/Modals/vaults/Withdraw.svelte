@@ -235,16 +235,17 @@
       : _openDebtAmount.mul(ratio);
     // remaining underlying token deposits that could be withdrawn
     const freeCover = _coveredDebtAmount.sub(requiredCover);
+    const freeCoverAmount = utils.formatUnits(freeCover, _decimals);
     // amount of debt tokens covered by this vault (= deposit amount)
     const vaultCover = _vault.balance
       .mul(_pricePerShare)
       .div(scalar(_decimals))
       .mul(scalar(BigNumber.from(18).sub(_decimals)));
     // amount of tokens available for withdrawal
-    const maxWithdrawAmount = vaultCover.sub(freeCover);
+    const maxWithdrawAmount = freeCover.sub(vaultCover);
 
     const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    const vaultCoverAmount = vaultCover.lt(BigNumber.from(0))
+    const vaultCoverAmount = vaultCover.lte(BigNumber.from(0))
       ? '0'
       : utils.formatUnits(
           vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
@@ -254,8 +255,8 @@
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
         ? maxWithdrawAmount.lte(BigNumber.from(0))
-          ? maxAmount
-          : vaultCoverAmount
+          ? freeCoverAmount
+          : maxAmount
         : vaultCoverAmount
       : '0';
   }
