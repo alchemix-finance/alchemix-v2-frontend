@@ -261,6 +261,34 @@ export const VaultTypesInfos = {
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x94b008aa00579c1307b0ef2c499ad98a8ce58e58&marketName=proto_optimism_v3',
         bonusType: 'aaveOptimism',
       },
+      '0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452': {
+        rewardAdapter: 'vesper',
+        rewardType: 'APR',
+        customTokenName: false,
+        token: 'vaUSDC',
+        customAddress: '',
+        vaultName: 'Vesper',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: false,
+        multicall: false,
+        gateway: 'ATokenGateway_alUSD',
+        strategy: 'https://app.vesper.finance/eth/pools/0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452',
+      },
+      '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee': {
+        rewardAdapter: 'vesper',
+        rewardType: 'APR',
+        customTokenName: false,
+        token: 'vaDAI',
+        customAddress: '',
+        vaultName: 'Vesper',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: false,
+        multicall: false,
+        gateway: 'ATokenGateway_alUSD',
+        strategy: 'https://app.vesper.finance/eth/pools/0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
+      },
     },
   },
   [VaultTypes.alETH]: {
@@ -397,6 +425,21 @@ export const vaultMessages = [
     level: 1,
     message:
       'The updated vault uses Uniswap, so will be subject to the rETH/ETH spread when the rETH buffer does not contain enough ETH for a direct withdrawal.',
+  },
+  {
+    vault: '0xd1C117319B3595fbc39b471AB1fd485629eb05F2',
+    level: 0,
+    message: "Awaiting whitelist on Vesper's API endpoint to fetch APR data.",
+  },
+  {
+    vault: '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
+    level: 0,
+    message: "Awaiting whitelist on Vesper's API endpoint to fetch APR data.",
+  },
+  {
+    vault: '0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452',
+    level: 0,
+    message: "Awaiting whitelist on Vesper's API endpoint to fetch APR data.",
   },
 ];
 

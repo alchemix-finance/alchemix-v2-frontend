@@ -8,7 +8,6 @@ function connector(endpoint: string) {
   return {
     url: `${API_URL}/${endpoint}`,
     method: 'GET',
-    crossDomain: true,
   };
 }
 
@@ -17,9 +16,11 @@ function connector(endpoint: string) {
  * */
 export async function getVesperApy() {
   try {
-    const poolData = await axios(connector('pools'));
-    console.log(poolData.data);
-    return poolData.data;
+    // @dev we're waiting for whitelisting to be enabled on the API endpoint
+    // const poolData = await axios(connector('pools'));
+    // console.log(poolData.data);
+    // return poolData.data;
+    return null;
   } catch (e) {
     console.error(e);
     return null;
