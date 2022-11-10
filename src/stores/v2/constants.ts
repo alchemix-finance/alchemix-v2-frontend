@@ -289,6 +289,15 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy: 'https://app.vesper.finance/eth/pools/0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
       },
+      '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE': {
+        gateway: 'ATokenGateway_alUSD',
+      },
+      '0x625E7708f30cA75bfd92586e17077590C60eb4cD': {
+        gateway: 'ATokenGateway_alUSD',
+      },
+      '0x6ab707Aca953eDAeFBc4fD23bA73294241490620': {
+        gateway: 'ATokenGateway_alUSD',
+      },
     },
   },
   [VaultTypes.alETH]: {
