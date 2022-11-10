@@ -11,6 +11,7 @@ import { getVaultApy } from '@middleware/yearn';
 import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { getLidoApr } from '@middleware/lido';
 import { getAaveApr } from '@middleware/aave';
+import { getVesperApy } from '@middleware/vesper';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
 import { getTokenPrices } from '@middleware/coingecko';
@@ -131,6 +132,8 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer, token: stri
       return getRocketApr();
     case 'aave':
       return getAaveApr(token);
+    case 'vesper':
+      return getVesperApy();
     default:
       return getVaultApy();
   }
