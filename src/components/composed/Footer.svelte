@@ -157,11 +157,6 @@
             <img src="images/integrations/snapshot.svg" class="w-32" alt="The logo of Snapshot" />
           </a>
         </li>
-        <li class="opacity-50 hover:opacity-100">
-          <a href="https://zapper.fi/" target="_blank">
-            <img src="images/integrations/zapper_black.svg" class="w-32" alt="The logo of Zapper" />
-          </a>
-        </li>
       </ul>
     </div>
   </div>
