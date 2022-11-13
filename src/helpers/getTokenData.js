@@ -34,7 +34,7 @@ const getTokenSymbol = async (address) => {
  * @returns String the token balance
  * */
 const getTokenBalance = async (address) => {
-  const contract = new ethers.Contract(address, genericAbi, provider);
+  const contract = new ethers.Contract(address, genericAbi, getProvider(_network.id));
   return contract.balanceOf(_account.address);
 };
 
@@ -44,7 +44,7 @@ const getTokenBalance = async (address) => {
  * @returns String the token name
  * */
 const getTokenName = async (address) => {
-  const contract = new ethers.Contract(address, genericAbi, provider);
+  const contract = new ethers.Contract(address, genericAbi, getProvider(_network.id));
   return contract.name();
 };
 

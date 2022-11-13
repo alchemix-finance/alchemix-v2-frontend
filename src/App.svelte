@@ -2,13 +2,9 @@
   // libraries
   import { onMount } from 'svelte';
   import { Router, Route } from 'svelte-routing';
-  import { _ } from 'svelte-i18n';
   import Modal from '@components/elements/Modal.svelte';
   import StateManager from '@components/composed/StateManager.svelte';
   import settings from '@stores/settings';
-
-  // middleware
-  import { getGasPrices, getFiatRates } from '@middleware/zapper';
 
   // composed components
   import HeaderBar from '@components/composed/HeaderBar.svelte';
@@ -29,8 +25,6 @@
   import SecretCowLevel from '@views/SecretCowLevel.svelte';
   import Swap from '@views/Swap.svelte';
   // import { routerGuard } from '@helpers/routerGuard';
-  import { networkStore } from '@stores/v2/alcxStore';
-  import { chainIds } from '@stores/v2/constants';
 
   import { connect } from '@helpers/walletManager';
   import MenuNavbar from './components/composed/MenuNavbar.svelte';
@@ -40,33 +34,10 @@
   let showBanner = false;
   if (deploymentUrl.filter((word) => word === 'staging').length !== 0) showBanner = true;
 
-  // @dev to stop waste API request, stop the gas updates if needed
-  let gasTimer;
-
   const preselect = JSON.parse(window.localStorage.getItem('connectedWallets')) || [];
   let walletChecked = false;
 
-  function gasPriceUpdater() {
-    gasTimer = window.setTimeout(async () => {
-      try {
-        await getGasPrices(
-          null,
-          chainIds.filter((entry) => entry.id === $networkStore)[0]?.abiPath || 'ethereum',
-        );
-        if (gasTimer !== 'stopped') gasPriceUpdater();
-      } catch (e) {
-        console.log('Error fetching gas prices from zapper', e);
-      }
-    }, 10000);
-  }
-
-  function gasIdle() {
-    clearTimeout(gasTimer);
-    gasTimer = 'stopped';
-  }
-
   onMount(async () => {
-    await Promise.all([getGasPrices(), getFiatRates()]);
     if (preselect.length > 0) {
       await connect(preselect);
       // if (location.pathname === '/') routerGuard('accounts');
@@ -131,7 +102,6 @@ Use at your own risk.
   }
 </style>
 
-<svelte:window on:blur="{gasIdle}" on:focus="{gasPriceUpdater}" />
 <div class="{$settings.invertColors ? 'inverseBg' : 'regularBg'} min-h-screen">
   <div class=" fixed inset-0 overflow-auto pb-20 lg:pb-0">
     <StateManager>
