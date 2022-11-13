@@ -18,58 +18,129 @@
   import settings from '@stores/settings';
   import { chainIds } from '@stores/v2/constants';
 
+  const sentinelConfig = [
+    {
+      chainId: '0x1',
+      alUSD: true,
+      alETH: true,
+      transmuters: [
+        { token: 'DAI', transmuter: 'alUSD' },
+        { token: 'USDC', transmuter: 'alUSD' },
+        { token: 'USDT', transmuter: 'alUSD' },
+        { token: 'ETH', transmuter: 'alETH' },
+      ],
+      alTokens: [
+        { token: 'AlToken', alchemist: 'alUSD' },
+        { token: 'AlEth', alchemist: 'alETH' },
+      ],
+    },
+    {
+      chainId: '0xa',
+      alUSD: true,
+      alETH: true,
+      transmuters: [
+        { token: 'DAI', transmuter: 'alUSD' },
+        { token: 'USDC', transmuter: 'alUSD' },
+        { token: 'USDT', transmuter: 'alUSD' },
+        { token: 'ETH', transmuter: 'alETH' },
+      ],
+      alTokens: [
+        { token: 'CrossChainCanonicalAlchemicTokenV2_alUSD', alchemist: 'alUSD' },
+        { token: 'CrossChainCanonicalAlchemicTokenV2_alETH', alchemist: 'alETH' },
+      ],
+    },
+    {
+      chainId: '0xfa',
+      alUSD: true,
+      alETH: false,
+      transmuters: [
+        { token: 'DAI', transmuter: 'alUSD' },
+        { token: 'USDC', transmuter: 'alUSD' },
+        { token: 'USDT', transmuter: 'alUSD' },
+      ],
+      alTokens: [{ token: 'CrossChainCanonicalAlchemicTokenV2_alUSD', alchemist: 'alUSD' }],
+    },
+  ];
+  $: currentSentinel = sentinelConfig.filter((entry) => entry.chainId === $networkStore)[0];
   let tokenList = [];
-
-  const transmuters = [
-    { token: 'DAI', transmuter: 'alUSD' },
-    { token: 'USDC', transmuter: 'alUSD' },
-    { token: 'USDT', transmuter: 'alUSD' },
-    { token: 'ETH', transmuter: 'alETH' },
-  ];
   let transmuterList = [];
-
-  const alTokens = [
-    { token: 'AlToken', alchemist: 'alUSD' },
-    { token: 'AlEth', alchemist: 'alETH' },
-  ];
   let alTokenList = [];
-
-  const alchemists = ['AlchemistV2_alUSD', 'AlchemistV2_alETH'];
-  let alchemistList = [];
 
   $: abiPath = chainIds.filter((chain) => chain.id === $networkStore)[0].abiPath;
 
   const initTokenData = (tokens, vaultType) => {
     tokens?.forEach(async (token) => {
-      const isEnabled = await fetchTokenEnabledStatus(VaultTypes[vaultType], token, $signer, $networkStore);
-      const name = await getTokenName(token);
-      tokenList = [...tokenList, { name, address: token, isEnabled, alchemist: vaultType }];
+      if (tokenList.filter((entry) => entry.address === token).length === 0) {
+        try {
+          const isEnabled = await fetchTokenEnabledStatus(
+            VaultTypes[vaultType],
+            token,
+            $signer,
+            $networkStore,
+          );
+          let name;
+          if ($networkStore !== '0xfa') {
+            name = await getTokenName(token);
+          } else {
+            name = `${token.slice(0, 8)}...`;
+          }
+          tokenList = [...tokenList, { name, address: token, isEnabled, alchemist: vaultType }];
+        } catch (e) {
+          console.error(e);
+        }
+      }
     });
   };
 
   const initTransmuters = () => {
-    transmuters.forEach(async (transmuter) => {
-      const contract = await getContract(`TransmuterV2_${transmuter.token}`, abiPath);
-      const isPaused = await contract.isPaused();
-      transmuterList = [...transmuterList, { type: transmuter.transmuter, name: transmuter.token, isPaused }];
-    });
+    if (!!currentSentinel) {
+      currentSentinel.transmuters.forEach(async (transmuter) => {
+        try {
+          const contract = await getContract(`TransmuterV2_${transmuter.token}`, abiPath);
+          const isPaused = await contract.isPaused();
+          transmuterList = [
+            ...transmuterList,
+            { type: transmuter.transmuter, name: transmuter.token, isPaused },
+          ];
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
   };
 
   const initAlTokens = () => {
-    alTokens.forEach(async (alToken) => {
-      const contract = await getContract(alToken.token, abiPath);
-      const alchemistAddress = await getAddress(`AlchemistV2_${alToken.alchemist}`, abiPath);
-      const isPaused = await contract.paused(alchemistAddress);
-      const name = await contract.name();
-      alTokenList = [...alTokenList, { name, isPaused, token: alToken.token, alchemist: alToken.alchemist }];
-    });
+    if (!!currentSentinel) {
+      currentSentinel.alTokens.forEach(async (alToken) => {
+        try {
+          const contract = await getContract(alToken.token, abiPath);
+          const alchemistAddress = await getAddress(`AlchemistV2_${alToken.alchemist}`, abiPath);
+          const isPaused = await contract.paused(alchemistAddress);
+          const name = await contract.name();
+          alTokenList = [
+            ...alTokenList,
+            { name, isPaused, token: alToken.token, alchemist: alToken.alchemist },
+          ];
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
+  };
+
+  const tokenInitSelection = () => {
+    if (currentSentinel.alUSD) {
+      initTokenData($tokensStore[0]?.underlyingTokens.concat($tokensStore[0]?.yieldTokens), 'alUSD');
+    }
+    if (currentSentinel.alETH) {
+      initTokenData($tokensStore[1]?.underlyingTokens.concat($tokensStore[1]?.yieldTokens), 'alETH');
+    }
   };
 
   const toggleTokenStatus = async (alchemist, token, newStatus) => {
     await toggleTokenEnabled(VaultTypes[alchemist], token, newStatus, [$signer], $networkStore).then(() => {
       tokenList.length = 0;
-      initTokenData($tokensStore[0].underlyingTokens.concat($tokensStore[0].yieldTokens), 'alUSD');
-      initTokenData($tokensStore[1].underlyingTokens.concat($tokensStore[1].yieldTokens), 'alETH');
+      tokenInitSelection();
     });
   };
 
@@ -89,8 +160,7 @@
     });
   };
 
-  $: initTokenData($tokensStore[0]?.underlyingTokens.concat($tokensStore[0]?.yieldTokens), 'alUSD');
-  $: initTokenData($tokensStore[1]?.underlyingTokens.concat($tokensStore[1]?.yieldTokens), 'alETH');
+  $: $tokensStore, tokenInitSelection();
 
   onMount(() => {
     if (!$sentinelStore) {
