@@ -17,10 +17,10 @@ function connector(endpoint: string) {
 export async function getVesperApy() {
   try {
     // @dev we're waiting for whitelisting to be enabled on the API endpoint
-    // const poolData = await axios(connector('pools'));
-    // console.log(poolData.data);
-    // return poolData.data;
-    return null;
+    const poolData = await axios(connector('pools'));
+    console.log(poolData.data);
+    return poolData.data;
+    // return null;
   } catch (e) {
     console.error(e);
     return null;
