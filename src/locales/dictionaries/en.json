@@ -54,6 +54,7 @@
   "approval": "Approval",
   "infinite": "Infinite",
   "exact": "Exact",
+  "utilities": "Utilities",
   "landing": {
     "intro_title": "Alchemix Self-Repaying Loans allow you to leverage a range of tokens without risk of liquidation.",
     "intro_subtitle_0": "Borrow up to 50% of your deposited collateral",
@@ -75,6 +76,12 @@
     "benefit_liquidations_blurb": "No matter what happens we'll never liquidate your deposit. You can choose to self-liquidate your own loan at your own discretion.",
     "benefit_flexible_title": "Completely flexible",
     "benefit_flexible_blurb": "Alchemix doesn't lock your deposit or charge you fees. Your funds are accessible 100% of the time. You can also repay your debt whenever you like."
+  },
+  "utilities_page": {
+    "title": "Utilities",
+    "subtitle": "A collection of useful tools",
+    "community_widget_button_open": "Open",
+    "community_widget_explainer": "These tools are developed and maintained by our awesome community members."
   },
   "settings_page": {
     "locale": "Locale",
