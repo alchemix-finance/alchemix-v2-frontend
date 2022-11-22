@@ -17,6 +17,8 @@
   import { resetStores } from '@stores/v2/methods';
   import { reservesStore } from '@stores/aaveReserves';
   import { getReservesEth, getReservesOpt } from '@middleware/aave';
+  import { vesperVaults } from '@stores/vesperVaults';
+  import { getVesperData } from '@middleware/vesper';
   import { queryOpenProposals } from '@middleware/snapshot';
 
   let lastConnection = {
@@ -36,6 +38,8 @@
       const aaveReservesEth = await getReservesEth();
       const aaveReservesOpt = await getReservesOpt();
       reservesStore.set([...aaveReservesEth.data.data.reserves, ...aaveReservesOpt.data.data.reserves]);
+      const vesperVaultData = await getVesperData();
+      vesperVaults.set([...vesperVaultData]);
 
       let vaultTokens = [];
       execute.vaultTypes.forEach((type) => {

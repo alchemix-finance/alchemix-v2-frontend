@@ -94,11 +94,11 @@ export async function fetchDataForVault(
     VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress) &&
     !!VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter
   ) {
-    apy = await rewardAdapter(
-      VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter,
-      signer,
-      tokenParams.underlyingToken,
-    );
+    const rAdapter = VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter;
+    apy =
+      rAdapter === 'vesper'
+        ? await rewardAdapter(rAdapter, signer, tokenAddress)
+        : await rewardAdapter(rAdapter, signer, tokenParams.underlyingToken);
   } else {
     try {
       apy = await getVaultApy(tokenAddress, network);
@@ -133,7 +133,7 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer, token: stri
     case 'aave':
       return getAaveApr(token);
     case 'vesper':
-      return getVesperApy();
+      return getVesperApy(token);
     default:
       return getVaultApy();
   }
