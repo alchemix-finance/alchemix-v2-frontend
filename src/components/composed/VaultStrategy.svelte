@@ -10,6 +10,7 @@
   import { vaultMessages, VaultConstants } from '@stores/v2/constants';
   import { getTokenPriceInEth } from '@middleware/llama';
   import { reservesStore } from '@stores/aaveReserves';
+  import { vesperVaults } from '@stores/vesperVaults';
 
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
@@ -36,6 +37,7 @@
   let bonusYieldValue = '0';
   let bonusYieldToken = '';
   let aaveReserve;
+  let vesperVault;
   let tokenPriceInEth = 0;
   const WEI_DEC = 10 ** 18;
   const SPY = 31536000;
@@ -63,6 +65,12 @@
             (aaveReserve.totalATokenSupply * tokenPriceInEth * WEI_DEC));
         if (CHAIN_DEC === 6) bonusYieldRate = bonusYieldRate / 10 ** 12;
         break;
+      case 'vesper':
+        vesperVault = $vesperVaults.filter((entry) => entry.address === strategy.col5.vault.address)[0];
+        bonusYieldToken = 'VSP';
+        bonusYieldRate = vesperVault['tokenDeltaRates']['30'];
+        bonusYield = true;
+        break;
       default:
         break;
     }
@@ -84,8 +92,7 @@
       $networkStore,
     ));
   };
-
-  $: totalYield = ((strategy.col4.yieldRate * 100 + bonusYieldRate * 100) / 100).toFixed(2);
+  $: totalYield = ((strategy?.col4.yieldRate * 100 + bonusYieldRate * 100) / 100).toFixed(2);
 
   $: if (alToken !== undefined) getPausedStatus();
 
@@ -194,7 +201,12 @@
       </div>
       <div class="self-start hidden lg:block w-full flex-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
-        <YieldCell yieldRate="{totalYield}" />
+        <YieldCell
+          yieldRate="{totalYield}"
+          bonusYield="{bonusYield}"
+          bonusYieldTokenSymbol="{bonusYieldToken}"
+          bonusYieldRate="{bonusYieldRate}"
+        />
       </div>
     </div>
     {#if isExpanded}
