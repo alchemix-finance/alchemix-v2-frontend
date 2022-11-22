@@ -80,10 +80,8 @@
   "utilities_page": {
     "title": "Utilities",
     "subtitle": "A collection of useful tools",
-    "community_widget_title": "Awesome Alchemix",
-    "community_widget_button_open": "Open {page}",
-    "community_widget_explainer": "These tools are developed and maintained by our awesome community members.",
-    "stats_page": "Protocol Stats"
+    "community_widget_button_open": "Open",
+    "community_widget_explainer": "These tools are developed and maintained by our awesome community members."
   },
   "settings_page": {
     "locale": "Locale",
