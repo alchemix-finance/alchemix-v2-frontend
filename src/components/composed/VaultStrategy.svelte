@@ -51,7 +51,6 @@
 
   $: bonusYieldType = strategy?.col4.incentives;
   const getIncentives = async () => {
-    bonusYield = true;
     switch (bonusYieldType) {
       case 'aaveOptimism':
         aaveReserve = getAaveReserveOpt(strategy?.col3.token.address);
@@ -64,6 +63,7 @@
           ((aaveReserve.aToken.rewards[0].emissionsPerSecond * SPY * WEI_DEC * bonusYieldValue) /
             (aaveReserve.totalATokenSupply * tokenPriceInEth * WEI_DEC));
         if (CHAIN_DEC === 6) bonusYieldRate = bonusYieldRate / 10 ** 12;
+        bonusYield = true;
         break;
       case 'vesper':
         vesperVault = $vesperVaults.filter((entry) => entry.address === strategy.col5.vault.address)[0];
