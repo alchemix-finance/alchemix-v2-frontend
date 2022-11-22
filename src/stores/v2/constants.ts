@@ -227,7 +227,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xda10009cbd5d07dd0cecc66161fc93d7c9000da1&marketName=proto_optimism_v3',
-        bonusType: 'aaveOptimism',
+        bonusType: '',
       },
       '0x4186Eb285b1efdf372AC5896a08C346c7E373cC4': {
         rewardAdapter: 'aave',
@@ -243,7 +243,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x7f5c764cbc14f9669b88837ca1490cca17c31607&marketName=proto_optimism_v3',
-        bonusType: 'aaveOptimism',
+        bonusType: '',
       },
       '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B': {
         rewardAdapter: 'aave',
@@ -259,7 +259,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x94b008aa00579c1307b0ef2c499ad98a8ce58e58&marketName=proto_optimism_v3',
-        bonusType: 'aaveOptimism',
+        bonusType: '',
       },
       '0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452': {
         rewardAdapter: 'vesper',
@@ -274,6 +274,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: 'ATokenGateway_alUSD',
         strategy: 'https://app.vesper.finance/eth/pools/0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452',
+        bonusType: 'vesper',
       },
       '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee': {
         rewardAdapter: 'vesper',
@@ -288,6 +289,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: 'ATokenGateway_alUSD',
         strategy: 'https://app.vesper.finance/eth/pools/0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
+        bonusType: 'vesper',
       },
       '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE': {
         gateway: 'ATokenGateway_alUSD',
@@ -401,7 +403,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alETH',
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x4200000000000000000000000000000000000006&marketName=proto_optimism_v3',
-        bonusType: 'aaveOptimism',
+        bonusType: '',
       },
       '0xd1C117319B3595fbc39b471AB1fd485629eb05F2': {
         rewardAdapter: 'vesper',
@@ -416,7 +418,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: 'ATokenGateway_alETH',
         strategy: 'https://app.vesper.finance/eth/pools/0xd1C117319B3595fbc39b471AB1fd485629eb05F2',
-        bonusType: '',
+        bonusType: 'vesper',
       },
     },
   },
@@ -434,21 +436,6 @@ export const vaultMessages = [
     level: 1,
     message:
       'The updated vault uses Uniswap, so will be subject to the rETH/ETH spread when the rETH buffer does not contain enough ETH for a direct withdrawal.',
-  },
-  {
-    vault: '0xd1C117319B3595fbc39b471AB1fd485629eb05F2',
-    level: 0,
-    message: "Awaiting whitelist on Vesper's API endpoint to fetch APR data.",
-  },
-  {
-    vault: '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
-    level: 0,
-    message: "Awaiting whitelist on Vesper's API endpoint to fetch APR data.",
-  },
-  {
-    vault: '0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452',
-    level: 0,
-    message: "Awaiting whitelist on Vesper's API endpoint to fetch APR data.",
   },
 ];
 
