@@ -242,6 +242,12 @@
         .div(BigNumber.from(10).pow(underlyingTokenData.decimals));
     };
 
+    const sanitizeDecimals = () => {
+      return vaultTokenData.decimals > underlyingTokenData.decimals
+        ? vaultTokenData.decimals
+        : underlyingTokenData.decimals;
+    };
+
     const incentives = () => {
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
         return metaConfig[vaultTokenData.address].bonusType;
@@ -269,7 +275,7 @@
           token: {
             balance: sharesBalance(),
             perShare: vault.underlyingPerShare,
-            decimals: underlyingTokenData.decimals,
+            decimals: sanitizeDecimals(),
             symbol: underlyingTokenData.symbol,
             address: underlyingTokenData.address,
           },
