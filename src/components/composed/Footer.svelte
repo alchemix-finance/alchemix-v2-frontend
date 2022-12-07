@@ -159,5 +159,25 @@
         </li>
       </ul>
     </div>
+    <div>
+      <p class="uppercase text-sm alcxTitle mb-5">{$_('carbon_footprint')}</p>
+      <ul class="text-sm space-y-3">
+        <li class="opacity-50 hover:opacity-100">
+          <a
+            href="https://www.klimadao.finance/pledge/0xffaa3cda4f169d33291dd9ddbea8578d1398430e"
+            target="_blank"
+          >
+            <img
+              src="images/integrations/klima.svg"
+              class="w-32"
+              alt="Alchemix pledged to offset 4,390.96 Carbon Tonnes"
+            />
+          </a>
+        </li>
+      </ul>
+      <p class="text-sm mt-3 text-justify opacity-50 w-60">
+        {$_('carbon_blurb')}
+      </p>
+    </div>
   </div>
 </div>
