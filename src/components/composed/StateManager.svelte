@@ -96,7 +96,7 @@
   }
 
   $: $networkStore, initialize($networkStore);
-  $: $addressStore, initialize($networkStore);
+  $: $addressStore, initialize($networkStore), fetchAllBalances([$signer, $fullTokenList], $networkStore);
 </script>
 
 <slot />
