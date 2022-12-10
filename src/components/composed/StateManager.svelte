@@ -29,6 +29,11 @@
 
   async function initialize(netId) {
     if (!initStarted && $addressStore !== undefined && netId !== lastConnection.chainId) {
+      // Reload the page if the vaults were previously loaded and the user is switching chains
+      if (!$vaultsLoading && netId !== lastConnection.chainId) {
+        location.reload();
+      }
+
       vaultsLoading.set(true);
 
       await resetStores();
