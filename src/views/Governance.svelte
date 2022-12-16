@@ -6,9 +6,12 @@
   import { getOpenProposals, getVotesForAddress } from '@middleware/snapshot';
   import { fetchPosts } from '@middleware/flarum';
 
+  import account from '@stores/account';
   import governance from '@stores/governance';
   import { flarum } from '@stores/flarum';
   import settings from '@stores/settings';
+
+  import { externalContractWrapper } from '@helpers/contractWrapper';
 
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
@@ -16,6 +19,7 @@
   import Button from '@components/elements/Button.svelte';
   import ProposalEntry from '@components/composed/ProposalEntry.svelte';
   import FlarumCard from '@components/composed/FlarumCard.svelte';
+  import Input from '@components/elements/Input.svelte';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -30,8 +34,8 @@
     'CLOSED',
   }
 
-  let currentFilter = FilterTypes.ALL;
 
+  let currentFilter = FilterTypes.ALL;
   $: countByFilter = {
     ALL: $governance.proposals.length,
     ACTIVE: $governance.proposals.filter((_prop) => _prop.state === 'active').length,
@@ -46,6 +50,17 @@
       : $governance.proposals.filter(
           (_proposal) => _proposal.state.toUpperCase() === FilterTypes[currentFilter],
         );
+
+
+
+  /// scoopy's code
+  let { instance: delegateRegistry} = externalContractWrapper('DelegateRegistry', account.signer);
+  let value;
+
+  let onSetDelegate = async (_address) => {
+    console.log(delegateRegistry)
+    await delegateRegistry.setDelegate('alchemixstakers.eth', _address);
+  };
 
   onMount(async () => {
     if ($governance.proposals.length === 0) {
@@ -68,7 +83,23 @@
     <p class="text-center text-xs opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
+    <div class="justaplaceholderdiv">
+      TESTING AREA
+      <input
+      id="borrowInput"
+            placeholder="Address or ENS"
+            bind:value={value}
+            />
+      <Button
+      label="Delegate"
+      borderSize="1"
+      height="h-8"
+      fontSize="text-md"
+      solid="{false}"
 
+      on:clicked="{() => onSetDelegate(value)}"
+      ></Button>
+    </div>
     <ContainerWithHeader>
       <div
         slot="header"
