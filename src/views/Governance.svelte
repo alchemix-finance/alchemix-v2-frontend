@@ -126,7 +126,7 @@
       await getVotesForAddress();
       // await getDelegatedAddress($account.address);
       // await getDelegatingAddresses($account.address);
-      console.log('dellll', delegatedToOther, delegatingToMe);
+      // console.log('dellll', delegatedToOther, delegatingToMe);
     }
     await fetchPosts();
   });
