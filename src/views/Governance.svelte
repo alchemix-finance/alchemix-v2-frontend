@@ -124,8 +124,8 @@
     if ($governance.proposals.length === 0) {
       await getOpenProposals();
       await getVotesForAddress();
-      await getDelegatedAddress($account.address);
-      await getDelegatingAddresses($account.address);
+      // await getDelegatedAddress($account.address);
+      // await getDelegatingAddresses($account.address);
       console.log('dellll', delegatedToOther, delegatingToMe);
     }
     await fetchPosts();
