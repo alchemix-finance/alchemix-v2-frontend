@@ -20,6 +20,8 @@
   import ProposalEntry from '@components/composed/ProposalEntry.svelte';
   import FlarumCard from '@components/composed/FlarumCard.svelte';
   import Input from '@components/elements/Input.svelte';
+  import { keccak256 } from 'ethers/lib/utils';
+  import { ethers } from 'ethers';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -33,7 +35,6 @@
     'ACTIVE',
     'CLOSED',
   }
-
 
   let currentFilter = FilterTypes.ALL;
   $: countByFilter = {
@@ -51,15 +52,16 @@
           (_proposal) => _proposal.state.toUpperCase() === FilterTypes[currentFilter],
         );
 
-
-
   /// scoopy's code
-  let { instance: delegateRegistry} = externalContractWrapper('DelegateRegistry', account.signer);
   let value;
 
   let onSetDelegate = async (_address) => {
-    console.log(delegateRegistry)
-    await delegateRegistry.setDelegate('alchemixstakers.eth', _address);
+    let delegateRegistry = await externalContractWrapper('DelegateRegistry', $account.signer);
+    console.log(delegateRegistry);
+    console.log("address", _address)
+    console.log("signer", $account.signer)
+    let snapshotSpace = ethers.utils.formatBytes32String("alchemixstakers.eth");
+    delegateRegistry.instance.setDelegate(snapshotSpace, _address);
   };
 
   onMount(async () => {
@@ -85,20 +87,15 @@
     </p>
     <div class="justaplaceholderdiv">
       TESTING AREA
-      <input
-      id="borrowInput"
-            placeholder="Address or ENS"
-            bind:value={value}
-            />
+      <input id="borrowInput" placeholder="Address or ENS" bind:value />
       <Button
-      label="Delegate"
-      borderSize="1"
-      height="h-8"
-      fontSize="text-md"
-      solid="{false}"
-
-      on:clicked="{() => onSetDelegate(value)}"
-      ></Button>
+        label="Delegate"
+        borderSize="1"
+        height="h-8"
+        fontSize="text-md"
+        solid="{false}"
+        on:clicked="{() => onSetDelegate(value)}"
+      />
     </div>
     <ContainerWithHeader>
       <div
