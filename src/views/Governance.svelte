@@ -11,6 +11,9 @@
   import { flarum } from '@stores/flarum';
   import settings from '@stores/settings';
 
+  import { GraphQLClient } from 'graphql-request';
+  import axios from 'axios';
+
   import { externalContractWrapper } from '@helpers/contractWrapper';
 
   import ViewContainer from '@components/elements/ViewContainer.svelte';
@@ -22,6 +25,8 @@
   import Input from '@components/elements/Input.svelte';
   import { keccak256 } from 'ethers/lib/utils';
   import { ethers } from 'ethers';
+  import { writable } from 'svelte/store';
+  import { write } from 'fs';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -53,21 +58,75 @@
         );
 
   /// scoopy's code
+  //value variable to store the binding in the input
   let value;
-
+  // takes the input address and calls the delegationRegistry contract
   let onSetDelegate = async (_address) => {
-    let delegateRegistry = await externalContractWrapper('DelegateRegistry', $account.signer);
-    console.log(delegateRegistry);
-    console.log("address", _address)
-    console.log("signer", $account.signer)
-    let snapshotSpace = ethers.utils.formatBytes32String("alchemixstakers.eth");
-    delegateRegistry.instance.setDelegate(snapshotSpace, _address);
+    let snapshotSpace = ethers.utils.formatBytes32String('alchemixstakers.eth');
+    let delegateRegistry = externalContractWrapper('DelegateRegistry', $account.signer);
+    await (await delegateRegistry).instance.setDelegate(snapshotSpace, _address);
   };
+  // //the graph boilerplating
+  const endpoint = 'https://api.thegraph.com/subgraphs/name/snapshot-labs/snapshot';
+  const space = 'alchemixstakers';
+  const spaceDotEth = 'alchemixstakers.eth';
+  let delegatingToMe;
+  let delegatedToOther;
+  const client = new GraphQLClient(endpoint);
 
+  //gets the address you are currently delegating to
+  // async function getDelegatingAddresses(delegatorAddress) {
+  //   const query1 = `
+  //   query {
+  //     delegations(
+  //       where: {space_in: "${space}", "${spaceDotEth}", ""], delegator: "0xf872703F1C8f93fA186869Bac83BAC5A0c87C3c8"}
+  //       ) {
+  //       delegate
+  //     }
+  //   }
+  // `;
+  //   axios({
+  //     url: endpoint,
+  //     method: "post",
+  //     data: {
+  //       query: query1
+  //     }
+  //   }).then((response) => {
+  //     console.log("AXIOS", response)
+  //   }).catch((err) => {
+  //     console.error(err)
+  //   })
+  //   // const data = await client.request(query);
+  //   // console.log('data', data);
+  //   // const delegatedTo = data.delegators.map((d) => d.delegate);
+  //   // console.log('delegatedToOther', delegatedTo);
+  //   // let delegatedToOther = delegatedTo;
+  // }
+  // //get the addresses currently delegating to you
+  // async function getDelegatedAddress(delegateAddress) {
+  //   const query = `
+  //   query {
+  //     delegations(where: {space_in: ["${space}", "${spaceDotEth}", ""], delegate: "${delegateAddress}"}
+  //     ) {
+  //       delegator
+  //     }
+  //   }
+  // `;
+
+  //   const data = await client.request(query);
+  //   const delegatingTo = data.delegates[0].delegator;
+  //   console.log('delegatingToMe', delegatingTo);
+  //   let delegatingToMe = delegatingTo;
+  // }
+
+  /// end of scoopy's code
   onMount(async () => {
     if ($governance.proposals.length === 0) {
       await getOpenProposals();
       await getVotesForAddress();
+      await getDelegatedAddress($account.address);
+      await getDelegatingAddresses($account.address);
+      console.log('dellll', delegatedToOther, delegatingToMe);
     }
     await fetchPosts();
   });
@@ -85,6 +144,7 @@
     <p class="text-center text-xs opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
+    <!--  -->
     <div class="justaplaceholderdiv">
       TESTING AREA
       <input id="borrowInput" placeholder="Address or ENS" bind:value />
@@ -97,6 +157,18 @@
         on:clicked="{() => onSetDelegate(value)}"
       />
     </div>
+    <div>
+      {#if delegatingToMe && Object.keys(delegatingToMe).length > 0}
+        Delegated to me:
+        <div>{delegatingToMe}</div>
+      {/if}
+      {#if delegatedToOther && Object.keys(delegatedToOther).length > 0}
+        My delegated:
+        <div>{delegatedToOther}</div>
+      {/if}
+    </div>
+    <!--  -->
+
     <ContainerWithHeader>
       <div
         slot="header"
