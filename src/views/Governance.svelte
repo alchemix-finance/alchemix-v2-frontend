@@ -157,7 +157,7 @@
         on:clicked="{() => onSetDelegate(value)}"
       />
     </div>
-    <div>
+    <!-- <div>
       {#if delegatingToMe && Object.keys(delegatingToMe).length > 0}
         Delegated to me:
         <div>{delegatingToMe}</div>
@@ -166,7 +166,7 @@
         My delegated:
         <div>{delegatedToOther}</div>
       {/if}
-    </div>
+    </div> -->
     <!--  -->
 
     <ContainerWithHeader>
