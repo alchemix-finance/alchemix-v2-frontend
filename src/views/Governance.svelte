@@ -12,7 +12,7 @@
   import settings from '@stores/settings';
 
   import { GraphQLClient } from 'graphql-request';
-  import axios from 'axios';
+  // import axios from 'axios';
 
   import { externalContractWrapper } from '@helpers/contractWrapper';
 
