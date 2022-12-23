@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = 'https://stake.rocketpool.net/api/network/stats';
+const apiUrl = 'https://stake.rocketpool.net/api/mainnet/network/stats';
 
 function getApr(
   totalAtStake = 1e6,
