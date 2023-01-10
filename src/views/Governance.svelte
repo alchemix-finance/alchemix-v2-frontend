@@ -12,7 +12,7 @@
   import settings from '@stores/settings';
 
   import { GraphQLClient } from 'graphql-request';
-  // import axios from 'axios';
+  import axios from 'axios';
 
   import { externalContractWrapper } from '@helpers/contractWrapper';
 
@@ -75,49 +75,49 @@
   const client = new GraphQLClient(endpoint);
 
   //gets the address you are currently delegating to
-  // async function getDelegatingAddresses(delegatorAddress) {
-  //   const query1 = `
-  //   query {
-  //     delegations(
-  //       where: {space_in: "${space}", "${spaceDotEth}", ""], delegator: "0xf872703F1C8f93fA186869Bac83BAC5A0c87C3c8"}
-  //       ) {
-  //       delegate
-  //     }
-  //   }
-  // `;
-  //   axios({
-  //     url: endpoint,
-  //     method: "post",
-  //     data: {
-  //       query: query1
-  //     }
-  //   }).then((response) => {
-  //     console.log("AXIOS", response)
-  //   }).catch((err) => {
-  //     console.error(err)
-  //   })
-  //   // const data = await client.request(query);
-  //   // console.log('data', data);
-  //   // const delegatedTo = data.delegators.map((d) => d.delegate);
-  //   // console.log('delegatedToOther', delegatedTo);
-  //   // let delegatedToOther = delegatedTo;
-  // }
-  // //get the addresses currently delegating to you
-  // async function getDelegatedAddress(delegateAddress) {
-  //   const query = `
-  //   query {
-  //     delegations(where: {space_in: ["${space}", "${spaceDotEth}", ""], delegate: "${delegateAddress}"}
-  //     ) {
-  //       delegator
-  //     }
-  //   }
-  // `;
+  async function getDelegatingAddresses(delegatorAddress) {
+    const query1 = `
+    query {
+      delegations(
+        where: {space_in: "${space}", "${spaceDotEth}", ""], delegator: "0xf872703F1C8f93fA186869Bac83BAC5A0c87C3c8"}
+        ) {
+        delegate
+      }
+    }
+  `;
+    axios({
+      url: endpoint,
+      method: "post",
+      data: {
+        query: query1
+      }
+    }).then((response) => {
+      console.log("AXIOS", response)
+    }).catch((err) => {
+      console.error(err)
+    })
+    const data = await client.request(query);
+    console.log('data', data);
+    const delegatedTo = data.delegators.map((d) => d.delegate);
+    console.log('delegatedToOther', delegatedTo);
+    let delegatedToOther = delegatedTo;
+  }
+  //get the addresses currently delegating to you
+  async function getDelegatedAddress(delegateAddress) {
+    const query = `
+    query {
+      delegations(where: {space_in: ["${space}", "${spaceDotEth}", ""], delegate: "${delegateAddress}"}
+      ) {
+        delegator
+      }
+    }
+  `;
 
-  //   const data = await client.request(query);
-  //   const delegatingTo = data.delegates[0].delegator;
-  //   console.log('delegatingToMe', delegatingTo);
-  //   let delegatingToMe = delegatingTo;
-  // }
+    const data = await client.request(query);
+    const delegatingTo = data.delegates[0].delegator;
+    console.log('delegatingToMe', delegatingTo);
+    let delegatingToMe = delegatingTo;
+  }
 
   /// end of scoopy's code
   onMount(async () => {
