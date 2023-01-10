@@ -30,6 +30,36 @@ const paramLookup = Object.freeze({
   },
 });
 
+export async function hasMigrated(_vaultType: VaultTypes, [_userAddress, _signer]: [string, Signer]) {
+  try {
+    const { instance: _transferInstance } = await contractWrapper(
+      VaultConstants[_vaultType].transferAdapter,
+      _signer,
+      'ethereum',
+    );
+    return _transferInstance.hasMigrated(_userAddress);
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message, error);
+    console.error(`[flashloanActions/hasMigrated]: ${error}`);
+    throw Error(error);
+  }
+}
+
+export async function legacyDeposit(_vaultType: VaultTypes, [_userAddress, _signer]: [string, Signer]) {
+  try {
+    const { instance: _legacyInstance } = await contractWrapper(
+      VaultConstants[_vaultType].legacy,
+      _signer,
+      'ethereum',
+    );
+    return _legacyInstance.getCdpTotalDeposited(_userAddress);
+  } catch (error) {
+    setError(error.data ? await error.data.message : error.message, error);
+    console.error(`[flashloanActions/legacyDeposit]: ${error}`);
+    throw Error(error);
+  }
+}
+
 export async function limitCheck(_vaultType: VaultTypes, [userAddress, signer]: [string, Signer]) {
   try {
     const param = paramLookup[_vaultType];
