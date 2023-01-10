@@ -33,6 +33,7 @@ export const VaultConstants = {
     },
     alToken: 'AlToken',
     legacy: 'Alchemist',
+    transferAdapter: 'TransferAdapter_alUSD',
   },
   [VaultTypes.alETH]: {
     alchemistContractSelector: 'AlchemistV2_alETH',
@@ -51,6 +52,7 @@ export const VaultConstants = {
     },
     alToken: 'AlEth',
     legacy: 'AlchemistEth',
+    transferAdapter: 'TransferAdapter_alETH',
   },
 };
 

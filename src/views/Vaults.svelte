@@ -348,9 +348,6 @@
     });
 
   const closeModal = () => modalReset();
-  const goToLegacy = () => {
-    window.open('https://legacy.alchemix.fi/vault', '_blank');
-  };
 </script>
 
 <ViewContainer>
