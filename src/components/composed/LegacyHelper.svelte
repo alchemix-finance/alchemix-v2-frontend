@@ -64,7 +64,7 @@
   });
 </script>
 
-<ContainerWithHeader canToggle="{true}" isVisible="{true}">
+<ContainerWithHeader canToggle="{true}" isVisible="{canMigrateAlETH || canMigrateAlUSD}">
   <div class="text-sm flex flex-row justify-between" slot="header">
     <p class="self-center">{$_('migration.title')}</p>
   </div>
