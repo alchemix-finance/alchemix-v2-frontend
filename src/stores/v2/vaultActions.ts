@@ -10,6 +10,28 @@ import {
   setError,
 } from '@helpers/setToast';
 
+export async function getVaultMaxLoss(
+  _yieldTokenAddress: string,
+  _vaultType: VaultTypes,
+  [_signer]: [Signer],
+  _network: string,
+) {
+  try {
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+    const { instance: alchemist } = await contractWrapper(
+      VaultConstants[_vaultType].alchemistContractSelector,
+      _signer,
+      path,
+    );
+    const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
+    return yieldTokenParameters[3];
+  } catch (error) {
+    setError(error.error.data ? await error.error.data.originalError.message : error.error.message, error);
+    console.error(`[vaultActions/getVaultMaxLoss] ${error}`);
+    throw Error(error);
+  }
+}
+
 export async function getVaultCapacity(
   _yieldTokenAddress: string,
   _vaultType: VaultTypes,
@@ -87,6 +109,7 @@ export async function deposit(
       // @dev we're literally just removing yearn's vault from the equation
       // @dev this is a temporary fix until we can properly refactor the vaults
       tokenAddress !== '0xa258C4606Ca8206D8aA700cE2143D7db854D168c' &&
+      tokenAddress !== '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0' &&
       gatewayIndexCheck >= 0 &&
       gatewayCheck[gatewayIndexCheck] !== undefined
     ) {
@@ -372,6 +395,7 @@ export async function withdraw(
       // @dev we're literally just removing yearn's vault from the equation
       // @dev this is a temporary fix until we can properly refactor the vaults
       yieldTokenAddress !== '0xa258C4606Ca8206D8aA700cE2143D7db854D168c' &&
+      yieldTokenAddress !== '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0' &&
       gatewayIndexCheck >= 0 &&
       gatewayCheck.filter((entry) => {
         return !!entry;

@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
@@ -9,7 +10,7 @@
   import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
   import VaultMessage from '@components/elements/VaultMessage.svelte';
 
-  import { deposit, depositUnderlying, multicallDeposit } from '@stores/v2/vaultActions';
+  import { deposit, depositUnderlying, multicallDeposit, getVaultMaxLoss } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
   import {
     addressStore,
@@ -36,6 +37,8 @@
   export let isPaused;
 
   let maximumLoss;
+
+  let maxLossPreset;
 
   let yieldDeposit = 0;
   let underlyingDeposit = 0;
@@ -285,6 +288,12 @@
     if (inputValues[yieldTokenData?.symbol]) yieldDeposit = inputValues[yieldTokenData?.symbol];
   }
   $: capa = capInfo.capacity.value;
+
+  onMount(async () => {
+    if (vault) {
+      maxLossPreset = await getVaultMaxLoss(vault.address, vault.type, [$signer], $networkStore);
+    }
+  });
 </script>
 
 {#if vault}
@@ -321,7 +330,7 @@
   </div>
 
   <div class="my-4">
-    <MaxLossController bind:maxLoss="{maximumLoss}" />
+    <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
   </div>
 
   <div class="my-4 text-sm text-lightgrey10 hidden">
