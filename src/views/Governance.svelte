@@ -68,68 +68,74 @@
   };
   // //the graph boilerplating
   const endpoint = 'https://api.thegraph.com/subgraphs/name/snapshot-labs/snapshot';
-  const space = 'alchemixstakers';
-  const spaceDotEth = 'alchemixstakers.eth';
-  let delegatingToMe;
-  let delegatedToOther;
-  const client = new GraphQLClient(endpoint);
+  let userDelegatingAddresses;
+  let delegatedToUserAddresses;
 
   //gets the address you are currently delegating to
-  async function getDelegatingAddresses(delegatorAddress) {
-    const query1 = `
-    query {
-      delegations(
-        where: {space_in: "${space}", "${spaceDotEth}", ""], delegator: "0xf872703F1C8f93fA186869Bac83BAC5A0c87C3c8"}
-        ) {
-        delegate
-      }
-    }
-  `;
+  let getUserDelegatingAddresses = async () => {
+    let address = await $account.address;
     axios({
       url: endpoint,
-      method: "post",
+      method: 'post',
       data: {
-        query: query1
-      }
-    }).then((response) => {
-      console.log("AXIOS", response)
-    }).catch((err) => {
-      console.error(err)
-    })
-    const data = await client.request(query);
-    console.log('data', data);
-    const delegatedTo = data.delegators.map((d) => d.delegate);
-    console.log('delegatedToOther', delegatedTo);
-    let delegatedToOther = delegatedTo;
-  }
-  //get the addresses currently delegating to you
-  async function getDelegatedAddress(delegateAddress) {
-    const query = `
-    query {
-      delegations(where: {space_in: ["${space}", "${spaceDotEth}", ""], delegate: "${delegateAddress}"}
-      ) {
-        delegator
-      }
-    }
-  `;
+        query: `{
+          delegations(where: {space_in: ["alchemixstakers", "alchemixstakers.eth"] delegator: "${address}"}) {
+            delegate
+          }
+        }`,
+      },
+    }).then((result) => {
+      const delegators = result.data.data.delegations;
+      console.log('YourDelegationAddresses', delegators);
+      const valuesArray = delegators
+        .map((object) => Object.values(object))
+        .reduce((acc, val) => acc.concat(val), []);
+      userDelegatingAddresses = valuesArray;
+      console.log("results in array", userDelegatingAddresses);
 
-    const data = await client.request(query);
-    const delegatingTo = data.delegates[0].delegator;
-    console.log('delegatingToMe', delegatingTo);
-    let delegatingToMe = delegatingTo;
-  }
+    });
+  };
+
+  //get the addresses currently delegated to you
+  let getDelegatedToUserAddresses = async () => {
+    let address = await $account.address;
+    axios({
+      url: endpoint,
+      method: 'post',
+      data: {
+        query: `{
+          delegations(where: {space_in: ["alchemixstakers", "alchemixstakers.eth"] delegate: "${address}"}) {
+            delegator
+          }
+        }`,
+      },
+    }).then((result) => {
+      const delegators = result.data.data.delegations;
+      console.log('DelegatedToYouAddresses', delegators);
+      const valuesArray = delegators
+        .map((object) => Object.values(object))
+        .reduce((acc, val) => acc.concat(val), []);
+      delegatedToUserAddresses = valuesArray;
+      console.log("results in array", delegatedToUserAddresses);
+
+      // delegators.forEach((delegator) => {
+      //   delegator.push(delegatedToUserAddresses)
+      // })
+      // console.log("deltouseradd",delegatedToUserAddresses)
+    });
+  };
 
   /// end of scoopy's code
   onMount(async () => {
     if ($governance.proposals.length === 0) {
       await getOpenProposals();
       await getVotesForAddress();
-      // await getDelegatedAddress($account.address);
-      // await getDelegatingAddresses($account.address);
-      // console.log('dellll', delegatedToOther, delegatingToMe);
+      await getDelegatedToUserAddresses();
+      await getUserDelegatingAddresses();
     }
     await fetchPosts();
   });
+
 </script>
 
 <ViewContainer>
@@ -144,9 +150,10 @@
     <p class="text-center text-xs opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
-    <!--  -->
+    <!--SCOOPY DELEGATION STUFF BEGIN  -->
     <div class="justaplaceholderdiv">
-      TESTING AREA
+      DelegateHub
+      <br /><br />
       <input id="borrowInput" placeholder="Address or ENS" bind:value />
       <Button
         label="Delegate"
@@ -156,7 +163,11 @@
         solid="{false}"
         on:clicked="{() => onSetDelegate(value)}"
       />
+      <div>Delegated to me: {delegatedToUserAddresses}</div>
+      <div>My delegations: {userDelegatingAddresses}</div>
     </div>
+        <!--SCOOPY DELEGATION STUFF END  -->
+
     <!-- <div>
       {#if delegatingToMe && Object.keys(delegatingToMe).length > 0}
         Delegated to me:
