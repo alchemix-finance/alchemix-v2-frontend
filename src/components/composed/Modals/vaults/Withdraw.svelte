@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
   import { writable } from 'svelte/store';
@@ -8,7 +9,7 @@
   import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
-  import { withdraw, withdrawUnderlying, multicallWithdraw } from '@stores/v2/vaultActions';
+  import { withdraw, withdrawUnderlying, multicallWithdraw, getVaultMaxLoss } from '@stores/v2/vaultActions';
   import { VaultTypes } from '@stores/v2/types';
   import {
     addressStore,
@@ -39,6 +40,7 @@
   let yieldWithdrawAmountShares;
   let underlyingWithdrawAmountShares;
   let maximumLoss;
+  let maxLossPreset;
   let yieldWithdrawAmount = 0;
   let underlyingWithdrawAmount = 0;
 
@@ -356,6 +358,12 @@
     if (inputValues[yieldTokenData.symbol] && convertToStatic)
       staticConversion(inputValues[yieldTokenData.symbol]);
   }
+
+  onMount(async () => {
+    if (vault) {
+      maxLossPreset = await getVaultMaxLoss(vault.address, vault.type, [$signer], $networkStore);
+    }
+  });
 </script>
 
 {#if vault}
@@ -401,7 +409,7 @@
     {/if}
   </div>
   <div class="my-4">
-    <MaxLossController bind:maxLoss="{maximumLoss}" />
+    <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
   </div>
   <div class="my-4 text-sm text-lightgrey10 hidden">
     {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
