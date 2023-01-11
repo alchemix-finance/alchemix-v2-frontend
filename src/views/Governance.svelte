@@ -91,8 +91,7 @@
         .map((object) => Object.values(object))
         .reduce((acc, val) => acc.concat(val), []);
       userDelegatingAddresses = valuesArray;
-      console.log("results in array", userDelegatingAddresses);
-
+      console.log('results in array', userDelegatingAddresses);
     });
   };
 
@@ -116,12 +115,7 @@
         .map((object) => Object.values(object))
         .reduce((acc, val) => acc.concat(val), []);
       delegatedToUserAddresses = valuesArray;
-      console.log("results in array", delegatedToUserAddresses);
-
-      // delegators.forEach((delegator) => {
-      //   delegator.push(delegatedToUserAddresses)
-      // })
-      // console.log("deltouseradd",delegatedToUserAddresses)
+      console.log('results in array', delegatedToUserAddresses);
     });
   };
 
@@ -135,7 +129,6 @@
     }
     await fetchPosts();
   });
-
 </script>
 
 <ViewContainer>
@@ -166,19 +159,7 @@
       <div>Delegated to me: {delegatedToUserAddresses}</div>
       <div>My delegations: {userDelegatingAddresses}</div>
     </div>
-        <!--SCOOPY DELEGATION STUFF END  -->
-
-    <!-- <div>
-      {#if delegatingToMe && Object.keys(delegatingToMe).length > 0}
-        Delegated to me:
-        <div>{delegatingToMe}</div>
-      {/if}
-      {#if delegatedToOther && Object.keys(delegatedToOther).length > 0}
-        My delegated:
-        <div>{delegatedToOther}</div>
-      {/if}
-    </div> -->
-    <!--  -->
+    <!--SCOOPY DELEGATION STUFF END  -->
 
     <ContainerWithHeader>
       <div
