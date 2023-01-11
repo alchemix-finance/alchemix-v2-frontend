@@ -10,6 +10,28 @@ import {
   setError,
 } from '@helpers/setToast';
 
+export async function getVaultMaxLoss(
+  _yieldTokenAddress: string,
+  _vaultType: VaultTypes,
+  [_signer]: [Signer],
+  _network: string,
+) {
+  try {
+    const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
+    const { instance: alchemist } = await contractWrapper(
+      VaultConstants[_vaultType].alchemistContractSelector,
+      _signer,
+      path,
+    );
+    const yieldTokenParameters = await alchemist.getYieldTokenParameters(_yieldTokenAddress);
+    return yieldTokenParameters[3];
+  } catch (error) {
+    setError(error.error.data ? await error.error.data.originalError.message : error.error.message, error);
+    console.error(`[vaultActions/getVaultMaxLoss] ${error}`);
+    throw Error(error);
+  }
+}
+
 export async function getVaultCapacity(
   _yieldTokenAddress: string,
   _vaultType: VaultTypes,

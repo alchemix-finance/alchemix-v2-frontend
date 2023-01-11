@@ -1,176 +1,193 @@
 <script>
-  import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
-  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
-  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
-  import Button from '@components/elements/Button.svelte';
+  import { _ } from 'svelte-i18n';
   import settings from '@stores/settings';
+  import VaultMessage from '@components/elements/VaultMessage.svelte';
 
   export let maxLoss;
-  export let preset = '0.3';
-
-  const typeOfLosses = Object.freeze({
-    '0.3': 0,
-    '0.5': 1,
-    '1': 2,
-  });
-
-  const lossPresets = {
-    [typeOfLosses['0.3']]: 0.3,
-    [typeOfLosses['0.5']]: 0.5,
-    [typeOfLosses['1']]: 1,
-  };
+  export let maxLossPreset;
 
   const maximumLossInputPref = {
     min: 0,
     max: 100,
-    multiplier: 1000,
+    multiplier: 100,
     safeMin: 0.3,
     saneMax: 5,
   };
+  let maximumLossInput;
 
-  let currentPreset = typeOfLosses[preset];
+  $: maxLossPreset,
+    !!maximumLossInput
+      ? maximumLossInput
+      : (maximumLossInput = maxLossPreset?.toString() / maximumLossInputPref.multiplier) || 0;
 
-  let useCustomAmount = false;
-  let maximumLossInput = 0;
-
-  maxLoss = lossPresets[typeOfLosses['0.3']] * maximumLossInputPref.multiplier;
-
-  $: maxLoss = useCustomAmount
-    ? maximumLossInput < 100
-      ? maximumLossInput * maximumLossInputPref.multiplier
-      : 100 * maximumLossInputPref.multiplier
-    : lossPresets[currentPreset] * maximumLossInputPref.multiplier;
+  $: maxLoss = maximumLossInput * maximumLossInputPref.multiplier;
+  $: dangerLow = maxLoss < parseInt(maxLossPreset?.toString());
 </script>
+
+<style>
+  input[type='range'].ltv-slider {
+    width: 100%;
+    margin: 5px 0;
+    background-color: transparent;
+    -webkit-appearance: none;
+  }
+
+  input[type='range'].ltv-slider:focus {
+    outline: none;
+  }
+
+  input[type='range'].ltv-slider::-webkit-slider-runnable-track {
+    background: #42b792;
+    border: 0;
+    border-radius: 25px;
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-webkit-slider-thumb {
+    margin-top: -5px;
+    width: 16px;
+    height: 16px;
+    background: #10141a;
+    border: 1px solid #42b792;
+    border-radius: 4px;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+
+  input[type='range'].ltv-slider:focus::-webkit-slider-runnable-track {
+    background: #52c19e;
+  }
+
+  input[type='range'].ltv-slider::-moz-range-track {
+    background: #42b792;
+    border: 0;
+    border-radius: 25px;
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #10141a;
+    border: 1px solid #42b792;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-ms-track {
+    background: transparent;
+    border-color: transparent;
+    border-width: 5px 0;
+    color: transparent;
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+  }
+
+  input[type='range'].ltv-slider::-ms-fill-lower {
+    background: #3ba483;
+    border: 0;
+    border-radius: 50px;
+  }
+
+  input[type='range'].ltv-slider::-ms-fill-upper {
+    background: #42b792;
+    border: 0;
+    border-radius: 50px;
+  }
+
+  input[type='range'].ltv-slider::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    background: #10141a;
+    border: 1px solid #42b792;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0;
+    /*Needed to keep the Edge thumb centred*/
+  }
+
+  input[type='range'].ltv-slider:focus::-ms-fill-lower {
+    background: #42b792;
+  }
+
+  input[type='range'].ltv-slider:focus::-ms-fill-upper {
+    background: #52c19e;
+  }
+
+  .range_tick {
+    fill: #979ba2;
+  }
+
+  .range_tick:last-child {
+    -webkit-transform: translateX(-3px);
+    -moz-transform: translateX(-3px);
+    -ms-transform: translateX(-3px);
+    -o-transform: translateX(-3px);
+    transform: translateX(-3px);
+  }
+
+  /*TODO: Use one of the selectors from https://stackoverflow.com/a/20541859/7077589 and figure out
+  how to remove the vertical space around the range input in IE*/
+  @supports (-ms-ime-align: auto) {
+    /* Pre-Chromium Edge only styles, selector taken from https://stackoverflow.com/a/32202953/7077589 */
+    input[type='range'].ltv-slider {
+      margin: 0;
+      /*Edge starts the margin from the thumb, not the track as other browsers do*/
+    }
+  }
+</style>
 
 <div class="flex flex-col space-y-2 w-full">
   <div class="flex flex-row w-full">
     <p class="flex-auto {$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'} text-sm">
       {$_('max_slippage')}:
     </p>
-    <ToggleSwitch
-      label="{$_('custom_amount')}"
-      on:toggleChange="{() => (useCustomAmount = !useCustomAmount)}"
-    />
+    <p>
+      {maximumLossInput}%
+    </p>
   </div>
-
-  {#if useCustomAmount}
-    <div
-      class="flex {$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'} rounded border {maximumLossInput >
-      maximumLossInputPref.max
-        ? 'border-red3'
-        : (maximumLossInput && maximumLossInput < maximumLossInputPref.safeMin) ||
-          maximumLossInput >= maximumLossInputPref.saneMax
-        ? 'text-orange1'
-        : `${$settings.invertColors ? 'border-grey3inverse' : 'border-grey3'}`}"
-      transition:slide|local
-    >
-      <div class="w-full">
-        <InputNumber
-          id="underlyingInput"
-          bind:value="{maximumLossInput}"
-          placeholder="0-100%"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
-            ? 'bg-grey3inverse'
-            : 'bg-grey3'} {maximumLossInput > maximumLossInputPref.max
-            ? 'text-red3'
-            : maximumLossInput < maximumLossInputPref.safeMin ||
-              maximumLossInput >= maximumLossInputPref.saneMax
-            ? 'text-orange1'
-            : 'text-lightgrey5'}"
+  <div class="flex flex-col w-full text-lg">
+    <div class="w-full flex flex-row space-x-4 justify-between items-center">
+      <input
+        type="range"
+        id="ltvSlider"
+        class="cursor-pointer w-full ltv-slider"
+        name="{$_('migration.ltv_ratio')}"
+        min="0.1"
+        max="10"
+        step="0.05"
+        bind:value="{maximumLossInput}"
+      />
+      <label for="ltvSlider" class="hidden">{maximumLossInput}%</label>
+    </div>
+    <fieldset class="w-full">
+      <svg role="presentation" width="100%" height="10" xmlns="http://www.w3.org/2000/svg">
+        <rect class="range_tick" x="0%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="10%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="20%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="30%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="40%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="50%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="60%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="70%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="80%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="90%" y="3" width="1" height="10"></rect>
+        <rect class="range_tick" x="100%" y="3" width="1" height="10"></rect>
+      </svg>
+    </fieldset>
+    {#if dangerLow}
+      <div class="mt-4" transition:slide|local>
+        <VaultMessage
+          level="1"
+          message="You have chosen a lower than suggested slippage, this transaction will likely fail."
         />
       </div>
-      <div class="flex flex-col">
-        <Button
-          label="MAX"
-          width="w-full"
-          fontSize="text-xs"
-          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => {
-            maximumLossInput = maximumLossInputPref.max;
-          }}"
-        />
-        <Button
-          label="CLEAR"
-          width="w-max"
-          fontSize="text-xs"
-          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => {
-            maximumLossInput = '';
-          }}"
-        />
-      </div>
-    </div>
-    {#if maximumLossInput && maximumLossInput < maximumLossInputPref.safeMin}
-      <p class="text-orange1 text-sm text-center" transition:slide|local>
-        {$_('modals.slippage_below_safe')}
-      </p>
     {/if}
-    {#if maximumLossInput > maximumLossInputPref.max}
-      <p class="text-red3 text-sm text-center" transition:slide|local>
-        {$_('modals.slippage_above_max')}
-      </p>
-    {:else if maximumLossInput >= maximumLossInputPref.saneMax}
-      <p class="text-orange1 text-sm text-center" transition:slide|local>
-        {$_('modals.slippage_above_safe')}
-      </p>
-    {/if}
-  {:else}
-    <div class="flex flex-row w-full text-lg" transition:slide|local>
-      <button
-        class="border {$settings.invertColors
-          ? 'border-grey5inverse'
-          : 'border-grey5'} rounded-l w-full {currentPreset === typeOfLosses['0.3']
-          ? `${$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'}`
-          : `${$settings.invertColors ? 'hover:bg-grey10inverse' : 'hover:bg-grey10'}`}"
-        on:click="{() => (currentPreset = typeOfLosses['0.3'])}"
-      >
-        <p
-          class="text-center h-full py-3 {currentPreset === typeOfLosses['0.3']
-            ? 'opacity-100'
-            : 'opacity-50 hover:opacity-100'}"
-        >
-          0.3%
-        </p>
-      </button>
-      <button
-        class="border-t border-b {$settings.invertColors
-          ? 'border-grey5inverse'
-          : 'border-grey5'} w-full {currentPreset === typeOfLosses['0.5']
-          ? `${$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'}`
-          : `${$settings.invertColors ? 'hover:bg-grey10inverse' : 'hover:bg-grey10'}`}"
-        on:click="{() => (currentPreset = typeOfLosses['0.5'])}"
-      >
-        <p
-          class="text-center h-full py-3 {currentPreset === typeOfLosses['0.5']
-            ? 'opacity-100'
-            : 'opacity-50 hover:opacity-100'}"
-        >
-          0.5%
-        </p>
-      </button>
-      <button
-        class="border {$settings.invertColors
-          ? 'border-grey5inverse'
-          : 'border-grey5'} rounded-r w-full {currentPreset === typeOfLosses['1']
-          ? `${$settings.invertColors ? 'bg-grey3inverse' : 'bg-grey3'}`
-          : `${$settings.invertColors ? 'hover:bg-grey10inverse' : 'hover:bg-grey10'}`}"
-        on:click="{() => (currentPreset = typeOfLosses['1'])}"
-      >
-        <p
-          class="text-center h-full py-3 {currentPreset === typeOfLosses['1']
-            ? 'opacity-100'
-            : 'opacity-50 hover:opacity-100'}"
-        >
-          1%
-        </p>
-      </button>
-    </div>
-  {/if}
+  </div>
 </div>
