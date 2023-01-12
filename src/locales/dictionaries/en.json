@@ -40,6 +40,8 @@
   "depositing": "Depositing",
   "to": "To",
   "proudly_using": "Proudly Using",
+  "carbon_footprint": "Carbon Footprint",
+  "carbon_blurb": "Our historical carbon emissions have been offset using KlimaDAO",
   "refresh": "Refresh",
   "wrong_network": "Wrong Network",
   "using_contract": "Contract-Wallets are not yet supported on Vaults and Transmuters",
@@ -300,7 +302,8 @@
     "target_ltv": "Leverage",
     "ltv_ratio": "LTV Ratio",
     "skip_legacy_alusd": "Manual alUSD flashloan",
-    "skip_legacy_aleth": "Manual alETH flashloan"
+    "skip_legacy_aleth": "Manual alETH flashloan",
+    "position_migrated": "Position already migrated"
   },
   "error_page": {
     "subtitle": "This doesn't look right...",
