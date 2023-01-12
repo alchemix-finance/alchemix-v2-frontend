@@ -16,6 +16,7 @@
   import Button from '@components/elements/Button.svelte';
   import ProposalEntry from '@components/composed/ProposalEntry.svelte';
   import FlarumCard from '@components/composed/FlarumCard.svelte';
+  import AvatarWithIndicator from '@components/elements/AvatarWithIndicator.svelte';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
@@ -138,11 +139,12 @@
               <div class="flex flex-col w-full space-y-2">
                 {#each userDelegatingAddresses as address}
                   <div
-                    class="border rounded w-full flex flex-col {$settings.invertColors
+                    class="border rounded w-full flex flex-row space-x-2 p-2 {$settings.invertColors
                       ? 'bg-grey10inverse border-grey3inverse'
                       : 'bg-grey10 border-grey3'}"
                   >
-                    {address}
+                    <AvatarWithIndicator hash="{address}" showIndicator="{false}" />
+                    <p>{address}</p>
                   </div>
                 {/each}
               </div>
@@ -154,11 +156,12 @@
               <div class="flex flex-col w-full space-y-2">
                 {#each delegatedToUserAddresses as address}
                   <div
-                    class="border rounded w-full flex flex-col {$settings.invertColors
+                    class="border rounded w-full flex flex-row space-x-2 p-2 {$settings.invertColors
                       ? 'bg-grey10inverse border-grey3inverse'
                       : 'bg-grey10 border-grey3'}"
                   >
-                    {address}
+                    <AvatarWithIndicator hash="{address}" showIndicator="{false}" />
+                    <p>{address}</p>
                   </div>
                 {/each}
               </div>
