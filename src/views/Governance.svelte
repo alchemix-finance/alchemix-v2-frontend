@@ -3,18 +3,12 @@
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
 
-  import { getOpenProposals, getVotesForAddress } from '@middleware/snapshot';
+  import { getOpenProposals, getVotesForAddress, setDelegate, queryDelegations } from '@middleware/snapshot';
   import { fetchPosts } from '@middleware/flarum';
 
-  import account from '@stores/account';
   import governance from '@stores/governance';
   import { flarum } from '@stores/flarum';
   import settings from '@stores/settings';
-
-  import { GraphQLClient } from 'graphql-request';
-  import axios from 'axios';
-
-  import { externalContractWrapper } from '@helpers/contractWrapper';
 
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
@@ -22,17 +16,16 @@
   import Button from '@components/elements/Button.svelte';
   import ProposalEntry from '@components/composed/ProposalEntry.svelte';
   import FlarumCard from '@components/composed/FlarumCard.svelte';
-  import Input from '@components/elements/Input.svelte';
-  import { keccak256 } from 'ethers/lib/utils';
-  import { ethers } from 'ethers';
-  import { writable } from 'svelte/store';
-  import { write } from 'fs';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
   };
   const openDiscussions = () => {
     window.open('https://forum.alchemix.fi/public/t/aip', '_blank');
+  };
+
+  const openDelegationOnSnapshot = () => {
+    window.open('https://snapshot.org/#/delegate', '_blank');
   };
 
   enum FilterTypes {
@@ -57,77 +50,18 @@
           (_proposal) => _proposal.state.toUpperCase() === FilterTypes[currentFilter],
         );
 
-  /// scoopy's code
-  //value variable to store the binding in the input
-  let value;
-  // takes the input address and calls the delegationRegistry contract
-  let onSetDelegate = async (_address) => {
-    let snapshotSpace = ethers.utils.formatBytes32String('alchemixstakers.eth');
-    let delegateRegistry = externalContractWrapper('DelegateRegistry', $account.signer);
-    await (await delegateRegistry).instance.setDelegate(snapshotSpace, _address);
-  };
-  // //the graph boilerplating
-  const endpoint = 'https://api.thegraph.com/subgraphs/name/snapshot-labs/snapshot';
-  let userDelegatingAddresses;
-  let delegatedToUserAddresses;
+  let delegateInputValue;
+  let userDelegatingAddresses = [];
+  let delegatedToUserAddresses = [];
 
-  //gets the address you are currently delegating to
-  let getUserDelegatingAddresses = async () => {
-    let address = await $account.address;
-    axios({
-      url: endpoint,
-      method: 'post',
-      data: {
-        query: `{
-          delegations(where: {space_in: ["alchemixstakers", "alchemixstakers.eth"] delegator: "${address}"}) {
-            delegate
-          }
-        }`,
-      },
-    }).then((result) => {
-      const delegators = result.data.data.delegations;
-      console.log('YourDelegationAddresses', delegators);
-      const valuesArray = delegators
-        .map((object) => Object.values(object))
-        .reduce((acc, val) => acc.concat(val), []);
-      userDelegatingAddresses = valuesArray;
-      console.log('results in array', userDelegatingAddresses);
-    });
-  };
-
-  //get the addresses currently delegated to you
-  let getDelegatedToUserAddresses = async () => {
-    let address = await $account.address;
-    axios({
-      url: endpoint,
-      method: 'post',
-      data: {
-        query: `{
-          delegations(where: {space_in: ["alchemixstakers", "alchemixstakers.eth"] delegate: "${address}"}) {
-            delegator
-          }
-        }`,
-      },
-    }).then((result) => {
-      const delegators = result.data.data.delegations;
-      console.log('DelegatedToYouAddresses', delegators);
-      const valuesArray = delegators
-        .map((object) => Object.values(object))
-        .reduce((acc, val) => acc.concat(val), []);
-      delegatedToUserAddresses = valuesArray;
-      console.log('results in array', delegatedToUserAddresses);
-    });
-  };
-
-  /// end of scoopy's code
   onMount(async () => {
     if ($governance.proposals.length === 0) {
       await getOpenProposals();
       await getVotesForAddress();
-      await getDelegatedToUserAddresses();
-      await getUserDelegatingAddresses();
     }
     await fetchPosts();
+    userDelegatingAddresses = [...(await queryDelegations('from'))];
+    delegatedToUserAddresses = [...(await queryDelegations('to'))];
   });
 </script>
 
@@ -143,23 +77,96 @@
     <p class="text-center text-xs opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
-    <!--SCOOPY DELEGATION STUFF BEGIN  -->
-    <div class="justaplaceholderdiv">
-      DelegateHub
-      <br /><br />
-      <input id="borrowInput" placeholder="Address or ENS" bind:value />
-      <Button
-        label="Delegate"
-        borderSize="1"
-        height="h-8"
-        fontSize="text-md"
-        solid="{false}"
-        on:clicked="{() => onSetDelegate(value)}"
-      />
-      <div>Delegated to me: {delegatedToUserAddresses}</div>
-      <div>My delegations: {userDelegatingAddresses}</div>
-    </div>
-    <!--SCOOPY DELEGATION STUFF END  -->
+
+    <ContainerWithHeader>
+      <div
+        slot="header"
+        class="py-4 px-6 text-sm flex flex-col gap-2 lg:gap-0 lg:flex-row lg:justify-between lg:items-center"
+      >
+        <p class="text-left">Delegation Hub</p>
+        <Button
+          label="{$_('governance_page.openOnSnapshot')}"
+          borderSize="1"
+          height="h-8"
+          class="w-full lg:w-max"
+          fontSize="text-md"
+          on:clicked="{() => openDelegationOnSnapshot()}"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            slot="leftSlot"
+          >
+            <title>AMP</title>
+            <path
+              d="M12 0c6.628 0 12 5.373 12 12s-5.372 12-12 12C5.373 24 0 18.627 0 12S5.373 0 12 0zm-.92 19.278l5.034-8.377a.444.444 0 00.097-.268.455.455 0 00-.455-.455l-2.851.004.924-5.468-.927-.003-5.018 8.367s-.1.183-.1.291c0 .251.204.455.455.455l2.831-.004-.901 5.458z"
+            ></path>
+          </svg>
+        </Button>
+      </div>
+      <div slot="body">
+        <div class="flex flex-row m-4 space-x-4">
+          <div class="flex flex-col w-full space-y-4">
+            <p>Delegate your voting power:</p>
+            <input
+              type="text"
+              id="targetWallet"
+              placeholder="Address or ENS"
+              class="w-full rounded appearance-none text-l text-right h-10 p-4 {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'}"
+              bind:value="{delegateInputValue}"
+            />
+            <Button
+              label="Delegate"
+              borderColor="green4"
+              backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+              hoverColor="green4"
+              height="h-8"
+              borderSize="1"
+              class="text-xs lg:text-md"
+              disabled="{!delegateInputValue}"
+              on:clicked="{() => setDelegate(delegateInputValue)}"
+            />
+          </div>
+          {#if userDelegatingAddresses.length > 0}
+            <div class="flex flex-col w-full space-y-4">
+              <p>My Delegations:</p>
+              <div class="flex flex-col w-full space-y-2">
+                {#each userDelegatingAddresses as address}
+                  <div
+                    class="border rounded w-full flex flex-col {$settings.invertColors
+                      ? 'bg-grey10inverse border-grey3inverse'
+                      : 'bg-grey10 border-grey3'}"
+                  >
+                    {address}
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/if}
+          {#if delegatedToUserAddresses.length > 0}
+            <div class="flex flex-col w-full space-y-4">
+              <p>Delegated to me:</p>
+              <div class="flex flex-col w-full space-y-2">
+                {#each delegatedToUserAddresses as address}
+                  <div
+                    class="border rounded w-full flex flex-col {$settings.invertColors
+                      ? 'bg-grey10inverse border-grey3inverse'
+                      : 'bg-grey10 border-grey3'}"
+                  >
+                    {address}
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    </ContainerWithHeader>
 
     <ContainerWithHeader>
       <div

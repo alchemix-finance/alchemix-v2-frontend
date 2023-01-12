@@ -1,21 +1,17 @@
 import axios from 'axios';
 import snapshot from '@snapshot-labs/snapshot.js';
-// import global from '../stores/global';
 import governance from '@stores/governance';
 import account from '@stores/account';
 import { utils } from 'ethers';
+import { externalContractWrapper } from '@helpers/contractWrapper';
 
 const snapshotHubUrl = 'https://hub.snapshot.org';
+const snapshotSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/snapshot-labs/snapshot';
 const space = 'alchemixstakers.eth';
 const client = new snapshot.Client712(snapshotHubUrl);
 
-// let _global;
 let _governance;
 let _account;
-
-// global.subscribe((val) => {
-//   _global = val;
-// });
 
 governance.subscribe((val) => {
   _governance = val;
@@ -28,9 +24,9 @@ account.subscribe((val) => {
 // @ts-ignore
 const debugging = Boolean(parseInt(import.meta.env.VITE_DEBUG_MODE));
 
-function gqlConnector(queryBody) {
+function gqlConnector(endpoint, queryBody) {
   return {
-    url: `${snapshotHubUrl}/graphql/`,
+    url: endpoint,
     method: 'POST',
     data: {
       query: queryBody,
@@ -57,7 +53,7 @@ export async function getVotesForAddress() {
       }
     }
   }`;
-  axios(gqlConnector(query))
+  axios(gqlConnector(`${snapshotHubUrl}/graphql/`, query))
     .then((result) => {
       if (debugging) console.table(result.data.data.votes);
       _governance.userVotes = result.data.data.votes;
@@ -94,7 +90,7 @@ export async function getOpenProposals() {
       type
     }
   }`;
-  axios(gqlConnector(query))
+  axios(gqlConnector(`${snapshotHubUrl}/graphql/`, query))
     .then((result) => {
       if (debugging) console.table(result.data.data.proposals);
       _governance.proposals = result.data.data.proposals;
@@ -120,7 +116,7 @@ export async function queryOpenProposals() {
       id
     }
   }`;
-  axios(gqlConnector(query))
+  axios(gqlConnector(`${snapshotHubUrl}/graphql/`, query))
     .then((result) => {
       const idCheck = _governance.activeVotes.map((prop) => {
         return prop.id;
@@ -164,4 +160,36 @@ export async function sendVote(voteData) {
     console.trace(e);
     return e;
   }
+}
+
+export async function setDelegate(address) {
+  try {
+    const delegateRegistry = await externalContractWrapper('DelegateRegistry', _account.signer);
+    await delegateRegistry.instance.setDelegate(utils.formatBytes32String(space), address);
+    return true;
+  } catch (error) {
+    console.trace(error);
+    return error;
+  }
+}
+
+export async function queryDelegations(direction) {
+  const querySetup = {
+    from: ['delegator', 'delegate'],
+    to: ['delegate', 'delegator'],
+  };
+  const query = `{
+          delegations(where: {space_in: ["alchemixstakers", "alchemixstakers.eth"] ${querySetup[direction][0]}: "${_account.address}"}) {
+            ${querySetup[direction][1]}
+          }
+        }`;
+  axios(gqlConnector(snapshotSubgraphUrl, query))
+    .then((result) => {
+      return result.data.data.delegations
+        .map((entry) => Object.values(entry))
+        .reduce((a, b) => a.concat(b), []);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
