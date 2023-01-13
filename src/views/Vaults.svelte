@@ -89,17 +89,18 @@
       tokenPrice = 1;
     }
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
+    console.log(`underlyingTokenData not null? ${!!underlyingTokenData}`);
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
-      underlyingTokenData.decimals,
+      (underlyingTokenData) ? underlyingTokenData.decimals: 0,
       tokenPrice,
     );
     const debtLimit = depositValue / ratio;
     const tvlValue = calculateBalanceValue(
       vault.tvl,
       vault.underlyingPerShare,
-      underlyingTokenData.decimals,
+      (underlyingTokenData) ? underlyingTokenData.decimals: 0,
       tokenPrice,
     );
     const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt)) * tokenPrice;
@@ -177,7 +178,7 @@
         return 'Yearn ' + underlyingTokenData.symbol;
       }
     };
-
+    console.log(`vault name = ${vaultName()}`);
     const yieldToken = () => {
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
         if (metaConfig[vaultTokenData.address].customAddress !== '') {

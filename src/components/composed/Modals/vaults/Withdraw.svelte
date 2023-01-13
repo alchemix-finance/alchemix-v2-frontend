@@ -277,11 +277,13 @@
     vault.underlyingPerShare,
   );
 
-  $: ({ debt } = $vaultsStore[vault.type].debt);
+  $: ({ debt } = ($vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0));
 
-  $: projDebtLimit = vault.balance
-    .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
-    .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
+  $: projDebtLimit = ($vaultsStore && $vaultsStore[vault.type]) 
+      ? vault.balance
+        .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
+        .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
+      : 0;
 
   $: roundingBalancer = utils.parseUnits(
     utils.formatUnits(1, underlyingTokenData.decimals),
@@ -289,12 +291,12 @@
   );
 
   $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
-    cDebt,
-    debt,
-    underlyingTokenData.decimals,
+    cDebt || BigNumber.from(0),
+    debt || BigNumber.from(0),
+    underlyingTokenData?.decimals || 0,
     vault,
     vault.underlyingPerShare,
-    $vaultsStore[vault.type].ratio,
+    $vaultsStore[vault.type]?.ratio || BigNumber.from(0),
   );
 
   $: maxWithdrawAmountForYield = utils.formatUnits(
@@ -367,7 +369,7 @@
 </script>
 
 {#if vault}
-  {#if debt.gt(BigNumber.from(0))}
+  {#if debt?.gt(BigNumber.from(0))}
     <p class="text-center pb-3">
       {$_('chart.debt')}: {utils.formatEther(debt)}
       {VaultTypesInfos[vault.type].name}
@@ -403,7 +405,7 @@
     {#if withdrawEth}
       <ComplexInput
         bind:inputValue="{underlyingWithdrawAmount}"
-        supportedTokens="{[ethData.symbol]}"
+        supportedTokens="{[ethData?.symbol]}"
         externalMax="{utils.parseUnits(maxWithdrawAmountForUnderlying, underlyingTokenData.decimals)}"
       />
     {/if}
