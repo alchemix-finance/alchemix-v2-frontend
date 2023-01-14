@@ -89,7 +89,6 @@
       tokenPrice = 1;
     }
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type]?.ratio));
-    console.log(`underlyingTokenData not null? ${!!underlyingTokenData}`);
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
@@ -178,7 +177,6 @@
         return 'Yearn ' + underlyingTokenData.symbol;
       }
     };
-    console.log(`vault name = ${vaultName()}`);
     const yieldToken = () => {
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
         if (metaConfig[vaultTokenData.address].customAddress !== '') {
