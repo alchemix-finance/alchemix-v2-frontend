@@ -4,6 +4,7 @@ import governance from '@stores/governance';
 import account from '@stores/account';
 import { utils } from 'ethers';
 import { externalContractWrapper } from '@helpers/contractWrapper';
+import { reverseLookup } from '@helpers/ensResolver';
 
 const snapshotHubUrl = 'https://hub.snapshot.org';
 const snapshotSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/snapshot-labs/snapshot';
@@ -173,17 +174,28 @@ export async function setDelegate(address) {
   }
 }
 
+export async function revokeDelegation() {
+  try {
+    const delegateRegistry = await externalContractWrapper('DelegateRegistry', _account.signer);
+    await delegateRegistry.instance.clearDelegate(utils.formatBytes32String(space));
+    return true;
+  } catch (error) {
+    console.trace(error);
+    return error;
+  }
+}
+
 export async function queryDelegations(direction) {
   const querySetup = {
     from: ['delegator', 'delegate'],
     to: ['delegate', 'delegator'],
   };
   const query = `{
-          delegations(where: {space_in: ["alchemixstakers", "alchemixstakers.eth"] ${querySetup[direction][0]}: "${_account.address}"}) {
+          delegations(where: {space_in: ["${space}"] ${querySetup[direction][0]}: "${_account.address}"}) {
             ${querySetup[direction][1]}
           }
         }`;
-  axios(gqlConnector(snapshotSubgraphUrl, query))
+  return axios(gqlConnector(snapshotSubgraphUrl, query))
     .then((result) => {
       return result.data.data.delegations
         .map((entry) => Object.values(entry))
@@ -191,5 +203,6 @@ export async function queryDelegations(direction) {
     })
     .catch((error) => {
       console.log(error);
+      return [];
     });
 }

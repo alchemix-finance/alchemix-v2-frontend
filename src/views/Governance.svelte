@@ -3,7 +3,13 @@
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
 
-  import { getOpenProposals, getVotesForAddress, setDelegate, queryDelegations } from '@middleware/snapshot';
+  import {
+    getOpenProposals,
+    getVotesForAddress,
+    setDelegate,
+    queryDelegations,
+    revokeDelegation,
+  } from '@middleware/snapshot';
   import { fetchPosts } from '@middleware/flarum';
 
   import governance from '@stores/governance';
@@ -54,6 +60,21 @@
   let delegateInputValue;
   let userDelegatingAddresses = [];
   let delegatedToUserAddresses = [];
+  let queriedDelegations = [];
+  let queriedDelegators = [];
+
+  $: queriedDelegations,
+    (userDelegatingAddresses = [...userDelegatingAddresses, ...queriedDelegations].filter(
+      (entry) => !!entry,
+    ));
+  $: queriedDelegators,
+    (delegatedToUserAddresses = [...delegatedToUserAddresses, ...queriedDelegators].filter(
+      (entry) => !!entry,
+    ));
+
+  const addressTruncator = (address) => {
+    return `${address.slice(0, 8)}...${address.slice(-8)}`;
+  };
 
   onMount(async () => {
     if ($governance.proposals.length === 0) {
@@ -61,8 +82,8 @@
       await getVotesForAddress();
     }
     await fetchPosts();
-    userDelegatingAddresses = [...(await queryDelegations('from'))];
-    delegatedToUserAddresses = [...(await queryDelegations('to'))];
+    queriedDelegations = await queryDelegations('from');
+    queriedDelegators = await queryDelegations('to');
   });
 </script>
 
@@ -136,7 +157,7 @@
           {#if userDelegatingAddresses.length > 0}
             <div class="flex flex-col w-full space-y-4">
               <p>My Delegations:</p>
-              <div class="flex flex-col w-full space-y-2">
+              <div class="flex flex-col w-full space-y-4">
                 {#each userDelegatingAddresses as address}
                   <div
                     class="border rounded w-full flex flex-row space-x-2 p-2 {$settings.invertColors
@@ -144,9 +165,19 @@
                       : 'bg-grey10 border-grey3'}"
                   >
                     <AvatarWithIndicator hash="{address}" showIndicator="{false}" />
-                    <p>{address}</p>
+                    <p>{addressTruncator(address)}</p>
                   </div>
                 {/each}
+                <Button
+                  label="{$_('actions.revoke')}"
+                  borderColor="red4"
+                  backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
+                  hoverColor="red3"
+                  height="h-8"
+                  borderSize="1"
+                  fontSize="text-xs lg:text-md"
+                  on:clicked="{() => revokeDelegation()}"
+                />
               </div>
             </div>
           {/if}
@@ -161,7 +192,7 @@
                       : 'bg-grey10 border-grey3'}"
                   >
                     <AvatarWithIndicator hash="{address}" showIndicator="{false}" />
-                    <p>{address}</p>
+                    <p>{addressTruncator(address)}</p>
                   </div>
                 {/each}
               </div>
