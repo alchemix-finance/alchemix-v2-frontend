@@ -3,7 +3,13 @@
   import { _ } from 'svelte-i18n';
   import { BarLoader } from 'svelte-loading-spinners';
 
-  import { getOpenProposals, getVotesForAddress } from '@middleware/snapshot';
+  import {
+    getOpenProposals,
+    getVotesForAddress,
+    setDelegate,
+    queryDelegations,
+    revokeDelegation,
+  } from '@middleware/snapshot';
   import { fetchPosts } from '@middleware/flarum';
 
   import governance from '@stores/governance';
@@ -16,12 +22,17 @@
   import Button from '@components/elements/Button.svelte';
   import ProposalEntry from '@components/composed/ProposalEntry.svelte';
   import FlarumCard from '@components/composed/FlarumCard.svelte';
+  import AvatarWithIndicator from '@components/elements/AvatarWithIndicator.svelte';
 
   const openAllOnSnapshot = () => {
     window.open('https://snapshot.org/#/alchemixstakers.eth', '_blank');
   };
   const openDiscussions = () => {
     window.open('https://forum.alchemix.fi/public/t/aip', '_blank');
+  };
+
+  const openDelegationOnSnapshot = () => {
+    window.open('https://snapshot.org/#/delegate', '_blank');
   };
 
   enum FilterTypes {
@@ -31,7 +42,6 @@
   }
 
   let currentFilter = FilterTypes.ALL;
-
   $: countByFilter = {
     ALL: $governance.proposals.length,
     ACTIVE: $governance.proposals.filter((_prop) => _prop.state === 'active').length,
@@ -47,12 +57,33 @@
           (_proposal) => _proposal.state.toUpperCase() === FilterTypes[currentFilter],
         );
 
+  let delegateInputValue;
+  let userDelegatingAddresses = [];
+  let delegatedToUserAddresses = [];
+  let queriedDelegations = [];
+  let queriedDelegators = [];
+
+  $: queriedDelegations,
+    (userDelegatingAddresses = [...userDelegatingAddresses, ...queriedDelegations].filter(
+      (entry) => !!entry,
+    ));
+  $: queriedDelegators,
+    (delegatedToUserAddresses = [...delegatedToUserAddresses, ...queriedDelegators].filter(
+      (entry) => !!entry,
+    ));
+
+  const addressTruncator = (address) => {
+    return `${address.slice(0, 8)}...${address.slice(-8)}`;
+  };
+
   onMount(async () => {
     if ($governance.proposals.length === 0) {
       await getOpenProposals();
       await getVotesForAddress();
     }
     await fetchPosts();
+    queriedDelegations = await queryDelegations('from');
+    queriedDelegators = await queryDelegations('to');
   });
 </script>
 
@@ -68,6 +99,108 @@
     <p class="text-center text-xs opacity-50">
       {$_('governance_page.noTranslation')}
     </p>
+
+    <ContainerWithHeader>
+      <div
+        slot="header"
+        class="py-4 px-6 text-sm flex flex-col gap-2 lg:gap-0 lg:flex-row lg:justify-between lg:items-center"
+      >
+        <p class="text-left">Delegation Hub</p>
+        <Button
+          label="{$_('governance_page.openOnSnapshot')}"
+          borderSize="1"
+          height="h-8"
+          class="w-full lg:w-max"
+          fontSize="text-md"
+          on:clicked="{() => openDelegationOnSnapshot()}"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            slot="leftSlot"
+          >
+            <title>AMP</title>
+            <path
+              d="M12 0c6.628 0 12 5.373 12 12s-5.372 12-12 12C5.373 24 0 18.627 0 12S5.373 0 12 0zm-.92 19.278l5.034-8.377a.444.444 0 00.097-.268.455.455 0 00-.455-.455l-2.851.004.924-5.468-.927-.003-5.018 8.367s-.1.183-.1.291c0 .251.204.455.455.455l2.831-.004-.901 5.458z"
+            ></path>
+          </svg>
+        </Button>
+      </div>
+      <div slot="body">
+        <div class="flex flex-row m-4 space-x-4">
+          <div class="flex flex-col w-full space-y-4">
+            <p>Delegate your voting power:</p>
+            <input
+              type="text"
+              id="targetWallet"
+              placeholder="Address or ENS"
+              class="w-full rounded appearance-none text-l text-right h-10 p-4 {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'}"
+              bind:value="{delegateInputValue}"
+            />
+            <Button
+              label="Delegate"
+              borderColor="green4"
+              backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+              hoverColor="green4"
+              height="h-8"
+              borderSize="1"
+              class="text-xs lg:text-md"
+              disabled="{!delegateInputValue}"
+              on:clicked="{() => setDelegate(delegateInputValue)}"
+            />
+          </div>
+          {#if userDelegatingAddresses.length > 0}
+            <div class="flex flex-col w-full space-y-4">
+              <p>My Delegations:</p>
+              <div class="flex flex-col w-full space-y-4">
+                {#each userDelegatingAddresses as address}
+                  <div
+                    class="border rounded w-full flex flex-row space-x-2 p-2 {$settings.invertColors
+                      ? 'bg-grey10inverse border-grey3inverse'
+                      : 'bg-grey10 border-grey3'}"
+                  >
+                    <AvatarWithIndicator hash="{address}" showIndicator="{false}" />
+                    <p>{addressTruncator(address)}</p>
+                  </div>
+                {/each}
+                <Button
+                  label="{$_('actions.revoke')}"
+                  borderColor="red4"
+                  backgroundColor="{$settings.invertColors ? 'red5' : 'red2'}"
+                  hoverColor="red3"
+                  height="h-8"
+                  borderSize="1"
+                  fontSize="text-xs lg:text-md"
+                  on:clicked="{() => revokeDelegation()}"
+                />
+              </div>
+            </div>
+          {/if}
+          {#if delegatedToUserAddresses.length > 0}
+            <div class="flex flex-col w-full space-y-4">
+              <p>Delegated to me:</p>
+              <div class="flex flex-col w-full space-y-2">
+                {#each delegatedToUserAddresses as address}
+                  <div
+                    class="border rounded w-full flex flex-row space-x-2 p-2 {$settings.invertColors
+                      ? 'bg-grey10inverse border-grey3inverse'
+                      : 'bg-grey10 border-grey3'}"
+                  >
+                    <AvatarWithIndicator hash="{address}" showIndicator="{false}" />
+                    <p>{addressTruncator(address)}</p>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    </ContainerWithHeader>
 
     <ContainerWithHeader>
       <div
