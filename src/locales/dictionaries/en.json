@@ -217,7 +217,8 @@
     "borrow_and_transfer": "Borrow and Transfer",
     "swap": "Swap",
     "migrate": "Migrate",
-    "info": "Info"
+    "info": "Info",
+    "revoke": "Revoke"
   },
   "toast": {
     "welcome_back": "Welcome back",
