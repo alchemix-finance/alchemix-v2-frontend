@@ -33,7 +33,7 @@
   let vaultNames = [];
   let vaultDecimals;
 
-  $: targetVaults = $vaultsStore[vaultType].vaultBody
+  $: targetVaults = $vaultsStore[vaultType]?.vaultBody
     .filter((body) => body.underlyingAddress === vault.underlyingAddress)
     .filter((body) => body.address !== vault.address)
     .filter((body) => {
@@ -118,7 +118,7 @@
 </script>
 
 <div class="flex flex-col space-y-4">
-  {#if targetVaults.length > 0}
+  {#if targetVaults?.length > 0}
     <div class="flex flex-col lg:flex-row space-x-4 ">
       <p class="text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
 

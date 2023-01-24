@@ -26,12 +26,12 @@
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
     const tokenPrice =
       $global.tokenPrices.find(
-        (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
+        (token) => token.address.toLowerCase() === underlyingTokenData?.address.toLowerCase(),
       )?.price || 0;
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
-      underlyingTokenData.decimals,
+      (underlyingTokenData) ? underlyingTokenData.decimals : 0,
       tokenPrice,
     );
     const ratio = parseFloat(utils.formatEther($vaultsStore[vault.type].ratio));
@@ -39,7 +39,7 @@
     const tvlValue = calculateBalanceValue(
       vault.tvl,
       vault.underlyingPerShare,
-      underlyingTokenData.decimals,
+      (underlyingTokenData) ? underlyingTokenData.decimals : 0,
       tokenPrice,
     );
     const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt)) * tokenPrice;
