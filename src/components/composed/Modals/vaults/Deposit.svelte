@@ -252,10 +252,10 @@
   $: supportedTokens =
     vault.type === 1 && metaConfig
       ? acceptWETH
-        ? [yieldTokenData?.symbol, underlyingTokenData.symbol]
+        ? [yieldTokenData?.symbol, underlyingTokenData?.symbol]
         : [yieldTokenData?.symbol]
-      : [yieldTokenData?.symbol, underlyingTokenData.symbol];
-  $: ethTokens = depositEth ? ethData.symbol : underlyingTokenData.symbol;
+      : [yieldTokenData?.symbol, underlyingTokenData?.symbol];
+  $: ethTokens = depositEth ? ethData?.symbol : underlyingTokenData?.symbol;
   $: yieldTokenSymbol = metaConfig.token || yieldTokenData?.symbol;
   let activeInputs = 1;
   const selection = writable();
@@ -325,7 +325,7 @@
         {/if}
       {/each}
     {:else if depositEth}
-      <ComplexInput supportedTokens="{[ethData.symbol]}" bind:inputValue="{underlyingDeposit}" />
+      <ComplexInput supportedTokens="{[ethData?.symbol]}" bind:inputValue="{underlyingDeposit}" />
     {/if}
   </div>
 
