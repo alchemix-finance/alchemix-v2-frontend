@@ -254,6 +254,8 @@
           _decimals,
         );
 
+    console.log(freeCoverAmount.toString(), maxAmount.toString(), vaultCoverAmount.toString());
+
     return vaultCover.gt(BigNumber.from(0))
       ? _openDebtAmount.gt(BigNumber.from(0))
         ? maxWithdrawAmount.lte(BigNumber.from(0))
@@ -277,12 +279,13 @@
     vault.underlyingPerShare,
   );
 
-  $: ({ debt } = ($vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0));
+  $: ({ debt } = $vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0);
 
-  $: projDebtLimit = ($vaultsStore && $vaultsStore[vault.type]) 
+  $: projDebtLimit =
+    $vaultsStore && $vaultsStore[vault.type]
       ? vault.balance
-        .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
-        .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
+          .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
+          .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
       : 0;
 
   $: roundingBalancer = utils.parseUnits(
@@ -323,12 +326,13 @@
   $: if (supportedTokens.length >= 1) {
     selection.set(
       supportedTokens?.map((token) => {
+        console.log(maxWithdrawAmountForYield.toString(), maxWithdrawAmountForUnderlying.toString());
         return {
           token: token,
           selected: false,
           maxWithdrawAmount: utils.parseUnits(
             token === yieldTokenData.symbol ? maxWithdrawAmountForYield : maxWithdrawAmountForUnderlying,
-            underlyingTokenData.decimals,
+            yieldTokenData.decimals,
           ),
         };
       }),

@@ -80,7 +80,7 @@
 
   $: ltv =
     100 / parseFloat(utils.formatEther($vaultsStore[strategy?.col5.vault.type]?.ratio || BigNumber.from(0)));
-  $: messages = vaultMessages.filter((item) => item.vault === strategy.limit.yieldTokenAddress);
+  $: messages = vaultMessages.filter((item) => item.vault === strategy?.limit.yieldTokenAddress);
   $: hasMessage = messages.length > 0;
   $: alToken = VaultConstants[strategy?.limit.vaultType].alToken;
 

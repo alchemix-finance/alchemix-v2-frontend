@@ -18,7 +18,6 @@
   export let selectedToken;
   export let metaConfig = false;
   export let convertToStatic = false;
-
   let tokenIcon = '/images/token-icons/unknown.svg';
   let externalMaxOverride;
 
