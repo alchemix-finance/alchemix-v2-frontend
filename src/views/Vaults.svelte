@@ -30,6 +30,7 @@
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { signer } from '@stores/v2/derived';
   import { setError } from '@helpers/setToast';
+  import { convertTokenUnits } from '@stores/v2/asyncMethods';
 
   $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
   $: vaultsSelector = makeSelectorStore([...vaultTypes]);
@@ -76,6 +77,7 @@
 
   $: aggregated = currentVaultsBasedOnType.map((vault) => {
     const underlyingTokenData = getTokenDataFromBalances(vault.underlyingAddress, [$balancesStore]);
+    const yieldTokenData = getTokenDataFromBalances(vault.address, [$balancesStore]);
     // const tokenPrice = $global.tokenPrices.find(
     //   (token) => token.address.toLowerCase() === underlyingTokenData.address.toLowerCase(),
     // )?.price;
@@ -92,14 +94,22 @@
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
-      (underlyingTokenData) ? underlyingTokenData.decimals: 0,
+      underlyingTokenData
+        ? yieldTokenData.decimals > underlyingTokenData.decimals
+          ? yieldTokenData.decimals
+          : underlyingTokenData.decimals
+        : 0,
       tokenPrice,
     );
     const debtLimit = depositValue / ratio;
     const tvlValue = calculateBalanceValue(
       vault.tvl,
       vault.underlyingPerShare,
-      (underlyingTokenData) ? underlyingTokenData.decimals: 0,
+      underlyingTokenData
+        ? yieldTokenData.decimals > underlyingTokenData.decimals
+          ? yieldTokenData.decimals
+          : underlyingTokenData.decimals
+        : 0,
       tokenPrice,
     );
     const vaultDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].debt.debt)) * tokenPrice;
@@ -138,14 +148,22 @@
     const depositValue = calculateBalanceValue(
       vault.balance,
       vault.underlyingPerShare,
-      underlyingTokenData.decimals,
+      underlyingTokenData
+        ? vaultTokenData.decimals > underlyingTokenData.decimals
+          ? vaultTokenData.decimals
+          : underlyingTokenData.decimals
+        : 0,
       tokenPrice,
     );
     // const debtValue = depositValue / parseFloat(utils.formatEther($vaultsStore[vault.type].ratio));
     const tvlValue = calculateBalanceValue(
       vault.tvl,
       vault.underlyingPerShare,
-      underlyingTokenData.decimals,
+      underlyingTokenData
+        ? vaultTokenData.decimals > underlyingTokenData.decimals
+          ? vaultTokenData.decimals
+          : underlyingTokenData.decimals
+        : 0,
       tokenPrice,
     );
 

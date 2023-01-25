@@ -32,6 +32,7 @@ export async function fetchDataForToken(tokenAddress: string, signer: ethers.Sig
     const symbol = (await tokenContract.symbol()) || '';
     const decimals = (await tokenContract.decimals()) || 18;
     const balance = (await tokenContract.balanceOf(address)) || 0;
+
     return {
       address: tokenAddress,
       name,
