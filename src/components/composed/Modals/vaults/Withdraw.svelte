@@ -27,7 +27,11 @@
 
   import { modalReset } from '@stores/modal';
 
-  import { getTokenDataFromBalances, aaveDynamicToStaticAmount } from '@stores/v2/helpers';
+  import {
+    getTokenDataFromBalances,
+    getTokenDataFromBalancesBySymbol,
+    aaveDynamicToStaticAmount,
+  } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
   import settings from '@stores/settings';
@@ -395,6 +399,7 @@
           externalMax="{$selection.filter((entry) => entry.token === selectedTokens[i])[0]
             ?.maxWithdrawAmount}"
           metaConfig="{metaConfig}"
+          externalDecimals="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.decimals}"
           bind:convertToStatic
         />
         {#if canAddInputs}

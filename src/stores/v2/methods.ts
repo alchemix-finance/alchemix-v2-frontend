@@ -28,6 +28,7 @@ export const resetStores = async () => {
   adaptersStore.set({});
   sentinelStore.set(undefined);
   controllerStore.set([]);
+  return true;
 };
 
 export const updateAddress = (address: string) => {
