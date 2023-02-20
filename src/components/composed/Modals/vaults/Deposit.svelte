@@ -239,7 +239,7 @@
     underlyingTokenData,
   );
 
-  $: totalDep = calculateTotalDeposit(vault, yieldDepositBN, underlyingDepositBN, underlyingTokenData);
+  $: totalDep = calculateTotalDeposit(vault, yieldDepositBN, underlyingDepositBN, yieldTokenData);
 
   $: depositButtonDisabled =
     maximumLoss / 1000 >= 100 ||
@@ -288,6 +288,13 @@
     if (inputValues[yieldTokenData?.symbol]) yieldDeposit = inputValues[yieldTokenData?.symbol];
   }
   $: capa = capInfo.capacity.value;
+  $: console.log(capa.toString());
+
+  const capaToUnits = (_capa, _token) => {
+    const tokenData = getTokenDataFromBalancesBySymbol(_token, [$balancesStore]);
+    console.log({ tokenData });
+    return utils.parseUnits(utils.formatUnits(_capa, underlyingTokenData.decimals), tokenData.decimals);
+  };
 
   onMount(async () => {
     if (vault) {
@@ -311,10 +318,11 @@
           bind:selectedToken="{selectedTokens[i]}"
           bind:inputValue="{inputValues[selectedTokens[i]]}"
           externalMax="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance.lt(
-            capa,
+            capaToUnits(capa, selectedTokens[i]),
           )
             ? getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.balance
             : capa}"
+          externalDecimals="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.decimals}"
         />
         {#if canAddInputs}
           <Button

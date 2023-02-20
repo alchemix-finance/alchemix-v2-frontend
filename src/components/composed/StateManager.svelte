@@ -28,7 +28,12 @@
   let initStarted = false;
 
   async function initialize(netId) {
-    if (!initStarted && $addressStore !== undefined && netId !== lastConnection.chainId) {
+    if (
+      !initStarted &&
+      $addressStore !== undefined &&
+      netId !== lastConnection.chainId &&
+      $signer !== undefined
+    ) {
       vaultsLoading.set(true);
 
       await resetStores();
