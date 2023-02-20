@@ -18,11 +18,12 @@
     adaptersStore,
     networkStore,
   } from '@stores/v2/alcxStore';
-  import { signer, vaultsAggregatedCoveredDebt } from '@stores/v2/derived';
+  import { signer, vaultsAggregatedDeposits } from '@stores/v2/derived';
   import {
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
     fetchAdaptersForVaultType,
+    convertTokenUnits,
   } from '@stores/v2/asyncMethods';
 
   import { modalReset } from '@stores/modal';
@@ -195,9 +196,16 @@
     }
   };
 
-  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
+  async function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
-    const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
+    const maxAmountToShares = await convertTokenUnits(
+      vault.type,
+      vault.address,
+      utils.parseUnits(maxWithdrawAmountForUnderlying, underlyingTokenData.decimals),
+      2,
+      $signer,
+      $networkStore,
+    );
 
     return (
       sharesWithdrawAmount.gt(BigNumber.from(0)) &&
@@ -212,27 +220,49 @@
     }
   }
 
-  function calculateRemainingBalance(
-    _vault,
-    _underlyingWithdrawAmount,
-    _yieldWithdrawAmount,
-    _underlyingTokenData,
-  ) {
-    const _remainingBalanceBN = _vault.balance
-      .sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount))
-      .sub(roundingBalancer);
-
-    return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
-  }
-
-  function calculateMaxWithdrawAmount(
-    _coveredDebtAmount,
+  async function calculateMaxWithdrawAmount(
+    _aggregatedDepositAmount,
     _openDebtAmount,
     _decimals,
     _vault,
     _pricePerShare,
     _ratio,
   ) {
+    console.log(
+      'aggregatedDepositAmount',
+      _aggregatedDepositAmount.toString(),
+      'openDebtAmount',
+      _openDebtAmount.toString(),
+      'decimals',
+      _decimals.toString(),
+      'vault',
+      _vault,
+      'pricePerShare',
+      _pricePerShare.toString(),
+      'ratio',
+      _ratio.toString(),
+    );
+    // setting up variables
+    const ratioNormalized = _ratio.div(BigNumber.from(10).pow(18));
+    const vaultBalance = _vault.balance;
+    const requiredCover = _openDebtAmount.mul(ratioNormalized);
+    const otherCover = _aggregatedDepositAmount.sub(vaultBalance);
+    const vaultMaxWithdrawAmount = requiredCover.sub(vaultBalance);
+    let availableAmount = '0';
+    console.log(
+      otherCover.gte(requiredCover),
+      vaultMaxWithdrawAmount.gt(BigNumber.from(0)),
+      _aggregatedDepositAmount.sub(requiredCover).gt(BigNumber.from(0)),
+    );
+    if (otherCover.gte(requiredCover)) {
+      availableAmount = utils.formatUnits(vaultBalance, _decimals);
+    } else if (vaultMaxWithdrawAmount.gt(BigNumber.from(0))) {
+      availableAmount = utils.formatUnits(vaultMaxWithdrawAmount, _decimals);
+    } else {
+      availableAmount = utils.formatUnits(vaultBalance.sub(requiredCover), _decimals);
+    }
+    /*
+    * old logic inside this comment
     const scalar = (decimals) => BigNumber.from(10).pow(decimals);
     const ratio = _ratio.div(scalar(18));
     // how many underlying tokens are needed to cover a user's debt
@@ -267,13 +297,16 @@
           : maxAmount
         : vaultCoverAmount
       : '0';
+
+     */
+    return availableAmount;
   }
 
   $: yieldTokenData = initializeTokenDataForAddress(vault.yieldToken);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
 
-  $: cDebt = $vaultsAggregatedCoveredDebt[vault.type];
+  $: aggregatedDeposits = $vaultsAggregatedDeposits[vault.type];
 
   $: yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldTokenData.decimals, vault.yieldPerShare);
 
@@ -285,26 +318,7 @@
 
   $: ({ debt } = $vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0);
 
-  $: projDebtLimit =
-    $vaultsStore && $vaultsStore[vault.type]
-      ? vault.balance
-          .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
-          .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
-      : 0;
-
-  $: roundingBalancer = utils.parseUnits(
-    utils.formatUnits(1, underlyingTokenData.decimals),
-    underlyingTokenData.decimals,
-  );
-
-  $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
-    cDebt || BigNumber.from(0),
-    debt || BigNumber.from(0),
-    underlyingTokenData?.decimals || 0,
-    vault,
-    vault.underlyingPerShare,
-    $vaultsStore[vault.type]?.ratio || BigNumber.from(0),
-  );
+  let maxWithdrawAmountForUnderlying = '0';
 
   $: maxWithdrawAmountForYield = utils.formatUnits(
     utils
@@ -371,7 +385,16 @@
 
   onMount(async () => {
     if (vault) {
+      let { debt } = $vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0;
       maxLossPreset = await getVaultMaxLoss(vault.address, vault.type, [$signer], $networkStore);
+      maxWithdrawAmountForUnderlying = await calculateMaxWithdrawAmount(
+        aggregatedDeposits || BigNumber.from(0),
+        debt || BigNumber.from(0),
+        underlyingTokenData?.decimals || 0,
+        vault,
+        vault.underlyingPerShare,
+        $vaultsStore[vault.type]?.ratio || BigNumber.from(0),
+      );
     }
   });
 </script>
@@ -421,19 +444,6 @@
   </div>
   <div class="my-4">
     <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
-  </div>
-  <div class="my-4 text-sm text-lightgrey10 hidden">
-    {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
-    -> {calculateRemainingBalance(
-      vault,
-      underlyingWithdrawAmountShares,
-      yieldWithdrawAmountShares,
-      underlyingTokenData,
-    )}
-    <br />
-    {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
-    -> {utils.formatUnits(projDebtLimit, underlyingTokenData.decimals) ||
-      utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
   </div>
 
   <Button
