@@ -276,6 +276,7 @@
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
+        hasConfig: metaConfig[vaultTokenData.address],
         col2: {
           CellComponent: FarmNameCell,
           farmName: vaultName(),
@@ -550,7 +551,9 @@
         <div slot="body">
           {#if currentRowsOnCurrentStrategyType.length > 0 && !$vaultsLoading}
             <div class="flex flex-col space-y-4 px-4 py-4">
-              {#each currentRowsOnCurrentStrategyType.map((obj) => obj.row) as strategy}
+              {#each currentRowsOnCurrentStrategyType
+                .map((obj) => obj.row)
+                .filter((obj) => !!obj.hasConfig) as strategy}
                 <VaultStrategy strategy="{strategy}" />
               {/each}
             </div>
