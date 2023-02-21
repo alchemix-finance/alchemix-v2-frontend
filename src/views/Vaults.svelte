@@ -553,7 +553,9 @@
             <div class="flex flex-col space-y-4 px-4 py-4">
               {#each currentRowsOnCurrentStrategyType
                 .map((obj) => obj.row)
-                .filter((obj) => !!obj.hasConfig) as strategy}
+                .filter((obj) => {
+                  return $networkStore === '0x1' ? !!obj.hasConfig : obj;
+                }) as strategy}
                 <VaultStrategy strategy="{strategy}" />
               {/each}
             </div>
