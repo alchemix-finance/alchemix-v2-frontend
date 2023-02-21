@@ -12,6 +12,16 @@
   const openOnForum = (url) => {
     window.open(url, '_blank');
   };
+
+  const titleRegEx = (title, part) => {
+    switch (part) {
+      case 'aip':
+        return title.match(/\[.*?]/g)[0];
+      case 'title':
+      default:
+        return title.replace(/\[.*?]/g, '');
+    }
+  };
 </script>
 
 <div
@@ -20,7 +30,7 @@
     : 'bg-grey10 border-grey3'}"
 >
   <div class="flex flex-col p-2 mb-10 w-52 lg:w-full flex-1">
-    <p class="mb-2 text-xs lg:text-base flex-1">{postData.title.slice(8)}</p>
+    <p class="mb-2 text-xs lg:text-base flex-1">{titleRegEx(postData.title, 'title')}</p>
     <div class="flex flex-row justify-between text-xs lg:text-sm">
       <p class="text-lightgrey5">Created:</p>
       <p>{toDate(postData.created)}</p>
@@ -37,7 +47,7 @@
 
   <div class="w-full p-1">
     <Button
-      label="Read {postData.title.slice(0, 8)}"
+      label="Read {titleRegEx(postData.title, 'aip')}"
       borderColor="green4"
       backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
       hoverColor="green4"

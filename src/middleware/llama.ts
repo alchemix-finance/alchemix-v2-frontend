@@ -1,11 +1,7 @@
 import axios from 'axios';
+import { updateTokenPrices } from '@stores/v2/methods';
 
 const urlBase = 'https://coins.llama.fi/prices/current/';
-
-type token = {
-  chain: string;
-  address: string;
-};
 
 export async function getTokenPriceInEth(_chain, _tokenAddress) {
   const queryUrl = `${urlBase}${_chain}:${_tokenAddress}`;
@@ -31,4 +27,19 @@ export async function getTokenPriceInEth(_chain, _tokenAddress) {
     });
 }
 
-export async function getTokenPriceInUsd([_tokenList]: [token]) {}
+export async function getTokenPrice(_chain: string, _tokenAddresses: string[]) {
+  const queryValues = _tokenAddresses.map((address) => `${_chain}:${address}`);
+  const queryUrl = `${urlBase}${queryValues.join(',')}`;
+  await axios
+    .get(queryUrl)
+    .then((response) => {
+      let tokenPrices = [];
+      for (const [key, value] of Object.entries(response.data.coins)) {
+        tokenPrices[key.split(':')[1].toLowerCase()] = { usd: value.price };
+      }
+      updateTokenPrices(tokenPrices);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}

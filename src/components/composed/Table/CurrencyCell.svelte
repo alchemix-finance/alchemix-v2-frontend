@@ -10,16 +10,15 @@
   export let token;
   let normalizedValue;
 
-  $: currency = $settings.baseCurrency.symbol;
   $: tokenPrice = $tokenPriceStore[token?.address.toLowerCase()]
-    ? $tokenPriceStore[token?.address.toLowerCase()][currency.toLowerCase()]
+    ? $tokenPriceStore[token?.address.toLowerCase()]['usd']
     : 1;
   $: tokenFormatted = utils.formatUnits(token?.balance || 0, token?.decimals || 18);
 
   const normalize = async () => {
     normalizedValue = new Intl.NumberFormat($settings.userLanguage.locale, {
       style: 'currency',
-      currency,
+      currency: 'USD',
     }).format(parseFloat((tokenFormatted * tokenPrice).toFixed(2)));
   };
   $: value, normalize();

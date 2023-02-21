@@ -55,7 +55,7 @@
     "@snapshot-labs/snapshot.js": "^0.4.57",
     "@tkh/tailwind-plugin-flex-basis": "^1.4.0",
     "@web3-onboard/coinbase": "^2.0.10",
-    "@web3-onboard/core": "^2.7.0",
+    "@web3-onboard/core": "^2.14.1",
     "@web3-onboard/injected-wallets": "^2.0.15",
     "@web3-onboard/walletconnect": "^2.0.9",
     "@web3-onboard/walletlink": "^2.0.6",
