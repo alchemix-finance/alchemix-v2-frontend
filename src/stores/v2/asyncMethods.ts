@@ -428,6 +428,6 @@ export async function convertTokenUnits(
     signer,
     path,
   );
-  const convertedValue = await alchemist[functions[functionSelector]](tokenAddress, amount);
+  const convertedValue: ethers.BigNumber = await alchemist[functions[functionSelector]](tokenAddress, amount);
   return convertedValue;
 }

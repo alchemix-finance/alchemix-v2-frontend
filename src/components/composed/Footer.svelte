@@ -30,11 +30,6 @@
           <Link to="/">{$_('main_page')}</Link>
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a href="https://legacy.alchemix.fi/" class="flex space-x-4" target="_blank">
-            <span>Legacy v1 UI</span>
-          </a>
-        </li>
-        <li class="opacity-50 hover:opacity-100">
           <a href="https://github.com/orgs/alchemix-finance/" class="flex space-x-4" target="_blank">
             <span>{$_('github')}</span>
           </a>

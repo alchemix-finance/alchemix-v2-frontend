@@ -9,7 +9,7 @@
   import settings from '../stores/settings';
   import errorLog from '../stores/errorLog';
   import { setSuccess } from '@helpers/setToast';
-  import { setCurrency, setLanguage, setGas, setInvert } from '@helpers/userSettings';
+  import { setLanguage, setGas, setInvert } from '@helpers/userSettings';
   import ToggleSwitch from '../components/elements/ToggleSwitch.svelte';
 
   const switchColorScheme = (event) => {

@@ -225,87 +225,45 @@
     _openDebtAmount,
     _decimals,
     _vault,
-    _pricePerShare,
     _ratio,
   ) {
-    console.log(
-      'inputs:',
-      'aggregatedDepositAmount',
-      _aggregatedDepositAmount.toString(),
-      'openDebtAmount',
-      _openDebtAmount.toString(),
-      'decimals',
-      _decimals.toString(),
-      'vault',
-      _vault,
-      'pricePerShare',
-      _pricePerShare.toString(),
-      'ratio',
-      _ratio.toString(),
-    );
-    // setting up variables
     const ratioNormalized = _ratio.div(BigNumber.from(10).pow(18));
-    const vaultBalance = _vault.balance;
-    const requiredCover = _openDebtAmount.mul(ratioNormalized);
-    const otherCover = _aggregatedDepositAmount.sub(vaultBalance);
-    const vaultMaxWithdrawAmount = vaultBalance.sub(requiredCover);
-    let availableAmount = '0';
-    console.log(
-      'computed:',
-      `vaultBalance: ${vaultBalance.toString()}`,
-      `requiredCover: ${requiredCover.toString()}`,
-      `otherCover: ${otherCover.toString()}`,
-      `vaultMaxWithdrawAmount: ${vaultMaxWithdrawAmount.toString()}`,
-      otherCover.gte(requiredCover),
-      vaultMaxWithdrawAmount.gt(BigNumber.from(0)),
-      _aggregatedDepositAmount.sub(requiredCover).gt(BigNumber.from(0)),
+    const vaultBalance = await convertTokenUnits(
+      _vault.type,
+      _vault.address,
+      _vault.balance,
+      0,
+      $signer,
+      $networkStore,
     );
+    const requiredCover = await convertTokenUnits(
+      _vault.type,
+      underlyingTokenData.address,
+      _openDebtAmount,
+      7,
+      $signer,
+      $networkStore,
+    ).then((response) => {
+      return response.mul(ratioNormalized);
+    });
+    const otherCover = await convertTokenUnits(
+      _vault.type,
+      _vault.address,
+      _aggregatedDepositAmount,
+      0,
+      $signer,
+      $networkStore,
+    ).then((response) => {
+      return response.sub(vaultBalance);
+    });
+    const vaultMaxWithdrawAmount = vaultBalance.sub(requiredCover);
     if (otherCover.gte(requiredCover)) {
-      availableAmount = utils.formatUnits(vaultBalance, _decimals);
+      return utils.formatUnits(vaultBalance, _decimals);
     } else if (vaultMaxWithdrawAmount.gt(BigNumber.from(0))) {
-      availableAmount = utils.formatUnits(vaultMaxWithdrawAmount, _decimals);
+      return utils.formatUnits(vaultMaxWithdrawAmount, _decimals);
     } else {
-      availableAmount = utils.formatUnits(vaultBalance.sub(requiredCover), _decimals);
+      return utils.formatUnits(vaultBalance.sub(requiredCover), _decimals);
     }
-    /*
-    * old logic inside this comment
-    const scalar = (decimals) => BigNumber.from(10).pow(decimals);
-    const ratio = _ratio.div(scalar(18));
-    // how many underlying tokens are needed to cover a user's debt
-    const requiredCover = _openDebtAmount.mul(ratio).lte(BigNumber.from(0))
-      ? BigNumber.from(0)
-      : _openDebtAmount.mul(ratio);
-    // remaining underlying token deposits that could be withdrawn
-    const freeCover = _coveredDebtAmount.sub(requiredCover);
-    const freeCoverAmount = utils.formatUnits(freeCover, _decimals);
-    // amount of debt tokens covered by this vault (= deposit amount)
-    const vaultCover = _vault.balance
-      .mul(_pricePerShare)
-      .div(scalar(_decimals))
-      .mul(scalar(BigNumber.from(18).sub(_decimals)));
-    // amount of tokens available for withdrawal
-    const maxWithdrawAmount = freeCover.sub(vaultCover);
-
-    const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    const vaultCoverAmount = vaultCover.lte(BigNumber.from(0))
-      ? '0'
-      : utils.formatUnits(
-          vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
-          _decimals,
-        );
-
-    console.log(freeCoverAmount.toString(), maxAmount.toString(), vaultCoverAmount.toString());
-
-    return vaultCover.gt(BigNumber.from(0))
-      ? _openDebtAmount.gt(BigNumber.from(0))
-        ? maxWithdrawAmount.lte(BigNumber.from(0))
-          ? freeCoverAmount
-          : maxAmount
-        : vaultCoverAmount
-      : '0';
-
-     */
-    return availableAmount;
   }
 
   $: yieldTokenData = initializeTokenDataForAddress(vault.yieldToken);
@@ -325,15 +283,7 @@
   $: ({ debt } = $vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0);
 
   let maxWithdrawAmountForUnderlying = '0';
-
-  $: maxWithdrawAmountForYield = utils.formatUnits(
-    utils
-      .parseUnits(maxWithdrawAmountForUnderlying, 18)
-      .mul(vault.yieldPerShare)
-      .div(vault.underlyingPerShare)
-      .div(BigNumber.from(10).pow(BigNumber.from(18).sub(yieldTokenData.decimals))),
-    yieldTokenData.decimals,
-  );
+  let maxWithdrawAmountForYield = '0';
 
   $: withdrawButtonState = getWithdrawButtonState(
     underlyingWithdrawAmountShares,
@@ -350,13 +300,12 @@
   $: if (supportedTokens.length >= 1) {
     selection.set(
       supportedTokens?.map((token) => {
-        console.log(maxWithdrawAmountForYield.toString(), maxWithdrawAmountForUnderlying.toString());
         return {
           token: token,
           selected: false,
           maxWithdrawAmount: utils.parseUnits(
             token === yieldTokenData.symbol ? maxWithdrawAmountForYield : maxWithdrawAmountForUnderlying,
-            yieldTokenData.decimals,
+            token === yieldTokenData.symbol ? yieldTokenData.decimals : underlyingTokenData.decimals,
           ),
         };
       }),
@@ -398,8 +347,18 @@
         debt || BigNumber.from(0),
         underlyingTokenData?.decimals || 0,
         vault,
-        vault.underlyingPerShare,
         $vaultsStore[vault.type]?.ratio || BigNumber.from(0),
+      );
+      maxWithdrawAmountForYield = utils.formatUnits(
+        await convertTokenUnits(
+          vault.type,
+          vault.address,
+          utils.parseUnits(maxWithdrawAmountForUnderlying.toString(), underlyingTokenData.decimals),
+          3,
+          $signer,
+          $networkStore,
+        ),
+        yieldTokenData.decimals,
       );
     }
   });
