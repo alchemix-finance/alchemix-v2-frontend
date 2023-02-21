@@ -236,16 +236,21 @@
       $signer,
       $networkStore,
     );
-    const requiredCover = await convertTokenUnits(
-      _vault.type,
-      underlyingTokenData.address,
-      _openDebtAmount,
-      7,
-      $signer,
-      $networkStore,
-    ).then((response) => {
-      return response.mul(ratioNormalized);
-    });
+    let requiredCover;
+    if (_openDebtAmount.gt(BigNumber.from(0))) {
+      requiredCover = await convertTokenUnits(
+        _vault.type,
+        underlyingTokenData.address,
+        _openDebtAmount,
+        7,
+        $signer,
+        $networkStore,
+      ).then((response) => {
+        return response.mul(ratioNormalized);
+      });
+    } else {
+      requiredCover = BigNumber.from(0);
+    }
     const otherCover = await convertTokenUnits(
       _vault.type,
       _vault.address,
