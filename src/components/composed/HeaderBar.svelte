@@ -188,53 +188,6 @@
 
     <Dropdown>
       <div
-        slot="label"
-        class="px-3
-        h-8
-        flex
-        justify-between
-        items-center
-        py-1
-        text-opacity-50
-        hover:text-opacity-100
-        select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
-          ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
-          : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 mr-2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <p class="pr-2">{$settings.baseCurrency?.symbol}</p>
-        <p>▾</p>
-      </div>
-      <ul slot="options" class="w-full">
-        {#each $global.allCurrencies as currency}
-          <li
-            class="cursor-pointer h-8 border-t {$settings.invertColors
-              ? 'hover:bg-grey10inverse border-grey10inverse'
-              : 'hover:bg-grey10 border-grey10'}"
-            on:click="{() => setCurrency(currency)}"
-          >
-            <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
-              {currency.symbol}
-            </p>
-          </li>
-        {/each}
-      </ul>
-    </Dropdown>
-    <Dropdown>
-      <div
         class="h-8
         px-3
         flex

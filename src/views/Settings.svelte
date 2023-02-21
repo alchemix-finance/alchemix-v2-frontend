@@ -81,40 +81,6 @@
         </div>
         <div id="locale-settings" class="mb-4">
           <p class="opacity-50 mb-3">{$_('settings_page.locale')}</p>
-          <div class="grid grid-cols-3 mb-3">
-            <p>{$_('settings_page.base_currency')}</p>
-            <div>
-              <Dropdown>
-                <div
-                  slot="label"
-                  class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
-                    ? 'border-lightgrey20inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
-                    : 'border-lightgrey20 text-white2 bg-grey10 hover:bg-grey1'}"
-                >
-                  <p class="mr-3 w-full text-center">
-                    {$settings.baseCurrency?.symbol}
-                  </p>
-                  <p>▾</p>
-                </div>
-                <ul slot="options" class="w-full">
-                  {#each $global.allCurrencies as currency, index}
-                    <li
-                      class="cursor-pointer h-8 px-3 py-1 {$settings.invertColors
-                        ? 'hover:bg-grey10inverse'
-                        : 'hover:bg-grey10'} {index + 1 === $global.allCurrencies.length
-                        ? ''
-                        : `border-b ${$settings.invertColors ? 'border-grey10inverse' : 'border-grey10'}`}"
-                      on:click="{() => setCurrency(currency)}"
-                    >
-                      <p class="text-center text-opacity-50 hover:text-opacity-100 w-full">
-                        {currency.symbol}
-                      </p>
-                    </li>
-                  {/each}
-                </ul>
-              </Dropdown>
-            </div>
-          </div>
           <div class="grid grid-cols-3">
             <p>{$_('settings_page.languages')}</p>
             <div>

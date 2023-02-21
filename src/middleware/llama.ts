@@ -3,11 +3,6 @@ import { updateTokenPrices } from '@stores/v2/methods';
 
 const urlBase = 'https://coins.llama.fi/prices/current/';
 
-type token = {
-  chain: string;
-  address: string;
-};
-
 export async function getTokenPriceInEth(_chain, _tokenAddress) {
   const queryUrl = `${urlBase}${_chain}:${_tokenAddress}`;
   const ethData = await axios
