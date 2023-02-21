@@ -12,16 +12,9 @@ import { getVaultApr as getRocketApr } from '@middleware/rocketPool';
 import { getLidoApr } from '@middleware/lido';
 import { getAaveApr } from '@middleware/aave';
 import { getVesperApy } from '@middleware/vesper';
+import { getTokenPrice } from '@middleware/llama';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
-import { getTokenPrices } from '@middleware/coingecko';
-import global from '@stores/global';
-import { get } from 'svelte/store';
-
-function getCurrencies(): string[] {
-  const globalStore = get(global);
-  return globalStore.allCurrencies.map((entry) => entry.symbol);
-}
 
 export async function fetchDataForToken(tokenAddress: string, signer: ethers.Signer): Promise<BalanceType> {
   const tokenContract = erc20Contract(tokenAddress, signer);
@@ -67,10 +60,9 @@ export async function fetchDataForETH(signer: ethers.Signer, network = '0x1'): P
 
 export const generateTokenPromises = (_tokens: string[], signer: ethers.Signer, network?: string) => {
   const networkName = chainIds.filter((chain) => chain.id === network)[0].abiPath;
-  getTokenPrices(
+  getTokenPrice(
     networkName || 'ethereum',
     _tokens.map((token) => token),
-    getCurrencies(),
   );
   return _tokens.map((token) => fetchDataForToken(token, signer));
 };

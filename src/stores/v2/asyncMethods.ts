@@ -418,6 +418,8 @@ export async function convertTokenUnits(
     'convertUnderlyingTokensToYield',
     'convertYieldTokensToShares',
     'convertYieldTokensToUnderlying',
+    'normalizeUnderlyingTokensToDebt',
+    'normalizeDebtTokensToUnderlying',
   }
 
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
@@ -426,6 +428,6 @@ export async function convertTokenUnits(
     signer,
     path,
   );
-  const convertedValue = await alchemist[functions[functionSelector]](tokenAddress, amount);
+  const convertedValue: ethers.BigNumber = await alchemist[functions[functionSelector]](tokenAddress, amount);
   return convertedValue;
 }

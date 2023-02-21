@@ -28,6 +28,7 @@ export const resetStores = async () => {
   adaptersStore.set({});
   sentinelStore.set(undefined);
   controllerStore.set([]);
+  return true;
 };
 
 export const updateAddress = (address: string) => {
@@ -44,7 +45,7 @@ export const updateAllBalances = (balances: BalanceType[]) => balancesStore.set(
 
 export const updateNetwork = (id: string) => networkStore.set(id);
 
-export const updateTokenPrices = (prices: []) => tokenPriceStore.set(prices);
+export const updateTokenPrices = (prices: any[]) => tokenPriceStore.set(prices);
 
 export const updateOneBalance = (balanceAddress: string, balanceAmount: ethers.BigNumber) =>
   balancesStore.update((_prevStore) => {

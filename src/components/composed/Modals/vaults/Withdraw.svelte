@@ -18,16 +18,21 @@
     adaptersStore,
     networkStore,
   } from '@stores/v2/alcxStore';
-  import { signer, vaultsAggregatedCoveredDebt } from '@stores/v2/derived';
+  import { signer, vaultsAggregatedDeposits } from '@stores/v2/derived';
   import {
     fetchBalanceByAddress,
     fetchUpdateVaultByAddress,
     fetchAdaptersForVaultType,
+    convertTokenUnits,
   } from '@stores/v2/asyncMethods';
 
   import { modalReset } from '@stores/modal';
 
-  import { getTokenDataFromBalances, aaveDynamicToStaticAmount } from '@stores/v2/helpers';
+  import {
+    getTokenDataFromBalances,
+    getTokenDataFromBalancesBySymbol,
+    aaveDynamicToStaticAmount,
+  } from '@stores/v2/helpers';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
   import settings from '@stores/settings';
@@ -191,9 +196,16 @@
     }
   };
 
-  function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
+  async function getWithdrawButtonState(_underlyingWithdrawAmount, _yieldWithdrawAmount, _decimals) {
     const sharesWithdrawAmount = _underlyingWithdrawAmount.add(_yieldWithdrawAmount);
-    const maxAmountToShares = toShares(maxWithdrawAmountForUnderlying, _decimals, vault.underlyingPerShare);
+    const maxAmountToShares = await convertTokenUnits(
+      vault.type,
+      vault.address,
+      utils.parseUnits(maxWithdrawAmountForUnderlying, underlyingTokenData.decimals),
+      2,
+      $signer,
+      $networkStore,
+    );
 
     return (
       sharesWithdrawAmount.gt(BigNumber.from(0)) &&
@@ -208,68 +220,57 @@
     }
   }
 
-  function calculateRemainingBalance(
-    _vault,
-    _underlyingWithdrawAmount,
-    _yieldWithdrawAmount,
-    _underlyingTokenData,
-  ) {
-    const _remainingBalanceBN = _vault.balance
-      .sub(_underlyingWithdrawAmount.add(_yieldWithdrawAmount))
-      .sub(roundingBalancer);
-
-    return utils.formatUnits(_remainingBalanceBN, _underlyingTokenData.decimals);
-  }
-
-  function calculateMaxWithdrawAmount(
-    _coveredDebtAmount,
+  async function calculateMaxWithdrawAmount(
+    _aggregatedDepositAmount,
     _openDebtAmount,
     _decimals,
     _vault,
-    _pricePerShare,
     _ratio,
   ) {
-    const scalar = (decimals) => BigNumber.from(10).pow(decimals);
-    const ratio = _ratio.div(scalar(18));
-    // how many underlying tokens are needed to cover a user's debt
-    const requiredCover = _openDebtAmount.mul(ratio).lte(BigNumber.from(0))
-      ? BigNumber.from(0)
-      : _openDebtAmount.mul(ratio);
-    // remaining underlying token deposits that could be withdrawn
-    const freeCover = _coveredDebtAmount.sub(requiredCover);
-    const freeCoverAmount = utils.formatUnits(freeCover, _decimals);
-    // amount of debt tokens covered by this vault (= deposit amount)
-    const vaultCover = _vault.balance
-      .mul(_pricePerShare)
-      .div(scalar(_decimals))
-      .mul(scalar(BigNumber.from(18).sub(_decimals)));
-    // amount of tokens available for withdrawal
-    const maxWithdrawAmount = freeCover.sub(vaultCover);
-
-    const maxAmount = utils.formatUnits(vaultCover.div(scalar(BigNumber.from(18).sub(_decimals))), _decimals);
-    const vaultCoverAmount = vaultCover.lte(BigNumber.from(0))
-      ? '0'
-      : utils.formatUnits(
-          vaultCover.sub(requiredCover).div(scalar(BigNumber.from(18).sub(_decimals))),
-          _decimals,
-        );
-
-    console.log(freeCoverAmount.toString(), maxAmount.toString(), vaultCoverAmount.toString());
-
-    return vaultCover.gt(BigNumber.from(0))
-      ? _openDebtAmount.gt(BigNumber.from(0))
-        ? maxWithdrawAmount.lte(BigNumber.from(0))
-          ? freeCoverAmount
-          : maxAmount
-        : vaultCoverAmount
-      : '0';
+    const ratioNormalized = _ratio.div(BigNumber.from(10).pow(18));
+    const vaultBalance = await convertTokenUnits(
+      _vault.type,
+      _vault.address,
+      _vault.balance,
+      0,
+      $signer,
+      $networkStore,
+    );
+    const requiredCover = await convertTokenUnits(
+      _vault.type,
+      underlyingTokenData.address,
+      _openDebtAmount,
+      7,
+      $signer,
+      $networkStore,
+    ).then((response) => {
+      return response.mul(ratioNormalized);
+    });
+    const otherCover = await convertTokenUnits(
+      _vault.type,
+      _vault.address,
+      _aggregatedDepositAmount,
+      0,
+      $signer,
+      $networkStore,
+    ).then((response) => {
+      return response.sub(vaultBalance);
+    });
+    const vaultMaxWithdrawAmount = vaultBalance.sub(requiredCover);
+    if (otherCover.gte(requiredCover)) {
+      return utils.formatUnits(vaultBalance, _decimals);
+    } else if (vaultMaxWithdrawAmount.gt(BigNumber.from(0))) {
+      return utils.formatUnits(vaultMaxWithdrawAmount, _decimals);
+    } else {
+      return utils.formatUnits(vaultBalance.sub(requiredCover), _decimals);
+    }
   }
 
   $: yieldTokenData = initializeTokenDataForAddress(vault.yieldToken);
   $: underlyingTokenData = initializeTokenDataForAddress(vault.underlyingAddress);
   $: ethData = getTokenDataFromBalances('0xETH', [$balancesStore]);
 
-  $: cDebt = $vaultsAggregatedCoveredDebt[vault.type];
+  $: aggregatedDeposits = $vaultsAggregatedDeposits[vault.type];
 
   $: yieldWithdrawAmountShares = toShares(yieldWithdrawAmount, yieldTokenData.decimals, vault.yieldPerShare);
 
@@ -281,35 +282,8 @@
 
   $: ({ debt } = $vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0);
 
-  $: projDebtLimit =
-    $vaultsStore && $vaultsStore[vault.type]
-      ? vault.balance
-          .sub(yieldWithdrawAmountShares.add(underlyingWithdrawAmountShares))
-          .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)))
-      : 0;
-
-  $: roundingBalancer = utils.parseUnits(
-    utils.formatUnits(1, underlyingTokenData.decimals),
-    underlyingTokenData.decimals,
-  );
-
-  $: maxWithdrawAmountForUnderlying = calculateMaxWithdrawAmount(
-    cDebt || BigNumber.from(0),
-    debt || BigNumber.from(0),
-    underlyingTokenData?.decimals || 0,
-    vault,
-    vault.underlyingPerShare,
-    $vaultsStore[vault.type]?.ratio || BigNumber.from(0),
-  );
-
-  $: maxWithdrawAmountForYield = utils.formatUnits(
-    utils
-      .parseUnits(maxWithdrawAmountForUnderlying, 18)
-      .mul(vault.yieldPerShare)
-      .div(vault.underlyingPerShare)
-      .div(BigNumber.from(10).pow(BigNumber.from(18).sub(yieldTokenData.decimals))),
-    yieldTokenData.decimals,
-  );
+  let maxWithdrawAmountForUnderlying = '0';
+  let maxWithdrawAmountForYield = '0';
 
   $: withdrawButtonState = getWithdrawButtonState(
     underlyingWithdrawAmountShares,
@@ -326,13 +300,12 @@
   $: if (supportedTokens.length >= 1) {
     selection.set(
       supportedTokens?.map((token) => {
-        console.log(maxWithdrawAmountForYield.toString(), maxWithdrawAmountForUnderlying.toString());
         return {
           token: token,
           selected: false,
           maxWithdrawAmount: utils.parseUnits(
             token === yieldTokenData.symbol ? maxWithdrawAmountForYield : maxWithdrawAmountForUnderlying,
-            yieldTokenData.decimals,
+            token === yieldTokenData.symbol ? yieldTokenData.decimals : underlyingTokenData.decimals,
           ),
         };
       }),
@@ -367,7 +340,26 @@
 
   onMount(async () => {
     if (vault) {
+      let { debt } = $vaultsStore && $vaultsStore[vault.type] ? $vaultsStore[vault.type].debt : 0;
       maxLossPreset = await getVaultMaxLoss(vault.address, vault.type, [$signer], $networkStore);
+      maxWithdrawAmountForUnderlying = await calculateMaxWithdrawAmount(
+        aggregatedDeposits || BigNumber.from(0),
+        debt || BigNumber.from(0),
+        underlyingTokenData?.decimals || 0,
+        vault,
+        $vaultsStore[vault.type]?.ratio || BigNumber.from(0),
+      );
+      maxWithdrawAmountForYield = utils.formatUnits(
+        await convertTokenUnits(
+          vault.type,
+          vault.address,
+          utils.parseUnits(maxWithdrawAmountForUnderlying.toString(), underlyingTokenData.decimals),
+          3,
+          $signer,
+          $networkStore,
+        ),
+        yieldTokenData.decimals,
+      );
     }
   });
 </script>
@@ -395,6 +387,7 @@
           externalMax="{$selection.filter((entry) => entry.token === selectedTokens[i])[0]
             ?.maxWithdrawAmount}"
           metaConfig="{metaConfig}"
+          externalDecimals="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.decimals}"
           bind:convertToStatic
         />
         {#if canAddInputs}
@@ -416,19 +409,6 @@
   </div>
   <div class="my-4">
     <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
-  </div>
-  <div class="my-4 text-sm text-lightgrey10 hidden">
-    {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, underlyingTokenData.decimals)}
-    -> {calculateRemainingBalance(
-      vault,
-      underlyingWithdrawAmountShares,
-      yieldWithdrawAmountShares,
-      underlyingTokenData,
-    )}
-    <br />
-    {$_('modals.borrow_limit')}: {utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
-    -> {utils.formatUnits(projDebtLimit, underlyingTokenData.decimals) ||
-      utils.formatUnits(borrowLimit, underlyingTokenData.decimals)}
   </div>
 
   <Button
