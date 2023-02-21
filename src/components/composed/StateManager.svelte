@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { addressStore, networkStore, tokensStore, tokenPriceStore } from '@stores/v2/alcxStore';
+  import { addressStore, networkStore, tokensStore } from '@stores/v2/alcxStore';
   import { fullTokenList, signer } from '@stores/v2/derived';
   import {
     fetchAdaptersForVaultType,

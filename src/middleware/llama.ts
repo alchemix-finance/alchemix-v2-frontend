@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { updateTokenPrices } from '@stores/v2/methods';
 
 const urlBase = 'https://coins.llama.fi/prices/current/';
 
@@ -33,14 +34,17 @@ export async function getTokenPriceInEth(_chain, _tokenAddress) {
 
 export async function getTokenPrice(_chain: string, _tokenAddresses: string[]) {
   const queryValues = _tokenAddresses.map((address) => `${_chain}:${address}`);
-  const queryUrl = `${urlBase}${queryValues}`;
+  const queryUrl = `${urlBase}${queryValues.join(',')}`;
   await axios
     .get(queryUrl)
     .then((response) => {
-      return response.data.coins[`${_chain}:${_tokenAddresses}`].price;
+      let tokenPrices = [];
+      for (const [key, value] of Object.entries(response.data.coins)) {
+        tokenPrices[key.split(':')[1].toLowerCase()] = { usd: value.price };
+      }
+      updateTokenPrices(tokenPrices);
     })
     .catch((error) => {
       console.error(error);
-      return 0;
     });
 }
