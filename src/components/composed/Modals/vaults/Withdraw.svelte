@@ -229,6 +229,7 @@
     _ratio,
   ) {
     console.log(
+      'inputs:',
       'aggregatedDepositAmount',
       _aggregatedDepositAmount.toString(),
       'openDebtAmount',
@@ -247,9 +248,14 @@
     const vaultBalance = _vault.balance;
     const requiredCover = _openDebtAmount.mul(ratioNormalized);
     const otherCover = _aggregatedDepositAmount.sub(vaultBalance);
-    const vaultMaxWithdrawAmount = requiredCover.sub(vaultBalance);
+    const vaultMaxWithdrawAmount = vaultBalance.sub(requiredCover);
     let availableAmount = '0';
     console.log(
+      'computed:',
+      `vaultBalance: ${vaultBalance.toString()}`,
+      `requiredCover: ${requiredCover.toString()}`,
+      `otherCover: ${otherCover.toString()}`,
+      `vaultMaxWithdrawAmount: ${vaultMaxWithdrawAmount.toString()}`,
       otherCover.gte(requiredCover),
       vaultMaxWithdrawAmount.gt(BigNumber.from(0)),
       _aggregatedDepositAmount.sub(requiredCover).gt(BigNumber.from(0)),

@@ -31,4 +31,16 @@ export async function getTokenPriceInEth(_chain, _tokenAddress) {
     });
 }
 
-export async function getTokenPriceInUsd([_tokenList]: [token]) {}
+export async function getTokenPrice(_chain: string, _tokenAddresses: string[]) {
+  const queryValues = _tokenAddresses.map((address) => `${_chain}:${address}`);
+  const queryUrl = `${urlBase}${queryValues}`;
+  await axios
+    .get(queryUrl)
+    .then((response) => {
+      return response.data.coins[`${_chain}:${_tokenAddresses}`].price;
+    })
+    .catch((error) => {
+      console.error(error);
+      return 0;
+    });
+}
