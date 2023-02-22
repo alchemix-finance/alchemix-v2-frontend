@@ -38,8 +38,8 @@
   const preselect = JSON.parse(window.localStorage.getItem('connectedWallets')) || [];
   let walletChecked = false;
 
-  const MODE = process.env.NODE_ENV;
-  const basePath = MODE === 'development' || 'production' ? '' : window.location.pathname;
+  // eslint-disable-next-line no-constant-condition
+  const basePath = process.env.NODE_ENV === 'development' || 'production' ? '' : window.location.pathname;
 
   onMount(async () => {
     if (preselect.length > 0) {
