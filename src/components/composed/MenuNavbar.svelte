@@ -27,7 +27,7 @@
           : ''}"
       >
         <img
-          src="images/icons/{navbarItem.icon}"
+          src="./images/icons/{navbarItem.icon}"
           class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
           alt="{navbarItem.label}"
         />
@@ -47,7 +47,7 @@
             : ''}"
         >
           <img
-            src="images/icons/{navbarItem.icon}"
+            src="./images/icons/{navbarItem.icon}"
             class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
             alt="{navbarItem.label}"
           />

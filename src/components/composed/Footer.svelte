@@ -11,7 +11,7 @@
   <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-11">
     <div class="w-60">
       <img
-        src="images/icons/ALCX_Std_logo.svg"
+        src="./images/icons/ALCX_Std_logo.svg"
         class="h-9 mb-5"
         style="filter:saturate(0);"
         alt="The Alchemix logo"
@@ -139,17 +139,17 @@
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
           <a href="https://defillama.com/" target="_blank">
-            <img src="images/integrations/defillama.svg" class="w-32" alt="The logo of DefiLlama" />
+            <img src="./images/integrations/defillama.svg" class="w-32" alt="The logo of DefiLlama" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
           <a href="https://li.fi/" target="_blank">
-            <img src="images/integrations/lifi.svg" class="w-32" alt="The logo of Li.Fi" />
+            <img src="./images/integrations/lifi.svg" class="w-32" alt="The logo of Li.Fi" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
           <a href="https://snapshot.org/" target="_blank">
-            <img src="images/integrations/snapshot.svg" class="w-32" alt="The logo of Snapshot" />
+            <img src="./images/integrations/snapshot.svg" class="w-32" alt="The logo of Snapshot" />
           </a>
         </li>
       </ul>
@@ -163,7 +163,7 @@
             target="_blank"
           >
             <img
-              src="images/integrations/klima.svg"
+              src="./images/integrations/klima.svg"
               class="w-32"
               alt="Alchemix pledged to offset 4,390.96 Carbon Tonnes"
             />

@@ -145,7 +145,7 @@
                 <Circle color="#F5C59F" size="32" />
               </div>
             {/if}
-            <img src="images/alchemix_logo.png" alt="Alchemix loader" class="w-5 h-5" />
+            <img src="./images/alchemix_logo.png" alt="Alchemix loader" class="w-5 h-5" />
           </div>
           <div class="ml-2 mr-6 max-w-xs">
             <p>{title}</p>

@@ -75,7 +75,7 @@
     <Link to="/">
       <div class="flex-shrink-0 flex items-center">
         <img
-          src="images/icons/ALCX_Std_logo.svg"
+          src="./images/icons/ALCX_Std_logo.svg"
           class="h-11 {$settings.invertColors ? 'invertIcons' : ''}"
           alt="The Alchemix logo"
         />

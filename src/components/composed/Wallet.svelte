@@ -84,7 +84,7 @@
         label=""
         on:clicked="{() => chainSelectCollapse()}"
       >
-        <img slot="rightSlot" class="h-8 w-8" src="images/icons/{networkIcon}.svg" alt="{networkIcon}" />
+        <img slot="rightSlot" class="h-8 w-8" src="./images/icons/{networkIcon}.svg" alt="{networkIcon}" />
       </Button>
 
       <Button
@@ -229,7 +229,7 @@
                 : 'opacity-50 hover:opacity-100 hover:cursor-pointer'} items-center"
               on:click="{() => updateChain(chainId.id)}"
             >
-              <img src="images/icons/{chainId.icon}.svg" alt="asd" class="w-6 h-6" />
+              <img src="./images/icons/{chainId.icon}.svg" alt="asd" class="w-6 h-6" />
               <p class="h-6">{chainId.name}</p>
             </div>
           {/each}

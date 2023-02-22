@@ -142,7 +142,7 @@
       on:click="{() => playVideo()}"
     >
       <img
-        src="/images/landing-page/ad.jpg"
+        src="./images/landing-page/ad.jpg"
         alt="Watch the Alchemix cinematic ad"
         class="w-full transition-all"
       />
@@ -169,7 +169,7 @@
       <p class="text-center text-lg opacity-75">{$_('landing.path_subtitle')}</p>
       <img
         class="w-3/4 self-center {$settings.invertColors ? 'filter invert' : ''}"
-        src="/images/landing-page/diagram.svg"
+        src="./images/landing-page/diagram.svg"
         alt="A diagram depicting the possibilities of Alchemix"
       />
       <a class="text-center underline" href="https://alchemix-finance.gitbook.io/v2/"
@@ -190,7 +190,7 @@
               ? 'border-grey1inverse bg-grey15inverse'
               : 'border-grey1 bg-grey15'} p-4 rounded-lg"
           >
-            <img src="/images/icons/{asset.name.toLowerCase()}.svg" class="w-16" alt="{asset.name} Logo" />
+            <img src="./images/icons/{asset.name.toLowerCase()}.svg" class="w-16" alt="{asset.name} Logo" />
             <div>
               <p>{asset.name}</p>
               <p>

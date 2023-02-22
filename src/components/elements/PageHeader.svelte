@@ -8,7 +8,7 @@
 
 <div class="flex gap-6 w-full items-center">
   <img
-    src="images/icons/{pageIcon}"
+    src="./images/icons/{pageIcon}"
     alt="{pageTitle}"
     class="max-h-full h-full w-20 {$settings.invertColors ? 'invertIcons' : ''}"
   />

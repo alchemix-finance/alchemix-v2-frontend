@@ -157,7 +157,7 @@
           on:clicked="{() => currentTransmuterCategories.select(allowedVaultTypes)}"
         >
           <p slot="leftSlot">
-            <img src="images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
+            <img src="./images/icons/alcx_med.svg" alt="all vaultAlUsd" class="w-5 h-5" />
           </p>
         </Button>
         {#if allowedVaultTypes.length > 1}

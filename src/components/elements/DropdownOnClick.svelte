@@ -38,7 +38,7 @@ For a dropdown that opens on hover see /Dropdown
   on:click="{handleOpen}"
 >
   <div class="flex items-center border-black2 border-r border-solid p-4">
-    <img src="images/icons/bar.svg" alt="Collaterals" class="w-3 h-3" />
+    <img src="./images/icons/bar.svg" alt="Collaterals" class="w-3 h-3" />
   </div>
 
   <div class="mx-14 flex items-center">
@@ -46,7 +46,7 @@ For a dropdown that opens on hover see /Dropdown
   </div>
 
   <div class="flex items-center border-black2 border-l border-solid p-4">
-    <img class="{isOpen && 'open'}" src="images/icons/caret.svg" alt="Dropdown" />
+    <img class="{isOpen && 'open'}" src="./images/icons/caret.svg" alt="Dropdown" />
   </div>
 
   {#if isOpen}

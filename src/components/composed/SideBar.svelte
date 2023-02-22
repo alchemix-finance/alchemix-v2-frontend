@@ -37,7 +37,7 @@
     >
       <span>{$_(sidebarItem.label)}</span>
       <img
-        src="images/icons/{sidebarItem.icon}"
+        src="./images/icons/{sidebarItem.icon}"
         class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
         alt="{sidebarItem.label}"
       />
@@ -52,7 +52,7 @@
   >
     <span>{$_('utilities')}</span>
     <img
-      src="images/icons/utilities_med.svg"
+      src="./images/icons/utilities_med.svg"
       class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
       alt="{$_('utilities')}"
     />
@@ -71,7 +71,7 @@
       >
         <span>{$_(sidebarItem.label)}</span>
         <img
-          src="images/icons/{sidebarItem.icon}"
+          src="./images/icons/{sidebarItem.icon}"
           class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
           alt="{sidebarItem.label}"
         />
@@ -91,7 +91,7 @@
       >
         <span>{$_(sidebarItem.label)}</span>
         <img
-          src="images/icons/{sidebarItem.icon}"
+          src="./images/icons/{sidebarItem.icon}"
           class="w-7 h-7 {$settings.invertColors ? 'invertIcons' : ''}"
           alt="{sidebarItem.label}"
         />

@@ -95,7 +95,7 @@ export const HiddenVaults = [
 export const VaultTypesInfos = {
   [VaultTypes.alUSD]: {
     name: 'alUSD',
-    icon: 'images/icons/alusd_med.svg',
+    icon: './images/icons/alusd_med.svg',
     useGateway: false,
     metaConfig: {
       '0xdA816459F1AB5631232FE5e97a05BBBb94970c95': {
@@ -306,7 +306,7 @@ export const VaultTypesInfos = {
   },
   [VaultTypes.alETH]: {
     name: 'alETH',
-    icon: 'images/icons/aleth_med.svg',
+    icon: './images/icons/aleth_med.svg',
     useGateway: true,
     metaConfig: {
       '0xa258C4606Ca8206D8aA700cE2143D7db854D168c': {

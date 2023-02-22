@@ -19,7 +19,7 @@
     <span class="text-3xl">{formattedNumber}</span>
   </p>
   <img
-    src="images/icons/{assetIcon}"
+    src="./images/icons/{assetIcon}"
     alt="The icon of {assetName}"
     class="w-max align-middle self-center my-20"
   />
