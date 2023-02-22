@@ -38,6 +38,9 @@
   const preselect = JSON.parse(window.localStorage.getItem('connectedWallets')) || [];
   let walletChecked = false;
 
+  // eslint-disable-next-line no-constant-condition
+  const basePath = process.env.NODE_ENV === 'development' || 'production' ? '' : window.location.pathname;
+
   onMount(async () => {
     if (preselect.length > 0) {
       await connect(preselect);
@@ -107,7 +110,7 @@ Use at your own risk.
   <div class=" fixed inset-0 overflow-auto pb-20 lg:pb-0">
     <StateManager>
       <Modal>
-        <Router url="{url}">
+        <Router url="{url}" basePath="{basePath}">
           <div class="grid grid-cols-12 font-alcxFlow">
             <div
               class="col-span-12 md:pl-8 md:pt-5 md:pb-5 {$settings.invertColors
