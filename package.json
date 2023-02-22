@@ -6,7 +6,7 @@
     "abi": "bash ./scripts/mainnetAbi.sh",
     "makeEnv": "bash ./scripts/makeEnv.sh",
     "build": "cross-env NODE_ENV=production vite build",
-    "build:gha": "cross-env NODE_OPTIONS=--max-old-space-size=8192 NODE_ENV=production vite build",
+    "build:gha": "cross-env NODE_OPTIONS=--max-old-space-size=8192 NODE_ENV=ipfs vite build",
     "vercel_debug_build": "echo $DEBUG_MODE; yarn makeEnv && yarn build",
     "dev:noabi": "yarn format && cross-env NODE_ENV=development vite --port 5005",
     "dev": "yarn abi && yarn format && cross-env NODE_ENV=development vite --port 5005",

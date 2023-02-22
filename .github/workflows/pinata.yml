@@ -9,44 +9,44 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.2
-        
+
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
           node-version: 14.x
-          
+
       - name: Install
         uses: borales/actions-yarn@v4.2.0
         with:
           cmd: install
-          
+
       - name: Make env
         run: |
-            echo "VITE_DEBUG_MODE="${{secrets.DEBUG_MODE}} >> .env
-            echo "VITE_BLOCKNATIVE_KEY="${{secrets.BLOCKNATIVE_KEY}} >> .env
-            echo "VITE_NETWORK_ID="${{secrets.NETWORK_ID}} >> .env
-            echo "VITE_NETWORK_NAME="${{secrets.NETWORK_NAME}} >> .env
-            echo "VITE_LOCAL_NETWORK_ID="${{secrets.LOCAL_NETWORK_ID}} >> .env
-            echo "VITE_LOCAL_NETWORK_NAME="${{secrets.LOCAL_NETWORK_NAME}} >> .env
-            echo "VITE_LOCAL_NETWORK_URL="${{secrets.LOCAL_NETWORK_URL}} >> .env
-            echo "VITE_ZAPPER_KEY="${{secrets.ZAPPER_KEY}} >> .env
-            echo "VITE_APP_URL="${{secrets.APP_URL}} >> .env
-      
+          echo "VITE_DEBUG_MODE="${{secrets.DEBUG_MODE}} >> .env
+          echo "VITE_BLOCKNATIVE_KEY="${{secrets.BLOCKNATIVE_KEY}} >> .env
+          echo "VITE_NETWORK_ID="${{secrets.NETWORK_ID}} >> .env
+          echo "VITE_NETWORK_NAME="${{secrets.NETWORK_NAME}} >> .env
+          echo "VITE_LOCAL_NETWORK_ID="${{secrets.LOCAL_NETWORK_ID}} >> .env
+          echo "VITE_LOCAL_NETWORK_NAME="${{secrets.LOCAL_NETWORK_NAME}} >> .env
+          echo "VITE_LOCAL_NETWORK_URL="${{secrets.LOCAL_NETWORK_URL}} >> .env
+          echo "VITE_ZAPPER_KEY="${{secrets.ZAPPER_KEY}} >> .env
+          echo "VITE_APP_URL="${{secrets.APP_URL}} >> .env
+
       - name: Build
         uses: borales/actions-yarn@v4.2.0
         with:
           cmd: build:gha
-          
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3.1.2
         with:
           name: production-files
           path: ./dist
-          
+
   deploy:
     name: Deploy
     needs: build
@@ -58,10 +58,10 @@ jobs:
         with:
           name: production-files
           path: ./dist
-      
+
       - name: Managa Pinata pin and gateway
         id: pinata-manager
-        uses: n4n0GH/pinata-manager@main
+        uses: n4n0GH/pinata-manager@v1.2.0
         with:
           path: ./dist
           secret: ${{secrets.PINATA_SECRET}}
@@ -71,7 +71,7 @@ jobs:
           unpinOld: "true"
           gatewayName: "alchemix"
           gatewayId: ${{secrets.PINATA_GATEWAY_ID}}
-          
+
       - name: Notify Discord Channel
         uses: n4n0GH/discord-ipfs-action@v1.0.0
         with:
@@ -81,7 +81,7 @@ jobs:
 
   cleanup:
     name: Cleanup
-    needs: [build, deploy]
+    needs: [ build, deploy ]
     runs-on: ubuntu-latest
     steps:
       - name: Remove artifact
