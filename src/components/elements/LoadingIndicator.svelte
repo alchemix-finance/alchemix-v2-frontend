@@ -66,7 +66,7 @@
       : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'} hover:text-opacity-100"
   >
     <lottie-player
-      src="images/lotties/AlchemixSpinning.json"
+      src="./images/lotties/AlchemixSpinning.json"
       style="width: 1.2rem; height: 1.2rem;"
       autoplay
       loop></lottie-player>

@@ -404,7 +404,7 @@
                   on:clicked="{() => vaultsSelector.select(vaultTypes)}"
                 >
                   <p slot="leftSlot">
-                    <img src="images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
+                    <img src="./images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
                   </p>
                 </Button>
               {/if}
@@ -441,7 +441,7 @@
         >
           <img
             slot="leftSlot"
-            src="images/icons/Icon_Borrow.svg"
+            src="./images/icons/Icon_Borrow.svg"
             class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
             alt="borrow"
           />
@@ -454,7 +454,7 @@
           on:clicked="{openRepayModal}"
           ><img
             slot="leftSlot"
-            src="images/icons/Icon_Repay.svg"
+            src="./images/icons/Icon_Repay.svg"
             class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
             alt="repay"
           />
@@ -467,7 +467,7 @@
           on:clicked="{openLiquidateModal}"
           ><img
             slot="leftSlot"
-            src="images/icons/Icon_Liquidate.svg"
+            src="./images/icons/Icon_Liquidate.svg"
             class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
             alt="liquidate"
           />

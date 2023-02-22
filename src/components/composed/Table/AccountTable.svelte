@@ -83,7 +83,7 @@
         CellComponent: StrategyTitleCell,
         strategyName: 'Sushi',
         strategyFullName: 'Sushiswap',
-        icon: 'images/token-svgs/sushi.svg',
+        icon: './images/token-svgs/sushi.svg',
         colSize: 2,
       },
       col2: {
@@ -128,7 +128,7 @@
         CellComponent: StrategyTitleCell,
         strategyName: 'Yearn',
         strategyFullName: 'Yearn vaultAlUsd',
-        icon: 'images/token-svgs/yearn.svg',
+        icon: './images/token-svgs/yearn.svg',
         colSize: 2,
       },
       col2: {
@@ -173,7 +173,7 @@
         CellComponent: StrategyTitleCell,
         strategyName: 'CRV',
         strategyFullName: 'Curve finance',
-        icon: 'images/token-svgs/curve.svg',
+        icon: './images/token-svgs/curve.svg',
         colSize: 2,
       },
       col2: {

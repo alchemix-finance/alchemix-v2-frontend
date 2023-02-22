@@ -383,11 +383,16 @@
             class="w-full lg:w-max"
             py="py-2"
           >
-            <img src="images/icons/beethovenx.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of BeethovenX" />
+            <img
+              src="./images/icons/beethovenx.svg"
+              class="w-5 h-5"
+              slot="leftSlot"
+              alt="Logo of BeethovenX"
+            />
           </Button>
         {/if}
         <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" class="w-full lg:w-max" py="py-2">
-          <img src="images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
+          <img src="./images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
         </Button>
         {#if $networkStore === '0xfa'}
           <Button
@@ -396,7 +401,12 @@
             class="w-full lg:w-max"
             py="py-2"
           >
-            <img src="images/icons/spiritswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpiritSwap" />
+            <img
+              src="./images/icons/spiritswap.svg"
+              class="w-5 h-5"
+              slot="leftSlot"
+              alt="Logo of SpiritSwap"
+            />
           </Button>
           <Button
             on:clicked="{() => goTo('https://spooky.fi/#/swap')}"
@@ -404,7 +414,12 @@
             class="w-full lg:w-max"
             py="py-2"
           >
-            <img src="images/icons/spookyswap.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of SpookySwap" />
+            <img
+              src="./images/icons/spookyswap.svg"
+              class="w-5 h-5"
+              slot="leftSlot"
+              alt="Logo of SpookySwap"
+            />
           </Button>
         {/if}
         <Button
@@ -413,7 +428,7 @@
           class="w-full lg:w-max"
           py="py-2"
         >
-          <img src="images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
+          <img src="./images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
         </Button>
         {#if $networkStore === '0xa'}
           <Button
@@ -422,7 +437,7 @@
             class="w-full lg:w-max"
             py="py-2"
           >
-            <img src="images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
+            <img src="./images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
           </Button>
         {/if}
         <Button
@@ -431,7 +446,7 @@
           class="w-full lg:w-max"
           py="py-2"
         >
-          <img src="images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
+          <img src="./images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
         </Button>
       </div>
     </ContainerWithHeader>
@@ -464,7 +479,7 @@
                   slot="label"
                   class="flex flex-row space-x-4 justify-between items-center px-2 w-full h-full rounded bg-{toChain.abiPath}"
                 >
-                  <img src="/images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
+                  <img src="./images/icons/{toChain.icon}.svg" alt="Network Icon" class="h-4" />
                   <p>{toChain.abiPath.charAt(0).toUpperCase() + toChain.abiPath.slice(1)}</p>
                   <p>▾</p>
                 </div>
