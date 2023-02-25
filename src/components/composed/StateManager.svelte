@@ -41,10 +41,21 @@
       const execute = chainIds.filter((entry) => entry.id === netId)[0];
 
       const aaveReservesEth = await getReservesEth();
+
+      if (aaveReservesEth?.data?.data?.reserves) {
+        $reservesStore = [...$reservesStore, aaveReservesEth.data.data.reserves];
+      }
+
       const aaveReservesOpt = await getReservesOpt();
-      reservesStore.set([...aaveReservesEth.data.data.reserves, ...aaveReservesOpt.data.data.reserves]);
+
+      if (aaveReservesOpt?.data?.data?.reserves) {
+        $reservesStore = [...$reservesStore, aaveReservesOpt.data.data.reserves];
+      }
+
       const vesperVaultData = await getVesperData();
-      vesperVaults.set([...vesperVaultData]);
+      if (vesperVaultData !== undefined) {
+        $vesperVaults = [...vesperVaultData];
+      }
 
       let vaultTokens = [];
       execute.vaultTypes.forEach((type) => {
@@ -100,8 +111,14 @@
     }
   }
 
+  async function onAddressStoreChange() {
+    await initialize($networkStore);
+
+    await fetchAllBalances([$signer, $fullTokenList], $networkStore);
+  }
+
   $: $networkStore, initialize($networkStore);
-  $: $addressStore, initialize($networkStore), fetchAllBalances([$signer, $fullTokenList], $networkStore);
+  $: $addressStore, onAddressStoreChange();
 </script>
 
 <slot />
