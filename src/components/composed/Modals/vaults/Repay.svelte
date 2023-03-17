@@ -4,9 +4,8 @@
 
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
-  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import DebtCard from '@components/elements/DebtCard.svelte';
-  import ComplexInput from '@components/composed/inputs/ComplexInput.svelte';
+  import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { addressStore, balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
