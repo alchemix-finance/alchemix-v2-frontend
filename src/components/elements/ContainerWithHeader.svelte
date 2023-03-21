@@ -1,35 +1,57 @@
+<svelte:options accessors />
+
 <script>
   import { slide } from 'svelte/transition';
   import Button from './Button.svelte';
   import settings from '@stores/settings';
 
   export let canToggle = false;
+  export let addToggleSpacing = true;
+  export let toggleOnlyOnButton = false;
   export let isVisible = true;
   export let disableButton = false;
   export let fullWidth = true;
-  let contentVisible = true;
+  export let contentVisible = true;
+  export let noBorder = false;
 
-  const toggleVisibility = () => {
+  export function toggleVisibility() {
     contentVisible = !contentVisible;
-  };
+  }
 
   $: isVisible, (contentVisible = isVisible);
 </script>
 
 <div
-  class="{fullWidth ? 'w-full' : 'w-max'} rounded border {$settings.invertColors
-    ? 'border-grey10inverse bg-grey15inverse'
-    : 'border-grey10 bg-grey15'} relative"
+  class="{fullWidth ? 'w-full' : 'w-max'} relative {noBorder
+    ? ''
+    : `rounded border ${
+        $settings.invertColors ? 'border-grey10inverse' : 'border-grey10'
+      }`} {$settings.invertColors ? 'bg-grey15inverse' : 'bg-grey15'}"
 >
   {#if $$slots.header}
     <div class="{$settings.invertColors ? 'bg-grey10inverse' : 'bg-grey10'} w-full">
       {#if canToggle}
         <div
-          class="py-4 px-6 text-sm flex justify-between cursor-pointer"
-          on:click="{() => (disableButton ? null : toggleVisibility())}"
+          class="{addToggleSpacing
+            ? 'py-4 px-6 justify-between text-sm'
+            : 'p-4 space-x-4'} flex {toggleOnlyOnButton ? '' : 'cursor-pointer'}"
+          on:click="{() => (disableButton || toggleOnlyOnButton ? null : toggleVisibility())}"
         >
-          <slot name="header" />
-          <Button width="w-max" label="" disabled="{disableButton}">
+          {#if addToggleSpacing}
+            <slot name="header" />
+          {:else}
+            <div class="flex-grow">
+              <slot name="header" />
+            </div>
+          {/if}
+          <Button
+            width="w-max"
+            label=""
+            disabled="{disableButton}"
+            on:clicked="{() => {
+              if (toggleOnlyOnButton) toggleVisibility();
+            }}"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               slot="rightSlot"

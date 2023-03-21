@@ -415,32 +415,20 @@
         </div>
       </div>
 
-      <div class="w-full">
+      <div class="w-full space-y-4">
         {#if showMetrics && aggregated.length > 0}
           <Metrics aggregate="{aggregated}" />
-          <!--{:else}-->
-          <!--  <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">-->
-          <!--    <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>-->
-          <!--    <div slot="body" class="bg-grey15">-->
-          <!--      <AccountsPageBarCharts-->
-          <!--        totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"-->
-          <!--        totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"-->
-          <!--        aggregatedApy="0"-->
-          <!--        totalDebt="{$aggregate.totalDebt.toFixed(2)}"-->
-          <!--        totalInterest="0"-->
-          <!--      />-->
-          <!--    </div>-->
-          <!--  </ContainerWithHeader>-->
+          <AccountOperations
+            aggregate="{aggregated}"
+            availableVaults="{vaultTypes}"
+            vaults="{currentVaultsBasedOnStrategyType}"
+          />
         {/if}
       </div>
     </div>
 
-    <div class="w-full mt-8 mb-8">
-      <AccountOperations availableVaults="{vaultTypes}" vaults="{currentVaultsBasedOnStrategyType}" />
-    </div>
-
     {#if $networkStore === '0x1'}
-      <div class="w-full mb-8">
+      <div class="w-full my-8">
         <LegacyHelper />
       </div>
     {/if}

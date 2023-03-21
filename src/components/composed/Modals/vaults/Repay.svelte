@@ -69,16 +69,6 @@
     return tokensArr;
   };
 
-  const setInputMax = (underlyingTokenData, debt) => {
-    const underlyingBalance18Decimals = utils.parseEther(
-      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
-    );
-
-    inputRepayAmount = underlyingBalance18Decimals.gte(debt)
-      ? utils.formatEther(debt)
-      : utils.formatEther(underlyingBalance18Decimals);
-  };
-
   const useBigNumberForInput = (inputValue) => {
     if (inputValue === 0 || inputValue === '') {
       return BigNumber.from(0);
@@ -162,9 +152,14 @@
   $: currentSelectedUnderlyingToken =
     tokensForVaultType.findIndex((entry) => entry.symbol === currentSelectedUnderlyingTokenSymbol) || 0;
   $: currentSelectedUnderlyingToken, currentSelectedVaultType, (inputRepayAmount = '');
+
+  const updateSelectionData = (value) => {
+    currentSelectedVaultType = value.detail.vault;
+    currentSelectedUnderlyingTokenSymbol = VaultTypesInfos[value.detail.vault].name;
+  };
 </script>
 
-<ContainerWithHeader>
+<ContainerWithHeader noBorder="{true}">
   <div slot="body" class="p-4 flex flex-col space-y-4">
     <div class="flex flex-row space-x-4">
       {#each selectedVaultsType as vaultType}
@@ -174,7 +169,7 @@
           debtAmount="{getDebtForVaultType(vaultType)}"
           vault="{vaultType}"
           on:selectionUpdate="{(value) => {
-            currentSelectedVaultType = value.detail.vault;
+            updateSelectionData(value);
           }}"
         />
       {/each}

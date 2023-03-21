@@ -124,7 +124,7 @@
   $: addressData = checkIfAddressIsValid(targetWallet);
 </script>
 
-<ContainerWithHeader>
+<ContainerWithHeader noBorder="{true}">
   <div slot="body" class="p-4 flex flex-col space-y-4">
     {#if availAmount.eq(BigNumber.from(0)) && maxDebtAmount.gt(BigNumber.from(0))}
       <p>{$_('modals.no_loan_available')}</p>

@@ -8,6 +8,12 @@
   export let debtAmount = '0';
   export let debtToken: string;
   export let vault;
+  export let mode = 0;
+
+  enum Mode {
+    0 = 'Repayment',
+    1 = 'Liquidation',
+  }
 
   const dispatch = createEventDispatcher();
 
@@ -23,7 +29,9 @@
       : 'border-grey5inverse'
     : selected
     ? 'border-green4'
-    : 'border-grey5'}"
+    : 'border-grey5'}
+hover:{selected ? 'cursor-default' : 'cursor-pointer'}"
+  on:click="{() => updateSelection()}"
 >
   <img
     src="./images/icons/{debtToken.toLowerCase()}_med.svg"
@@ -34,13 +42,12 @@
     <p class="text-sm opacity-60">{debtToken} Debt:</p>
     <p class="w-48 truncate font-alcxMono text-lg {selected ? 'opacity-100' : 'opacity-60'}">{debtAmount}</p>
     <Button
-      label="{selected ? 'Selected for Repayment' : 'Select for Repayment'}"
+      label="{selected ? 'Selected' : 'Select'} for {Mode[mode]}"
       disabled="{selected}"
       width="w-full"
       canToggle="{true}"
       borderColor="bronze3"
       textColorInactive="white2"
-      on:clicked="{() => updateSelection()}"
     />
   </div>
 </div>
