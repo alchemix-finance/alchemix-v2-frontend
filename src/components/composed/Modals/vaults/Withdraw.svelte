@@ -104,7 +104,13 @@
       .div(adapterPrice);
     const subTokens = underlyingToYield.mul(BigNumber.from(maximumLoss)).div(100000);
     const minimumOut = underlyingToYield.sub(subTokens);
-
+    console.log(
+      yieldWithdrawAmountShares.toString(),
+      underlyingWithdrawAmountShares.toString(),
+      yieldWithdrawAmountShares.eq(BigNumber.from(0)),
+      !!!yieldWithdrawAmountShares,
+      underlyingWithdrawAmountShares.gt(BigNumber.from(0)),
+    );
     if (
       yieldWithdrawAmountShares.gt(BigNumber.from(0)) &&
       (underlyingWithdrawAmountShares.eq(BigNumber.from(0)) || !!!underlyingWithdrawAmountShares)

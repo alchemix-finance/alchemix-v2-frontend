@@ -51,10 +51,6 @@
               <div class="flex mr-2">
                 {totalDepositFiat}
               </div>
-              <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
-              <!--        <span class="text-xs mr-1">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>-->
-              <!--        <span> {getPlusOrMinusIndicator(metric.percentChangedIsIncrease)}{metric.percentChanged}%</span>-->
-              <!--      </div>-->
             </div>
           </div>
 

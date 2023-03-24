@@ -77,7 +77,9 @@
     return utils.parseEther(`${inputValue}`);
   };
 
-  $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]);
+  $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]).filter((entry) =>
+    entry.balance.gt(BigNumber.from(0)),
+  );
 
   $: inputRepayAmountBN = useBigNumberForInput(inputRepayAmount);
 
@@ -148,14 +150,18 @@
   let currentSelectedUnderlyingTokenSymbol;
   let tokenList;
 
-  $: tokenList = tokensForVaultType.map((token) => token.listSymbol);
+  $: tokenList = tokensForVaultType
+    .filter((entry) => entry.balance.gt(BigNumber.from(0)))
+    .map((token) => token.listSymbol);
   $: currentSelectedUnderlyingToken =
     tokensForVaultType.findIndex((entry) => entry.symbol === currentSelectedUnderlyingTokenSymbol) || 0;
   $: currentSelectedUnderlyingToken, currentSelectedVaultType, (inputRepayAmount = '');
 
   const updateSelectionData = (value) => {
     currentSelectedVaultType = value.detail.vault;
-    currentSelectedUnderlyingTokenSymbol = VaultTypesInfos[value.detail.vault].name;
+    currentSelectedUnderlyingTokenSymbol = useTokenListForVaultType(currentSelectedVaultType, [
+      $vaultsStore,
+    ]).filter((entry) => entry.balance.gt(BigNumber.from(0)))[0].symbol;
   };
 </script>
 

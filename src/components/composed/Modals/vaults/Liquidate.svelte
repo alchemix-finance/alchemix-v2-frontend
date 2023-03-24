@@ -132,6 +132,7 @@
   };
 
   const useCurrentBalance = (yieldTokenData) => {
+    console.log(yieldTokenData);
     return yieldTokenData.balance
       .mul(yieldTokenData.underlyingPerShare)
       .div(BigNumber.from(10).pow(yieldTokenData.decimals));
@@ -176,11 +177,12 @@
   };
 
   let currentSelectedYieldTokenSymbol;
+  let currentYieldBalance;
+  let remainingBalance;
 
   $: yieldTokenList = useTokenListForVaultType(selectedVaultType, [$vaultsStore]).filter((entry) =>
     entry.balance.gt(BigNumber.from(0)),
   );
-  $: currentYieldBalance = useCurrentBalance(yieldTokenList[selectedYieldToken]);
 
   $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
 
@@ -188,19 +190,38 @@
     ? $vaultsStore[selectedVaultType].debt[0]
     : BigNumber.from(0);
 
-  $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
-    ? BigNumber.from(0)
-    : debtAmount.sub(inputLiquidateAmountBN) || BigNumber.from(0);
+  // $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
+  //   ? BigNumber.from(0)
+  //   : debtAmount.sub(inputLiquidateAmountBN) || BigNumber.from(0);
 
-  $: remainingBalance = useRemainingBalance(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken]);
-  $: currentSelectedYieldToken =
-    yieldTokenList.findIndex((entry) => entry.symbol === currentSelectedYieldTokenSymbol) || 0;
+  // $: remainingBalance = useRemainingBalance(
+  //   inputLiquidateAmountBN,
+  //   yieldTokenList[selectedYieldToken],
+  // );
+  // $: currentYieldBalance = useCurrentBalance(yieldTokenList[currentSelectedYieldTokenSymbol || 0]);
   const updateSelectionData = (value) => {
     selectedVaultType = value.detail.vault;
     currentSelectedYieldTokenSymbol = useTokenListForVaultType(selectedVaultType, [$vaultsStore]).filter(
       (entry) => entry.balance.gt(BigNumber.from(0)),
     )[0].symbol;
   };
+
+  const updateTokenData = () => {
+    selectedYieldToken = yieldTokenList.findIndex(
+      (entry) => entry.symbol === currentSelectedYieldTokenSymbol,
+    );
+    remainingBalance = useRemainingBalance(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken]);
+    currentYieldBalance = useCurrentBalance(yieldTokenList[currentSelectedYieldTokenSymbol]);
+  };
+
+  $: currentSelectedYieldTokenSymbol,
+    () => {
+      console.log('fired');
+      if (!!currentSelectedYieldTokenSymbol) {
+        console.log('registered');
+        updateTokenData();
+      }
+    };
 
   onMount(async () => {
     const defaultYieldToken = useTokenListForVaultType(selectedVaultType, [$vaultsStore])[0];
@@ -236,17 +257,6 @@
 
     <div class="w-full">
       <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
-    </div>
-    <div class="w-full text-sm text-lightgrey10 hidden">
-      {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
-        remainingDebtAmount,
-      )} <br />
-      {$_('modals.remaining_deposit')}: {utils.formatUnits(
-        currentYieldBalance,
-        yieldTokenList[selectedYieldToken].decimals,
-      )}
-      {yieldTokenList[selectedYieldToken].symbol} -> {utils.formatEther(remainingBalance)}
-      {yieldTokenList[selectedYieldToken].symbol}
     </div>
 
     <div class="w-max">
