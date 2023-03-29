@@ -67,7 +67,7 @@ export async function getReservesOpt() {
 }
 
 export async function getAaveApr(underlyingAsset: string) {
-  const reserve = _reserves
+  const reserve = _reserves[0]
     .filter((reserve) => reserve.underlyingAsset.toLowerCase() === underlyingAsset.toLowerCase())
     .filter((entry) => entry.aEmissionPerSecond !== '0')[0];
   const RAY = 10 ** 27;
