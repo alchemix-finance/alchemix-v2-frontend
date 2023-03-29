@@ -84,6 +84,7 @@ export const TransmuterNameAliases = {
   usdt: 'Paracelsus',
   weth: 'Van Helmont',
   fusdt: 'de Rais',
+  frax: 'Flamel'
 };
 
 export const AllowedVaultTypes = [VaultTypes.alUSD, VaultTypes.alETH];
