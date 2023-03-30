@@ -82,13 +82,14 @@ export const updateVaultDebtTokenAddress = (vault: VaultTypes, debtTokenAddress:
     return _store;
   });
 
-export const updateVaultDebt = (vault: VaultTypes, debt: any) =>
+export const updateVaultDebt = (vault: VaultTypes, debt: any, maxDebt: any) =>
   vaultsStore.update((_store) => {
     _store = {
       ..._store,
       [vault]: {
         ..._store[vault],
         debt: debt,
+        maxDebt: maxDebt,
       },
     };
 

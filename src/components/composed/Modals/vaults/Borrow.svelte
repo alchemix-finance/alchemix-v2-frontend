@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // TODO if users have not deposited anything or maxDebt is 0, include a deposit input, craft a multitx
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
@@ -7,7 +7,7 @@
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import Button from '@components/elements/Button.svelte';
   import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
-  import InputNumber from '@components/elements/inputs/InputNumber.svelte';
+  import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { addressStore, balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
@@ -15,7 +15,6 @@
   import { mint } from '@stores/v2/vaultActions';
   import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
   import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
-  import { modalReset } from '@stores/modal';
   import settings from '@stores/settings';
 
   export let selectedVaults;
@@ -25,6 +24,11 @@
   let targetWallet;
   let rng = false;
   let targetWalletVerified = false;
+
+  enum Alchemists {
+    alUSD,
+    alETH,
+  }
 
   const setExportAndTransfer = () => {
     exportAndTransfer = !exportAndTransfer;
@@ -39,14 +43,6 @@
     }
   };
 
-  const clearBorrow = () => {
-    borrowAmount = '0';
-  };
-
-  const setMaxBorrow = (amount) => {
-    borrowAmount = amount;
-  };
-
   const clearTarget = () => {
     targetWallet = '';
     verifyAddress(true);
@@ -57,50 +53,60 @@
       $balancesStore,
     ]);
 
-    modalReset();
-
     await mint(_borrowAmountBN, _address, _currentVaultType, [$signer], $networkStore).then(() => {
       Promise.all([
         fetchVaultRatio(_currentVaultType, [$signer], $networkStore),
         fetchVaultDebt(_currentVaultType, [$addressStore, $signer], $networkStore),
         fetchBalanceByAddress(alUSDData.address, [$signer]),
       ]).then(() => {
+        clearTarget();
+        borrowAmount = 0;
+        exportAndTransfer = false;
         console.log('[onMintButton/mint/finish]: Updated values related to borrow!');
       });
     });
   };
 
-  let defaultSelectedVault = selectedVaults[0];
+  let selectedVault;
+  $: defaultSelectedVault = Alchemists[selectedVault] || selectedVaults[0];
 
   $: debtTokenInfo = VaultTypesInfos[defaultSelectedVault];
 
-  function calculateAvailableAmount(_aggregatedDebtStore, _vaultsStore, _selectedVault) {
-    if (!_aggregatedDebtStore[_selectedVault] || !_vaultsStore[_selectedVault]) {
+  $: supportedTokens = selectedVaults.map((vaultId) => VaultTypesInfos[vaultId].name);
+
+  const scalar = BigNumber.from(10).pow(18);
+
+  function calculateAvailableAmount(_vaultStore, _selectedVault) {
+    if (!_vaultStore[_selectedVault]) {
       return BigNumber.from(0);
     }
-    return utils
-      .parseUnits(utils.formatUnits(_aggregatedDebtStore[_selectedVault], 18), 18)
-      .sub(_vaultsStore[_selectedVault].debt.debt);
+
+    const normalizedRatio = _vaultStore[_selectedVault].ratio.div(scalar);
+
+    return _vaultStore[_selectedVault].maxDebt
+      .div(normalizedRatio)
+      .sub(_vaultStore[_selectedVault].debt.debt);
   }
 
-  function getMaxDebt(_aggregatedDebtStore, _selectedVault) {
-    if (!_aggregatedDebtStore[_selectedVault]) {
+  function getMaxDebt(_vaultStore, _selectedVault) {
+    if (!_vaultStore[_selectedVault]) {
       return BigNumber.from(0);
     }
+    const normalizedRatio = _vaultStore[_selectedVault].ratio.div(scalar);
 
-    return _aggregatedDebtStore[_selectedVault];
+    return _vaultStore[_selectedVault].maxDebt.div(normalizedRatio);
   }
 
   function checkIfAddressIsValid(address) {
     try {
       const checksumAddress = utils.getAddress(address);
-      address = checksumAddress;
+      verifyAddress(true);
       return {
         address: checksumAddress,
         error: false,
       };
     } catch {
-      rng = false;
+      verifyAddress(false);
       return {
         address: undefined,
         error: true,
@@ -108,82 +114,47 @@
     }
   }
 
-  $: availAmount = calculateAvailableAmount($vaultsAggregatedDebt, $vaultsStore, defaultSelectedVault);
-  $: maxDebtAmount = getMaxDebt($vaultsAggregatedDebt, defaultSelectedVault);
+  function verifyToggle(status, wallet) {
+    if (!!status.detail.value) {
+      checkIfAddressIsValid(wallet);
+    } else {
+      verifyAddress(false);
+    }
+  }
+
+  $: availAmount = calculateAvailableAmount($vaultsStore, defaultSelectedVault);
+  $: maxDebtAmount = getMaxDebt($vaultsStore, defaultSelectedVault);
 
   $: borrowAmountBN = utils.parseEther(`${borrowAmount}` || `0`);
 
   $: addressData = checkIfAddressIsValid(targetWallet);
 </script>
 
-<ContainerWithHeader>
-  <div slot="header" class="p-4 text-sm flex justify-between">
-    <p class="self-center inline-block">{$_('actions.borrow')} {debtTokenInfo.name}</p>
-    {#if selectedVaults.length > 1}
-      <select
-        name="selectToken"
-        id="selectToken"
-        class="cursor-pointer border {$settings.invertColors
-          ? 'border-grey5inverse bg-grey1inverse'
-          : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
-        bind:value="{defaultSelectedVault}"
-      >
-        {#each selectedVaults as vaultId}
-          <option value="{vaultId}">{VaultTypesInfos[vaultId].name}</option>
-        {/each}
-      </select>
-    {/if}
-  </div>
+<ContainerWithHeader noBorder="{true}">
   <div slot="body" class="p-4 flex flex-col space-y-4">
     {#if availAmount.eq(BigNumber.from(0)) && maxDebtAmount.gt(BigNumber.from(0))}
       <p>{$_('modals.no_loan_available')}</p>
     {:else if maxDebtAmount.eq(BigNumber.from(0))}
       <p>{$_('modals.no_debt_limit')}</p>
     {:else}
-      <label for="borrowInput" class="text-sm text-lightgrey10">
-        {$_('available')}: {utils.formatEther(availAmount)}
-        {debtTokenInfo.name}
-      </label>
       <div
         class="flex rounded border {$settings.invertColors
           ? 'bg-grey3inverse border-grey3inverse'
           : 'bg-grey3 border-grey3'}"
       >
         <div class="w-full">
-          <InputNumber
-            id="borrowInput"
-            placeholder="~0.00 {debtTokenInfo.name}"
-            bind:value="{borrowAmount}"
-            class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
-              ? 'bg-grey3inverse'
-              : 'bg-grey3'}"
-          />
-        </div>
-        <div class="flex flex-col">
-          <Button
-            label="MAX"
-            width="w-full"
-            fontSize="text-xs"
-            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-            borderSize="0"
-            height="h-10"
-            on:clicked="{() => setMaxBorrow(utils.formatEther(availAmount))}"
-          />
-          <Button
-            label="CLEAR"
-            width="w-max"
-            fontSize="text-xs"
-            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-            borderSize="0"
-            height="h-10"
-            on:clicked="{() => clearBorrow()}"
+          <ComplexInput
+            supportedTokens="{supportedTokens}"
+            externalMax="{availAmount}"
+            bind:inputValue="{borrowAmount}"
+            bind:selectedToken="{selectedVault}"
           />
         </div>
       </div>
 
-      <ToggleSwitch label="{$_('modals.transfer_loan')}" on:toggleChange="{setExportAndTransfer}" />
+      <div class="w-max">
+        <ToggleSwitch secondLabel="{$_('modals.transfer_loan')}" on:toggleChange="{setExportAndTransfer}" />
+      </div>
       {#if exportAndTransfer}
         <div class="w-full" transition:slide>
           <label
@@ -223,15 +194,19 @@
               {$_('modals.transfer_error')}
             </p>
           {/if}
-          <ToggleSwitch
-            label="{$_('modals.transfer_disclaimer')}"
-            on:toggleChange="{() => checkIfAddressIsValid(targetWallet)}"
-            forceState="{rng}"
-          />
+          <div class="w-max">
+            <ToggleSwitch
+              secondLabel="{$_('modals.transfer_disclaimer')}"
+              on:toggleChange="{(val) => verifyToggle(val, targetWallet)}"
+              forceState="{rng}"
+            />
+          </div>
         </div>
       {/if}
       <Button
-        label="{exportAndTransfer ? $_('actions.borrow_and_transfer') : $_('actions.borrow')}"
+        label="{exportAndTransfer
+          ? $_('actions.borrow_and_transfer') + ' ' + debtTokenInfo.name
+          : $_('actions.borrow') + ' ' + debtTokenInfo.name}"
         borderSize="1"
         borderColor="green4"
         backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"

@@ -19,12 +19,18 @@
   export let py = 'py-1';
   export let canToggle = false;
   export let selected = false;
+  export let canUnselect = false;
 
   const dispatch = createEventDispatcher();
 
   // @dev emits an event 'clicked' the parent component can listen to
   const clickEvent = () => {
-    if (!disabled && ((canToggle && !selected) || !canToggle)) dispatch('clicked');
+    if (!disabled && ((canToggle && !selected) || !canToggle)) {
+      dispatch('clicked');
+    } else if (canUnselect && selected) {
+      selected = false;
+      dispatch('clicked');
+    }
   };
 </script>
 

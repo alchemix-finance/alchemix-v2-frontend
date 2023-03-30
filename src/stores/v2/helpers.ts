@@ -83,6 +83,11 @@ export async function fetchDataForVault(
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
   const useGateway = VaultTypesInfos[vaultType].useGateway;
   const debtToken = await contractInstance.debtToken();
+  const positionToUnderlying = await contractInstance.convertSharesToUnderlyingTokens(
+    tokenAddress,
+    position.shares,
+  );
+  const positionToYield = await contractInstance.convertSharesToYieldTokens(tokenAddress, position.shares);
   let apy;
   if (
     VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress) &&
@@ -116,6 +121,8 @@ export async function fetchDataForVault(
     yieldPerShare: yieldPerShare,
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,
+    yieldAmount: positionToYield,
+    underlyingAmount: positionToUnderlying,
     apy,
     useGateway,
     debtToken,

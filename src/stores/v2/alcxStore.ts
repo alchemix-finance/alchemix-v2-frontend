@@ -17,6 +17,8 @@ export type BodyVaultType = {
   yieldPerShare: ethers.BigNumber;
   underlyingAddress: string;
   underlyingPerShare: ethers.BigNumber;
+  yieldAmount: ethers.BigNumber;
+  underlyingAmount: ethers.BigNumber;
   tvl: ethers.BigNumber;
   apy: number;
   useGateway: boolean;
@@ -33,6 +35,7 @@ export interface TokensType {
 export interface VaultsType {
   [key: number]: {
     debt: any;
+    maxDebt: any;
     ratio: ethers.BigNumber;
     debtTokenAddress: string;
     vaultBody: BodyVaultType[];

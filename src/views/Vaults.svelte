@@ -18,6 +18,7 @@
   import LegacyHelper from '@components/composed/LegacyHelper.svelte';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell.svelte';
   import VaultStrategy from '@components/composed/VaultStrategy.svelte';
+  import AccountOperations from '@components/composed/AccountOperations.svelte';
 
   import { alusd } from '@stores/vaults';
   import { showModal, modalReset } from '@stores/modal';
@@ -346,26 +347,6 @@
     [TypeOfStrategies.UNUSED]: $_('table.all_strategies'),
     [TypeOfStrategies.ALL]: $_('table.no_strategies_avail'),
   };
-
-  const openBorrowModal = () =>
-    showModal(Borrow, {
-      selectedVaults: $vaultsSelector,
-    });
-
-  const openRepayModal = () =>
-    showModal(Repay, {
-      selectedVaultsType: $vaultsSelector,
-      outstandingDebt: $alusd.userDebt,
-    });
-
-  const openLiquidateModal = () =>
-    showModal(Liquidate, {
-      selectedVaultsType: $vaultsSelector,
-      outstandingDebt: $alusd.userDebt,
-      vaults: currentVaultsBasedOnStrategyType,
-    });
-
-  const closeModal = () => modalReset();
 </script>
 
 <ViewContainer>
@@ -388,114 +369,66 @@
       </div>
     </ContainerWithHeader>
   {:else}
-    <div class="w-full mb-8 md:h-10 flex flex-col md:flex-row gap-8">
-      <div class="w-full">
-        <ContainerWithHeader>
-          <div slot="body">
-            <div class=" items-center flex space-x-2 h-10 px-2">
-              {#if vaultTypes.length > 1}
-                <Button
-                  label="All Vaults"
-                  width="w-max"
-                  canToggle="{true}"
-                  selected="{vaultsSelector.isSelectedAll($vaultsSelector, vaultTypes)}"
-                  solid="{false}"
-                  borderSize="0"
-                  on:clicked="{() => vaultsSelector.select(vaultTypes)}"
-                >
-                  <p slot="leftSlot">
-                    <img src="./images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
-                  </p>
-                </Button>
-              {/if}
-              {#each vaultTypes as vaultType}
-                <Button
-                  label="{VaultTypesInfos[vaultType].name}"
-                  width="w-max"
-                  canToggle="{true}"
-                  selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
-                  solid="{false}"
-                  borderSize="0"
-                  on:clicked="{() => vaultsSelector.select([vaultType])}"
-                >
-                  <p slot="leftSlot">
-                    <img
-                      src="{VaultTypesInfos[vaultType].icon}"
-                      alt="{VaultTypesInfos[vaultType].name} vaults"
-                      class="w-5 h-5"
-                    />
-                  </p>
-                </Button>
-              {/each}
+    <div class="sticky pt-4 top-0 z-40 backdrop-filter backdrop-blur filter drop-shadow-xl">
+      <div class="w-full mb-8 md:h-10">
+        <div class="w-full">
+          <ContainerWithHeader>
+            <div slot="body">
+              <div class=" items-center flex space-x-2 h-10 px-2">
+                {#if vaultTypes.length > 1}
+                  <Button
+                    label="All Vaults"
+                    width="w-max"
+                    canToggle="{true}"
+                    selected="{vaultsSelector.isSelectedAll($vaultsSelector, vaultTypes)}"
+                    solid="{false}"
+                    borderSize="0"
+                    on:clicked="{() => vaultsSelector.select(vaultTypes)}"
+                  >
+                    <p slot="leftSlot">
+                      <img src="./images/icons/alcx_med.svg" alt="all vaults" class="w-5 h-5" />
+                    </p>
+                  </Button>
+                {/if}
+                {#each vaultTypes as vaultType}
+                  <Button
+                    label="{VaultTypesInfos[vaultType].name}"
+                    width="w-max"
+                    canToggle="{true}"
+                    selected="{vaultsSelector.isSelected($vaultsSelector, vaultType)}"
+                    solid="{false}"
+                    borderSize="0"
+                    on:clicked="{() => vaultsSelector.select([vaultType])}"
+                  >
+                    <p slot="leftSlot">
+                      <img
+                        src="{VaultTypesInfos[vaultType].icon}"
+                        alt="{VaultTypesInfos[vaultType].name} vaults"
+                        class="w-5 h-5"
+                      />
+                    </p>
+                  </Button>
+                {/each}
+              </div>
             </div>
-          </div>
-        </ContainerWithHeader>
+          </ContainerWithHeader>
+        </div>
       </div>
-      <div class="w-full flex flex-col md:flex-row gap-4">
-        <Button
-          borderColor="bronze3"
-          textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
-          label="{$_('vaults_page.borrow')}"
-          width="w-full"
-          on:clicked="{openBorrowModal}"
-        >
-          <img
-            slot="leftSlot"
-            src="./images/icons/Icon_Borrow.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
-            alt="borrow"
-          />
-        </Button>
-        <Button
-          borderColor="bronze3"
-          textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
-          label="{$_('vaults_page.repay')}"
-          width="w-full"
-          on:clicked="{openRepayModal}"
-          ><img
-            slot="leftSlot"
-            src="./images/icons/Icon_Repay.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
-            alt="repay"
-          />
-        </Button>
-        <Button
-          borderColor="bronze3"
-          textColor="{$settings.invertColors ? 'bronze4' : 'white2'}"
-          label="{$_('vaults_page.liquidate')}"
-          width="w-full"
-          on:clicked="{openLiquidateModal}"
-          ><img
-            slot="leftSlot"
-            src="./images/icons/Icon_Liquidate.svg"
-            class="{$settings.invertColors ? 'text-bronze4' : 'text-white2'} fill-current h-5"
-            alt="liquidate"
-          />
-        </Button>
-      </div>
-    </div>
 
-    <div class="w-full mb-8">
-      {#if showMetrics && aggregated.length > 0}
-        <Metrics aggregate="{aggregated}" />
-        <!--{:else}-->
-        <!--  <ContainerWithHeader canToggle="{true}" isVisible="{Math.floor($aggregate.totalDeposit) > 0}">-->
-        <!--    <p slot="header" class="inline-block self-center">{$_('chart.aggregate')}</p>-->
-        <!--    <div slot="body" class="bg-grey15">-->
-        <!--      <AccountsPageBarCharts-->
-        <!--        totalDeposit="{$aggregate.totalDeposit.toFixed(2)}"-->
-        <!--        totalDebtLimit="{($aggregate.totalDeposit / 2).toFixed(2)}"-->
-        <!--        aggregatedApy="0"-->
-        <!--        totalDebt="{$aggregate.totalDebt.toFixed(2)}"-->
-        <!--        totalInterest="0"-->
-        <!--      />-->
-        <!--    </div>-->
-        <!--  </ContainerWithHeader>-->
-      {/if}
+      <div class="w-full space-y-4">
+        {#if showMetrics && aggregated.length > 0}
+          <Metrics aggregate="{aggregated}" />
+          <AccountOperations
+            aggregate="{aggregated}"
+            availableVaults="{vaultTypes}"
+            vaults="{currentVaultsBasedOnStrategyType}"
+          />
+        {/if}
+      </div>
     </div>
 
     {#if $networkStore === '0x1'}
-      <div class="w-full mb-8">
+      <div class="w-full my-8">
         <LegacyHelper />
       </div>
     {/if}

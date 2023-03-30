@@ -34,7 +34,11 @@
   $: tvlFiat = getFormattedValue(tvl);
 </script>
 
-<div class="w-full flex flex-row space-x-4">
+<div
+  class="w-full flex flex-row space-x-4 border rounded {$settings.invertColors
+    ? 'bg-grey10inverse border-grey3inverse'
+    : 'bg-grey10 border-grey3'}"
+>
   <div class="grow w-full">
     <ContainerWithHeader fullWidth="{true}">
       <div slot="header" class="py-4 px-6">
@@ -47,10 +51,6 @@
               <div class="flex mr-2">
                 {totalDepositFiat}
               </div>
-              <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
-              <!--        <span class="text-xs mr-1">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>-->
-              <!--        <span> {getPlusOrMinusIndicator(metric.percentChangedIsIncrease)}{metric.percentChanged}%</span>-->
-              <!--      </div>-->
             </div>
           </div>
 
