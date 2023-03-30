@@ -110,7 +110,6 @@
     const vaultMaxDebt = parseFloat(utils.formatEther($vaultsStore[vault.type].maxDebt)) * tokenPrice;
     const rawWithdraw = depositValue - vaultDebt * ratio;
     const vaultWithdraw = rawWithdraw < 0 ? 0 : rawWithdraw;
-    console.log(vault);
     return {
       vaultType: vault.type,
       token: vault.debtToken,
