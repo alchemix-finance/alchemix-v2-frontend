@@ -9,19 +9,13 @@
   import Button from '@components/elements/Button.svelte';
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import ActionsCell from '@components/composed/Table/vaults/ActionsCell.svelte';
-  import Borrow from '@components/composed/Modals/vaults/Borrow.svelte';
-  import Repay from '@components/composed/Modals/vaults/Repay.svelte';
-  import Liquidate from '@components/composed/Modals/vaults/Liquidate.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import Metrics from '@components/composed/Metrics.svelte';
   import YieldCell from '@components/composed/Table/YieldCell.svelte';
-  import LegacyHelper from '@components/composed/LegacyHelper.svelte';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell.svelte';
   import VaultStrategy from '@components/composed/VaultStrategy.svelte';
   import AccountOperations from '@components/composed/AccountOperations.svelte';
 
-  import { alusd } from '@stores/vaults';
-  import { showModal, modalReset } from '@stores/modal';
   import settings from '@stores/settings';
   import { balancesStore, vaultsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { VaultTypes } from '@stores/v2/types';
@@ -31,7 +25,6 @@
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { signer } from '@stores/v2/derived';
   import { setError } from '@helpers/setToast';
-  import { convertTokenUnits } from '@stores/v2/asyncMethods';
 
   $: vaultTypes = chainIds.filter((entry) => entry.id === $networkStore)[0].vaultTypes;
   $: vaultsSelector = makeSelectorStore([...vaultTypes]);
@@ -427,13 +420,7 @@
       </div>
     </div>
 
-    {#if $networkStore === '0x1'}
-      <div class="w-full my-8">
-        <LegacyHelper />
-      </div>
-    {/if}
-
-    <div class="w-full mb-8">
+    <div class="w-full my-8">
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 flex space-x-4">
           <Button

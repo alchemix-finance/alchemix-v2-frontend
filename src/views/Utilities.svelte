@@ -4,11 +4,12 @@
 
   import settings from '@stores/settings';
   import { utilities } from '@stores/utilities';
+  import { networkStore } from '@stores/v2/alcxStore';
 
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
   import Button from '@components/elements/Button.svelte';
-  import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
+  import LegacyHelper from '@components/composed/LegacyHelper.svelte';
 
   $: embedStats = $settings.embedStats;
 
@@ -29,6 +30,11 @@
       pageSubtitle="{$_('utilities_page.subtitle')}"
     />
   </div>
+  {#if $networkStore === '0x1'}
+    <div class="w-full my-8">
+      <LegacyHelper />
+    </div>
+  {/if}
   <p class="text-center text-xs opacity-50 mb-6">{$_('utilities_page.community_widget_explainer')}</p>
   <div class="flex flex-row flex-wrap gap-4 w-full">
     {#each utilities as utility}
