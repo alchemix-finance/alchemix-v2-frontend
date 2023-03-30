@@ -69,7 +69,7 @@
     const vault = vaults.filter((vault) => vault.underlyingAddress === underlyingTokenData.address)[0];
     await liquidate(
       yieldTokenData.yieldAddress,
-      amount.mul(BigNumber.from(10).pow(underlyingTokenData.decimals)).div(BigNumber.from(10).pow(18)),
+      amount,
       vaultType,
       BigNumber.from(maximumLoss),
       [$signer, $addressStore],
@@ -82,6 +82,9 @@
         fetchUpdateVaultByAddress(vaultType, vault.address, [$signer, $addressStore], $networkStore),
       ])
         .then(() => {
+          useTokenListForVaultType(selectedVaultType, [$vaultsStore])[0];
+          inputLiquidateAmount = 0;
+          userVerifiedToggle = false;
           console.log('[onLiquidateButton/finished]: Data updated!');
         })
         .catch((e) => {
@@ -123,6 +126,8 @@
           decimals: tokenData.decimals,
           yieldPerShare: vaultBody.yieldPerShare,
           underlyingPerShare: vaultBody.underlyingPerShare,
+          yieldAmount: vaultBody.yieldAmount,
+          underlyingAmount: vaultBody.underlyingAmount,
           debtToken: debtTokenData.symbol,
         });
       }
@@ -132,28 +137,14 @@
   };
 
   const useCurrentBalance = (yieldTokenData) => {
-    console.log(yieldTokenData);
-    return yieldTokenData.balance
-      .mul(yieldTokenData.underlyingPerShare)
-      .div(BigNumber.from(10).pow(yieldTokenData.decimals));
+    return yieldTokenData.yieldAmount;
   };
 
-  const useBigNumberForInput = (inputValue) => {
+  const useBigNumberForInput = (inputValue, yieldToken) => {
     if (inputValue === 0 || inputValue === '') {
       return BigNumber.from(0);
     }
-
-    return utils.parseEther(`${inputValue}`);
-  };
-
-  const useRemainingBalance = (inputAmount, yieldTokenData) => {
-    const vaultBalanceAs18Decimals = utils.parseEther(
-      utils.formatUnits(yieldTokenData.balance, yieldTokenData.decimals),
-    );
-
-    return vaultBalanceAs18Decimals.sub(inputAmount).lte(BigNumber.from(0))
-      ? BigNumber.from(0)
-      : vaultBalanceAs18Decimals.sub(inputAmount);
+    return utils.parseUnits(`${inputValue}`, yieldToken.decimals);
   };
 
   const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
@@ -177,28 +168,17 @@
   };
 
   let currentSelectedYieldTokenSymbol;
-  let currentYieldBalance;
-  let remainingBalance;
 
   $: yieldTokenList = useTokenListForVaultType(selectedVaultType, [$vaultsStore]).filter((entry) =>
     entry.balance.gt(BigNumber.from(0)),
   );
 
-  $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount);
+  $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount, yieldTokenList[selectedYieldToken]);
 
   $: debtAmount = $vaultsStore[selectedVaultType].debt[0].gt(BigNumber.from(0))
     ? $vaultsStore[selectedVaultType].debt[0]
     : BigNumber.from(0);
 
-  // $: remainingDebtAmount = inputLiquidateAmountBN.gte(debtAmount)
-  //   ? BigNumber.from(0)
-  //   : debtAmount.sub(inputLiquidateAmountBN) || BigNumber.from(0);
-
-  // $: remainingBalance = useRemainingBalance(
-  //   inputLiquidateAmountBN,
-  //   yieldTokenList[selectedYieldToken],
-  // );
-  // $: currentYieldBalance = useCurrentBalance(yieldTokenList[currentSelectedYieldTokenSymbol || 0]);
   const updateSelectionData = (value) => {
     selectedVaultType = value.detail.vault;
     currentSelectedYieldTokenSymbol = useTokenListForVaultType(selectedVaultType, [$vaultsStore]).filter(
@@ -206,22 +186,15 @@
     )[0].symbol;
   };
 
-  const updateTokenData = () => {
-    selectedYieldToken = yieldTokenList.findIndex(
-      (entry) => entry.symbol === currentSelectedYieldTokenSymbol,
-    );
-    remainingBalance = useRemainingBalance(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken]);
-    currentYieldBalance = useCurrentBalance(yieldTokenList[currentSelectedYieldTokenSymbol]);
+  const updateTokenData = (token) => {
+    if (!token) {
+      selectedYieldToken = 0;
+    } else {
+      selectedYieldToken = yieldTokenList.findIndex((entry) => entry.symbol === token);
+    }
   };
 
-  $: currentSelectedYieldTokenSymbol,
-    () => {
-      console.log('fired');
-      if (!!currentSelectedYieldTokenSymbol) {
-        console.log('registered');
-        updateTokenData();
-      }
-    };
+  $: updateTokenData(currentSelectedYieldTokenSymbol);
 
   onMount(async () => {
     const defaultYieldToken = useTokenListForVaultType(selectedVaultType, [$vaultsStore])[0];
@@ -250,7 +223,7 @@
     </div>
     <ComplexInput
       supportedTokens="{yieldTokenList.map((token) => token.symbol)}"
-      externalMax="{currentYieldBalance}"
+      externalMax="{yieldTokenList[selectedYieldToken].yieldAmount}"
       bind:inputValue="{inputLiquidateAmount}"
       bind:selectedToken="{currentSelectedYieldTokenSymbol}"
     />

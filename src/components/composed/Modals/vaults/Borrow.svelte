@@ -74,21 +74,27 @@
 
   $: supportedTokens = selectedVaults.map((vaultId) => VaultTypesInfos[vaultId].name);
 
-  function calculateAvailableAmount(_aggregatedDebtStore, _vaultsStore, _selectedVault) {
-    if (!_aggregatedDebtStore[_selectedVault] || !_vaultsStore[_selectedVault]) {
+  const scalar = BigNumber.from(10).pow(18);
+
+  function calculateAvailableAmount(_vaultStore, _selectedVault) {
+    if (!_vaultStore[_selectedVault]) {
       return BigNumber.from(0);
     }
-    return utils
-      .parseUnits(utils.formatUnits(_aggregatedDebtStore[_selectedVault], 18), 18)
-      .sub(_vaultsStore[_selectedVault].debt.debt);
+
+    const normalizedRatio = _vaultStore[_selectedVault].ratio.div(scalar);
+
+    return _vaultStore[_selectedVault].maxDebt
+      .div(normalizedRatio)
+      .sub(_vaultStore[_selectedVault].debt.debt);
   }
 
-  function getMaxDebt(_aggregatedDebtStore, _selectedVault) {
-    if (!_aggregatedDebtStore[_selectedVault]) {
+  function getMaxDebt(_vaultStore, _selectedVault) {
+    if (!_vaultStore[_selectedVault]) {
       return BigNumber.from(0);
     }
+    const normalizedRatio = _vaultStore[_selectedVault].ratio.div(scalar);
 
-    return _aggregatedDebtStore[_selectedVault];
+    return _vaultStore[_selectedVault].maxDebt.div(normalizedRatio);
   }
 
   function checkIfAddressIsValid(address) {
@@ -116,8 +122,8 @@
     }
   }
 
-  $: availAmount = calculateAvailableAmount($vaultsAggregatedDebt, $vaultsStore, defaultSelectedVault);
-  $: maxDebtAmount = getMaxDebt($vaultsAggregatedDebt, defaultSelectedVault);
+  $: availAmount = calculateAvailableAmount($vaultsStore, defaultSelectedVault);
+  $: maxDebtAmount = getMaxDebt($vaultsStore, defaultSelectedVault);
 
   $: borrowAmountBN = utils.parseEther(`${borrowAmount}` || `0`);
 
