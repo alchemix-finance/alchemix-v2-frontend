@@ -85,6 +85,14 @@ export const additionalTokens = [
     network: '0xa',
     address: '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8',
   },
+  {
+    network: '0x1',
+    address: '0x853d955acef822db058eb8505911ed77f175b99e',
+  },
+  {
+    network: '0x1',
+    address: '0xd4937682df3C8aEF4FE912A96A74121C0829E664',
+  },
 ];
 
 export const externalLookup = [

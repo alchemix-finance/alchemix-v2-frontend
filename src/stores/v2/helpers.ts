@@ -13,6 +13,7 @@ import { getLidoApr } from '@middleware/lido';
 import { getAaveApr } from '@middleware/aave';
 import { getVesperApy } from '@middleware/vesper';
 import { getTokenPrice } from '@middleware/llama';
+import { getFraxApy } from '@middleware/frax';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
 
@@ -94,7 +95,7 @@ export async function fetchDataForVault(
           ? await rewardAdapter(rAdapter, signer, tokenAddress)
           : await rewardAdapter(rAdapter, signer, tokenParams.underlyingToken);
     } catch (e) {
-      console.error(`[fetchDataForVault]:${vaultType}:${tokenAddress}`, e)
+      console.error(`[fetchDataForVault]:${vaultType}:${tokenAddress}`, e);
     }
   } else {
     try {
@@ -131,6 +132,8 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer, token: stri
       return getAaveApr(token);
     case 'vesper':
       return getVesperApy(token);
+    case 'frax':
+      return getFraxApy(token);
     default:
       return getVaultApy();
   }
