@@ -26,10 +26,20 @@
     }, [])
     .map((val) => val.vaultDebt)
     .reduce((prev, curr) => prev + curr);
+  $: aggregateMaxDebt =
+    aggregate
+      ?.reduce((list, item) => {
+        if (!list.some((obj) => obj.vaultType === item.vaultType)) {
+          list.push(item);
+        }
+        return list;
+      }, [])
+      .map((val) => val.vaultMaxDebt)
+      .reduce((prev, curr) => prev + curr) / 2;
   $: openDebtFiat = getFormattedValue(openDebt);
   $: openCreditRaw = aggregate?.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr) - openDebt;
   $: openCredit = openCreditRaw < 0 ? openCreditRaw * -1 : openCreditRaw;
-  $: openCreditFiat = getFormattedValue(openCredit);
+  $: openCreditFiat = getFormattedValue(aggregateMaxDebt - openDebt);
   $: tvl = aggregate?.map((val) => val.tvlValue).reduce((prev, curr) => prev + curr);
   $: tvlFiat = getFormattedValue(tvl);
 </script>
