@@ -153,9 +153,13 @@
   $: tokenList = tokensForVaultType
     .filter((entry) => entry.balance.gt(BigNumber.from(0)))
     .map((token) => token.listSymbol);
+  $: fullTokenList = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]).map(
+    (token) => token.listSymbol,
+  );
   $: currentSelectedUnderlyingToken =
     tokensForVaultType.findIndex((entry) => entry.symbol === currentSelectedUnderlyingTokenSymbol) || 0;
   $: currentSelectedUnderlyingToken, currentSelectedVaultType, (inputRepayAmount = '');
+  $: initialList = tokenList.length === 0 ? fullTokenList : tokenList;
 
   const updateSelectionData = (value) => {
     currentSelectedVaultType = value.detail.vault;
@@ -181,7 +185,7 @@
       {/each}
     </div>
     <ComplexInput
-      supportedTokens="{tokenList}"
+      supportedTokens="{initialList}"
       bind:inputValue="{inputRepayAmount}"
       bind:selectedToken="{currentSelectedUnderlyingTokenSymbol}"
     />
