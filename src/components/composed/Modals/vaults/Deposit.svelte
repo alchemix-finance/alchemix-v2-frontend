@@ -217,13 +217,6 @@
     }
   }
 
-  function calculateTotalDeposit(_vault, _yieldDeposit, _underlyingDeposit, _underlyingTokenData) {
-    return utils.formatUnits(
-      vault.balance.add(_yieldDeposit.add(_underlyingDeposit)),
-      _underlyingTokenData.decimals,
-    );
-  }
-
   function switchDepositType() {
     depositEth = !depositEth;
     underlyingDeposit = '';
@@ -238,8 +231,6 @@
     yieldTokenData,
     underlyingTokenData,
   );
-
-  $: totalDep = calculateTotalDeposit(vault, yieldDepositBN, underlyingDepositBN, yieldTokenData);
 
   $: depositButtonDisabled =
     maximumLoss / 1000 >= 100 ||
@@ -288,11 +279,9 @@
     if (inputValues[yieldTokenData?.symbol]) yieldDeposit = inputValues[yieldTokenData?.symbol];
   }
   $: capa = capInfo.capacity.value;
-  $: console.log(capa.toString());
 
   const capaToUnits = (_capa, _token) => {
     const tokenData = getTokenDataFromBalancesBySymbol(_token, [$balancesStore]);
-    console.log({ tokenData });
     return utils.parseUnits(utils.formatUnits(_capa, underlyingTokenData.decimals), tokenData.decimals);
   };
 
@@ -339,13 +328,6 @@
 
   <div class="my-4">
     <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
-  </div>
-
-  <div class="my-4 text-sm text-lightgrey10 hidden">
-    {$_('modals.deposit_balance')}: {utils.formatUnits(vault.balance, yieldTokenData?.decimals)}
-    -> {totalDep}<br />
-    {$_('modals.borrow_limit')}: {startDebtLimit} ->
-    {projDeptLimit || startDebtLimit} <br />
   </div>
 
   {#if capInfo.isFull}

@@ -117,7 +117,7 @@
 </script>
 
 {#if isOpen}
-  <div class="fixed z-20 w-full pointer-events-none">
+  <div class="fixed z-50 w-full pointer-events-none">
     <div class="sticky mx-auto max-w-max pointer-events-auto" transition:fly="{{ y: -8, duration: 400 }}">
       <div
         class="{cn(

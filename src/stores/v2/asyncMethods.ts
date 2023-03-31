@@ -94,8 +94,9 @@ export async function fetchVaultDebt(
   const { instance } = await contractWrapper(VaultConstants[vaultId].alchemistContractSelector, signer, path);
 
   const rawDebt = await instance.accounts(accountAddress);
+  const maxDebt = await instance.totalValue(accountAddress);
 
-  updateVaultDebt(vaultId, rawDebt);
+  updateVaultDebt(vaultId, rawDebt, maxDebt);
 }
 
 export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Signer], _network: string) {

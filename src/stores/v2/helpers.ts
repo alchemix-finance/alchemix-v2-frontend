@@ -13,6 +13,7 @@ import { getLidoApr } from '@middleware/lido';
 import { getAaveApr } from '@middleware/aave';
 import { getVesperApy } from '@middleware/vesper';
 import { getTokenPrice } from '@middleware/llama';
+import { getFraxApy } from '@middleware/frax';
 import { v4 as uuidv4 } from 'uuid';
 import { VaultTypesInfos, chainIds } from './constants';
 
@@ -82,6 +83,11 @@ export async function fetchDataForVault(
   const underlyingPerShare = await contractInstance.getUnderlyingTokensPerShare(tokenAddress);
   const useGateway = VaultTypesInfos[vaultType].useGateway;
   const debtToken = await contractInstance.debtToken();
+  const positionToUnderlying = await contractInstance.convertSharesToUnderlyingTokens(
+    tokenAddress,
+    position.shares,
+  );
+  const positionToYield = await contractInstance.convertSharesToYieldTokens(tokenAddress, position.shares);
   let apy;
   if (
     VaultTypesInfos[vaultType].metaConfig.hasOwnProperty(tokenAddress) &&
@@ -94,7 +100,7 @@ export async function fetchDataForVault(
           ? await rewardAdapter(rAdapter, signer, tokenAddress)
           : await rewardAdapter(rAdapter, signer, tokenParams.underlyingToken);
     } catch (e) {
-      console.error(`[fetchDataForVault]:${vaultType}:${tokenAddress}`, e)
+      console.error(`[fetchDataForVault]:${vaultType}:${tokenAddress}`, e);
     }
   } else {
     try {
@@ -115,6 +121,8 @@ export async function fetchDataForVault(
     yieldPerShare: yieldPerShare,
     underlyingAddress: tokenParams.underlyingToken,
     underlyingPerShare: underlyingPerShare,
+    yieldAmount: positionToYield,
+    underlyingAmount: positionToUnderlying,
     apy,
     useGateway,
     debtToken,
@@ -131,6 +139,8 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer, token: stri
       return getAaveApr(token);
     case 'vesper':
       return getVesperApy(token);
+    case 'frax':
+      return getFraxApy(token);
     default:
       return getVaultApy();
   }

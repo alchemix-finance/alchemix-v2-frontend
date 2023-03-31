@@ -1,17 +1,18 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { utils, BigNumber } from 'ethers';
+
   import ContainerWithHeader from '../../../elements/ContainerWithHeader.svelte';
   import Button from '../../../elements/Button.svelte';
+  import DebtCard from '@components/elements/DebtCard.svelte';
+  import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
-  import InputNumber from '../../../elements/inputs/InputNumber.svelte';
   import { VaultTypesInfos } from '@stores/v2/constants';
   import { addressStore, balancesStore, vaultsStore, networkStore } from '@stores/v2/alcxStore';
   import { getTokenDataFromBalances } from '@stores/v2/helpers';
   import { burn, repay } from '@stores/v2/vaultActions';
   import { signer } from '@stores/v2/derived';
   import { fetchBalanceByAddress, fetchVaultDebt, fetchVaultRatio } from '@stores/v2/asyncMethods';
-  import { modalReset } from '@stores/modal';
   import settings from '@stores/settings';
 
   export let selectedVaultsType;
@@ -19,12 +20,97 @@
   let inputRepayAmount = 0;
 
   let currentSelectedVaultType = selectedVaultsType[0];
-  let currentSelectedUnderlyingToken = 0;
+  // let currentSelectedUnderlyingToken = 0;
+
+  const useTokenListForVaultType = (vaultType, [vaultsStore]) => {
+    if (!vaultsStore || vaultType === undefined) {
+      return [];
+    }
+
+    const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
+
+    let tokensArr = [
+      {
+        address: debtTokenData.address,
+        balance: debtTokenData.balance,
+        listSymbol: debtTokenData.symbol,
+        symbol: debtTokenData.symbol,
+        decimals: debtTokenData.decimals,
+        underlyingPerShare: BigNumber.from(1),
+        debtToken: debtTokenData.symbol,
+      },
+    ];
+
+    for (const vaultBody of vaultsStore[vaultType].vaultBody) {
+      const underlyingTokenData = getTokenDataFromBalances(vaultBody.underlyingAddress, [$balancesStore]);
+
+      const underlyingTokenSymbol = (() => {
+        if (!VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.underlyingAddress]) {
+          return underlyingTokenData.symbol;
+        }
+
+        return VaultTypesInfos[currentSelectedVaultType].metaConfig[vaultBody.underlyingAddress].token;
+      })();
+
+      // @dev since many vaults share the same underlying token, we need to prevent duplicates
+      if (!tokensArr.some((entry) => entry.symbol === underlyingTokenSymbol)) {
+        tokensArr.push({
+          address: vaultBody.underlyingAddress,
+          balance: underlyingTokenData.balance,
+          listSymbol: underlyingTokenSymbol,
+          symbol: underlyingTokenSymbol,
+          decimals: underlyingTokenData.decimals,
+          underlyingPerShare: vaultBody.underlyingPerShare,
+          debtToken: debtTokenData.symbol,
+        });
+      }
+    }
+
+    return tokensArr;
+  };
+
+  const useBigNumberForInput = (inputValue) => {
+    if (inputValue === 0 || inputValue === '') {
+      return BigNumber.from(0);
+    }
+
+    return utils.parseEther(`${inputValue}`);
+  };
+
+  $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]).filter((entry) =>
+    entry.balance.gt(BigNumber.from(0)),
+  );
+
+  $: inputRepayAmountBN = useBigNumberForInput(inputRepayAmount);
+
+  $: debtAmount = $vaultsStore[currentSelectedVaultType].debt[0] || BigNumber.from(0);
+
+  const getDebtForVaultType = (vaultType) => {
+    if (!$vaultsStore || vaultType === undefined) {
+      return '0';
+    }
+
+    return utils.formatEther($vaultsStore[vaultType].debt[0]) || '0';
+  };
+
+  const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
+    if (!!underlyingTokenData) {
+      const underlyingBalance18Decimals = utils.parseEther(
+        utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
+      );
+
+      return (
+        inputAmount.gt(BigNumber.from(0)) &&
+        inputAmount.lte(debt) &&
+        inputAmount.lte(underlyingBalance18Decimals)
+      );
+    } else {
+      return false;
+    }
+  };
 
   const onRepayButton = async (repayAmount, underlyingTokenData, debtTokenData, vaultType) => {
     const _fRepayAmount = utils.parseUnits(utils.formatEther(repayAmount), underlyingTokenData.decimals);
-
-    modalReset();
 
     if (underlyingTokenData.address === debtTokenData.address) {
       await burn(
@@ -61,191 +147,51 @@
     }
   };
 
-  const useTokenListForVaultType = (vaultType, [vaultsStore]) => {
-    if (!vaultsStore || vaultType === undefined) {
-      return [];
-    }
+  let currentSelectedUnderlyingTokenSymbol;
+  let tokenList;
 
-    const debtTokenData = getTokenDataFromBalances(vaultsStore[vaultType].debtTokenAddress, [$balancesStore]);
-
-    let tokensArr = [
-      {
-        address: debtTokenData.address,
-        balance: debtTokenData.balance,
-        listSymbol: debtTokenData.symbol,
-        symbol: debtTokenData.symbol,
-        decimals: debtTokenData.decimals,
-        underlyingPerShare: BigNumber.from(1),
-        debtToken: debtTokenData.symbol,
-      },
-    ];
-
-    for (const vaultBody of vaultsStore[vaultType].vaultBody) {
-      const tokenData = getTokenDataFromBalances(vaultBody.address, [$balancesStore]);
-      const underlyingTokenData = getTokenDataFromBalances(vaultBody.underlyingAddress, [$balancesStore]);
-
-      const yieldTokenSymbol = (() => {
-        if (!VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.address]) {
-          return tokenData.symbol;
-        }
-
-        return VaultTypesInfos[currentSelectedVaultType].metaConfig[vaultBody.address].token;
-      })();
-
-      const underlyingTokenSymbol = (() => {
-        if (!VaultTypesInfos[currentSelectedVaultType]?.metaConfig[vaultBody.underlyingAddress]) {
-          return underlyingTokenData.symbol;
-        }
-
-        return VaultTypesInfos[currentSelectedVaultType].metaConfig[vaultBody.underlyingAddress].token;
-      })();
-
-      tokensArr.push({
-        address: vaultBody.underlyingAddress,
-        balance: underlyingTokenData.balance,
-        listSymbol: yieldTokenSymbol + '/' + underlyingTokenSymbol,
-        symbol: underlyingTokenSymbol,
-        decimals: underlyingTokenData.decimals,
-        underlyingPerShare: vaultBody.underlyingPerShare,
-        debtToken: debtTokenData.symbol,
-      });
-    }
-
-    return tokensArr;
-  };
-
-  const setInputMax = (underlyingTokenData, debt) => {
-    const underlyingBalance18Decimals = utils.parseEther(
-      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
-    );
-
-    inputRepayAmount = underlyingBalance18Decimals.gte(debt)
-      ? utils.formatEther(debt)
-      : utils.formatEther(underlyingBalance18Decimals);
-  };
-
-  const useBigNumberForInput = (inputValue) => {
-    if (inputValue === 0 || inputValue === '') {
-      return BigNumber.from(0);
-    }
-
-    return utils.parseEther(`${inputValue}`);
-  };
-
-  const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
-    const underlyingBalance18Decimals = utils.parseEther(
-      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
-    );
-
-    return (
-      inputAmount.gt(BigNumber.from(0)) &&
-      inputAmount.lte(debt) &&
-      inputAmount.lte(underlyingBalance18Decimals)
-    );
-  };
-
-  $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]);
-
-  $: inputRepayAmountBN = useBigNumberForInput(inputRepayAmount);
-
-  $: debtAmount = $vaultsStore[currentSelectedVaultType].debt[0] || BigNumber.from(0);
-
-  $: remainingDebtAmount = inputRepayAmountBN.gte(debtAmount)
-    ? BigNumber.from(0)
-    : debtAmount.sub(inputRepayAmountBN) || BigNumber.from(0);
-
+  $: tokenList = tokensForVaultType
+    .filter((entry) => entry.balance.gt(BigNumber.from(0)))
+    .map((token) => token.listSymbol);
+  $: fullTokenList = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]).map(
+    (token) => token.listSymbol,
+  );
+  $: currentSelectedUnderlyingToken =
+    tokensForVaultType.findIndex((entry) => entry.symbol === currentSelectedUnderlyingTokenSymbol) || 0;
   $: currentSelectedUnderlyingToken, currentSelectedVaultType, (inputRepayAmount = '');
+  $: initialList = tokenList.length === 0 ? fullTokenList : tokenList;
+
+  const updateSelectionData = (value) => {
+    currentSelectedVaultType = value.detail.vault;
+    currentSelectedUnderlyingTokenSymbol = useTokenListForVaultType(currentSelectedVaultType, [
+      $vaultsStore,
+    ]).filter((entry) => entry.balance.gt(BigNumber.from(0)))[0].symbol;
+  };
 </script>
 
-<ContainerWithHeader>
-  <div slot="header" class="p-4 text-sm flex items-center justify-between">
-    <p class="inline-block">{$_('modals.repay_loans')}</p>
-    <div class="flex gap-1">
-      {#if selectedVaultsType.length > 1}
-        <select
-          id="selectVaultType"
-          class="cursor-pointer border {$settings.invertColors
-            ? 'border-grey5inverse bg-grey1inverse'
-            : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
-          bind:value="{currentSelectedVaultType}"
-        >
-          {#each selectedVaultsType as vaultType}
-            <option value="{vaultType}">{VaultTypesInfos[vaultType].name}</option>
-          {/each}
-        </select>
-      {/if}
-      <select
-        id="selectUnderlying"
-        class="cursor-pointer border {$settings.invertColors
-          ? 'border-grey5inverse bg-grey1inverse'
-          : 'border-grey5 bg-grey1'} h-8 rounded p-1 text-xs block w-24"
-        bind:value="{currentSelectedUnderlyingToken}"
-      >
-        {#each tokensForVaultType as token, index}
-          <option value="{index}">{token.listSymbol}</option>
-        {/each}
-      </select>
-    </div>
-  </div>
+<ContainerWithHeader noBorder="{true}">
   <div slot="body" class="p-4 flex flex-col space-y-4">
-    {#if debtAmount.gt(BigNumber.from(0))}
-      <p class="text-sm">
-        {$_('metrics.open_debt')}: {utils.formatEther(debtAmount)}
-        {tokensForVaultType[currentSelectedUnderlyingToken].debtToken}
-      </p>
-    {/if}
-    <label for="repayInput" class="text-sm text-lightgrey10">
-      {$_('available')}: {utils.formatUnits(
-        tokensForVaultType[currentSelectedUnderlyingToken].balance,
-        tokensForVaultType[currentSelectedUnderlyingToken].decimals,
-      )}
-      {tokensForVaultType[currentSelectedUnderlyingToken].symbol}
-    </label>
-    <div
-      class="flex rounded border {$settings.invertColors
-        ? 'bg-grey3inverse border-grey3inverse'
-        : 'bg-grey3 border-grey3'}"
-    >
-      <div class="w-full">
-        <InputNumber
-          id="repayInput"
-          placeholder="~0.00 {tokensForVaultType[currentSelectedUnderlyingToken].symbol}"
-          bind:value="{inputRepayAmount}"
-          class="w-full rounded appearance-none text-xl text-right h-full p-4 {$settings.invertColors
-            ? 'bg-grey3inverse'
-            : 'bg-grey3'}"
+    <div class="flex flex-row space-x-4">
+      {#each selectedVaultsType as vaultType}
+        <DebtCard
+          selected="{currentSelectedVaultType === vaultType}"
+          debtToken="{VaultTypesInfos[vaultType].name}"
+          debtAmount="{getDebtForVaultType(vaultType)}"
+          vault="{vaultType}"
+          on:selectionUpdate="{(value) => {
+            updateSelectionData(value);
+          }}"
         />
-      </div>
-      <div class="flex flex-col">
-        <Button
-          label="MAX"
-          width="w-full"
-          fontSize="text-xs"
-          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => setInputMax(tokensForVaultType[currentSelectedUnderlyingToken], debtAmount)}"
-        />
-        <Button
-          label="CLEAR"
-          width="w-max"
-          fontSize="text-xs"
-          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-          borderSize="0"
-          height="h-10"
-          on:clicked="{() => (inputRepayAmount = '')}"
-        />
-      </div>
+      {/each}
     </div>
-    <div class="w-full text-sm text-lightgrey10 hidden">
-      {$_('modals.outstanding_debt')}: {utils.formatEther(debtAmount)} -> {utils.formatEther(
-        remainingDebtAmount,
-      )}
-    </div>
+    <ComplexInput
+      supportedTokens="{initialList}"
+      bind:inputValue="{inputRepayAmount}"
+      bind:selectedToken="{currentSelectedUnderlyingTokenSymbol}"
+    />
+
     <Button
-      label="{$_('actions.repay')}"
+      label="{$_('actions.repay')} with {currentSelectedUnderlyingTokenSymbol}"
       borderColor="green4"
       backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
       hoverColor="green4"

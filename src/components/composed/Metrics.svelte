@@ -26,15 +26,29 @@
     }, [])
     .map((val) => val.vaultDebt)
     .reduce((prev, curr) => prev + curr);
+  $: aggregateMaxDebt =
+    aggregate
+      ?.reduce((list, item) => {
+        if (!list.some((obj) => obj.vaultType === item.vaultType)) {
+          list.push(item);
+        }
+        return list;
+      }, [])
+      .map((val) => val.vaultMaxDebt)
+      .reduce((prev, curr) => prev + curr) / 2;
   $: openDebtFiat = getFormattedValue(openDebt);
   $: openCreditRaw = aggregate?.map((val) => val.debtLimit).reduce((prev, curr) => prev + curr) - openDebt;
   $: openCredit = openCreditRaw < 0 ? openCreditRaw * -1 : openCreditRaw;
-  $: openCreditFiat = getFormattedValue(openCredit);
+  $: openCreditFiat = getFormattedValue(aggregateMaxDebt - openDebt);
   $: tvl = aggregate?.map((val) => val.tvlValue).reduce((prev, curr) => prev + curr);
   $: tvlFiat = getFormattedValue(tvl);
 </script>
 
-<div class="w-full flex flex-row space-x-4">
+<div
+  class="w-full flex flex-row space-x-4 border rounded {$settings.invertColors
+    ? 'bg-grey10inverse border-grey3inverse'
+    : 'bg-grey10 border-grey3'}"
+>
   <div class="grow w-full">
     <ContainerWithHeader fullWidth="{true}">
       <div slot="header" class="py-4 px-6">
@@ -47,10 +61,6 @@
               <div class="flex mr-2">
                 {totalDepositFiat}
               </div>
-              <!--      <div class="flex items-center text-{metric.percentChangedIsIncrease ? 'green1' : 'red1'}">-->
-              <!--        <span class="text-xs mr-1">{getUpDownIndicator(metric.percentChangedIsIncrease)}</span>-->
-              <!--        <span> {getPlusOrMinusIndicator(metric.percentChangedIsIncrease)}{metric.percentChanged}%</span>-->
-              <!--      </div>-->
             </div>
           </div>
 
