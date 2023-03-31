@@ -11,8 +11,8 @@
   export let mode = 0;
 
   enum Mode {
-    0 = 'Repayment',
-    1 = 'Liquidation',
+    'Repayment',
+    'Liquidation',
   }
 
   const dispatch = createEventDispatcher();

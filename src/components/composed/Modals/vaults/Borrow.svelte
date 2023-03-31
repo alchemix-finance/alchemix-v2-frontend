@@ -132,77 +132,75 @@
 
 <ContainerWithHeader noBorder="{true}">
   <div slot="body" class="p-4 flex flex-col space-y-4">
-    {#if availAmount.eq(BigNumber.from(0)) && maxDebtAmount.gt(BigNumber.from(0))}
-      <p>{$_('modals.no_loan_available')}</p>
-    {:else if maxDebtAmount.eq(BigNumber.from(0))}
-      <p>{$_('modals.no_debt_limit')}</p>
-    {:else}
-      <div
-        class="flex rounded border {$settings.invertColors
-          ? 'bg-grey3inverse border-grey3inverse'
-          : 'bg-grey3 border-grey3'}"
-      >
-        <div class="w-full">
-          <ComplexInput
-            supportedTokens="{supportedTokens}"
-            externalMax="{availAmount}"
-            bind:inputValue="{borrowAmount}"
-            bind:selectedToken="{selectedVault}"
+    <div
+      class="flex rounded border {$settings.invertColors
+        ? 'bg-grey3inverse border-grey3inverse'
+        : 'bg-grey3 border-grey3'}"
+    >
+      <div class="w-full">
+        <ComplexInput
+          supportedTokens="{supportedTokens}"
+          externalMax="{availAmount}"
+          bind:inputValue="{borrowAmount}"
+          bind:selectedToken="{selectedVault}"
+        />
+      </div>
+    </div>
+
+    <div class="w-max">
+      <ToggleSwitch secondLabel="{$_('modals.transfer_loan')}" on:toggleChange="{setExportAndTransfer}" />
+    </div>
+    {#if exportAndTransfer}
+      <div class="w-full" transition:slide>
+        <label
+          class="{$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'} text-sm sr-only"
+          >{$_('modals.target_wallet')}</label
+        >
+        <div
+          class="flex {$settings.invertColors
+            ? 'bg-grey3inverse'
+            : 'bg-grey3'} rounded border {addressData.error && targetWallet
+            ? 'border-red3'
+            : `${$settings.invertColors ? 'border-grey3inverse' : 'border-grey3'}`} mb-4"
+        >
+          <div class="w-full">
+            <input
+              type="text"
+              id="targetWallet"
+              placeholder="0xdeadbeef"
+              class="w-full rounded appearance-none text-l text-right h-20 p-4 {$settings.invertColors
+                ? 'bg-grey3inverse'
+                : 'bg-grey3'}"
+              bind:value="{targetWallet}"
+            />
+          </div>
+          <Button
+            label="CLEAR"
+            width="w-max"
+            fontSize="text-xs"
+            textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+            backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+            borderSize="0"
+            on:clicked="{() => clearTarget()}"
+          />
+        </div>
+        {#if addressData.error && targetWallet}
+          <p transition:slide class="text-red3 text-center text-sm mb-4">
+            {$_('modals.transfer_error')}
+          </p>
+        {/if}
+        <div class="w-max">
+          <ToggleSwitch
+            secondLabel="{$_('modals.transfer_disclaimer')}"
+            on:toggleChange="{(val) => verifyToggle(val, targetWallet)}"
+            forceState="{rng}"
           />
         </div>
       </div>
-
-      <div class="w-max">
-        <ToggleSwitch secondLabel="{$_('modals.transfer_loan')}" on:toggleChange="{setExportAndTransfer}" />
-      </div>
-      {#if exportAndTransfer}
-        <div class="w-full" transition:slide>
-          <label
-            class="{$settings.invertColors ? 'text-lightgrey10inverse' : 'text-lightgrey10'} text-sm sr-only"
-            >{$_('modals.target_wallet')}</label
-          >
-          <div
-            class="flex {$settings.invertColors
-              ? 'bg-grey3inverse'
-              : 'bg-grey3'} rounded border {addressData.error && targetWallet
-              ? 'border-red3'
-              : `${$settings.invertColors ? 'border-grey3inverse' : 'border-grey3'}`} mb-4"
-          >
-            <div class="w-full">
-              <input
-                type="text"
-                id="targetWallet"
-                placeholder="0xdeadbeef"
-                class="w-full rounded appearance-none text-l text-right h-20 p-4 {$settings.invertColors
-                  ? 'bg-grey3inverse'
-                  : 'bg-grey3'}"
-                bind:value="{targetWallet}"
-              />
-            </div>
-            <Button
-              label="CLEAR"
-              width="w-max"
-              fontSize="text-xs"
-              textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-              backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-              borderSize="0"
-              on:clicked="{() => clearTarget()}"
-            />
-          </div>
-          {#if addressData.error && targetWallet}
-            <p transition:slide class="text-red3 text-center text-sm mb-4">
-              {$_('modals.transfer_error')}
-            </p>
-          {/if}
-          <div class="w-max">
-            <ToggleSwitch
-              secondLabel="{$_('modals.transfer_disclaimer')}"
-              on:toggleChange="{(val) => verifyToggle(val, targetWallet)}"
-              forceState="{rng}"
-            />
-          </div>
-        </div>
-      {/if}
+    {/if}
+    {#if availAmount.eq(BigNumber.from(0)) && maxDebtAmount.gt(BigNumber.from(0))}
+      <p class="text-center">{$_('modals.no_loan_available')}</p>
+    {:else}
       <Button
         label="{exportAndTransfer
           ? $_('actions.borrow_and_transfer') + ' ' + debtTokenInfo.name
