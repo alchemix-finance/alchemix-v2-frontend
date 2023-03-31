@@ -62,7 +62,12 @@ export const VaultConstants = {
 
 export const TransmuterConstants = {
   [VaultTypes.alUSD]: {
-    transmuterContractSelectors: ['TransmuterV2_DAI', 'TransmuterV2_USDC', 'TransmuterV2_USDT'],
+    transmuterContractSelectors: [
+      'TransmuterV2_DAI',
+      'TransmuterV2_USDC',
+      'TransmuterV2_USDT',
+      'TransmuterV2_FRAX',
+    ],
   },
   [VaultTypes.alETH]: {
     transmuterContractSelectors: ['TransmuterV2_ETH'],
@@ -84,7 +89,7 @@ export const TransmuterNameAliases = {
   usdt: 'Paracelsus',
   weth: 'Van Helmont',
   fusdt: 'de Rais',
-  frax: 'Flamel'
+  frax: 'Flamel',
 };
 
 export const AllowedVaultTypes = [VaultTypes.alUSD, VaultTypes.alETH];

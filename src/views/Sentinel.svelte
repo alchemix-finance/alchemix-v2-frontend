@@ -28,6 +28,7 @@
         { token: 'USDC', transmuter: 'alUSD' },
         { token: 'USDT', transmuter: 'alUSD' },
         { token: 'ETH', transmuter: 'alETH' },
+        { token: 'FRAX', transmuter: 'alUSD' },
       ],
       alTokens: [
         { token: 'AlToken', alchemist: 'alUSD' },
