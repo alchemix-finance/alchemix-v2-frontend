@@ -186,29 +186,33 @@ export async function fetchDataForTransmuter(
   accountAddress: string,
   _network: string,
 ): Promise<TransmuterType> {
-  const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
-  const { instance: transmuterInstance, address: transmuterAddress } = await contractWrapper(
-    contractSelector,
-    signer,
-    path,
-  );
+  try {
+    const path = chainIds.filter((item) => item.id === _network)[0].abiPath;
+    const { instance: transmuterInstance, address: transmuterAddress } = await contractWrapper(
+      contractSelector,
+      signer,
+      path,
+    );
 
-  const syntethicTokenAddress = await transmuterInstance.syntheticToken();
-  const underlyingTokenAddress = await transmuterInstance.underlyingToken();
-  const totalUnexchanged = await transmuterInstance.totalUnexchanged();
-  const exchangedBalance = await transmuterInstance.getClaimableBalance(accountAddress);
-  const unexchangedBalance = await transmuterInstance.getUnexchangedBalance(accountAddress);
+    const syntethicTokenAddress = await transmuterInstance.syntheticToken();
+    const underlyingTokenAddress = await transmuterInstance.underlyingToken();
+    const totalUnexchanged = await transmuterInstance.totalUnexchanged();
+    const exchangedBalance = await transmuterInstance.getClaimableBalance(accountAddress);
+    const unexchangedBalance = await transmuterInstance.getUnexchangedBalance(accountAddress);
 
-  return {
-    type: vaultType,
-    contractSelector: contractSelector,
-    transmuterAddress: transmuterAddress,
-    synthAddress: syntethicTokenAddress,
-    underlyingTokenAddress: underlyingTokenAddress,
-    totalUnexchangedBN: totalUnexchanged,
-    exchangedBalanceBN: exchangedBalance,
-    unexchangedBalanceBN: unexchangedBalance,
-  };
+    return {
+      type: vaultType,
+      contractSelector: contractSelector,
+      transmuterAddress: transmuterAddress,
+      synthAddress: syntethicTokenAddress,
+      underlyingTokenAddress: underlyingTokenAddress,
+      totalUnexchangedBN: totalUnexchanged,
+      exchangedBalanceBN: exchangedBalance,
+      unexchangedBalanceBN: unexchangedBalance,
+    };
+  } catch (e) {
+    console.error(`[fetchDataForTransmuter]:${vaultType}:${contractSelector}`, e);
+  }
 }
 
 export function calculateVaultDebt(
