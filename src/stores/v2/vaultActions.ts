@@ -703,7 +703,7 @@ export async function burn(
       await sendApe.wait();
     }
 
-    const tx = (await alchemistInstance.burn(amountToBurn, addressStore)) as ContractTransaction;
+    const tx = (await alchemistInstance.repay(debtToken, amountToBurn, addressStore)) as ContractTransaction;
 
     setPendingTx();
 
