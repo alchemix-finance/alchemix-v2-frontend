@@ -19,6 +19,7 @@
   import Button from '@components/elements/Button.svelte';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
   import Dropdown from '@components/elements/Dropdown.svelte';
+  import VaultMessage from '@components/elements/VaultMessage.svelte';
 
   export let vault;
   export let vaultType;
@@ -166,6 +167,11 @@
       externalMax="{vault?.balance}"
       externalDecimals="{vaultDecimals}"
       supportedTokens="{['Shares']}"
+    />
+
+    <VaultMessage
+      message="We are aware of issues with migrating vaults at the moment, causing failed transactions. Use flashbots protection to save your gas. Proceed at your own risk until further notice."
+      level="1"
     />
 
     <Button
