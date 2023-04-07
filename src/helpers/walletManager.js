@@ -10,6 +10,9 @@ import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import coinbaseWallet from '@web3-onboard/coinbase';
+import tahoWallet from '@web3-onboard/taho';
+import trezor from '@web3-onboard/trezor';
+import ledgerModule from '@web3-onboard/ledger';
 import { chainIds } from '@stores/v2/constants';
 
 // let _toastConfig;
@@ -27,6 +30,9 @@ account.subscribe((val) => {
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
 const coinbase = coinbaseWallet();
+const taho = tahoWallet();
+const trezorWallet = trezor({ email: 'n4n0@mail.alchemix.fi', appUrl: 'https://alchemix.fi' });
+const ledger = ledgerModule();
 
 const supportedChains = chainIds.map((chain) => {
   return {
@@ -39,7 +45,7 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect, coinbase],
+  wallets: [injected, walletConnect, coinbase, taho, trezorWallet, ledger],
   chains: supportedChains,
 
   appMetadata: {
@@ -49,7 +55,7 @@ const onboard = Onboard({
     description: 'Self repaying, non-liquidatable loans. Your only debt is time.',
     recommendedInjectedWallets: [
       { name: 'MetaMask', url: 'https://metamask.io/' },
-      { name: 'Tally', url: 'https://tally.cash/' },
+      { name: 'Taho', url: 'https://taho.xyz/' },
     ],
   },
   accountCenter: {
