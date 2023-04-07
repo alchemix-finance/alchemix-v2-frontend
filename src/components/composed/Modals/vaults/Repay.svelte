@@ -78,7 +78,7 @@
   };
 
   $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]).filter((entry) =>
-    entry.balance.gt(BigNumber.from(0)),
+    entry.balance.gte(BigNumber.from(0)),
   );
 
   $: inputRepayAmountBN = useBigNumberForInput(inputRepayAmount);
@@ -111,7 +111,6 @@
 
   const onRepayButton = async (repayAmount, underlyingTokenData, debtTokenData, vaultType) => {
     const _fRepayAmount = utils.parseUnits(utils.formatEther(repayAmount), underlyingTokenData.decimals);
-
     if (underlyingTokenData.address === debtTokenData.address) {
       await burn(
         underlyingTokenData.address,
