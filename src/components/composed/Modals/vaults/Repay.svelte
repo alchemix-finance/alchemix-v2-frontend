@@ -78,7 +78,7 @@
   };
 
   $: tokensForVaultType = useTokenListForVaultType(currentSelectedVaultType, [$vaultsStore]).filter((entry) =>
-    entry.balance.gte(BigNumber.from(0)),
+    entry.balance.gt(BigNumber.from(0)),
   );
 
   $: inputRepayAmountBN = useBigNumberForInput(inputRepayAmount);
@@ -205,7 +205,7 @@
         onRepayButton(
           inputRepayAmountBN,
           tokensForVaultType[currentSelectedUnderlyingToken],
-          tokensForVaultType[0],
+          fullTokenList[0],
           currentSelectedVaultType,
         )}"
     />
