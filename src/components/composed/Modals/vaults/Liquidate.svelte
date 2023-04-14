@@ -221,39 +221,47 @@
         />
       {/each}
     </div>
-    <ComplexInput
-      supportedTokens="{yieldTokenList.map((token) => token.symbol)}"
-      externalMax="{yieldTokenList[selectedYieldToken].yieldAmount}"
-      bind:inputValue="{inputLiquidateAmount}"
-      bind:selectedToken="{currentSelectedYieldTokenSymbol}"
-    />
-
-    <div class="w-full">
-      <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
-    </div>
-
-    <div class="w-max">
-      <ToggleSwitch
-        secondLabel="{$_('modals.liq_disclaimer')}"
-        forceState="{toggleForceState}"
-        on:toggleChange="{() => {
-          userVerifiedToggle = !userVerifiedToggle;
-        }}"
+    {#if yieldTokenList.length !== 0}
+      <ComplexInput
+        supportedTokens="{yieldTokenList.map((token) => token.symbol)}"
+        externalMax="{yieldTokenList[selectedYieldToken].yieldAmount}"
+        bind:inputValue="{inputLiquidateAmount}"
+        bind:selectedToken="{currentSelectedYieldTokenSymbol}"
       />
-    </div>
-    <Button
-      label="{$_('actions.liquidate')}"
-      borderColor="green4"
-      backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
-      hoverColor="green4"
-      height="h-12"
-      fontSize="text-md"
-      disabled="{!(
-        checkButtonState(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken], debtAmount) &&
-        userVerifiedToggle
-      )}"
-      on:clicked="{() =>
-        onLiquidateButton(yieldTokenList[selectedYieldToken], inputLiquidateAmountBN, selectedVaultType)}"
-    />
+
+      <div class="w-full">
+        <MaxLossController bind:maxLoss="{maximumLoss}" maxLossPreset="{maxLossPreset}" />
+      </div>
+
+      <div class="w-max">
+        <ToggleSwitch
+          secondLabel="{$_('modals.liq_disclaimer')}"
+          forceState="{toggleForceState}"
+          on:toggleChange="{() => {
+            userVerifiedToggle = !userVerifiedToggle;
+          }}"
+        />
+      </div>
+      <Button
+        label="{$_('actions.liquidate')}"
+        borderColor="green4"
+        backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
+        hoverColor="green4"
+        height="h-12"
+        fontSize="text-md"
+        disabled="{!(
+          checkButtonState(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken], debtAmount) &&
+          userVerifiedToggle
+        )}"
+        on:clicked="{() =>
+          onLiquidateButton(yieldTokenList[selectedYieldToken], inputLiquidateAmountBN, selectedVaultType)}"
+      />
+    {:else}
+      <div class="w-full">
+        <p class="text-center">
+          {$_('modals.no_debt')}
+        </p>
+      </div>
+    {/if}
   </div>
 </ContainerWithHeader>

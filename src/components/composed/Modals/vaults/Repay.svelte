@@ -206,7 +206,7 @@
         onRepayButton(
           inputRepayAmountBN,
           tokensForVaultType[currentSelectedUnderlyingToken],
-          tokensForVaultType[0],
+          fullTokenList[0],
           currentSelectedVaultType,
         )}"
     />
