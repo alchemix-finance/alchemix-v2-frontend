@@ -1,0 +1,549 @@
+{
+  "address": "0x2931b84D59f6f570EEBDAaaE182867C5E5D58075",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "ERC20CallFailed",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "BPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "rewardCollectorAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rewardAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rewardTimeframe",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastRewardBlock",
+          "type": "uint256"
+        }
+      ],
+      "name": "addVault",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        }
+      ],
+      "name": "distributeRewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        }
+      ],
+      "name": "getRewardCollector",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "rewardCollectors",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "rewardCollectorAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rewardAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rewardTimeframe",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastRewardBlock",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rewardAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setRewardAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "rewardCollectorAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setRewardCollectorAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "vault",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timeframe",
+          "type": "uint256"
+        }
+      ],
+      "name": "setRewardTimeframe",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "slippage",
+          "type": "uint256"
+        }
+      ],
+      "name": "setSlippage",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "slippageBPS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        }
+      ],
+      "name": "sweepTokens",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x15800c2e760c2406c77336331d6650201a7cf8fefdd37abfc2eca2f815b9178a",
+  "receipt": {
+    "to": null,
+    "from": "0xb31aCbB06fCF38Bc6a93F198Ec3805AdBF2DAA7C",
+    "contractAddress": "0x2931b84D59f6f570EEBDAaaE182867C5E5D58075",
+    "transactionIndex": 0,
+    "gasUsed": "884187",
+    "logsBloom": "0x00000000000000000000000000000000000000000010000000800000000000400000000000000008000000000000000000000000004000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000020000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000020000000000000000000000000000000000000000200000000000000000000000000",
+    "blockHash": "0x0c7f177f4329796e3fb923af1be2003bb4ec4623a4ca521b58575879c4e952b4",
+    "transactionHash": "0x15800c2e760c2406c77336331d6650201a7cf8fefdd37abfc2eca2f815b9178a",
+    "logs": [
+      {
+        "transactionIndex": 0,
+        "blockNumber": 83230206,
+        "transactionHash": "0x15800c2e760c2406c77336331d6650201a7cf8fefdd37abfc2eca2f815b9178a",
+        "address": "0x2931b84D59f6f570EEBDAaaE182867C5E5D58075",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000b31acbb06fcf38bc6a93f198ec3805adbf2daa7c"
+        ],
+        "data": "0x",
+        "logIndex": 0,
+        "blockHash": "0x0c7f177f4329796e3fb923af1be2003bb4ec4623a4ca521b58575879c4e952b4"
+      }
+    ],
+    "blockNumber": 83230206,
+    "cumulativeGasUsed": "884187",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "4865646f5642a8997ba028dc087a6836",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"success\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"ERC20CallFailed\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"BPS\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"rewardCollectorAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"rewardAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rewardTimeframe\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastRewardBlock\",\"type\":\"uint256\"}],\"name\":\"addVault\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"}],\"name\":\"distributeRewards\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"}],\"name\":\"getRewardCollector\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"rewardCollectors\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"rewardCollectorAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"rewardAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rewardTimeframe\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastRewardBlock\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"rewardAmount\",\"type\":\"uint256\"}],\"name\":\"setRewardAmount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"rewardCollectorAddress\",\"type\":\"address\"}],\"name\":\"setRewardCollectorAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"vault\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"timeframe\",\"type\":\"uint256\"}],\"name\":\"setRewardTimeframe\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"slippage\",\"type\":\"uint256\"}],\"name\":\"setSlippage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"slippageBPS\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"sweepTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Alchemix Finance\",\"errors\":{\"ERC20CallFailed(address,bool,bytes)\":[{\"params\":{\"data\":\"The resulting data from the call. This is error data when the call was not a success. Otherwise,                this is malformed data when the call was a success.\",\"success\":\"If the call to the token was a success.\",\"target\":\"The target address.\"}}]},\"kind\":\"dev\",\"methods\":{\"addVault(address,address,uint256,uint256,uint256)\":{\"details\":\"Add reward collector params to a map of yield tokens\"},\"distributeRewards(address)\":{\"details\":\"Distributes grant rewards and triggers reward collector to claim and donate\"},\"getRewardCollector(address)\":{\"details\":\"Get reward collector params for a given vault\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"setRewardAmount(address,uint256)\":{\"details\":\"Set the reward token amount for a given vault\"},\"setRewardCollectorAddress(address,address)\":{\"details\":\"Set the reward collector address for a given vault\"},\"setRewardTimeframe(address,uint256)\":{\"details\":\"Set the reward token timeframe for a given vault\"},\"setSlippage(uint256)\":{\"details\":\"Set the allowed slippage\"},\"sweepTokens(address,address)\":{\"details\":\"Sweeps reward tokens to recipient\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"stateVariables\":{\"rewardCollectors\":{\"details\":\"A mapping of the yield tokens to their respective reward collectors\"},\"version\":{\"return\":\"The version.\",\"returns\":{\"_0\":\"The version.\"}}},\"title\":\"Reward Router\",\"version\":1},\"userdoc\":{\"errors\":{\"ERC20CallFailed(address,bool,bytes)\":[{\"notice\":\"An error used to indicate that a call to an ERC20 contract failed.\"}]},\"kind\":\"user\",\"methods\":{\"sweepTokens(address,address)\":{\"notice\":\"This contract is stocked with reward tokens from grants. This function is to retract excess tokens.\"},\"version()\":{\"notice\":\"Gets the current version.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"submodules/v2-foundry/src/utils/RewardRouter.sol\":\"RewardRouter\"},\"evmVersion\":\"london\",\"libraries\":{\":__CACHE_BREAKER__\":\"0x0000000000000031363739353939323234363531\"},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"submodules/v2-foundry/lib/openzeppelin-contracts/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby removing any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673\",\"license\":\"MIT\"},\"submodules/v2-foundry/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n\\n    /**\\n     * @dev Returns the amount of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the amount of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves `amount` tokens from the caller's account to `to`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address to, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Moves `amount` tokens from `from` to `to` using the\\n     * allowance mechanism. `amount` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 amount\\n    ) external returns (bool);\\n}\\n\",\"keccak256\":\"0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b\",\"license\":\"MIT\"},\"submodules/v2-foundry/lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/IERC20Metadata.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../IERC20.sol\\\";\\n\\n/**\\n * @dev Interface for the optional metadata functions from the ERC20 standard.\\n *\\n * _Available since v4.1._\\n */\\ninterface IERC20Metadata is IERC20 {\\n    /**\\n     * @dev Returns the name of the token.\\n     */\\n    function name() external view returns (string memory);\\n\\n    /**\\n     * @dev Returns the symbol of the token.\\n     */\\n    function symbol() external view returns (string memory);\\n\\n    /**\\n     * @dev Returns the decimals places of the token.\\n     */\\n    function decimals() external view returns (uint8);\\n}\\n\",\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\"},\"submodules/v2-foundry/lib/openzeppelin-contracts/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"submodules/v2-foundry/src/base/ErrorMessages.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\npragma solidity >=0.8.4;\\n\\n/// @notice An error used to indicate that an argument passed to a function is illegal or\\n///         inappropriate.\\n///\\n/// @param message The error message.\\nerror IllegalArgument(string message);\\n\\n/// @notice An error used to indicate that a function has encountered an unrecoverable state.\\n///\\n/// @param message The error message.\\nerror IllegalState(string message);\\n\\n/// @notice An error used to indicate that an operation is unsupported.\\n///\\n/// @param message The error message.\\nerror UnsupportedOperation(string message);\\n\\n/// @notice An error used to indicate that a message sender tried to execute a privileged function.\\n///\\n/// @param message The error message.\\nerror Unauthorized(string message);\",\"keccak256\":\"0x302087c36048c360cbd3192e41344d8705d7a50fdb97c8b77d45a5ff503dd264\",\"license\":\"UNLICENSED\"},\"submodules/v2-foundry/src/interfaces/IERC20Burnable.sol\":{\"content\":\"pragma solidity >=0.5.0;\\n\\nimport \\\"../../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\\\";\\n\\n/// @title  IERC20Burnable\\n/// @author Alchemix Finance\\ninterface IERC20Burnable is IERC20 {\\n    /// @notice Burns `amount` tokens from the balance of `msg.sender`.\\n    ///\\n    /// @param amount The amount of tokens to burn.\\n    ///\\n    /// @return If burning the tokens was successful.\\n    function burn(uint256 amount) external returns (bool);\\n\\n    /// @notice Burns `amount` tokens from `owner`'s balance.\\n    ///\\n    /// @param owner  The address to burn tokens from.\\n    /// @param amount The amount of tokens to burn.\\n    ///\\n    /// @return If burning the tokens was successful.\\n    function burnFrom(address owner, uint256 amount) external returns (bool);\\n}\",\"keccak256\":\"0x1ef68b8211ae0387d53a98d9ed818fed3991c029f58a4730467baa1cf6b22e58\"},\"submodules/v2-foundry/src/interfaces/IERC20Mintable.sol\":{\"content\":\"pragma solidity >=0.5.0;\\n\\nimport \\\"../../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\\\";\\n\\n/// @title  IERC20Mintable\\n/// @author Alchemix Finance\\ninterface IERC20Mintable is IERC20 {\\n    /// @notice Mints `amount` tokens to `recipient`.\\n    ///\\n    /// @param recipient The address which will receive the minted tokens.\\n    /// @param amount    The amount of tokens to mint.\\n    function mint(address recipient, uint256 amount) external;\\n}\",\"keccak256\":\"0x072e557e7eff54ba828d410d96e7782931a634813bccc817dc8988979a435aeb\"},\"submodules/v2-foundry/src/interfaces/IRewardCollector.sol\":{\"content\":\"pragma solidity ^0.8.13;\\n\\ninterface IRewardCollector {\\n    /// @notice Gets the current version.\\n    ///\\n    /// @return The version.\\n    function version() external view returns (string memory);\\n\\n    /// @notice Gets the current reward token.\\n    ///\\n    /// @return The reward token.\\n    function rewardToken() external view returns (address);\\n\\n    /// @notice Gets the current swap router.\\n    ///\\n    /// @return The swap router address.\\n    function swapRouter() external view returns (address);\\n\\n    /// @notice Gets the current debt token.\\n    ///\\n    /// @return The debt token\\n    function debtToken() external view returns (address);\\n\\n    /// @notice Claims rewards tokens, swaps for debt tokens. \\n    ///\\n    /// @param  token                The yield token to claim rewards for.\\n    /// @param  minimumAmountOut     The minimum returns to accept.\\n    ///\\n    /// @return claimed              The amount of reward tokens claimed.\\n    function claimAndDonateRewards(address token, uint256 minimumAmountOut) external returns (uint256 claimed);\\n\\n    /// @notice Gets expected exchange for OP to debt token.\\n    function getExpectedExchange(address yieldToken) external view returns (uint256);\\n}\",\"keccak256\":\"0xda51b9261b56023f21d6f858e77ea298eccf0bee30efc2188697ba4330bfce8c\"},\"submodules/v2-foundry/src/interfaces/IRewardRouter.sol\":{\"content\":\"pragma solidity ^0.8.13;\\n\\ninterface IRewardRouter {\\n    /// @notice Gets the current version.\\n    ///\\n    /// @return The version.\\n    function version() external view returns (string memory);\\n\\n    /// @notice Gets the rewardcollector params.\\n    function getRewardCollector(address) external view returns (address, address, uint256, uint256, uint256);\\n\\n    /// @notice Distributes rewards from grants and triggers collectors to claim rewards and donate.\\n    ///\\n    /// @param  token                The yield token to claim rewards for.\\n    ///\\n    /// @return claimed              The amount of reward tokens claimed.\\n    function distributeRewards(address token) external returns (uint256 claimed);\\n}\",\"keccak256\":\"0x48f2150767317ae4372eff068e39adea139ce47eb331378bc81e92246af8b378\"},\"submodules/v2-foundry/src/interfaces/external/aave/DataTypes.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\n// @dev Refer to the whitepaper, section 1.1 basic concepts for a formal description of these properties.\\nstruct ReserveData {\\n  // Stores the reserve configuration.\\n  ReserveConfigurationMap configuration;\\n  // The liquidity index. Expressed in ray.\\n  uint128 liquidityIndex;\\n  // Variable borrow index. Expressed in ray.\\n  uint128 variableBorrowIndex;\\n  // The current supply rate. Expressed in ray.\\n  uint128 currentLiquidityRate;\\n  // The current variable borrow rate. Expressed in ray.\\n  uint128 currentVariableBorrowRate;\\n  // The current stable borrow rate. Expressed in ray.\\n  uint128 currentStableBorrowRate;\\n  uint40 lastUpdateTimestamp;\\n  // Tokens addresses.\\n  address aTokenAddress;\\n  address stableDebtTokenAddress;\\n  address variableDebtTokenAddress;\\n  // Address of the interest rate strategy.\\n  address interestRateStrategyAddress;\\n  // The id of the reserve. Represents the position in the list of the active reserves.\\n  uint8 id;\\n}\\n\\nstruct ReserveConfigurationMap {\\n  //bit 0-15: LTV\\n  //bit 16-31: Liq. threshold\\n  //bit 32-47: Liq. bonus\\n  //bit 48-55: Decimals\\n  //bit 56: Reserve is active\\n  //bit 57: reserve is frozen\\n  //bit 58: borrowing is enabled\\n  //bit 59: stable rate borrowing enabled\\n  //bit 60-63: reserved\\n  //bit 64-79: reserve factor\\n  uint256 data;\\n}\\n\\nstruct UserConfigurationMap {\\n  uint256 data;\\n}\\n\\nenum InterestRateMode {\\n  NONE,\\n  STABLE,\\n  VARIABLE\\n}\",\"keccak256\":\"0x63e3c6a3663d616b5cbb9d6a0b9d5f10465bc39715ff88d29cb57275bfb651b1\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/IAToken.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\nimport {IERC20} from \\\"../../../../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\\\";\\nimport {IScaledBalanceToken} from './IScaledBalanceToken.sol';\\nimport {IInitializableAToken} from './IInitializableAToken.sol';\\nimport {IAaveIncentivesController} from './IAaveIncentivesController.sol';\\n\\ninterface IAToken is IERC20, IScaledBalanceToken, IInitializableAToken {\\n  /**\\n   * @dev Emitted after the mint action\\n   * @param from The address performing the mint\\n   * @param value The amount being\\n   * @param index The new liquidity index of the reserve\\n   **/\\n  event Mint(address indexed from, uint256 value, uint256 index);\\n\\n  /**\\n   * @dev Mints `amount` aTokens to `user`\\n   * @param user The address receiving the minted tokens\\n   * @param amount The amount of tokens getting minted\\n   * @param index The new liquidity index of the reserve\\n   * @return `true` if the the previous balance of the user was 0\\n   */\\n  function mint(\\n    address user,\\n    uint256 amount,\\n    uint256 index\\n  ) external returns (bool);\\n\\n  /**\\n   * @dev Emitted after aTokens are burned\\n   * @param from The owner of the aTokens, getting them burned\\n   * @param target The address that will receive the underlying\\n   * @param value The amount being burned\\n   * @param index The new liquidity index of the reserve\\n   **/\\n  event Burn(address indexed from, address indexed target, uint256 value, uint256 index);\\n\\n  /**\\n   * @dev Emitted during the transfer action\\n   * @param from The user whose tokens are being transferred\\n   * @param to The recipient\\n   * @param value The amount being transferred\\n   * @param index The new liquidity index of the reserve\\n   **/\\n  event BalanceTransfer(address indexed from, address indexed to, uint256 value, uint256 index);\\n\\n  /**\\n   * @dev Burns aTokens from `user` and sends the equivalent amount of underlying to `receiverOfUnderlying`\\n   * @param user The owner of the aTokens, getting them burned\\n   * @param receiverOfUnderlying The address that will receive the underlying\\n   * @param amount The amount being burned\\n   * @param index The new liquidity index of the reserve\\n   **/\\n  function burn(\\n    address user,\\n    address receiverOfUnderlying,\\n    uint256 amount,\\n    uint256 index\\n  ) external;\\n\\n  /**\\n   * @dev Mints aTokens to the reserve treasury\\n   * @param amount The amount of tokens getting minted\\n   * @param index The new liquidity index of the reserve\\n   */\\n  function mintToTreasury(uint256 amount, uint256 index) external;\\n\\n  /**\\n   * @dev Transfers aTokens in the event of a borrow being liquidated, in case the liquidators reclaims the aToken\\n   * @param from The address getting liquidated, current owner of the aTokens\\n   * @param to The recipient\\n   * @param value The amount of tokens getting transferred\\n   **/\\n  function transferOnLiquidation(\\n    address from,\\n    address to,\\n    uint256 value\\n  ) external;\\n\\n  /**\\n   * @dev Transfers the underlying asset to `target`. Used by the LendingPool to transfer\\n   * assets in borrow(), withdraw() and flashLoan()\\n   * @param user The recipient of the underlying\\n   * @param amount The amount getting transferred\\n   * @return The amount transferred\\n   **/\\n  function transferUnderlyingTo(address user, uint256 amount) external returns (uint256);\\n\\n  /**\\n   * @dev Invoked to execute actions on the aToken side after a repayment.\\n   * @param user The user executing the repayment\\n   * @param amount The amount getting repaid\\n   **/\\n  function handleRepayment(address user, uint256 amount) external;\\n\\n  /**\\n   * @dev Returns the address of the incentives controller contract\\n   **/\\n  function getIncentivesController() external view returns (IAaveIncentivesController);\\n\\n  /**\\n   * @dev Returns the address of the underlying asset of this aToken (E.g. WETH for aWETH)\\n   **/\\n  function UNDERLYING_ASSET_ADDRESS() external view returns (address);\\n}\",\"keccak256\":\"0x6241a8de6ea9ca116842a8e54b525f3372beb60ff0e8a066d2406f9e5a91848e\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/IAaveIncentivesController.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\npragma experimental ABIEncoderV2;\\n\\ninterface IAaveIncentivesController {\\n  event RewardsAccrued(address indexed user, uint256 amount);\\n\\n  event RewardsClaimed(address indexed user, address indexed to, uint256 amount);\\n\\n  event RewardsClaimed(\\n    address indexed user,\\n    address indexed to,\\n    address indexed claimer,\\n    uint256 amount\\n  );\\n\\n  event ClaimerSet(address indexed user, address indexed claimer);\\n\\n  /*\\n   * @dev Returns the configuration of the distribution for a certain asset\\n   * @param asset The address of the reference asset of the distribution\\n   * @return The asset index, the emission per second and the last updated timestamp\\n   **/\\n  function getAssetData(address asset)\\n    external\\n    view\\n    returns (\\n      uint256,\\n      uint256,\\n      uint256\\n    );\\n\\n  /**\\n   * @dev Whitelists an address to claim the rewards on behalf of another address\\n   * @param user The address of the user\\n   * @param claimer The address of the claimer\\n   */\\n  function setClaimer(address user, address claimer) external;\\n\\n  /**\\n   * @dev Returns the whitelisted claimer for a certain address (0x0 if not set)\\n   * @param user The address of the user\\n   * @return The claimer address\\n   */\\n  function getClaimer(address user) external view returns (address);\\n\\n  /**\\n   * @dev Configure assets for a certain rewards emission\\n   * @param assets The assets to incentivize\\n   * @param emissionsPerSecond The emission for each asset\\n   */\\n  function configureAssets(address[] calldata assets, uint256[] calldata emissionsPerSecond)\\n    external;\\n\\n  /**\\n   * @dev Called by the corresponding asset on any update that affects the rewards distribution\\n   * @param asset The address of the user\\n   * @param userBalance The balance of the user of the asset in the lending pool\\n   * @param totalSupply The total supply of the asset in the lending pool\\n   **/\\n  function handleAction(\\n    address asset,\\n    uint256 userBalance,\\n    uint256 totalSupply\\n  ) external;\\n\\n  /**\\n   * @dev Returns the total of rewards of an user, already accrued + not yet accrued\\n   * @param user The address of the user\\n   * @return The rewards\\n   **/\\n  function getRewardsBalance(address[] calldata assets, address user)\\n    external\\n    view\\n    returns (uint256);\\n\\n  /**\\n   * @dev Claims reward for an user, on all the assets of the lending pool, accumulating the pending rewards\\n   * @param amount Amount of rewards to claim\\n   * @param to Address that will be receiving the rewards\\n   * @return Rewards claimed\\n   **/\\n  function claimRewards(\\n    address[] calldata assets,\\n    uint256 amount,\\n    address to\\n  ) external returns (uint256);\\n\\n  /**\\n   * @dev Claims reward for an user on behalf, on all the assets of the lending pool, accumulating the pending rewards. The caller must\\n   * be whitelisted via \\\"allowClaimOnBehalf\\\" function by the RewardsAdmin role manager\\n   * @param amount Amount of rewards to claim\\n   * @param user Address to check and claim rewards\\n   * @param to Address that will be receiving the rewards\\n   * @return Rewards claimed\\n   **/\\n  function claimRewardsOnBehalf(\\n    address[] calldata assets,\\n    uint256 amount,\\n    address user,\\n    address to\\n  ) external returns (uint256);\\n\\n  /**\\n   * @dev returns the unclaimed rewards of the user\\n   * @param user the address of the user\\n   * @return the unclaimed user rewards\\n   */\\n  function getUserUnclaimedRewards(address user) external view returns (uint256);\\n\\n  /**\\n   * @dev returns the unclaimed rewards of the user\\n   * @param user the address of the user\\n   * @param asset The asset to incentivize\\n   * @return the user index for the asset\\n   */\\n  function getUserAssetData(address user, address asset) external view returns (uint256);\\n\\n  /**\\n   * @dev for backward compatibility with previous implementation of the Incentives controller\\n   */\\n  function REWARD_TOKEN() external view returns (address);\\n\\n  /**\\n   * @dev for backward compatibility with previous implementation of the Incentives controller\\n   */\\n  function PRECISION() external view returns (uint8);\\n}\",\"keccak256\":\"0x36f7001948d174c5c6546737ca44c1b99f93162d47e8b146b769483de0e3db91\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/IInitializableAToken.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\nimport {ILendingPool} from './ILendingPool.sol';\\nimport {IAaveIncentivesController} from './IAaveIncentivesController.sol';\\n\\n/**\\n * @title IInitializableAToken\\n * @notice Interface for the initialize function on AToken\\n * @author Aave\\n **/\\ninterface IInitializableAToken {\\n  /**\\n   * @dev Emitted when an aToken is initialized\\n   * @param underlyingAsset The address of the underlying asset\\n   * @param pool The address of the associated lending pool\\n   * @param treasury The address of the treasury\\n   * @param incentivesController The address of the incentives controller for this aToken\\n   * @param aTokenDecimals the decimals of the underlying\\n   * @param aTokenName the name of the aToken\\n   * @param aTokenSymbol the symbol of the aToken\\n   * @param params A set of encoded parameters for additional initialization\\n   **/\\n  event Initialized(\\n    address indexed underlyingAsset,\\n    address indexed pool,\\n    address treasury,\\n    address incentivesController,\\n    uint8 aTokenDecimals,\\n    string aTokenName,\\n    string aTokenSymbol,\\n    bytes params\\n  );\\n\\n  /**\\n   * @dev Initializes the aToken\\n   * @param pool The address of the lending pool where this aToken will be used\\n   * @param treasury The address of the Aave treasury, receiving the fees on this aToken\\n   * @param underlyingAsset The address of the underlying asset of this aToken (E.g. WETH for aWETH)\\n   * @param incentivesController The smart contract managing potential incentives distribution\\n   * @param aTokenDecimals The decimals of the aToken, same as the underlying asset's\\n   * @param aTokenName The name of the aToken\\n   * @param aTokenSymbol The symbol of the aToken\\n   */\\n  function initialize(\\n    ILendingPool pool,\\n    address treasury,\\n    address underlyingAsset,\\n    IAaveIncentivesController incentivesController,\\n    uint8 aTokenDecimals,\\n    string calldata aTokenName,\\n    string calldata aTokenSymbol,\\n    bytes calldata params\\n  ) external;\\n}\",\"keccak256\":\"0xab946c6d2e403d07ab0caa699f0861ac74561d3c5f8ee101448e6c2a9ea12c35\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/ILendingPool.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\nimport * as DataTypes from \\\"./DataTypes.sol\\\";\\n\\nimport {ILendingPoolAddressesProvider} from \\\"./ILendingPoolAddressesProvider.sol\\\";\\n\\ninterface ILendingPool {\\n  /// @dev Emitted on `deposit`.\\n  ///\\n  /// @param reserve    The address of the underlying asset of the reserve.\\n  /// @param user       The address initiating the deposit.\\n  /// @param onBehalfOf The beneficiary of the deposit, receiving the aTokens.\\n  /// @param amount     The amount deposited.\\n  /// @param referral   The referral code used.\\n  event Deposit(\\n    address indexed reserve,\\n    address user,\\n    address indexed onBehalfOf,\\n    uint256 amount,\\n    uint16 indexed referral\\n  );\\n\\n  /// @dev Emitted on `withdraw`.\\n  ///\\n  /// @param reserve The address of the underlying asset being withdrawn.\\n  /// @param user    The address initiating the withdrawal, owner of aTokens.\\n  /// @param to      Address that will receive the underlying.\\n  /// @param amount  The amount to be withdrawn.\\n  event Withdraw(address indexed reserve, address indexed user, address indexed to, uint256 amount);\\n  \\n  /// @dev Emitted on `borrow` and `flashLoan` when debt needs to be opened.\\n  ///\\n  /// @param reserve        The address of the underlying asset being borrowed.\\n  /// @param user           The address of the user initiating the `borrow`, receiving the funds on `borrow` or just\\n  ///                       initiator of the transaction on `flashLoan`.\\n  /// @param onBehalfOf     The address that will be getting the debt.\\n  /// @param amount         The amount borrowed out.\\n  /// @param borrowRateMode The rate mode: 1 for Stable, 2 for Variable.\\n  /// @param borrowRate     The numeric rate at which the user has borrowed.\\n  /// @param referral       The referral code used.\\n  event Borrow(\\n    address indexed reserve,\\n    address user,\\n    address indexed onBehalfOf,\\n    uint256 amount,\\n    uint256 borrowRateMode,\\n    uint256 borrowRate,\\n    uint16 indexed referral\\n  );\\n\\n  /// @dev Emitted on `repay`.\\n  ///\\n  /// @param reserve The address of the underlying asset of the reserve.\\n  /// @param user    The beneficiary of the repayment, getting his debt reduced.\\n  /// @param repayer The address of the user initiating the `repay`, providing the funds.\\n  /// @param amount  The amount repaid.\\n  event Repay(address indexed reserve, address indexed user, address indexed repayer, uint256 amount);\\n  \\n  /// @dev Emitted on `swapBorrowRateMode`.\\n  ///\\n  /// @param reserve  The address of the underlying asset of the reserve\\n  /// @param user     The address of the user swapping his rate mode\\n  /// @param rateMode The rate mode that the user wants to swap to\\n  event Swap(address indexed reserve, address indexed user, uint256 rateMode);\\n  \\n  /// @dev Emitted on `setUserUseReserveAsCollateral`.\\n  ///\\n  /// @param reserve The address of the underlying asset of the reserve\\n  /// @param user    The address of the user enabling the usage as collateral\\n  event ReserveUsedAsCollateralEnabled(address indexed reserve, address indexed user);\\n\\n  /// @dev Emitted on `setUserUseReserveAsCollateral`.\\n  ///\\n  /// @param reserve The address of the underlying asset of the reserve\\n  /// @param user    The address of the user enabling the usage as collateral\\n  event ReserveUsedAsCollateralDisabled(address indexed reserve, address indexed user);\\n  \\n  /// @dev Emitted on `rebalanceStableBorrowRate`.\\n  ///\\n  /// @param reserve The address of the underlying asset of the reserve\\n  /// @param user    The address of the user for which the rebalance has been executed\\n  event RebalanceStableBorrowRate(address indexed reserve, address indexed user);\\n\\n  /// @dev Emitted on `flashLoan`.\\n  ///\\n  /// @param target       The address of the flash loan receiver contract.\\n  /// @param initiator    The address initiating the flash loan.\\n  /// @param asset        The address of the asset being flash borrowed.\\n  /// @param amount       The amount flash borrowed.\\n  /// @param premium      The fee flash borrowed.\\n  /// @param referralCode The referral code used.\\n  event FlashLoan(\\n    address indexed target,\\n    address indexed initiator,\\n    address indexed asset,\\n    uint256 amount,\\n    uint256 premium,\\n    uint16 referralCode\\n  );\\n\\n  /// @dev Emitted when the pause is triggered.\\n  event Paused();\\n\\n  /// @dev Emitted when the pause is lifted.\\n  event Unpaused();\\n\\n  /// @dev Emitted when a borrower is liquidated. This event is emitted by the LendingPool via LendingPoolCollateral\\n  ///      manager using a DELEGATECALL.\\n  ///\\n  /// This allows to have the events in the generated ABI for LendingPool.\\n  ///\\n  /// @param collateralAsset            The address of the underlying asset used as collateral, to receive as result of\\n  ///                                   the liquidation.\\n  /// @param debtAsset                  The address of the underlying borrowed asset to be repaid with the liquidation.\\n  /// @param user                       The address of the borrower getting liquidated.\\n  /// @param debtToCover                The debt amount of borrowed `asset` the liquidator wants to cover.\\n  /// @param liquidatedCollateralAmount The amount of collateral received by the liquidator.\\n  /// @param liquidator                 The address of the liquidator\\n  /// @param receiveAToken              `true` if the liquidators wants to receive the collateral aTokens, `false` if\\n  ///                                   he wants to receive the underlying collateral asset directly.\\n  event LiquidationCall(\\n    address indexed collateralAsset,\\n    address indexed debtAsset,\\n    address indexed user,\\n    uint256 debtToCover,\\n    uint256 liquidatedCollateralAmount,\\n    address liquidator,\\n    bool receiveAToken\\n  );\\n\\n  /// @dev Emitted when the state of a reserve is updated.\\n  ///\\n  /// NOTE: This event is actually declared in the ReserveLogic library and emitted in the `updateInterestRates`\\n  /// function. Since the function is internal, the event will actually be fired by the LendingPool contract. The event\\n  /// is therefore replicated here so it gets added to the LendingPool ABI.\\n  ///\\n  /// @param reserve             The address of the underlying asset of the reserve.\\n  /// @param liquidityRate       The new liquidity rate.\\n  /// @param stableBorrowRate    The new stable borrow rate.\\n  /// @param variableBorrowRate  The new variable borrow rate.\\n  /// @param liquidityIndex      The new liquidity index\\n  /// @param variableBorrowIndex The new variable borrow index\\n  event ReserveDataUpdated(\\n    address indexed reserve,\\n    uint256 liquidityRate,\\n    uint256 stableBorrowRate,\\n    uint256 variableBorrowRate,\\n    uint256 liquidityIndex,\\n    uint256 variableBorrowIndex\\n  );\\n\\n  /// @dev Deposits an `amount` of underlying asset into the reserve, receiving in return overlying aTokens.\\n  ///\\n  /// - E.g. User deposits 100 USDC and gets in return 100 aUSDC.\\n  ///\\n  /// @param asset        The address of the underlying asset to deposit.\\n  /// @param amount       The amount to be deposited.\\n  /// @param onBehalfOf   The address that will receive the aTokens, same as msg.sender if the user wants to receive\\n  ///                     them on his own wallet, or a different address if the beneficiary of aTokens is a different\\n  ///                     wallet.\\n  /// @param referralCode Code used to register the integrator originating the operation, for potential rewards.0 if the\\n  ///                     action is executed directly by the user, without any middle-man\\n  function deposit(\\n    address asset,\\n    uint256 amount,\\n    address onBehalfOf,\\n    uint16 referralCode\\n  ) external;\\n\\n  /// @dev Withdraws an `amount` of underlying asset from the reserve, burning the equivalent aTokens owned.\\n  ///\\n  /// E.g. User has 100 aUSDC, calls `withdraw` and receives 100 USDC, burning the 100 aUSDC.\\n  ///\\n  /// @param asset  The address of the underlying asset to withdraw\\n  /// @param amount The underlying amount to be withdrawn.\\n  /// @param to     Address that will receive the underlying, same as msg.sender if the user wants to receive it on his\\n  ///               own wallet, or a different address if the beneficiary is a different wallet.\\n  ///\\n  /// @return amountWithdrawn The final amount withdrawn\\n  function withdraw(\\n    address asset,\\n    uint256 amount,\\n    address to\\n  ) external returns (uint256 amountWithdrawn);\\n\\n  /// @dev Allows users to borrow a specific `amount` of the reserve underlying asset, provided that the borrower\\n  ///     already deposited enough collateral, or he was given enough allowance by a credit delegator on the\\n  ///     corresponding debt token (StableDebtToken or VariableDebtToken).\\n  ///\\n  /// - E.g. User borrows 100 USDC passing as `onBehalfOf` his own address, receiving the 100 USDC in his wallet and\\n  ///   100 stable/variable debt tokens, depending on the `interestRateMode`.\\n  ///\\n  /// @param asset            The address of the underlying asset to borrow.\\n  /// @param amount           The amount to be borrowed.\\n  /// @param interestRateMode The interest rate mode at which the user wants to borrow: 1 for Stable, 2 for Variable\\n  /// @param referralCode     Code used to register the integrator originating the operation, for potential rewards.\\n  ///                         0 if the action is executed directly by the user, without any middle-man\\n  /// @param onBehalfOf       Address of the user who will receive the debt. Should be the address of the borrower\\n  ///                         itself calling the function if he wants to borrow against his own collateral, or the\\n  ///                         address of the credit delegator if he has been given credit delegation allowance\\n  function borrow(\\n    address asset,\\n    uint256 amount,\\n    uint256 interestRateMode,\\n    uint16 referralCode,\\n    address onBehalfOf\\n  ) external;\\n\\n  /// @notice Repays a borrowed `amount` on a specific reserve, burning the equivalent debt tokens owned.\\n  ///\\n  /// - E.g. User repays 100 USDC, burning 100 variable/stable debt tokens of the `onBehalfOf` address.\\n  ///\\n  /// @param asset      The address of the borrowed underlying asset previously borrowed.\\n  /// @param amount     The amount to repay.\\n  /// @param rateMode   The interest rate mode at of the debt the user wants to repay: 1 for Stable, 2 for Variable\\n  /// @param onBehalfOf Address of the user who will get his debt reduced/removed. Should be the address of the user\\n  ///                   calling the function if he wants to reduce/remove his own debt, or the address of any other\\n  ///                   other borrower whose debt should be removed.\\n  ///\\n  /// @return amountRepaid The final amount repaid.\\n  function repay(\\n    address asset,\\n    uint256 amount,\\n    uint256 rateMode,\\n    address onBehalfOf\\n  ) external returns (uint256 amountRepaid);\\n\\n  /// @dev Allows a borrower to swap his debt between stable and variable mode, or vice versa.\\n  ///\\n  /// @param asset    The address of the underlying asset borrowed.\\n  /// @param rateMode The rate mode that the user wants to swap to.\\n  function swapBorrowRateMode(address asset, uint256 rateMode) external;\\n\\n  /// @dev Rebalances the stable interest rate of a user to the current stable rate defined on the reserve.\\n  ///\\n  /// - Users can be rebalanced if the following conditions are satisfied:\\n  ///   1. Usage ratio is above 95%\\n  ///   2. the current deposit APY is below REBALANCE_UP_THRESHOLD  maxVariableBorrowRate, which means that too much\\n  ///      has been borrowed at a stable rate and depositors are not earning enough.\\n  ///\\n  /// @param asset The address of the underlying asset borrowed.\\n  /// @param user The address of the user to be rebalanced.\\n  function rebalanceStableBorrowRate(address asset, address user) external;\\n\\n  /// @dev Allows depositors to enable/disable a specific deposited asset as collateral.\\n  ///\\n  /// @param asset            The address of the underlying asset deposited.\\n  /// @param useAsCollateral `true` if the user wants to use the deposit as collateral, `false` otherwise.\\n  function setUserUseReserveAsCollateral(address asset, bool useAsCollateral) external;\\n  \\n  /// @dev Function to liquidate a non-healthy position collateral-wise, with Health Factor below 1.\\n  ///\\n  /// - The caller (liquidator) covers `debtToCover` amount of debt of the user getting liquidated, and receives a\\n  ///   proportionally amount of the `collateralAsset` plus a bonus to cover market risk.\\n  ///\\n  /// @param collateralAsset The address of the underlying asset used as collateral, to receive as result of the\\n  ///                        liquidation.\\n  /// @param debtAsset       The address of the underlying borrowed asset to be repaid with the liquidation.\\n  /// @param user            The address of the borrower getting liquidated.\\n  /// @param debtToCover     The debt amount of borrowed `asset` the liquidator wants to cover.\\n  /// @param receiveAToken   `true` if the liquidators wants to receive the collateral aTokens, `false` if he wants to\\n  ///                        receive the underlying collateral asset directly\\n  function liquidationCall(\\n    address collateralAsset,\\n    address debtAsset,\\n    address user,\\n    uint256 debtToCover,\\n    bool receiveAToken\\n  ) external;\\n\\n  /// @dev Allows smart contracts to access the liquidity of the pool within one transaction, as long as the amount\\n  ///      taken plus a fee is returned.\\n  ///\\n  /// IMPORTANT There are security concerns for developers of flash loan receiver contracts that must be kept into\\n  /// consideration.\\n  ///\\n  /// For further details please visit https://developers.aave.com.\\n  ///\\n  /// @param receiverAddress The address of the contract receiving the funds, implementing the IFlashLoanReceiver\\n  ///                        interface.\\n  /// @param assets          The addresses of the assets being flash-borrowed.\\n  /// @param amounts         The amounts amounts being flash-borrowed.\\n  /// @param modes           Types of the debt to open if the flash loan is not returned.\\n  /// @param onBehalfOf      The address  that will receive the debt in the case of using on `modes` 1 or 2.\\n  /// @param params          Variadic packed params to pass to the receiver as extra information.\\n  /// @param referralCode    Code used to register the integrator originating the operation, for potential rewards. 0\\n  ///                        if the action is executed directly by the user, without any middle-man\\n  function flashLoan(\\n    address receiverAddress,\\n    address[] calldata assets,\\n    uint256[] calldata amounts,\\n    uint256[] calldata modes,\\n    address onBehalfOf,\\n    bytes calldata params,\\n    uint16 referralCode\\n  ) external;\\n\\n  /// @dev Returns the user account data across all the reserves.\\n  ///\\n  /// @param user The address of the user.\\n  ///\\n  /// @return totalCollateralETH          The total collateral in ETH of the user.\\n  /// @return totalDebtETH                The total debt in ETH of the user.\\n  /// @return availableBorrowsETH         The borrowing power left of the user.\\n  /// @return currentLiquidationThreshold The liquidation threshold of the user.\\n  /// @return ltv                         The loan to value of the user.\\n  /// @return healthFactor                The current health factor of the user.\\n  function getUserAccountData(address user)\\n    external\\n    view\\n    returns (\\n      uint256 totalCollateralETH,\\n      uint256 totalDebtETH,\\n      uint256 availableBorrowsETH,\\n      uint256 currentLiquidationThreshold,\\n      uint256 ltv,\\n      uint256 healthFactor\\n    );\\n\\n  function initReserve(\\n    address reserve,\\n    address aTokenAddress,\\n    address stableDebtAddress,\\n    address variableDebtAddress,\\n    address interestRateStrategyAddress\\n  ) external;\\n\\n    /**\\n   * @notice Supplies an `amount` of underlying asset into the reserve, receiving in return overlying aTokens.\\n   * - E.g. User supplies 100 USDC and gets in return 100 aUSDC\\n   * @param asset The address of the underlying asset to supply\\n   * @param amount The amount to be supplied\\n   * @param onBehalfOf The address that will receive the aTokens, same as msg.sender if the user\\n   *   wants to receive them on his own wallet, or a different address if the beneficiary of aTokens\\n   *   is a different wallet\\n   * @param referralCode Code used to register the integrator originating the operation, for potential rewards.\\n   *   0 if the action is executed directly by the user, without any middle-man\\n   **/\\n  function supply(\\n    address asset,\\n    uint256 amount,\\n    address onBehalfOf,\\n    uint16 referralCode\\n  ) external;\\n\\n  function setReserveInterestRateStrategyAddress(address reserve, address rateStrategyAddress) external;\\n\\n  function setConfiguration(address reserve, uint256 configuration) external;\\n\\n  /// @dev Returns the configuration of the reserve.\\n  ///\\n  /// @param asset The address of the underlying asset of the reserve.\\n  ///\\n  /// @return The configuration of the reserve.\\n  function getConfiguration(address asset) external view returns (DataTypes.ReserveConfigurationMap memory);\\n\\n  /// @dev Returns the configuration of the user across all the reserves.\\n  ///\\n  /// @param user The user address.\\n  ///\\n  /// @return The configuration of the user.\\n  function getUserConfiguration(address user) external view returns (DataTypes.UserConfigurationMap memory);\\n  \\n  /// @dev Returns the normalized income normalized income of the reserve.\\n  ///\\n  /// @param asset The address of the underlying asset of the reserve.\\n  ///\\n  /// @return The reserve's normalized income.\\n  function getReserveNormalizedIncome(address asset) external view returns (uint256);\\n\\n  /// @dev Returns the normalized variable debt per unit of asset.`\\n  ///\\n  /// @param asset The address of the underlying asset of the reserve.\\n  ///\\n  /// @return The reserve normalized variable debt.\\n  function getReserveNormalizedVariableDebt(address asset) external view returns (uint256);\\n\\n  /// @dev Returns the state and configuration of the reserve.\\n  ///\\n  /// @param asset The address of the underlying asset of the reserve.\\n  ///\\n  /// @return The state of the reserve.\\n  function getReserveData(address asset) external view returns (DataTypes.ReserveData memory);\\n\\n  function finalizeTransfer(\\n    address asset,\\n    address from,\\n    address to,\\n    uint256 amount,\\n    uint256 balanceFromAfter,\\n    uint256 balanceToBefore\\n  ) external;\\n\\n  function getReservesList() external view returns (address[] memory);\\n\\n  function getAddressesProvider() external view returns (ILendingPoolAddressesProvider);\\n\\n  function setPause(bool val) external;\\n\\n  function paused() external view returns (bool);\\n}\\n\",\"keccak256\":\"0x02f1d4cac650fbb60e702ebcaa7433381d9946d3fc43aafee44545b58db36af8\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/ILendingPoolAddressesProvider.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\n/// @title  ILendingPoolAddressesProvider\\n/// @author Aave\\n///\\n/// @dev Main registry of addresses part of or connected to the protocol, including permissioned roles.\\n///\\n/// - Acting also as factory of proxies and admin of those, so with right to change its implementations.\\n/// - Owned by the Aave Governance.\\ninterface ILendingPoolAddressesProvider {\\n  event MarketIdSet(string newMarketId);\\n  event LendingPoolUpdated(address indexed newAddress);\\n  event ConfigurationAdminUpdated(address indexed newAddress);\\n  event EmergencyAdminUpdated(address indexed newAddress);\\n  event LendingPoolConfiguratorUpdated(address indexed newAddress);\\n  event LendingPoolCollateralManagerUpdated(address indexed newAddress);\\n  event PriceOracleUpdated(address indexed newAddress);\\n  event LendingRateOracleUpdated(address indexed newAddress);\\n  event ProxyCreated(bytes32 id, address indexed newAddress);\\n  event AddressSet(bytes32 id, address indexed newAddress, bool hasProxy);\\n\\n  function getMarketId() external view returns (string memory);\\n\\n  function setMarketId(string calldata marketId) external;\\n\\n  function setAddress(bytes32 id, address newAddress) external;\\n\\n  function setAddressAsProxy(bytes32 id, address impl) external;\\n\\n  function getAddress(bytes32 id) external view returns (address);\\n\\n  function getLendingPool() external view returns (address);\\n\\n  function setLendingPoolImpl(address pool) external;\\n\\n  function getLendingPoolConfigurator() external view returns (address);\\n\\n  function setLendingPoolConfiguratorImpl(address configurator) external;\\n\\n  function getLendingPoolCollateralManager() external view returns (address);\\n\\n  function setLendingPoolCollateralManager(address manager) external;\\n\\n  function getPoolAdmin() external view returns (address);\\n\\n  function setPoolAdmin(address admin) external;\\n\\n  function getEmergencyAdmin() external view returns (address);\\n\\n  function setEmergencyAdmin(address admin) external;\\n\\n  function getPriceOracle() external view returns (address);\\n\\n  function setPriceOracle(address priceOracle) external;\\n\\n  function getLendingRateOracle() external view returns (address);\\n\\n  function setLendingRateOracle(address lendingRateOracle) external;\\n}\\n\",\"keccak256\":\"0x1506d7df79f8019ecdccfd2338d3e98fd7936c5a3bd9aface67b020a4080b9d6\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/IScaledBalanceToken.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\ninterface IScaledBalanceToken {\\n  /// @dev Returns the scaled balance of the user. The scaled balance is the sum of all the updated stored balance\\n  ///      divided by the reserve's liquidity index at the moment of the update.\\n  ///\\n  /// @param user The user whose balance is calculated.\\n  ///\\n  /// @return The scaled balance of the user.\\n  function scaledBalanceOf(address user) external view returns (uint256);\\n\\n  /// @dev Returns the scaled balance of the user and the scaled total supply.\\n  ///\\n  /// @param user The address of the user.\\n  ///\\n  /// @return scaledBalance     The scaled balance of the user.\\n  /// @return scaledTotalSupply The scaled balance and the scaled total supply.\\n  function getScaledUserBalanceAndSupply(address user)\\n    external view\\n    returns (\\n      uint256 scaledBalance,\\n      uint256 scaledTotalSupply\\n    );\\n\\n  /// @dev Returns the scaled total supply of the variable debt token. Represents sum(debt/index).\\n  ///\\n  /// @return The scaled total supply.\\n  function scaledTotalSupply() external view returns (uint256);\\n}\\n\",\"keccak256\":\"0x0bb73533d797247abd3022eb3d7641f030b05afb76bff4ad1a8da1daf9f6599c\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/interfaces/external/aave/IStaticAToken.sol\":{\"content\":\"// SPDX-License-Identifier: agpl-3.0\\npragma solidity >=0.5.0;\\n\\nimport {IERC20} from \\\"../../../../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\\\";\\n\\nimport {IAToken} from \\\"./IAToken.sol\\\";\\nimport {ILendingPool} from \\\"./ILendingPool.sol\\\";\\n\\n/// @title  IStaticAToken\\n/// @author Aave\\n///\\n/// @dev Wrapper token that allows to deposit tokens on the Aave protocol and receive token which balance doesn't\\n///      increase automatically, but uses an ever-increasing exchange rate. Only supporting deposits and withdrawals.\\ninterface IStaticAToken is IERC20 {\\n  struct SignatureParams {\\n    uint8 v;\\n    bytes32 r;\\n    bytes32 s;\\n  }\\n\\n  function LENDING_POOL() external returns (ILendingPool);\\n  function ATOKEN() external view returns (IERC20);\\n  function ASSET() external returns (IERC20);\\n\\n  function _nonces(address owner) external returns (uint256);\\n\\n  function claimRewards() external;\\n\\n  function deposit(\\n    address recipient,\\n    uint256 amount,\\n    uint16 referralCode,\\n    bool fromUnderlying\\n  ) external returns (uint256);\\n\\n  function withdraw(\\n    address recipient,\\n    uint256 amount,\\n    bool toUnderlying\\n  ) external returns (uint256, uint256);\\n\\n  function withdrawDynamicAmount(\\n    address recipient,\\n    uint256 amount,\\n    bool toUnderlying\\n  ) external returns (uint256, uint256);\\n\\n  function permit(\\n    address owner,\\n    address spender,\\n    uint256 value,\\n    uint256 deadline,\\n    uint8 v,\\n    bytes32 r,\\n    bytes32 s,\\n    uint256 chainId\\n  ) external;\\n\\n  function metaDeposit(\\n    address depositor,\\n    address recipient,\\n    uint256 value,\\n    uint16 referralCode,\\n    bool fromUnderlying,\\n    uint256 deadline,\\n    SignatureParams calldata sigParams,\\n    uint256 chainId\\n  ) external returns (uint256);\\n\\n  function metaWithdraw(\\n    address owner,\\n    address recipient,\\n    uint256 staticAmount,\\n    uint256 dynamicAmount,\\n    bool toUnderlying,\\n    uint256 deadline,\\n    SignatureParams calldata sigParams,\\n    uint256 chainId\\n  ) external returns (uint256, uint256);\\n\\n  function dynamicBalanceOf(address account) external view returns (uint256);\\n\\n  /// @dev Converts a static amount (scaled balance on aToken) to the aToken/underlying value, using the current\\n  ///      liquidity index on Aave.\\n  ///\\n  /// @param amount The amount to convert from.\\n  ///\\n  /// @return dynamicAmount The dynamic amount.\\n  function staticToDynamicAmount(uint256 amount) external view returns (uint256 dynamicAmount);\\n\\n  /// @dev Converts an aToken or underlying amount to the what it is denominated on the aToken as scaled balance,\\n  ///      function of the principal and the liquidity index.\\n  ///\\n  /// @param amount The amount to convert from.\\n  ///\\n  /// @return staticAmount The static (scaled) amount.\\n  function dynamicToStaticAmount(uint256 amount) external view returns (uint256 staticAmount);\\n\\n  /// @dev Returns the Aave liquidity index of the underlying aToken, denominated rate here as it can be considered as\\n  ///      an ever-increasing exchange rate.\\n  ///\\n  /// @return The rate.\\n  function rate() external view returns (uint256);\\n\\n  /// @dev Function to return a dynamic domain separator, in order to be compatible with forks changing chainId.\\n  ///\\n  /// @param chainId The chain id.\\n  ///\\n  /// @return The domain separator.\\n  function getDomainSeparator(uint256 chainId) external returns (bytes32);\\n}\",\"keccak256\":\"0xbad07e20270c5021fa63ad9c53da3dbe85e8f118b07e7447e64ab0e151581c2a\",\"license\":\"agpl-3.0\"},\"submodules/v2-foundry/src/libraries/TokenUtils.sol\":{\"content\":\"pragma solidity ^0.8.13;\\n\\nimport \\\"../../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\\\";\\nimport \\\"../../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol\\\";\\nimport \\\"../interfaces/IERC20Burnable.sol\\\";\\nimport \\\"../interfaces/IERC20Mintable.sol\\\";\\n\\n/// @title  TokenUtils\\n/// @author Alchemix Finance\\nlibrary TokenUtils {\\n    /// @notice An error used to indicate that a call to an ERC20 contract failed.\\n    ///\\n    /// @param target  The target address.\\n    /// @param success If the call to the token was a success.\\n    /// @param data    The resulting data from the call. This is error data when the call was not a success. Otherwise,\\n    ///                this is malformed data when the call was a success.\\n    error ERC20CallFailed(address target, bool success, bytes data);\\n\\n    /// @dev A safe function to get the decimals of an ERC20 token.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the query fails or returns an unexpected value.\\n    ///\\n    /// @param token The target token.\\n    ///\\n    /// @return The amount of decimals of the token.\\n    function expectDecimals(address token) internal view returns (uint8) {\\n        (bool success, bytes memory data) = token.staticcall(\\n            abi.encodeWithSelector(IERC20Metadata.decimals.selector)\\n        );\\n\\n        if (token.code.length == 0 || !success || data.length < 32) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n\\n        return abi.decode(data, (uint8));\\n    }\\n\\n    /// @dev Gets the balance of tokens held by an account.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the query fails or returns an unexpected value.\\n    ///\\n    /// @param token   The token to check the balance of.\\n    /// @param account The address of the token holder.\\n    ///\\n    /// @return The balance of the tokens held by an account.\\n    function safeBalanceOf(address token, address account) internal view returns (uint256) {\\n        (bool success, bytes memory data) = token.staticcall(\\n            abi.encodeWithSelector(IERC20.balanceOf.selector, account)\\n        );\\n\\n        if (token.code.length == 0 || !success || data.length < 32) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n\\n        return abi.decode(data, (uint256));\\n    }\\n\\n    /// @dev Transfers tokens to another address.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the transfer failed or returns an unexpected value.\\n    ///\\n    /// @param token     The token to transfer.\\n    /// @param recipient The address of the recipient.\\n    /// @param amount    The amount of tokens to transfer.\\n    function safeTransfer(address token, address recipient, uint256 amount) internal {\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(IERC20.transfer.selector, recipient, amount)\\n        );\\n\\n        if (token.code.length == 0 || !success || (data.length != 0 && !abi.decode(data, (bool)))) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n    }\\n\\n    /// @dev Approves tokens for the smart contract.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the approval fails or returns an unexpected value.\\n    ///\\n    /// @param token   The token to approve.\\n    /// @param spender The contract to spend the tokens.\\n    /// @param value   The amount of tokens to approve.\\n    function safeApprove(address token, address spender, uint256 value) internal {\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(IERC20.approve.selector, spender, value)\\n        );\\n\\n        if (token.code.length == 0 || !success || (data.length != 0 && !abi.decode(data, (bool)))) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n    }\\n\\n    /// @dev Transfer tokens from one address to another address.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the transfer fails or returns an unexpected value.\\n    ///\\n    /// @param token     The token to transfer.\\n    /// @param owner     The address of the owner.\\n    /// @param recipient The address of the recipient.\\n    /// @param amount    The amount of tokens to transfer.\\n    function safeTransferFrom(address token, address owner, address recipient, uint256 amount) internal {\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(IERC20.transferFrom.selector, owner, recipient, amount)\\n        );\\n\\n        if (token.code.length == 0 || !success || (data.length != 0 && !abi.decode(data, (bool)))) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n    }\\n\\n    /// @dev Mints tokens to an address.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the mint fails or returns an unexpected value.\\n    ///\\n    /// @param token     The token to mint.\\n    /// @param recipient The address of the recipient.\\n    /// @param amount    The amount of tokens to mint.\\n    function safeMint(address token, address recipient, uint256 amount) internal {\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(IERC20Mintable.mint.selector, recipient, amount)\\n        );\\n\\n        if (token.code.length == 0 || !success || (data.length != 0 && !abi.decode(data, (bool)))) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n    }\\n\\n    /// @dev Burns tokens.\\n    ///\\n    /// Reverts with a `CallFailed` error if execution of the burn fails or returns an unexpected value.\\n    ///\\n    /// @param token  The token to burn.\\n    /// @param amount The amount of tokens to burn.\\n    function safeBurn(address token, uint256 amount) internal {\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(IERC20Burnable.burn.selector, amount)\\n        );\\n\\n        if (token.code.length == 0 || !success || (data.length != 0 && !abi.decode(data, (bool)))) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n    }\\n\\n    /// @dev Burns tokens from its total supply.\\n    ///\\n    /// @dev Reverts with a {CallFailed} error if execution of the burn fails or returns an unexpected value.\\n    ///\\n    /// @param token  The token to burn.\\n    /// @param owner  The owner of the tokens.\\n    /// @param amount The amount of tokens to burn.\\n    function safeBurnFrom(address token, address owner, uint256 amount) internal {\\n        (bool success, bytes memory data) = token.call(\\n            abi.encodeWithSelector(IERC20Burnable.burnFrom.selector, owner, amount)\\n        );\\n\\n        if (token.code.length == 0 || !success || (data.length != 0 && !abi.decode(data, (bool)))) {\\n            revert ERC20CallFailed(token, success, data);\\n        }\\n    }\\n}\",\"keccak256\":\"0xc5baa0feb362479be13700eafb1bc8eee1ab10cac51bc9b317b721b5d2dd228c\"},\"submodules/v2-foundry/src/utils/RewardRouter.sol\":{\"content\":\"pragma solidity ^0.8.13;\\n\\nimport {IERC20} from \\\"../../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\\\";\\nimport {TokenUtils} from \\\"../libraries/TokenUtils.sol\\\";\\nimport \\\"../../lib/openzeppelin-contracts/contracts/access/Ownable.sol\\\";\\n\\nimport {IRewardCollector} from \\\"../interfaces/IRewardCollector.sol\\\";\\nimport {IRewardRouter} from \\\"../interfaces/IRewardRouter.sol\\\";\\nimport {IStaticAToken} from \\\"../interfaces/external/aave/IStaticAToken.sol\\\";\\n\\nimport {Unauthorized, IllegalState, IllegalArgument} from \\\"../base/ErrorMessages.sol\\\";\\n\\nstruct RewardCollector {\\n    address rewardCollectorAddress;\\n    uint256 rewardAmount;\\n    uint256 rewardTimeframe;\\n    uint256 lastRewardBlock;\\n}\\n\\n/// @title  Reward Router\\n/// @author Alchemix Finance\\ncontract RewardRouter is IRewardRouter, Ownable {\\n    string public override version = \\\"1.0.0\\\";\\n    uint256 public constant BPS = 10000;\\n\\n    uint256 public slippageBPS = 9500;\\n\\n    /// @dev A mapping of the yield tokens to their respective reward collectors\\n    mapping(address => RewardCollector) public rewardCollectors;\\n\\n    constructor() Ownable() {}\\n\\n    /// @dev Distributes grant rewards and triggers reward collector to claim and donate\\n    function distributeRewards(address vault) external returns (uint256) {\\n        // If vault is set to receive rewards from grants, send amount to reward collector to donate\\n        if (rewardCollectors[vault].rewardAmount > 0) {\\n            // Calculates ratio of timeframe to time since last harvest\\n            // Uses this ratio to determine partial reward amount or extra reward amount\\n            uint256 blocksSinceLastReward = block.number - rewardCollectors[vault].lastRewardBlock;\\n            uint256 amountToSend = rewardCollectors[vault].rewardAmount * blocksSinceLastReward / rewardCollectors[vault].rewardTimeframe;\\n            TokenUtils.safeTransfer(IRewardCollector(rewardCollectors[vault].rewardCollectorAddress).rewardToken(), rewardCollectors[vault].rewardCollectorAddress, amountToSend);\\n            rewardCollectors[vault].lastRewardBlock = block.number;\\n        }\\n\\n        return IRewardCollector(rewardCollectors[vault].rewardCollectorAddress).claimAndDonateRewards(vault, IRewardCollector(rewardCollectors[vault].rewardCollectorAddress).getExpectedExchange(vault) * slippageBPS / BPS);\\n    }\\n\\n    /// @dev Sweeps reward tokens to recipient\\n    ///\\n    /// @notice This contract is stocked with reward tokens from grants. This function is to retract excess tokens.\\n    function sweepTokens(address token, address recipient) external onlyOwner {\\n        TokenUtils.safeTransfer(token, recipient, TokenUtils.safeBalanceOf(token, address(this)));\\n    }\\n\\n    /// @dev Add reward collector params to a map of yield tokens\\n    function addVault(\\n        address vault,\\n        address rewardCollectorAddress,\\n        uint256 rewardAmount,\\n        uint256 rewardTimeframe,\\n        uint256 lastRewardBlock\\n    ) external onlyOwner {\\n        rewardCollectors[vault] = RewardCollector(rewardCollectorAddress, rewardAmount, rewardTimeframe, lastRewardBlock);\\n    }\\n\\n    /// @dev Set the reward collector address for a given vault\\n    function setRewardCollectorAddress(address vault, address rewardCollectorAddress) external onlyOwner {\\n        rewardCollectors[vault].rewardCollectorAddress = rewardCollectorAddress;\\n    }\\n\\n    /// @dev Set the reward token amount for a given vault\\n    function setRewardAmount(address vault, uint256 rewardAmount) external onlyOwner {\\n        rewardCollectors[vault].rewardAmount = rewardAmount;\\n    }\\n\\n    /// @dev Set the reward token timeframe for a given vault\\n    function setRewardTimeframe(address vault, uint256 timeframe) external onlyOwner {\\n        rewardCollectors[vault].rewardTimeframe = timeframe;\\n    }\\n\\n    /// @dev Set the allowed slippage\\n    function setSlippage(uint256 slippage) external onlyOwner {\\n        slippageBPS = slippage;\\n    }\\n\\n    /// @dev Get reward collector params for a given vault\\n    function getRewardCollector(address vault) external view returns (address, address, uint256, uint256, uint256) {\\n        return (\\n            rewardCollectors[vault].rewardCollectorAddress,\\n            IRewardCollector(rewardCollectors[vault].rewardCollectorAddress).rewardToken(),\\n            rewardCollectors[vault].rewardAmount,\\n            rewardCollectors[vault].rewardTimeframe,\\n            rewardCollectors[vault].lastRewardBlock\\n        );\\n    }\\n}\",\"keccak256\":\"0xfca019a95a30346e77cf6bd1983dffd3b771cd665e506e068e0a19893e38da86\"}},\"version\":1}",
+  "bytecode": "0x60c060405260056080819052640312e302e360dc1b60a09081526200002891600191906200009e565b5061251c6002553480156200003c57600080fd5b5062000048336200004e565b62000180565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b828054620000ac9062000144565b90600052602060002090601f016020900481019282620000d057600085556200011b565b82601f10620000eb57805160ff19168380011785556200011b565b828001600101855582156200011b579182015b828111156200011b578251825591602001919060010190620000fe565b50620001299291506200012d565b5090565b5b808211156200012957600081556001016200012e565b600181811c908216806200015957607f821691505b6020821081036200017a57634e487b7160e01b600052602260045260246000fd5b50919050565b610db280620001906000396000f3fe608060405234801561001057600080fd5b50600436106100f55760003560e01c806354fd4d5011610097578063e8260b9911610066578063e8260b9914610256578063eefc6e2314610269578063f0fa55a91461027c578063f2fde38b1461028f57600080fd5b806354fd4d50146101d85780636d0580b9146101ed578063715018a6146102335780638da5cb5b1461023b57600080fd5b80632526e17e116100d35780632526e17e1461013e578063348c49a1146101515780633ec7010f1461016457806352c94f751461016d57600080fd5b80631609be1d146100fa5780631de9d9b61461010f578063249d39e914610135575b600080fd5b61010d610108366004610ad2565b6102a2565b005b61012261011d366004610b0b565b6102c2565b6040519081526020015b60405180910390f35b61012261271081565b61010d61014c366004610b2f565b610522565b61010d61015f366004610ad2565b610549565b61012260025481565b6101ae61017b366004610b0b565b600360208190526000918252604090912080546001820154600283015492909301546001600160a01b0390911692919084565b604080516001600160a01b039095168552602085019390935291830152606082015260800161012c565b6101e061057f565b60405161012c9190610bb7565b6102006101fb366004610b0b565b61060d565b604080516001600160a01b039687168152959094166020860152928401919091526060830152608082015260a00161012c565b61010d6106cf565b6000546040516001600160a01b03909116815260200161012c565b61010d610264366004610b2f565b6106e3565b61010d610277366004610bca565b61070a565b61010d61028a366004610c1b565b610779565b61010d61029d366004610b0b565b610786565b6102aa610804565b6102be82826102b9853061085e565b610961565b5050565b6001600160a01b0381166000908152600360205260408120600101541561040a576001600160a01b0382166000908152600360208190526040822001546103099043610c4a565b6001600160a01b03841660009081526003602052604081206002810154600190910154929350909161033c908490610c61565b6103469190610c80565b6001600160a01b0380861660009081526003602090815260409182902054825163f7c618c160e01b815292519495506103e89493169263f7c618c19260048082019392918290030181865afa1580156103a3573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103c79190610ca2565b6001600160a01b038087166000908152600360205260409020541683610961565b50506001600160a01b0382166000908152600360208190526040909120439101555b6001600160a01b03828116600081815260036020526040908190205460025491516315a1452760e21b815260048101939093529092169163a387b32f918591612710918590635685149c90602401602060405180830381865afa158015610475573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104999190610cbf565b6104a39190610c61565b6104ad9190610c80565b6040516001600160e01b031960e085901b1681526001600160a01b03909216600483015260248201526044016020604051808303816000875af11580156104f8573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061051c9190610cbf565b92915050565b61052a610804565b6001600160a01b03909116600090815260036020526040902060020155565b610551610804565b6001600160a01b03918216600090815260036020526040902080546001600160a01b03191691909216179055565b6001805461058c90610cd8565b80601f01602080910402602001604051908101604052809291908181526020018280546105b890610cd8565b80156106055780601f106105da57610100808354040283529160200191610605565b820191906000526020600020905b8154815290600101906020018083116105e857829003601f168201915b505050505081565b6001600160a01b03808216600090815260036020908152604080832054815163f7c618c160e01b815291519394859485948594859490931692839263f7c618c1926004808401939192918290030181865afa158015610670573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106949190610ca2565b6001600160a01b0397909716600090815260036020819052604090912060018101546002820154919092015492999197509550909350915050565b6106d7610804565b6106e16000610a6d565b565b6106eb610804565b6001600160a01b03909116600090815260036020526040902060010155565b610712610804565b604080516080810182526001600160a01b039586168152602080820195865281830194855260608201938452968616600090815260039788905291909120905181546001600160a01b03191695169490941784559151600184015551600283015551910155565b610781610804565b600255565b61078e610804565b6001600160a01b0381166107f85760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084015b60405180910390fd5b61080181610a6d565b50565b6000546001600160a01b031633146106e15760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064016107ef565b604080516001600160a01b0383811660248084019190915283518084039091018152604490920183526020820180516001600160e01b03166370a0823160e01b179052915160009283928392918716916108b89190610d12565b600060405180830381855afa9150503d80600081146108f3576040519150601f19603f3d011682016040523d82523d6000602084013e6108f8565b606091505b5091509150846001600160a01b03163b60001480610914575081155b80610920575060208151105b156109445784828260405163e7e40b5b60e01b81526004016107ef93929190610d2e565b808060200190518101906109589190610cbf565b95945050505050565b604080516001600160a01b038481166024830152604480830185905283518084039091018152606490920183526020820180516001600160e01b031663a9059cbb60e01b17905291516000928392908716916109bd9190610d12565b6000604051808303816000865af19150503d80600081146109fa576040519150601f19603f3d011682016040523d82523d6000602084013e6109ff565b606091505b5091509150846001600160a01b03163b60001480610a1b575081155b80610a425750805115801590610a42575080806020019051810190610a409190610d5a565b155b15610a665784828260405163e7e40b5b60e01b81526004016107ef93929190610d2e565b5050505050565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001600160a01b038116811461080157600080fd5b60008060408385031215610ae557600080fd5b8235610af081610abd565b91506020830135610b0081610abd565b809150509250929050565b600060208284031215610b1d57600080fd5b8135610b2881610abd565b9392505050565b60008060408385031215610b4257600080fd5b8235610b4d81610abd565b946020939093013593505050565b60005b83811015610b76578181015183820152602001610b5e565b83811115610b85576000848401525b50505050565b60008151808452610ba3816020860160208601610b5b565b601f01601f19169290920160200192915050565b602081526000610b286020830184610b8b565b600080600080600060a08688031215610be257600080fd5b8535610bed81610abd565b94506020860135610bfd81610abd565b94979496505050506040830135926060810135926080909101359150565b600060208284031215610c2d57600080fd5b5035919050565b634e487b7160e01b600052601160045260246000fd5b600082821015610c5c57610c5c610c34565b500390565b6000816000190483118215151615610c7b57610c7b610c34565b500290565b600082610c9d57634e487b7160e01b600052601260045260246000fd5b500490565b600060208284031215610cb457600080fd5b8151610b2881610abd565b600060208284031215610cd157600080fd5b5051919050565b600181811c90821680610cec57607f821691505b602082108103610d0c57634e487b7160e01b600052602260045260246000fd5b50919050565b60008251610d24818460208701610b5b565b9190910192915050565b6001600160a01b0384168152821515602082015260606040820181905260009061095890830184610b8b565b600060208284031215610d6c57600080fd5b81518015158114610b2857600080fdfea2646970667358221220435b7df64a54013637e950a66a0a0c47edde4a4aea632107837675fc59a53c3764736f6c634300080d0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100f55760003560e01c806354fd4d5011610097578063e8260b9911610066578063e8260b9914610256578063eefc6e2314610269578063f0fa55a91461027c578063f2fde38b1461028f57600080fd5b806354fd4d50146101d85780636d0580b9146101ed578063715018a6146102335780638da5cb5b1461023b57600080fd5b80632526e17e116100d35780632526e17e1461013e578063348c49a1146101515780633ec7010f1461016457806352c94f751461016d57600080fd5b80631609be1d146100fa5780631de9d9b61461010f578063249d39e914610135575b600080fd5b61010d610108366004610ad2565b6102a2565b005b61012261011d366004610b0b565b6102c2565b6040519081526020015b60405180910390f35b61012261271081565b61010d61014c366004610b2f565b610522565b61010d61015f366004610ad2565b610549565b61012260025481565b6101ae61017b366004610b0b565b600360208190526000918252604090912080546001820154600283015492909301546001600160a01b0390911692919084565b604080516001600160a01b039095168552602085019390935291830152606082015260800161012c565b6101e061057f565b60405161012c9190610bb7565b6102006101fb366004610b0b565b61060d565b604080516001600160a01b039687168152959094166020860152928401919091526060830152608082015260a00161012c565b61010d6106cf565b6000546040516001600160a01b03909116815260200161012c565b61010d610264366004610b2f565b6106e3565b61010d610277366004610bca565b61070a565b61010d61028a366004610c1b565b610779565b61010d61029d366004610b0b565b610786565b6102aa610804565b6102be82826102b9853061085e565b610961565b5050565b6001600160a01b0381166000908152600360205260408120600101541561040a576001600160a01b0382166000908152600360208190526040822001546103099043610c4a565b6001600160a01b03841660009081526003602052604081206002810154600190910154929350909161033c908490610c61565b6103469190610c80565b6001600160a01b0380861660009081526003602090815260409182902054825163f7c618c160e01b815292519495506103e89493169263f7c618c19260048082019392918290030181865afa1580156103a3573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103c79190610ca2565b6001600160a01b038087166000908152600360205260409020541683610961565b50506001600160a01b0382166000908152600360208190526040909120439101555b6001600160a01b03828116600081815260036020526040908190205460025491516315a1452760e21b815260048101939093529092169163a387b32f918591612710918590635685149c90602401602060405180830381865afa158015610475573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104999190610cbf565b6104a39190610c61565b6104ad9190610c80565b6040516001600160e01b031960e085901b1681526001600160a01b03909216600483015260248201526044016020604051808303816000875af11580156104f8573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061051c9190610cbf565b92915050565b61052a610804565b6001600160a01b03909116600090815260036020526040902060020155565b610551610804565b6001600160a01b03918216600090815260036020526040902080546001600160a01b03191691909216179055565b6001805461058c90610cd8565b80601f01602080910402602001604051908101604052809291908181526020018280546105b890610cd8565b80156106055780601f106105da57610100808354040283529160200191610605565b820191906000526020600020905b8154815290600101906020018083116105e857829003601f168201915b505050505081565b6001600160a01b03808216600090815260036020908152604080832054815163f7c618c160e01b815291519394859485948594859490931692839263f7c618c1926004808401939192918290030181865afa158015610670573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106949190610ca2565b6001600160a01b0397909716600090815260036020819052604090912060018101546002820154919092015492999197509550909350915050565b6106d7610804565b6106e16000610a6d565b565b6106eb610804565b6001600160a01b03909116600090815260036020526040902060010155565b610712610804565b604080516080810182526001600160a01b039586168152602080820195865281830194855260608201938452968616600090815260039788905291909120905181546001600160a01b03191695169490941784559151600184015551600283015551910155565b610781610804565b600255565b61078e610804565b6001600160a01b0381166107f85760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084015b60405180910390fd5b61080181610a6d565b50565b6000546001600160a01b031633146106e15760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064016107ef565b604080516001600160a01b0383811660248084019190915283518084039091018152604490920183526020820180516001600160e01b03166370a0823160e01b179052915160009283928392918716916108b89190610d12565b600060405180830381855afa9150503d80600081146108f3576040519150601f19603f3d011682016040523d82523d6000602084013e6108f8565b606091505b5091509150846001600160a01b03163b60001480610914575081155b80610920575060208151105b156109445784828260405163e7e40b5b60e01b81526004016107ef93929190610d2e565b808060200190518101906109589190610cbf565b95945050505050565b604080516001600160a01b038481166024830152604480830185905283518084039091018152606490920183526020820180516001600160e01b031663a9059cbb60e01b17905291516000928392908716916109bd9190610d12565b6000604051808303816000865af19150503d80600081146109fa576040519150601f19603f3d011682016040523d82523d6000602084013e6109ff565b606091505b5091509150846001600160a01b03163b60001480610a1b575081155b80610a425750805115801590610a42575080806020019051810190610a409190610d5a565b155b15610a665784828260405163e7e40b5b60e01b81526004016107ef93929190610d2e565b5050505050565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001600160a01b038116811461080157600080fd5b60008060408385031215610ae557600080fd5b8235610af081610abd565b91506020830135610b0081610abd565b809150509250929050565b600060208284031215610b1d57600080fd5b8135610b2881610abd565b9392505050565b60008060408385031215610b4257600080fd5b8235610b4d81610abd565b946020939093013593505050565b60005b83811015610b76578181015183820152602001610b5e565b83811115610b85576000848401525b50505050565b60008151808452610ba3816020860160208601610b5b565b601f01601f19169290920160200192915050565b602081526000610b286020830184610b8b565b600080600080600060a08688031215610be257600080fd5b8535610bed81610abd565b94506020860135610bfd81610abd565b94979496505050506040830135926060810135926080909101359150565b600060208284031215610c2d57600080fd5b5035919050565b634e487b7160e01b600052601160045260246000fd5b600082821015610c5c57610c5c610c34565b500390565b6000816000190483118215151615610c7b57610c7b610c34565b500290565b600082610c9d57634e487b7160e01b600052601260045260246000fd5b500490565b600060208284031215610cb457600080fd5b8151610b2881610abd565b600060208284031215610cd157600080fd5b5051919050565b600181811c90821680610cec57607f821691505b602082108103610d0c57634e487b7160e01b600052602260045260246000fd5b50919050565b60008251610d24818460208701610b5b565b9190910192915050565b6001600160a01b0384168152821515602082015260606040820181905260009061095890830184610b8b565b600060208284031215610d6c57600080fd5b81518015158114610b2857600080fdfea2646970667358221220435b7df64a54013637e950a66a0a0c47edde4a4aea632107837675fc59a53c3764736f6c634300080d0033",
+  "devdoc": {
+    "author": "Alchemix Finance",
+    "errors": {
+      "ERC20CallFailed(address,bool,bytes)": [
+        {
+          "params": {
+            "data": "The resulting data from the call. This is error data when the call was not a success. Otherwise,                this is malformed data when the call was a success.",
+            "success": "If the call to the token was a success.",
+            "target": "The target address."
+          }
+        }
+      ]
+    },
+    "kind": "dev",
+    "methods": {
+      "addVault(address,address,uint256,uint256,uint256)": {
+        "details": "Add reward collector params to a map of yield tokens"
+      },
+      "distributeRewards(address)": {
+        "details": "Distributes grant rewards and triggers reward collector to claim and donate"
+      },
+      "getRewardCollector(address)": {
+        "details": "Get reward collector params for a given vault"
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "setRewardAmount(address,uint256)": {
+        "details": "Set the reward token amount for a given vault"
+      },
+      "setRewardCollectorAddress(address,address)": {
+        "details": "Set the reward collector address for a given vault"
+      },
+      "setRewardTimeframe(address,uint256)": {
+        "details": "Set the reward token timeframe for a given vault"
+      },
+      "setSlippage(uint256)": {
+        "details": "Set the allowed slippage"
+      },
+      "sweepTokens(address,address)": {
+        "details": "Sweeps reward tokens to recipient"
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "stateVariables": {
+      "rewardCollectors": {
+        "details": "A mapping of the yield tokens to their respective reward collectors"
+      },
+      "version": {
+        "return": "The version.",
+        "returns": {
+          "_0": "The version."
+        }
+      }
+    },
+    "title": "Reward Router",
+    "version": 1
+  },
+  "userdoc": {
+    "errors": {
+      "ERC20CallFailed(address,bool,bytes)": [
+        {
+          "notice": "An error used to indicate that a call to an ERC20 contract failed."
+        }
+      ]
+    },
+    "kind": "user",
+    "methods": {
+      "sweepTokens(address,address)": {
+        "notice": "This contract is stocked with reward tokens from grants. This function is to retract excess tokens."
+      },
+      "version()": {
+        "notice": "Gets the current version."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 27636,
+        "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 89144,
+        "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+        "label": "version",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_string_storage"
+      },
+      {
+        "astId": 89150,
+        "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+        "label": "slippageBPS",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 89156,
+        "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+        "label": "rewardCollectors",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_address,t_struct(RewardCollector)89135_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_struct(RewardCollector)89135_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct RewardCollector)",
+        "numberOfBytes": "32",
+        "value": "t_struct(RewardCollector)89135_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(RewardCollector)89135_storage": {
+        "encoding": "inplace",
+        "label": "struct RewardCollector",
+        "members": [
+          {
+            "astId": 89128,
+            "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+            "label": "rewardCollectorAddress",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 89130,
+            "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+            "label": "rewardAmount",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 89132,
+            "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+            "label": "rewardTimeframe",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 89134,
+            "contract": "submodules/v2-foundry/src/utils/RewardRouter.sol:RewardRouter",
+            "label": "lastRewardBlock",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
