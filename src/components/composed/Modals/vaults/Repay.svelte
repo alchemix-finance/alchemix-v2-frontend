@@ -112,7 +112,7 @@
   const onRepayButton = async (repayAmount, underlyingTokenData, debtTokenData, vaultType) => {
     const _fRepayAmount = utils.parseUnits(utils.formatEther(repayAmount), underlyingTokenData.decimals);
 
-    if (underlyingTokenData.address === debtTokenData.address) {
+    if (underlyingTokenData.symbol === debtTokenData) {
       await burn(
         underlyingTokenData.address,
         _fRepayAmount,
