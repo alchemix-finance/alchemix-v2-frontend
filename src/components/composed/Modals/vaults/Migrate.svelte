@@ -63,6 +63,14 @@
       $signer,
       $networkStore,
     );
+    const underlyingToDebt = await convertTokenUnits(
+      vault.type,
+      vault.address,
+      underlyingAmount,
+      6,
+      $signer,
+      $networkStore,
+    );
     const minimumSharesOut = await convertTokenUnits(
       vault.type,
       vault.address,
@@ -78,6 +86,7 @@
       sharesBase,
       minimumSharesOut,
       underlyingAmount,
+      underlyingToDebt,
       $networkStore,
       [$signer, $addressStore],
     ).then(() => {
