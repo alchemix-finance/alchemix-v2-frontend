@@ -101,6 +101,7 @@ export const HiddenVaults = [
   '0xf350C6B7fbe5F6CB53c7D638Dfba9173A5722236',
   '0xC5c0D3e20DF4CA855281B4b5Bcf3bEf8D8068c75',
   '0x400509D00888c46903CF01495BB2eeAfD24F0f80',
+  '0xac3E018457B222d93114458476f3E3416Abbe38F',
 ];
 export const VaultTypesInfos = {
   [VaultTypes.alUSD]: {
@@ -466,6 +467,21 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alETH',
         strategy: 'https://app.vesper.finance/eth/pools/0xd1C117319B3595fbc39b471AB1fd485629eb05F2',
         bonusType: 'vesper',
+      },
+      '0xac3E018457B222d93114458476f3E3416Abbe38F': {
+        rewardAdapter: 'frax',
+        rewardType: 'APR',
+        customTokenName: true,
+        token: 'sfrxETH',
+        customAddress: '',
+        vaultName: 'Frax',
+        beta: true,
+        acceptGateway: true,
+        acceptWETH: true,
+        multicall: false,
+        gateway: 'ATokenGateway_alETH',
+        strategy: '',
+        bonusType: '',
       },
     },
   },
