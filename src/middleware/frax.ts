@@ -3,14 +3,15 @@ import axios from 'axios';
 const apiUrl = 'https://api.frax.finance/v2/frxeth/summary/latest';
 
 export async function getFraxApy() {
+  let apr;
   await axios
     .get(apiUrl)
     .then((res) => {
-      console.log(res.data);
-      return res.data.sfrxethApr;
+      apr = res.data.sfrxethApr / 100;
     })
     .catch((error) => {
       console.log(error);
-      return '0';
+      apr = null;
     });
+  return apr;
 }

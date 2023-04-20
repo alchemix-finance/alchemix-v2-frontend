@@ -140,7 +140,7 @@ async function rewardAdapter(adapter: string, signer: ethers.Signer, token: stri
     case 'vesper':
       return getVesperApy(token);
     case 'frax':
-      return getFraxApy(token);
+      return getFraxApy();
     default:
       return getVaultApy();
   }

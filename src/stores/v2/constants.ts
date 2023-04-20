@@ -479,7 +479,7 @@ export const VaultTypesInfos = {
         acceptWETH: true,
         multicall: false,
         gateway: 'ATokenGateway_alETH',
-        strategy: '',
+        strategy: 'https://app.frax.finance/frxeth/stake',
         bonusType: '',
       },
     },
