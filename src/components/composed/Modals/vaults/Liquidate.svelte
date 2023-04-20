@@ -147,17 +147,12 @@
     return utils.parseUnits(`${inputValue}`, yieldToken.decimals);
   };
 
-  const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
-    const underlyingBalance18Decimals = utils.parseEther(
-      utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
-    );
-
-    return (
-      inputAmount.gt(BigNumber.from(0)) &&
-      inputAmount.lte(debt) &&
-      inputAmount.lte(underlyingBalance18Decimals)
-    );
-  };
+  $: normalizedUnderlyingBalance = utils.parseEther(
+    utils.formatUnits(
+      yieldTokenList[selectedYieldToken].balance,
+      yieldTokenList[selectedYieldToken].decimals,
+    ),
+  );
 
   const getDebtForVaultType = (vaultType) => {
     if (!$vaultsStore || vaultType === undefined) {
@@ -250,7 +245,8 @@
         height="h-12"
         fontSize="text-md"
         disabled="{!(
-          checkButtonState(inputLiquidateAmountBN, yieldTokenList[selectedYieldToken], debtAmount) &&
+          inputLiquidateAmountBN.gt(BigNumber.from(0)) &&
+          inputLiquidateAmountBN.lte(normalizedUnderlyingBalance) &&
           userVerifiedToggle
         )}"
         on:clicked="{() =>
