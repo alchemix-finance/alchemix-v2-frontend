@@ -493,12 +493,6 @@ export const vaultMessages = [
     message:
       'Deposit on this vault is paused. Yearn is deprecating this Vault in favor of their new yvUSDT vault. Please migrate your position.',
   },
-  {
-    vault: '0xae78736Cd615f374D3085123A210448E74Fc6393',
-    level: 1,
-    message:
-      'The updated vault uses Uniswap, so will be subject to the rETH/ETH spread when the rETH buffer does not contain enough ETH for a direct withdrawal.',
-  },
 ];
 
 // @ts-ignore
