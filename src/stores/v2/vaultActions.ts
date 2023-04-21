@@ -824,6 +824,7 @@ export async function migrateVault(
   shareAmount: BigNumber,
   minReturnShares: BigNumber,
   minReturnUnderlying: BigNumber,
+  underlyingInDebt: BigNumber,
   network: string,
   [signerStore, addressStore]: [Signer, string],
 ) {
@@ -862,11 +863,11 @@ export async function migrateVault(
       await sendApe.wait();
     }
 
-    if (minReturnUnderlying.gt(mintAllowance)) {
+    if (underlyingInDebt.gt(mintAllowance)) {
       setPendingApproval();
       const sendApe = (await alchemistInstance.approveMint(
         migratorAddress,
-        minReturnUnderlying,
+        underlyingInDebt,
       )) as ContractTransaction;
       await sendApe.wait();
     }

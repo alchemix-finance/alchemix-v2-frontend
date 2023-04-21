@@ -101,7 +101,6 @@ export const HiddenVaults = [
   '0xf350C6B7fbe5F6CB53c7D638Dfba9173A5722236',
   '0xC5c0D3e20DF4CA855281B4b5Bcf3bEf8D8068c75',
   '0x400509D00888c46903CF01495BB2eeAfD24F0f80',
-  '0xac3E018457B222d93114458476f3E3416Abbe38F',
 ];
 export const VaultTypesInfos = {
   [VaultTypes.alUSD]: {
@@ -480,7 +479,7 @@ export const VaultTypesInfos = {
         acceptWETH: true,
         multicall: false,
         gateway: 'ATokenGateway_alETH',
-        strategy: '',
+        strategy: 'https://app.frax.finance/frxeth/stake',
         bonusType: '',
       },
     },
@@ -493,12 +492,6 @@ export const vaultMessages = [
     level: 0,
     message:
       'Deposit on this vault is paused. Yearn is deprecating this Vault in favor of their new yvUSDT vault. Please migrate your position.',
-  },
-  {
-    vault: '0xae78736Cd615f374D3085123A210448E74Fc6393',
-    level: 1,
-    message:
-      'The updated vault uses Uniswap, so will be subject to the rETH/ETH spread when the rETH buffer does not contain enough ETH for a direct withdrawal.',
   },
 ];
 

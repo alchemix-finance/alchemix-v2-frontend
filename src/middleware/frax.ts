@@ -1,18 +1,17 @@
 import axios from 'axios';
 
-const apiUrl = 'https://api.frax.finance/pools';
+const apiUrl = 'https://api.frax.finance/v2/frxeth/summary/latest';
 
-export async function getFraxApy(token) {
-  console.log(token);
+export async function getFraxApy() {
+  let apr;
   await axios
     .get(apiUrl)
     .then((res) => {
-      console.log(res.data);
-      console.log(res.data.filter((entry) => entry.lp_address === token));
-      return '0';
+      apr = res.data.sfrxethApr / 100;
     })
     .catch((error) => {
       console.log(error);
-      return '0';
+      apr = null;
     });
+  return apr;
 }

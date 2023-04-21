@@ -93,21 +93,12 @@
     return utils.formatEther($vaultsStore[vaultType].debt[0]) || '0';
   };
 
-  const checkButtonState = (inputAmount, underlyingTokenData, debt) => {
-    if (!!underlyingTokenData) {
-      const underlyingBalance18Decimals = utils.parseEther(
-        utils.formatUnits(underlyingTokenData.balance, underlyingTokenData.decimals),
-      );
-
-      return (
-        inputAmount.gt(BigNumber.from(0)) &&
-        inputAmount.lte(debt) &&
-        inputAmount.lte(underlyingBalance18Decimals)
-      );
-    } else {
-      return false;
-    }
-  };
+  $: normalizedUnderlyingBalance = utils.parseEther(
+    utils.formatUnits(
+      tokensForVaultType[currentSelectedUnderlyingToken]?.balance || BigNumber.from(0),
+      tokensForVaultType[currentSelectedUnderlyingToken]?.decimals || 18,
+    ),
+  );
 
   const onRepayButton = async (repayAmount, underlyingTokenData, debtTokenData, vaultType) => {
     const _fRepayAmount = utils.parseUnits(utils.formatEther(repayAmount), underlyingTokenData.decimals);
@@ -197,10 +188,8 @@
       hoverColor="green4"
       height="h-12"
       fontSize="text-md"
-      disabled="{!checkButtonState(
-        inputRepayAmountBN,
-        tokensForVaultType[currentSelectedUnderlyingToken],
-        debtAmount,
+      disabled="{!(
+        inputRepayAmountBN.gt(BigNumber.from(0)) && inputRepayAmountBN.lte(normalizedUnderlyingBalance)
       )}"
       on:clicked="{() =>
         onRepayButton(
