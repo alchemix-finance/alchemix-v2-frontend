@@ -9,9 +9,17 @@ reservesStore.subscribe((val) => {
   _reserves = val;
 });
 
+function abortRequest(timeout) {
+  const abortController = new AbortController();
+  setTimeout(() => abortController.abort(), timeout || 0);
+  return abortController.signal;
+}
+
 export async function getReservesEth() {
-  return axios
+  let reserves;
+  await axios
     .post(subgraphUrlEth, {
+      signal: abortRequest(4000),
       query: `{
         reserves {
         name
@@ -30,14 +38,21 @@ export async function getReservesEth() {
       }
     }`,
     })
+    .then((res) => {
+      reserves = res;
+    })
     .catch((error) => {
       throw Error(error);
     });
+  return reserves;
 }
 
 export async function getReservesOpt() {
-  return axios.post(subgraphUrlOpt, {
-    query: `{
+  let reserves;
+  await axios
+    .post(subgraphUrlOpt, {
+      signal: abortRequest(4000),
+      query: `{
         reserves {
           name
           underlyingAsset
@@ -63,7 +78,14 @@ export async function getReservesOpt() {
           decimals
       }
     }`,
-  });
+    })
+    .then((res) => {
+      reserves = res;
+    })
+    .catch((error) => {
+      throw Error(error);
+    });
+  return reserves;
 }
 
 export async function getAaveApr(underlyingAsset: string) {
