@@ -41,13 +41,11 @@
       const execute = chainIds.filter((entry) => entry.id === netId)[0];
 
       const aaveReservesEth = await getReservesEth();
-
       if (aaveReservesEth?.data?.data?.reserves) {
         $reservesStore = [...$reservesStore, aaveReservesEth.data.data.reserves];
       }
 
       const aaveReservesOpt = await getReservesOpt();
-
       if (aaveReservesOpt?.data?.data?.reserves) {
         $reservesStore = [...$reservesStore, aaveReservesOpt.data.data.reserves];
       }
