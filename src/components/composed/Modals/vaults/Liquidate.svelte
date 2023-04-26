@@ -147,12 +147,19 @@
     return utils.parseUnits(`${inputValue}`, yieldToken.decimals);
   };
 
-  $: normalizedUnderlyingBalance = utils.parseEther(
-    utils.formatUnits(
-      yieldTokenList[selectedYieldToken].balance,
-      yieldTokenList[selectedYieldToken].decimals,
-    ),
+  $: yieldTokenList = useTokenListForVaultType(selectedVaultType, [$vaultsStore]).filter((entry) =>
+    entry.balance.gt(BigNumber.from(0)),
   );
+
+  $: normalizedUnderlyingBalance =
+    yieldTokenList.length > 0
+      ? utils.parseEther(
+          utils.formatUnits(
+            yieldTokenList[selectedYieldToken].balance,
+            yieldTokenList[selectedYieldToken].decimals,
+          ),
+        )
+      : BigNumber.from(0);
 
   const getDebtForVaultType = (vaultType) => {
     if (!$vaultsStore || vaultType === undefined) {
@@ -163,10 +170,6 @@
   };
 
   let currentSelectedYieldTokenSymbol;
-
-  $: yieldTokenList = useTokenListForVaultType(selectedVaultType, [$vaultsStore]).filter((entry) =>
-    entry.balance.gt(BigNumber.from(0)),
-  );
 
   $: inputLiquidateAmountBN = useBigNumberForInput(inputLiquidateAmount, yieldTokenList[selectedYieldToken]);
 
