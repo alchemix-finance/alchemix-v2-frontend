@@ -10,6 +10,7 @@
   import ExternalFarms from '@components/composed/Table/farms/ExternalFarms.svelte';
   import GAlcxWrapper from '@components/composed/GAlcxWrapper.svelte';
   import FarmEntry from '@components/composed/FarmEntry.svelte';
+  import LiquidityMigration from '@components/composed/LiquidityMigration.svelte';
 
   import { addressStore, farmsStore, networkStore, tokenPriceStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
@@ -175,6 +176,10 @@
 
   <div class="w-full mb-8">
     <GAlcxWrapper />
+  </div>
+
+  <div class="w-full mb-8">
+    <LiquidityMigration />
   </div>
 
   <div class="w-full mb-8">
