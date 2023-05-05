@@ -3,7 +3,8 @@
   import Button from '@components/elements/Button.svelte';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
 
-  import { migrateLiquidity } from '@stores/v2/liquidityMigrator';
+  import { test } from '@stores/v2/liquidityMigrator';
+  import { signer } from '@stores/v2/derived';
 
   const tokenList = ['SUSHI'];
   const targetList = ['20WETH-80ALCX', 'aura20WETH-80ALCX-vault'];
@@ -11,6 +12,11 @@
   let migrationInputAmount;
   let selectedTarget;
   // TODO: add debounce for receive value
+
+  const runTest = () => {
+    console.log('run test');
+    test($signer);
+  };
 </script>
 
 <ContainerWithHeader canToggle="{true}" isVisible="{true}">
@@ -25,6 +31,6 @@
       viewOnly="{true}"
       bind:selectedToken="{selectedTarget}"
     />
-    <Button label="Migrate Liquidity" />
+    <Button label="Migrate Liquidity" on:clicked="{() => runTest()}" />
   </div>
 </ContainerWithHeader>
