@@ -93,6 +93,10 @@ export const additionalTokens = [
     network: '0x1',
     address: '0xd4937682df3C8aEF4FE912A96A74121C0829E664',
   },
+  {
+    network: '0x1',
+    address: '0xC3f279090a47e80990Fe3a9c30d24Cb117EF91a8',
+  },
 ];
 
 export const externalLookup = [

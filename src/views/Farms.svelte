@@ -175,11 +175,11 @@
   </div>
 
   <div class="w-full mb-8">
-    <GAlcxWrapper />
+    <LiquidityMigration />
   </div>
 
   <div class="w-full mb-8">
-    <LiquidityMigration />
+    <GAlcxWrapper />
   </div>
 
   <div class="w-full mb-8">
