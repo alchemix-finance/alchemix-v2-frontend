@@ -5,7 +5,9 @@
   import { BarLoader } from 'svelte-loading-spinners';
 
   import { calculateParams, beginMigration } from '@stores/v2/liquidityMigrator';
+  import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
   import { signer } from '@stores/v2/derived';
+  import { balancesStore, addressStore } from '@stores/v2/alcxStore';
   import settings from '@stores/settings';
   import { utils } from 'ethers';
 
@@ -32,8 +34,11 @@
 
   const preflight = async () => {
     calculatingParams = true;
+    estimateBalancer = '0';
+    estimateAura = '0';
     try {
-      const params = await calculateParams(selectedTarget === targetList[1], migrationInputAmount, $signer);
+      const amountToBN = utils.parseEther(migrationInputAmount);
+      const params = await calculateParams(selectedTarget === targetList[1], amountToBN, $signer);
       migrationParams = params;
       estimateBalancer = utils.formatEther(params.amountBalancerLiquidityOut);
       estimateAura = utils.formatEther(params.amountAuraSharesMinimum);
@@ -46,21 +51,32 @@
 
   const migrateLiquidity = async () => {
     try {
-      await calculateParams(selectedTarget === targetList[1], migrationInputAmount, $signer)
-        .then(async (response) => {
-          await beginMigration(response, $signer);
+      await beginMigration(migrationParams, $signer, $addressStore)
+        .then((response) => {
+          console.log(response);
         })
         .finally(() => {
           console.log('[migrateLiquidity]: all done!');
           migrationInputAmount = null;
           selectedTarget = null;
+          estimateBalancer = '0';
+          estimateAura = '0';
+          migrationParams = null;
         });
     } catch (e) {
       console.log('[migrateLiquidity]:', e);
+      migrationInputAmount = null;
+      selectedTarget = null;
+      estimateBalancer = '0';
+      estimateAura = '0';
+      migrationParams = null;
     }
   };
 
   $: migrationInputAmount, debounce();
+  $: projectedAmount = selectedTarget === targetList[1] ? estimateAura : estimateBalancer;
+  $: slpBalance = getTokenDataFromBalancesBySymbol(tokenList[0], [$balancesStore]);
+  $: console.log(slpBalance.balance.toString(), estimateBalancer, estimateAura);
 </script>
 
 <ContainerWithHeader canToggle="{true}" isVisible="{true}">
@@ -70,13 +86,15 @@
   <div slot="body" class="flex flex-col space-y-4 p-4">
     <ComplexInput supportedTokens="{tokenList}" bind:inputValue="{migrationInputAmount}" />
     <ComplexInput
-      inputValue="{migrationInputAmount}"
+      inputValue="{projectedAmount}"
       supportedTokens="{targetList}"
       viewOnly="{true}"
       bind:selectedToken="{selectedTarget}"
     />
     {#if calculatingParams}
-      <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
+      <div class="flex flex-row justify-center items-center h-12">
+        <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
+      </div>
     {:else}
       <Button
         borderColor="green4"

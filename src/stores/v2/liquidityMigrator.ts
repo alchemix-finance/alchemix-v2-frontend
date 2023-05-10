@@ -1,5 +1,12 @@
-import { Signer, BigNumber } from 'ethers';
-import { externalContractWrapper } from '@helpers/contractWrapper';
+import { Signer, BigNumber, ContractTransaction } from 'ethers';
+import { contractWrapper, erc20Contract } from '@helpers/contractWrapper';
+import {
+  setPendingWallet,
+  setPendingTx,
+  setError,
+  setSuccessTx,
+  setPendingApproval,
+} from '@helpers/setToast';
 
 // token, pool and feed addresses
 const slpToken = '0xC3f279090a47e80990Fe3a9c30d24Cb117EF91a8';
@@ -12,8 +19,9 @@ const slippage = BigNumber.from(10);
 
 export async function calculateParams(toAura: boolean, amount: BigNumber, signer: Signer) {
   try {
-    const { instance: liquidityMigrator } = await externalContractWrapper('LiquidityMigrator', signer);
-    return liquidityMigrator.getMigrationParams(
+    // const { instance: liquidityMigrator } = await externalContractWrapper('LiquidityMigrator', signer);
+    const { instance: liquidityMigrator } = await contractWrapper('MigrationCalcs', signer, 'ethereum');
+    return liquidityMigrator.getMigrationParams([
       toAura,
       amount,
       slippage,
@@ -22,18 +30,36 @@ export async function calculateParams(toAura: boolean, amount: BigNumber, signer
       auraPool,
       wethPriceFeed,
       tokenPriceFeed,
-    );
+    ]);
   } catch (e) {
     console.log('[calculateParams]:', e);
     return false;
   }
 }
 
-export async function beginMigration(paramStruct: any, signer: Signer) {
+export async function beginMigration(paramStruct: any, signer: Signer, userAddress: string) {
   try {
-    const { instance: liquidityMigrator } = await externalContractWrapper('LiquidityMigrator', signer);
-    return liquidityMigrator.migrate(paramStruct);
+    const { instance: liquidityMigrator, address: liquidityMigratorAddress } = await contractWrapper(
+      'Migrator',
+      signer,
+      'ethereum',
+    );
+    const slpInstance = erc20Contract(slpToken, signer);
+    const slpAllowance = await slpInstance.allowanceOf(userAddress, liquidityMigratorAddress);
+    if (BigNumber.from(slpAllowance).lt(paramStruct.poolTokensIn)) {
+      setPendingApproval();
+      const sendApe = (await slpInstance.approve(liquidityMigratorAddress)) as ContractTransaction;
+      await sendApe.wait();
+    }
+    setPendingWallet();
+    const tx = (await liquidityMigrator.migrate(paramStruct)) as ContractTransaction;
+    setPendingTx();
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction.transactionHash);
+      return true;
+    });
   } catch (e) {
+    setError(e.data ? await e.data.message : e.message, e);
     console.log('[beginMigration]:', e);
     return false;
   }
