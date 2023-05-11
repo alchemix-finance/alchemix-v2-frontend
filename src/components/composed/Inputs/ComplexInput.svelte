@@ -18,6 +18,8 @@
   export let selectedToken;
   export let metaConfig = false;
   export let convertToStatic = false;
+  export let viewOnly = false;
+
   let tokenIcon = './images/token-icons/unknown.svg';
   let externalMaxOverride;
 
@@ -126,65 +128,79 @@
     <div class="relative w-full">
       <!--   token balance   -->
       <p class="absolute text-xs lg:text-sm p-2 left-2 pointer-events-none text-lightgrey10">
-        {$_('available')}:
-        {tokenBalance}
+        {#if !viewOnly}
+          {$_('available')}:
+          {tokenBalance}
+        {/if}
         {selectedToken}
       </p>
       <!--   input field   -->
-      <InputNumber
-        bind:value="{inputValue}"
-        placeholder="0.00"
-        class="rounded appearance-none text-xl w-full text-right h-full p-4 {$settings.invertColors
-          ? 'bg-grey3inverse'
-          : 'bg-grey3'}"
-      />
+      {#if !viewOnly}
+        <InputNumber
+          bind:value="{inputValue}"
+          placeholder="0.00"
+          class="rounded appearance-none text-xl w-full text-right h-full p-4 {$settings.invertColors
+            ? 'bg-grey3inverse'
+            : 'bg-grey3'}"
+        />
+      {:else}
+        <div
+          class="text-xl w-full text-right h-full p-4 pt-6 text-lightgrey10 {$settings.invertColors
+            ? 'bg-grey3inverse'
+            : 'bg-grey3'}"
+        >
+          {inputValue || '0.00'}
+        </div>
+      {/if}
     </div>
 
-    <!--   max/clear buttons   -->
-    <div class="hidden lg:flex flex-col w-max">
-      <Button
-        label="{$_('max').toUpperCase()}"
-        width="w-full"
-        fontSize="text-xs"
-        textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-        backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-        borderSize="0"
-        height="h-10"
-        on:clicked="{() => setMax()}"
-      />
-      <Button
-        label="{$_('clear').toUpperCase()}"
-        width="w-full"
-        fontSize="text-xs"
-        textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-        backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-        borderSize="0"
-        height="h-10"
-        on:clicked="{() => clear()}"
-      />
-    </div>
+    {#if !viewOnly}
+      <!--   max/clear buttons   -->
+      <div class="hidden lg:flex flex-col w-max">
+        <Button
+          label="{$_('max').toUpperCase()}"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMax()}"
+        />
+        <Button
+          label="{$_('clear').toUpperCase()}"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clear()}"
+        />
+      </div>
 
-    <div class="lg:hidden flex flex-row w-full">
-      <Button
-        label="{$_('max').toUpperCase()}"
-        width="w-full"
-        fontSize="text-xs"
-        textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-        backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-        borderSize="0"
-        height="h-10"
-        on:clicked="{() => setMax()}"
-      />
-      <Button
-        label="{$_('clear').toUpperCase()}"
-        width="w-full"
-        fontSize="text-xs"
-        textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
-        backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
-        borderSize="0"
-        height="h-10"
-        on:clicked="{() => clear()}"
-      />
-    </div>
+      <div class="lg:hidden flex flex-row w-full">
+        <Button
+          label="{$_('max').toUpperCase()}"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => setMax()}"
+        />
+        <Button
+          label="{$_('clear').toUpperCase()}"
+          width="w-full"
+          fontSize="text-xs"
+          textColor="{$settings.invertColors ? 'lightgrey10inverse' : 'lightgrey10'}"
+          backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
+          borderSize="0"
+          height="h-10"
+          on:clicked="{() => clear()}"
+        />
+      </div>
+    {/if}
   </div>
 </div>

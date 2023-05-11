@@ -205,7 +205,7 @@
           backgroundColor="{$settings.invertColors ? 'grey3inverse' : 'grey3'}"
           borderSize="0"
           height="h-10"
-          on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit.amount || 0))}"
+          on:clicked="{() => (inputWithdrawAmount = utils.formatEther(farm.userDeposit || 0))}"
         />
         <Button
           label="CLEAR"
