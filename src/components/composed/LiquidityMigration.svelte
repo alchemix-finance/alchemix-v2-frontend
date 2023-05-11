@@ -12,11 +12,10 @@
   import { utils } from 'ethers';
 
   const tokenList = ['SLP'];
-  const targetList = ['BALANCER', 'AURA'];
+  const targetList = ['AURA', 'BALANCER'];
 
   let migrationInputAmount;
   let selectedTarget;
-  // TODO: add debounce for receive value
   let timer;
   let calculatingParams = false;
   let estimateBalancer = '0';
