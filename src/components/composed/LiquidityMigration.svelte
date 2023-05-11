@@ -76,7 +76,6 @@
   $: migrationInputAmount, debounce();
   $: projectedAmount = selectedTarget === targetList[1] ? estimateAura : estimateBalancer;
   $: slpBalance = getTokenDataFromBalancesBySymbol(tokenList[0], [$balancesStore]);
-  $: console.log(slpBalance.balance.toString(), estimateBalancer, estimateAura);
 </script>
 
 <ContainerWithHeader canToggle="{true}" isVisible="{true}">
