@@ -37,7 +37,7 @@
     estimateAura = '0';
     try {
       const amountToBN = utils.parseEther(migrationInputAmount);
-      const params = await calculateParams(selectedTarget === targetList[1], amountToBN, $signer);
+      const params = await calculateParams(selectedTarget === targetList[0], amountToBN, $signer);
       migrationParams = params;
       estimateBalancer = utils.formatEther(params.amountBalancerLiquidityOut);
       estimateAura = utils.formatEther(params.amountAuraSharesMinimum);
@@ -73,7 +73,7 @@
   };
 
   $: migrationInputAmount, debounce();
-  $: projectedAmount = selectedTarget === targetList[1] ? estimateAura : estimateBalancer;
+  $: projectedAmount = selectedTarget === targetList[0] ? estimateAura : estimateBalancer;
   $: slpBalance = getTokenDataFromBalancesBySymbol(tokenList[0], [$balancesStore]);
 </script>
 
