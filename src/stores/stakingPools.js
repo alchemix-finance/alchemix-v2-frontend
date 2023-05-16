@@ -97,6 +97,26 @@ export const additionalTokens = [
     network: '0x1',
     address: '0xC3f279090a47e80990Fe3a9c30d24Cb117EF91a8',
   },
+  {
+    network: '0x1',
+    address: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+  },
+  {
+    network: '0x1',
+    address: '0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e',
+  },
+  {
+    network: '0x1',
+    address: '0xBE1C919cA137299715e9c929BC7126Af14f76091',
+  },
+  {
+    network: '0x1',
+    address: '0xf16aEe6a71aF1A9Bc8F56975A4c2705ca7A782Bc',
+  },
+  {
+    network: '0x1',
+    address: '0xA0657642224Fc53dAB4a3d2069430afe157BEc5D',
+  },
 ];
 
 export const externalLookup = [
@@ -108,6 +128,56 @@ export const externalLookup = [
     subtitle: 'SushiSwap LP',
     farmIcon: undefined,
     tokenIcon: 'sushi',
+    network: '0x1',
+  },
+  {
+    // Convex alUSD3CRV
+    address: '0x02E2151D4F351881017ABdF2DD2b51150841d5B3',
+    token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+    title: 'alUSD3CRV Convex Boosted',
+    subtitle: 'Curve LP',
+    farmIcon: undefined,
+    tokenIcon: 'cvx',
+    network: '0x1',
+  },
+  {
+    // Convex alETH
+    address: '0x48Bc302d8295FeA1f8c3e7F57D4dDC9981FEE410',
+    token: '0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e',
+    title: 'alETH Convex Boosted',
+    subtitle: 'Curve LP',
+    farmIcon: undefined,
+    tokenIcon: 'cvx',
+    network: '0x1',
+  },
+  {
+    // FRAX-Convex alusdFRAXBP
+    address: '0x711d650Cd10dF656C2c28D375649689f137005fA',
+    token: '0xBE1C919cA137299715e9c929BC7126Af14f76091',
+    title: 'alUSDFRAXBP Frax-Convex Boosted',
+    subtitle: 'Curve LP',
+    farmIcon: undefined,
+    tokenIcon: 'cvx',
+    network: '0x1',
+  },
+  {
+    // FRAX-Convex ALCX-FRAXBP
+    address: '0xAF1b82809296E52A42B3452c52e301369Ce20554',
+    token: '0xA0657642224Fc53dAB4a3d2069430afe157BEc5D',
+    title: 'ALCX-FRAXBP Frax-Convex Boosted',
+    subtitle: 'Curve LP',
+    farmIcon: undefined,
+    tokenIcon: 'cvx',
+    network: '0x1',
+  },
+  {
+    // Balancer 80ALCX/20WETH
+    address: '0xA57b8d98dAE62B26Ec3bcC4a365338157060B234',
+    token: '0xf16aEe6a71aF1A9Bc8F56975A4c2705ca7A782Bc',
+    title: 'Aura Boosted',
+    subtitle: 'Balancer LP',
+    farmIcon: undefined,
+    tokenIcon: 'aura',
     network: '0x1',
   },
   {

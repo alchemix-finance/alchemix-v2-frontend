@@ -11,6 +11,42 @@ export const ExternalFarmsMetadata = {
     farmIcon: 'alusd_med.svg',
     tokenIcon: 'crv',
   },
+  '0x02E2151D4F351881017ABdF2DD2b51150841d5B3': {
+    title: 'alUSD3CRV Convex',
+    subtitle: 'Convex alUSD Metapool',
+    farmIcon: 'alusd_med.svg',
+    tokenIcon: 'cvx',
+  },
+  // '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364' : {
+  //   title: 'PancakeSwap alETH-WETH',
+  //   subtitle: 'Pancake Concentrated alETH Pool',
+  //   farmIcon: 'aleth_med.svg',
+  //   tokenIcon: 'cake',
+  // },
+  '0xA57b8d98dAE62B26Ec3bcC4a365338157060B234' : {
+    title: 'Aura 80ALCX/20WETH',
+    subtitle: 'AURA ALCX Boosted Pool',
+    farmIcon: 'alcx',
+    tokenIcon: 'aura',
+  },
+  '0x48Bc302d8295FeA1f8c3e7F57D4dDC9981FEE410' : {
+    title: 'alETH Convex',
+    subtitle: 'Convex alETH Metapool',
+    farmIcon: 'aleth_med.svg',
+    tokenIcon: 'cvx',
+  },
+  '0x711d650Cd10dF656C2c28D375649689f137005fA' : {
+    title: 'alUSD FRAXBP',
+    subtitle: 'FRAX Convex alUSD FRAXBP',
+    farmIcon: 'alusd_med.svg',
+    tokenIcon: 'cvx',
+  },
+  // '' : {
+  //   title: '',
+  //   subtitle: '',
+  //   farmIcon: '',
+  //   tokenIcon: '',
+  // },
 };
 
 export const InternalFarmsMetadata = {
