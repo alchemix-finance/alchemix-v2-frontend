@@ -47,6 +47,15 @@ export interface CurveFarmType extends GenericFarmType {
   lpTokenAddress: string;
 }
 
+export interface AuraFarmType extends GenericFarmType {
+  tokenBalance: ethers.BigNumber;
+  totalDeposit: ethers.BigNumber;
+  underlyingAddresses: string[];
+  poolTokenAddress: string;
+  rewardRates: ethers.BigNumber[];
+  balTotalSupply: ethers.BigNumber;
+}
+
 export const castToInternalFarmType = (farm: any) => {
   return farm as InternalFarmType;
 };
