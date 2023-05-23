@@ -132,7 +132,7 @@ export async function fetchDataForVault(
 async function rewardAdapter(adapter: string, signer: ethers.Signer, token: string) {
   switch (adapter) {
     case 'lido':
-      return getLidoApr(signer);
+      return getLidoApr();
     case 'rocketPool':
       return getRocketApr();
     case 'aave':

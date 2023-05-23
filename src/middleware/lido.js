@@ -1,17 +1,19 @@
-// see documentation at https://docs.lido.fi/contracts/lido-oracle/#add-calculation-of-staker-rewards-apr
+// see documentation at https://docs.lido.fi/integrations/api
 
-import { externalContractWrapper } from '@helpers/contractWrapper';
-import { utils } from 'ethers';
+import axios from 'axios';
 
-export async function getLidoApr(signer) {
+function connector() {
+  return {
+    url: 'https://eth-api.lido.fi/v1/protocol/steth/apr/last',
+    method: 'GET',
+  };
+}
+
+export async function getLidoApr() {
   try {
-    const { instance: oracle } = await externalContractWrapper('Lido', signer);
-    const delta = await oracle.getLastCompletedReportDelta();
-    const prePool = utils.formatEther(delta.preTotalPooledEther);
-    const postPool = utils.formatEther(delta.postTotalPooledEther);
-    const timeElapsed = delta.timeElapsed;
-    const secondsPA = 60 * 60 * 24 * 365;
-    return ((postPool - prePool) * secondsPA) / (prePool * timeElapsed);
+    const api = await axios(connector());
+    console.log(api);
+    return api.data.data.apr / 100;
   } catch (error) {
     console.error(`[lido/getLidoApr]: ${error}`);
     throw Error(error);
