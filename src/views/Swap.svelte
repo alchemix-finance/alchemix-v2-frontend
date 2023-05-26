@@ -7,6 +7,7 @@
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
   import Button from '@components/elements/Button.svelte';
+  import VaultMessage from '@components/elements/VaultMessage.svelte';
   import { getQuote, getStatus } from '@middleware/liFi';
   import { bridge, toCanonical, fromCanonical, bridgeBalance } from '@helpers/multichain';
   import { BarLoader } from 'svelte-loading-spinners';
@@ -450,6 +451,15 @@
         </Button>
       </div>
     </ContainerWithHeader>
+  </div>
+
+  <div class="w-full mb-8">
+    <VaultMessage
+      level="{1}"
+      message="The bridge is currently unavailable because our aggregator partner LiFi decided to remove Multichain from their services for the time being. We're working on a solution in the meantime and am sorry for the inconvenience caused. For a workaround, check out the solution in our Forums below."
+      linkTarget="https://forum.alchemix.fi/public/d/417-temporary-bridging-workaround"
+      linkLabel="Temporary bridging workaround"
+    />
   </div>
 
   <div class="w-full mb-8">
