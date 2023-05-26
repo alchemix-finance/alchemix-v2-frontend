@@ -1,6 +1,14 @@
 <script>
+  import Button from './Button.svelte';
+
   export let message = '';
   export let level = 0;
+  export let linkTarget = '';
+  export let linkLabel = '';
+
+  const goTo = (url) => {
+    window.open(url, '_blank');
+  };
 
   const messageConfig = {
     0: {
@@ -22,19 +30,25 @@
 </script>
 
 <div
-  class="flex flex-row space-x-4 p-2 pl-4 items-center w-full border text-grey15
+  class="flex flex-col space-y-4 p-2 pl-4 items-center w-full border text-grey15
     text-l rounded bg-{messageConfig[level].bgColor} border-{messageConfig[level].borderColor}"
 >
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="1.5"
-    stroke="currentColor"
-    class="w-8 h-8"
-  >
-    <path stroke-linecap="round" stroke-linejoin="round" d="{messageConfig[level].icon}"></path>
-  </svg>
+  <div class="flex flex-row space-x-4">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-8 h-8"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="{messageConfig[level].icon}"></path>
+    </svg>
 
-  <p>{message}</p>
+    <p>{message}</p>
+  </div>
+
+  {#if linkTarget}
+    <Button on:clicked="{() => goTo(linkTarget)}" label="{linkLabel}" py="py-2" class="w-full lg:w-max" />
+  {/if}
 </div>
