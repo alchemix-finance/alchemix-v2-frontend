@@ -456,9 +456,9 @@
   <div class="w-full mb-8">
     <VaultMessage
       level="{1}"
-      message="The bridge is currently unavailable because our aggregator partner LiFi decided to remove Multichain from their services for the time being. We're working on a solution in the meantime and am sorry for the inconvenience caused. For a workaround, check out the solution in our Forums below."
-      linkTarget="https://forum.alchemix.fi/public/d/417-temporary-bridging-workaround"
-      linkLabel="Temporary bridging workaround"
+      message="Swapping bridged assets for canonical tokens is currently paused due to the ongoing uncertainty with Multichain. See the announcement below."
+      linkTarget="https://twitter.com/AlchemixFi/status/1664287170243497984"
+      linkLabel="Swap pause announcement on Twitter"
     />
   </div>
 
