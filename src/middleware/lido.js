@@ -12,7 +12,6 @@ function connector() {
 export async function getLidoApr() {
   try {
     const api = await axios(connector());
-    console.log(api);
     return api.data.data.apr / 100;
   } catch (error) {
     console.error(`[lido/getLidoApr]: ${error}`);
