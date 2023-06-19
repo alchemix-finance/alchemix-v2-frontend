@@ -269,88 +269,72 @@
       }
     };
 
-    const zeroConfException = [
-      '0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb',
-      '0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
-      '0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE',
-      '0x7Da96a3891Add058AdA2E826306D812C638D87a7',
-      '0x3B27F92C0e212C671EA351827EDF93DB27cc0c65',
-      '0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
-      '0x637eC617c86D24E421328e6CAEa1d92114892439',
-      '0xEF0210eB96c7EB36AF8ed1c20306462764935607',
-      '0x148c05caf1Bb09B5670f00D511718f733C54bC4c',
-    ];
-
-    if (zeroConfException.includes(vaultTokenData.address) || !!metaConfig[vaultTokenData.address]) {
-      return {
-        type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
-        row: {
-          hasConfig: metaConfig[vaultTokenData.address],
-          col2: {
-            CellComponent: FarmNameCell,
-            farmName: vaultName(),
-            farmSubtitle: vaultSubtitle(),
-            farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
-            tokenIcon: `${vaultIcon()}`.toLowerCase(),
-            isBeta: betaStatus(),
-            colSize: 3,
-            alignment: 'justify-self-start',
+    return {
+      type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
+      row: {
+        hasConfig: metaConfig[vaultTokenData.address],
+        col2: {
+          CellComponent: FarmNameCell,
+          farmName: vaultName(),
+          farmSubtitle: vaultSubtitle(),
+          farmIcon: `${VaultTypes[vault.type].toLowerCase()}_med.svg`,
+          tokenIcon: `${vaultIcon()}`.toLowerCase(),
+          isBeta: betaStatus(),
+          colSize: 3,
+          alignment: 'justify-self-start',
+        },
+        deposited: {
+          CellComponent: CurrencyCell,
+          value: depositValue,
+          token: {
+            balance: sharesBalance(),
+            perShare: vault.underlyingPerShare,
+            decimals: sanitizeDecimals(),
+            symbol: underlyingTokenData.symbol,
+            address: underlyingTokenData.address,
           },
-          deposited: {
-            CellComponent: CurrencyCell,
-            value: depositValue,
-            token: {
-              balance: sharesBalance(),
-              perShare: vault.underlyingPerShare,
-              decimals: sanitizeDecimals(),
-              symbol: underlyingTokenData.symbol,
-              address: underlyingTokenData.address,
-            },
-            colSize: 2,
-          },
-          col3: {
-            CellComponent: CurrencyCell,
-            value: tvlValue,
-            token: {
-              balance: vault.tvl,
-              perShare: vault.underlyingPerShare,
-              decimals: underlyingTokenData.decimals,
-              symbol: underlyingTokenData.symbol,
-              address: underlyingTokenData.address,
-            },
-            colSize: 2,
-          },
-          limit: {
-            CellComponent: VaultCapacityCell,
-            vaultType: vault.type,
-            signer: $signer,
-            yieldTokenAddress: vaultTokenData.address,
-            underlyingPerShare: vault.underlyingPerShare,
-            yieldPerShare: vault.yieldPerShare,
+          colSize: 2,
+        },
+        col3: {
+          CellComponent: CurrencyCell,
+          value: tvlValue,
+          token: {
+            balance: vault.tvl,
+            perShare: vault.underlyingPerShare,
             decimals: underlyingTokenData.decimals,
             symbol: underlyingTokenData.symbol,
-            colSize: 2,
-            fullWidth: true,
+            address: underlyingTokenData.address,
           },
-
-          col4: {
-            CellComponent: YieldCell,
-            yieldRate: vaultApy,
-            yieldType: rewardType(),
-            incentives: incentives(),
-            colSize: 2,
-          },
-          col5: {
-            CellComponent: ActionsCell,
-            colSize: 3,
-            vault: { ...vault, yieldToken: yieldToken(), acceptWETH: acceptWETH() },
-            borrowLimit: vaultDebt,
-          },
+          colSize: 2,
         },
-      };
-    } else {
-      return false;
-    }
+        limit: {
+          CellComponent: VaultCapacityCell,
+          vaultType: vault.type,
+          signer: $signer,
+          yieldTokenAddress: vaultTokenData.address,
+          underlyingPerShare: vault.underlyingPerShare,
+          yieldPerShare: vault.yieldPerShare,
+          decimals: underlyingTokenData.decimals,
+          symbol: underlyingTokenData.symbol,
+          colSize: 2,
+          fullWidth: true,
+        },
+
+        col4: {
+          CellComponent: YieldCell,
+          yieldRate: vaultApy,
+          yieldType: rewardType(),
+          incentives: incentives(),
+          colSize: 2,
+        },
+        col5: {
+          CellComponent: ActionsCell,
+          colSize: 3,
+          vault: { ...vault, yieldToken: yieldToken(), acceptWETH: acceptWETH() },
+          borrowLimit: vaultDebt,
+        },
+      },
+    };
   });
 
   $: noVaultsForStrategyText = {
