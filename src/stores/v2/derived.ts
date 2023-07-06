@@ -13,7 +13,7 @@ account.subscribe((val) => {
 });
 
 export const signer = derived([providerStore], ([$provider]) => {
-  return $provider?.getSigner(_account.address)
+  return $provider?.getSigner(_account.address);
 });
 
 export const fullTokenList = derived([tokensStore, networkStore], ([$tokensStore, $network]) => {
@@ -79,12 +79,12 @@ export const vaultsAggregatedDeposits = derived([vaultsStore, balancesStore], ([
       ...balances,
       [Number(vaultTypeKey)]: vaultBody
         ? vaultBody.reduce((_prevVault, _currentVault) => {
-          const underlyingTokenData = getTokenDataFromBalances(_currentVault.underlyingAddress, [
-            $balances,
-          ]);
-          const amount = underlyingTokenData ? _currentVault.balance : 0;
-          return _prevVault.add(amount);
-        }, initialVal)
+            const underlyingTokenData = getTokenDataFromBalances(_currentVault.underlyingAddress, [
+              $balances,
+            ]);
+            const amount = underlyingTokenData ? _currentVault.balance : 0;
+            return _prevVault.add(amount);
+          }, initialVal)
         : 0,
     };
   });

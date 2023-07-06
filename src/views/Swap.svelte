@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
-  import { utils, BigNumber } from 'ethers';
+  import { utils, BigNumber, ethers } from 'ethers';
   import ViewContainer from '@components/elements/ViewContainer.svelte';
   import PageHeader from '@components/elements/PageHeader.svelte';
   import ContainerWithHeader from '@components/elements/ContainerWithHeader.svelte';
@@ -19,8 +19,11 @@
   import multichainPendingTx from '@stores/multichainStore';
   import Dropdown from '@components/elements/Dropdown.svelte';
   import { switchChain } from '@helpers/walletManager';
-  import { setError } from '@helpers/setToast';
+  import { setError, setPendingTx, setSuccessTx } from '@helpers/setToast';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
+  import { contractWrapper } from '@helpers/contractWrapper';
+
+  import crossChainCanonicalAbi from '@helpers/CrossChainCanonical';
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -340,7 +343,93 @@
     if (!targetNetworks.includes(toChain)) setToChain(targetNetworks[0].id);
   };
   $: selectedToken, updateNetworks();
+
+  let selected;
+  let value = 0;
+
+  let alETH_Tokens = {
+    optimism: {
+      bridge: '0x1CcCA1cE62c62F7Be95d4A67722a8fDbed6EEcb4',
+      canonical: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
+      selector: 'CrossChainCanonicalAlchemicTokenV2_alETH',
+    },
+  };
+
+  let alUSD_Tokens = {
+    arbitrum: {
+      bridge: '0x2130d2a1e51112D349cCF78D2a1EE65843ba36e0',
+      canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
+      selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
+    },
+    optimism: {
+      bridge: '0xb2c22a9fb4fc02eb9d1d337655ce079a04a526c7',
+      canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
+      selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
+    },
+    fantom: {
+      bridge: '0xe5130d3dbfac6ae7d73a24d719762df74d8e4c27',
+      canonical: '0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E',
+      selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
+    },
+  };
+
+  async function swapToCanonical() {
+    try {
+      const canonicalContract = new ethers.Contract(selected.canonical, crossChainCanonicalAbi, $signer);
+
+      const tx = await canonicalContract.exchangeCanonicalForOld(
+        selected.bridge,
+        utils.parseEther(value.toString()),
+      );
+
+      setPendingTx();
+
+      return await tx.wait().then((transaction) => {
+        setSuccessTx(transaction.transactionHash);
+      });
+
+      // const path = chainIds.filter((chain) => chain.legacyId === $networkStore)[0].abiPath;
+      // const { instance: canonicalInstance } = await contractWrapper(selected.selector, $signer, path);
+
+      // const tx = await canonicalInstance.exchangeCanonicalForOld(
+      //   _bridgeToken,
+      //   utils.parseEther(value.toString()),
+      // );
+      // setPendingTx();
+      // return await tx.wait().then((transaction) => {
+      //   setSuccessTx(transaction.transactionHash);
+      //   return transaction.transactionHash;
+      // });
+    } catch (error) {
+      const message = error.data ? await error.data.message : error.message;
+      setError(message, error);
+      console.error(`[fromCanonical]:`, message);
+      throw Error(error);
+    }
+  }
 </script>
+
+<div class="flex">
+  <div>
+    <select class=" bg-black2 text-white2" bind:value="{selected}">
+      {#each Object.keys(alUSD_Tokens) as key}
+        <option value="{alUSD_Tokens[key]}">
+          alUSD {key}
+        </option>
+      {/each}
+
+      {#each Object.keys(alETH_Tokens) as key}
+        <option value="{alETH_Tokens[key]}">
+          alETH {key}
+        </option>
+      {/each}
+    </select>
+
+    <input class=" bg-black2 text-white2" bind:value type="number" />
+  </div>
+
+  <button on:click="{swapToCanonical}">Swap canonical tokens to old tokens</button>
+</div>
 
 <ViewContainer>
   <div slot="head" class="flex justify-between">
