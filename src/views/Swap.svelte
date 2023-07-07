@@ -345,7 +345,7 @@
   $: selectedToken, updateNetworks();
 
   let selected;
-  let value = 0;
+  let value = '';
 
   let alETH_Tokens = {
     optimism: {
@@ -373,14 +373,11 @@
     },
   };
 
-  async function swapToCanonical() {
+  async function exchangeCanonicalForOld() {
     try {
       const canonicalContract = new ethers.Contract(selected.canonical, crossChainCanonicalAbi, $signer);
 
-      const tx = await canonicalContract.exchangeCanonicalForOld(
-        selected.bridge,
-        utils.parseEther(value.toString()),
-      );
+      const tx = await canonicalContract.exchangeCanonicalForOld(selected.bridge, utils.parseEther(value));
 
       setPendingTx();
 
@@ -409,28 +406,6 @@
   }
 </script>
 
-<div class="flex">
-  <div>
-    <select class=" bg-black2 text-white2" bind:value="{selected}">
-      {#each Object.keys(alUSD_Tokens) as key}
-        <option value="{alUSD_Tokens[key]}">
-          alUSD {key}
-        </option>
-      {/each}
-
-      {#each Object.keys(alETH_Tokens) as key}
-        <option value="{alETH_Tokens[key]}">
-          alETH {key}
-        </option>
-      {/each}
-    </select>
-
-    <input class=" bg-black2 text-white2" bind:value type="number" />
-  </div>
-
-  <button on:click="{swapToCanonical}">Swap canonical tokens to old tokens</button>
-</div>
-
 <ViewContainer>
   <div slot="head" class="flex justify-between">
     <PageHeader
@@ -438,6 +413,40 @@
       pageTitle="{$_('swap_page.title')}"
       pageSubtitle="{$_('swap_page.subtitle')}"
     />
+  </div>
+
+  <div class="w-full mb-8">
+    <ContainerWithHeader>
+      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
+        <p class="inline-block self-center">Emergency Chainswap</p>
+      </div>
+      <div
+        slot="body"
+        class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-y-visible lg:overflow-y-hidden"
+      >
+        <div class="flex">
+          <div>
+            <select class=" bg-black2 text-white2" bind:value="{selected}">
+              {#each Object.keys(alUSD_Tokens) as key}
+                <option value="{alUSD_Tokens[key]}">
+                  alUSD {key}
+                </option>
+              {/each}
+
+              {#each Object.keys(alETH_Tokens) as key}
+                <option value="{alETH_Tokens[key]}">
+                  alETH {key}
+                </option>
+              {/each}
+            </select>
+
+            <input class=" bg-black2 text-white2" bind:value type="text" />
+          </div>
+
+          <button on:click="{exchangeCanonicalForOld}">Swap canonical tokens to old tokens</button>
+        </div>
+      </div>
+    </ContainerWithHeader>
   </div>
 
   {#if unbridgedAssets}
