@@ -24,6 +24,7 @@
   import { contractWrapper } from '@helpers/contractWrapper';
 
   import crossChainCanonicalAbi from '@helpers/CrossChainCanonical';
+  import { formatEther, parseEther } from 'ethers/lib/utils';
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -406,24 +407,24 @@
       return await tx.wait().then((transaction) => {
         setSuccessTx(transaction.transactionHash);
       });
-
-      // const path = chainIds.filter((chain) => chain.legacyId === $networkStore)[0].abiPath;
-      // const { instance: canonicalInstance } = await contractWrapper(selected.selector, $signer, path);
-
-      // const tx = await canonicalInstance.exchangeCanonicalForOld(
-      //   _bridgeToken,
-      //   utils.parseEther(value.toString()),
-      // );
-      // setPendingTx();
-      // return await tx.wait().then((transaction) => {
-      //   setSuccessTx(transaction.transactionHash);
-      //   return transaction.transactionHash;
-      // });
     } catch (error) {
       const message = error.data ? await error.data.message : error.message;
       setError(message, error);
-      console.error(`[fromCanonical]:`, message);
-      throw Error(error);
+      console.error(`[exchangeCanonicalForOld]:`, message);
+    }
+  }
+
+  async function onMaxButtonHandle() {
+    try {
+      const canonicalContract = new ethers.Contract(selected.canonical, crossChainCanonicalAbi, $signer);
+
+      const balanceOf = await canonicalContract.balanceOf($addressStore);
+
+      value = formatEther(balanceOf);
+    } catch (error) {
+      const message = error.data ? await error.data.message : error.message;
+      setError(message, error);
+      console.error(`[onMaxButtonHandle]:`, message);
     }
   }
 </script>
@@ -446,7 +447,7 @@
         slot="body"
         class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-y-visible lg:overflow-y-hidden"
       >
-        <div class="flex">
+        <div class="flex flex-col">
           <div>
             <select class=" bg-black2 text-white2" bind:value="{selected}">
               {#if alUSD_Tokens[$networkStore]}
@@ -468,10 +469,16 @@
               {/if}
             </select>
 
-            <input class=" bg-black2 text-white2" bind:value type="text" />
+            <input class="border border-grey2 p-2 bg-black2 text-white2" bind:value type="text" />
+
+            <button class="p-2 bg-grey3 border border-grey15 text-white2" on:click="{onMaxButtonHandle}"
+              >MAX</button
+            >
           </div>
 
-          <button on:click="{exchangeCanonicalForOld}">Swap canonical tokens to old tokens</button>
+          <button class="p-2 bg-grey3 border border-grey15 text-white2" on:click="{exchangeCanonicalForOld}"
+            >Swap canonical tokens to old tokens</button
+          >
         </div>
       </div>
     </ContainerWithHeader>
