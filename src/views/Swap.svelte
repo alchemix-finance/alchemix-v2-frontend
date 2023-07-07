@@ -479,6 +479,14 @@
           <button class="p-2 bg-grey3 border border-grey15 text-white2" on:click="{exchangeCanonicalForOld}"
             >Swap canonical tokens to old tokens</button
           >
+
+          <div class=" p-2 bg-orange1 text-black1 font-semibold">
+            We are deprecating the multichain bridge. If you wish to move your alUSD, alETH, or gALCX back to
+            mainnet, swap to the multichain bridge asset, and then go to <a
+              class=" text-blue1"
+              href="https://app.multichain.org/">app.multichain.org</a
+            > and send it back to mainnet.
+          </div>
         </div>
       </div>
     </ContainerWithHeader>
