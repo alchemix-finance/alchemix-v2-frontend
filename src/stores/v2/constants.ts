@@ -495,6 +495,13 @@ export const vaultMessages = [
   },
 ];
 
+export const chainIDS = {
+  ethereum: '0x1',
+  fantom: '0xfa',
+  arbitrium: '0xa4b1',
+  optimism: '0xa'
+}
+
 // @ts-ignore
 export const chainIds = [
   {

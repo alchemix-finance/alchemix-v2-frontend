@@ -14,7 +14,7 @@
   import { addressStore, balancesStore, networkStore } from '@stores/v2/alcxStore';
   import { signer } from '@stores/v2/derived';
   import { getTokenDataFromBalancesBySymbol } from '@stores/v2/helpers';
-  import { chainIds } from '@stores/v2/constants';
+  import { chainIDS, chainIds } from '@stores/v2/constants';
   import settings from '@stores/settings';
   import multichainPendingTx from '@stores/multichainStore';
   import Dropdown from '@components/elements/Dropdown.svelte';
@@ -348,36 +348,58 @@
   let value = '';
 
   let alETH_Tokens = {
-    optimism: {
+    [chainIDS.optimism]: {
+      title: 'alETH',
       bridge: '0x1CcCA1cE62c62F7Be95d4A67722a8fDbed6EEcb4',
       canonical: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
       selector: 'CrossChainCanonicalAlchemicTokenV2_alETH',
     },
   };
 
+  let gAlLCX_Tokens = {
+    [chainIDS.fantom]: {
+      title: 'gALCX',
+      bridge: '0x4CbA8902ce48AB1d5eEa1920D65faeDB934B9916',
+      canonical: '0x70F9fd19f857411b089977E7916c05A0fc477Ac9',
+    },
+    [chainIDS.arbitrium]: {
+      title: 'gALCX',
+      bridge: '0x026e91e4C3d35EB31a90FcdBF50313d0290Af3cb',
+      canonical: '0x870d36B8AD33919Cc57FFE17Bb5D3b84F3aDee4f',
+    },
+  };
+
   let alUSD_Tokens = {
-    arbitrum: {
+    [chainIDS.arbitrium]: {
+      title: 'alUSD',
       bridge: '0x2130d2a1e51112D349cCF78D2a1EE65843ba36e0',
       canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
       selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
     },
-    optimism: {
+    [chainIDS.optimism]: {
+      title: 'alUSD',
       bridge: '0xb2c22a9fb4fc02eb9d1d337655ce079a04a526c7',
       canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
       selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
     },
-    fantom: {
+    [chainIDS.fantom]: {
+      title: 'alUSD',
       bridge: '0xe5130d3dbfac6ae7d73a24d719762df74d8e4c27',
       canonical: '0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E',
       selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
     },
   };
 
+  $: console.log(selected);
+
   async function exchangeCanonicalForOld() {
     try {
+      console.log(selected);
       const canonicalContract = new ethers.Contract(selected.canonical, crossChainCanonicalAbi, $signer);
 
-      const tx = await canonicalContract.exchangeCanonicalForOld(selected.bridge, utils.parseEther(value));
+      const amount = utils.parseEther(value);
+      console.log(amount.toString());
+      const tx = await canonicalContract.exchangeCanonicalForOld(selected.bridge, amount);
 
       setPendingTx();
 
@@ -427,17 +449,23 @@
         <div class="flex">
           <div>
             <select class=" bg-black2 text-white2" bind:value="{selected}">
-              {#each Object.keys(alUSD_Tokens) as key}
-                <option value="{alUSD_Tokens[key]}">
-                  alUSD {key}
+              {#if alUSD_Tokens[$networkStore]}
+                <option value="{alUSD_Tokens[$networkStore]}">
+                  {alUSD_Tokens[$networkStore].title}
                 </option>
-              {/each}
+              {/if}
 
-              {#each Object.keys(alETH_Tokens) as key}
-                <option value="{alETH_Tokens[key]}">
-                  alETH {key}
+              {#if alETH_Tokens[$networkStore]}
+                <option value="{alETH_Tokens[$networkStore]}">
+                  {alETH_Tokens[$networkStore].title}
                 </option>
-              {/each}
+              {/if}
+
+              {#if gAlLCX_Tokens[$networkStore]}
+                <option value="{gAlLCX_Tokens[$networkStore]}">
+                  {gAlLCX_Tokens[$networkStore].title}
+                </option>
+              {/if}
             </select>
 
             <input class=" bg-black2 text-white2" bind:value type="text" />
