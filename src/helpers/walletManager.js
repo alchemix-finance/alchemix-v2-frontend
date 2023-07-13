@@ -30,11 +30,11 @@ account.subscribe((val) => {
 });
 
 const injected = injectedModule();
-const walletConnect = walletConnectModule();
+const walletConnect = walletConnectModule({ projectId: '6266d94f366820b41edbd6a12180a1cb' });
 const coinbase = coinbaseWallet();
 const taho = tahoWallet();
 const trezorWallet = trezor({ email: 'n4n0@mail.alchemix.fi', appUrl: 'https://alchemix.fi' });
-const ledger = ledgerModule();
+const ledger = ledgerModule({ walletConnectVersion: 2, projectId: '6266d94f366820b41edbd6a12180a1cb' });
 const keystone = keystoneModule();
 
 const supportedChains = chainIds.map((chain) => {
