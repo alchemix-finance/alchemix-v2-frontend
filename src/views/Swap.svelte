@@ -21,6 +21,7 @@
   import { switchChain } from '@helpers/walletManager';
   import { setError } from '@helpers/setToast';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
+  import { relayerFee, xcall } from '@middleware/connext';
 
   const goTo = (url) => {
     window.open(url, '_blank');
@@ -99,17 +100,6 @@
   const setToChain = (_id) => {
     clear();
     toChain = chainIds.filter((chain) => chain.id === _id)[0];
-  };
-
-  const setToken = (token) => {
-    if (token !== selectedToken) {
-      selectedToken = token;
-      clear();
-    }
-  };
-
-  const setMax = () => {
-    bridgeAmount = tokenBalance;
   };
 
   const clear = () => {
