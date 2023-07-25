@@ -1,29 +1,17 @@
 import { create, SdkConfig } from '@connext/sdk';
-import { signer } from '@stores/v2/derived';
-import { addressStore } from '@stores/v2/alcxStore';
 import { chainIds } from '@stores/v2/constants';
-import { utils } from 'ethers';
+import { utils, Signer } from 'ethers';
+import { contractWrapper } from '@helpers/contractWrapper';
 
 const abiCoder = new utils.AbiCoder();
-
-let _addressStore;
-let _signer;
-
-addressStore.subscribe((val) => {
-  _addressStore = val;
-});
-
-signer.subscribe((val) => {
-  _signer = val;
-});
 
 const getRpcByConnextId = (id: number) => {
   return chainIds.filter((entry) => entry.connextId === id)[0].apiUrl;
 };
 
-export const relayerFee = async (origin, destination) => {
+export const relayerFee = async (origin: number, destination: number, userAddress: string) => {
   const sdkConfig: SdkConfig = {
-    signerAddress: _addressStore.address,
+    signerAddress: userAddress,
     network: 'mainnet',
     chains: {
       6648936: {
@@ -47,10 +35,13 @@ export const xcall = async (
   destination: string,
   asset: string,
   amount: string,
-  gateway: string,
+  signer: Signer,
+  userAddress: string,
+  path: string,
+  infiniteApproval: boolean,
 ) => {
   const sdkConfig: SdkConfig = {
-    signerAddress: _addressStore.address,
+    signerAddress: userAddress,
     network: 'mainnet',
     chains: {
       6648936: {
@@ -66,24 +57,25 @@ export const xcall = async (
   };
   const { sdkBase } = await create(sdkConfig);
 
+  const { address: gatewayAddress } = await contractWrapper('AlchemixConnextGateway', signer, path);
+
   const xcallParams = {
     origin: origin,
     destination: destination,
     asset: asset,
     amount: amount,
-    to: gateway,
-    callData: abiCoder.encode(['address'], _addressStore.address),
+    to: gatewayAddress,
+    callData: abiCoder.encode(['address'], [userAddress]),
   };
 
-  const xcallApproval = await sdkBase.approveIfNeeded(origin, asset, amount);
+  const xcallApproval = await sdkBase.approveIfNeeded(origin, asset, amount, infiniteApproval);
 
   if (xcallApproval) {
-    const approveReceipt = await _signer.sendTransaction(xcallApproval);
+    const approveReceipt = await signer.sendTransaction(xcallApproval);
     await approveReceipt.wait();
   }
 
   const xcallRequest = await sdkBase.xcall(xcallParams);
-  const xcallReceipt = await _signer.sendTransaction(xcallRequest);
-  console.log(xcallReceipt);
+  const xcallReceipt = await signer.sendTransaction(xcallRequest);
   await xcallReceipt.wait();
 };

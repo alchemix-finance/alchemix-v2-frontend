@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
@@ -17,55 +17,38 @@
   import settings from '@stores/settings';
   import multichainPendingTx from '@stores/multichainStore';
   import Dropdown from '@components/elements/Dropdown.svelte';
-  import { switchChain } from '@helpers/walletManager';
   import { setError } from '@helpers/setToast';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
   import { relayerFee, xcall } from '@middleware/connext';
-
-  const goTo = (url) => {
-    window.open(url, '_blank');
-  };
+  import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
 
   const supportedTokens = {
     alUSD: {
       name: 'alUSD',
       address: {
         ethereum: '0xbc6da0fe9ad5f3b0d58160288917aa56653660e9',
-        fantom: {
-          bridge: '0xe5130d3dbfac6ae7d73a24d719762df74d8e4c27',
-          canonical: '0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E',
-        },
-        arbitrum: {
-          bridge: '0x2130d2a1e51112D349cCF78D2a1EE65843ba36e0',
-          canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
-        },
-        optimism: {
-          bridge: '0xb2c22a9fb4fc02eb9d1d337655ce079a04a526c7',
-          canonical: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
-        },
+        arbitrum: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
+        optimism: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
       },
-      selector: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
     },
     alETH: {
       name: 'alETH',
       address: {
         ethereum: '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',
-        optimism: {
-          bridge: '0x1CcCA1cE62c62F7Be95d4A67722a8fDbed6EEcb4',
-          canonical: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
-        },
+        arbitrum: '0x17573150d67d820542EFb24210371545a4868B03',
+        optimism: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
       },
-      selector: 'CrossChainCanonicalAlchemicTokenV2_alETH',
     },
   };
 
   const supportedNetworks = [
-    { name: 'Ethereum', id: '0x1', abiPath: 'ethereum' },
-    { name: 'Arbitrum', id: '0xa4b1', abiPath: 'arbitrum' },
+    { name: 'Ethereum', id: '0x1', abiPath: 'ethereum', icon: 'ethereum' },
+    { name: 'Arbitrum', id: '0xa4b1', abiPath: 'arbitrum', icon: 'arbitrum' },
     {
       name: 'Optimism',
       id: '0xa',
       abiPath: 'optimism',
+      icon: 'optimism',
     },
   ];
 
@@ -76,11 +59,7 @@
   let bridgeFees = '0.00';
   $: routerFees = Math.round(bridgeAmount * 0.0005 * 100) / 100 || '0.00';
   let timer;
-  console.log($networkStore, supportedNetworks[0].id);
-  supportedNetworks.filter((chain) => {
-    console.log(chain.id, $networkStore);
-    chain.id !== $networkStore;
-  });
+
   let toChain = supportedNetworks.filter((chain) => chain.id !== $networkStore)[0];
   $: tokenBalanceRaw =
     getTokenDataFromBalancesBySymbol(selectedToken, [$balancesStore])?.balance || BigNumber.from(0);
@@ -95,6 +74,11 @@
   let statusTimer;
   let autoCheck = false;
   let bridgeReceived = false;
+  let infiniteApproval = false;
+
+  const switchApproval = () => {
+    infiniteApproval = !infiniteApproval;
+  };
 
   const setToChain = (_id) => {
     clear();
@@ -152,101 +136,66 @@
   const _getQuote = async () => {
     fetchingQuote = true;
     const originChain = chainIds.filter((chain) => chain.id === $networkStore)[0].connextId;
-    const targetChain = toChain.connextId;
-    console.log(originChain, targetChain);
-    await relayerFee(originChain, targetChain)
+    const targetChain = chainIds.filter((chain) => chain.id === toChain.id)[0].connextId;
+    await relayerFee(originChain, targetChain, $addressStore)
       .then((result) => {
-        console.log(result);
         bridgeFees = result;
+        quoteReceived = true;
       })
       .catch((error) => {
         console.log(error);
+        setError('Something went wrong', error);
       })
       .finally(() => {
         fetchingQuote = false;
       });
   };
 
-  const startBridge = async (txData, _targetNetwork) => {
-    let fromToken;
-    const fromChain = chainIds.filter((chain) => chain.id === $networkStore)[0];
-    const amount = utils.parseEther(bridgeAmount.toString());
-    if (_targetNetwork !== '0x1') processing = true;
-    step = _targetNetwork === '0x1' ? 2 : 1;
-    fromToken =
-      fromChain.id === '0x1'
-        ? supportedTokens[selectedToken].address.ethereum
-        : supportedTokens[selectedToken].address[fromChain.abiPath].bridge;
-    await bridge(txData, fromToken, amount, approvalTarget, [$addressStore, $signer])
-      .then((hash) => {
-        $multichainPendingTx.bridge = tool;
-        $multichainPendingTx.fromChain = fromChain.legacyId;
-        $multichainPendingTx.toChain = toChain.legacyId;
-        $multichainPendingTx.txHash = hash;
-        $multichainPendingTx.bridgeToken = bridgeToken;
-        $multichainPendingTx.token = selectedToken;
-        autoCheck = true;
-        step = _targetNetwork === '0x1' ? 3 : 2;
-        if (_targetNetwork === '0x1') processing = false;
-        statusPing();
-      })
-      .catch((error) => {
-        step = 0;
-        processing = false;
-        console.error(error);
-      });
-  };
-
-  const swapToken = async (targetNetwork) => {
-    let chain;
-    switch (targetNetwork) {
-      case '0x1':
-        processing = true;
-        step = 1;
-        chain = chainIds.filter((chain) => chain.id === $networkStore)[0];
-        await fromCanonical(
-          supportedTokens[selectedToken].address[chain.abiPath].bridge,
-          supportedTokens[selectedToken].selector,
-          chainIds.filter((chain) => chain.id === $networkStore)[0].legacyId,
-          utils.parseEther(bridgeAmount.toString()),
-          [$signer],
-        )
-          .then((txHash) => {
-            console.log(txHash);
-            startBridge(txData, '0x1');
-          })
-          .catch((error) => {
-            console.error(error);
-            step = 0;
-            processing = false;
-          });
+  const startBridge = () => {
+    const originChain = chainIds.filter((chain) => chain.id === $networkStore)[0];
+    const targetChain = chainIds.filter((chain) => chain.id === toChain.id)[0];
+    let direction;
+    if (originChain.id === '0x1') direction = 'ETHL2';
+    if (targetChain.id === '0x1') direction = 'L2ETH';
+    if (originChain.id !== '0x1' && targetChain.id !== '0x1') direction = 'L2L2';
+    console.log(direction);
+    switch (direction) {
+      case 'ETHL2':
+        // ETH -> L2 xcall
+        ethl2(originChain, targetChain);
+        break;
+      case 'L2ETH':
+        // L2 -> ETH gateway
+        break;
+      case 'L2L2':
+        // L2 -> L2 unwrap, xcall, wrap
         break;
       default:
-        await toCanonical(
-          $multichainPendingTx.bridgeToken,
-          supportedTokens[$multichainPendingTx.token].selector,
-          $multichainPendingTx.toChain,
-          [$addressStore, $signer],
-        )
-          .then((txHash) => {
-            console.log(txHash);
-            step = 0;
-            processing = false;
-            txData = '';
-            approvalTarget = '';
-            tool = '';
-            pendingTx = false;
-            bridgeToken = '';
-            autoCheck = false;
-            bridgeReceived = false;
-            $multichainPendingTx.txHash = undefined;
-            localStorage.removeItem('multichainPendingTx');
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        break;
+        console.log('Invalid direction');
     }
+  };
+
+  const ethl2 = async (origin: object, target: object) => {
+    const tokenAddress = supportedTokens[selectedToken].address[origin.abiPath];
+    console.log('ethl2', origin, target, tokenAddress);
+
+    await xcall(
+      origin.connextId.toString(),
+      target.connextId.toString(),
+      tokenAddress,
+      bridgeAmount,
+      $signer,
+      $addressStore,
+      target.abiPath,
+      infiniteApproval,
+    )
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+        setError('Something went wrong', error);
+      });
   };
 
   let unbridgedAssets = false;
@@ -285,16 +234,16 @@
   onMount(() => {
     if ($networkStore !== '0x1') checkForBridgeAssets();
   });
-  let targetNetworks;
-  const updateNetworks = () => {
-    targetNetworks = chainIds
-      .map((chain) => {
-        if (supportedTokens[selectedToken].address.hasOwnProperty(chain.abiPath)) return chain;
-      })
-      .filter((chain) => !!chain);
-    if (!targetNetworks.includes(toChain)) setToChain(targetNetworks[0].id);
-  };
-  $: selectedToken, updateNetworks();
+  // let targetNetworks;
+  // const updateNetworks = () => {
+  //   targetNetworks = chainIds
+  //     .map((chain) => {
+  //       if (supportedTokens[selectedToken].address.hasOwnProperty(chain.abiPath)) return chain;
+  //     })
+  //     .filter((chain) => !!chain);
+  //   if (!targetNetworks.includes(toChain)) setToChain(targetNetworks[0].id);
+  // };
+  // $: selectedToken, updateNetworks();
 </script>
 
 <ViewContainer>
@@ -322,48 +271,6 @@
       </div>
     </div>
   {/if}
-
-  <div class="w-full mb-8">
-    <ContainerWithHeader>
-      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
-        <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
-      </div>
-      <div
-        slot="body"
-        class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-y-visible lg:overflow-y-hidden"
-      >
-        <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" class="w-full lg:w-max" py="py-2">
-          <img src="./images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
-        </Button>
-        <Button
-          on:clicked="{() => goTo('http://app.paraswap.io')}"
-          label="Paraswap"
-          class="w-full lg:w-max"
-          py="py-2"
-        >
-          <img src="./images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
-        </Button>
-        {#if $networkStore === '0xa'}
-          <Button
-            on:clicked="{() => goTo('https://app.velodrome.finance/swap')}"
-            label="Velodrome"
-            class="w-full lg:w-max"
-            py="py-2"
-          >
-            <img src="./images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
-          </Button>
-        {/if}
-        <Button
-          on:clicked="{() => goTo('http://zapper.fi')}"
-          label="Zapper"
-          class="w-full lg:w-max"
-          py="py-2"
-        >
-          <img src="./images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
-        </Button>
-      </div>
-    </ContainerWithHeader>
-  </div>
 
   <div class="w-full mb-8">
     <ContainerWithHeader>
@@ -428,7 +335,24 @@
               </div>
             </div>
             <div class="flex flex-col justify-between">
-              <p class="text-sm text-lightgrey10 min-w-max pb-2">Token</p>
+              <div class="flex flex-row justify-between  pb-2">
+                <p class="text-sm text-lightgrey10 min-w-max">Token</p>
+
+                <div class="flex flex-row space-x-4">
+                  <p
+                    class="flex-auto {$settings.invertColors
+                      ? 'text-lightgrey10inverse'
+                      : 'text-lightgrey10'} text-sm self-center"
+                  >
+                    {$_('approval')}:
+                  </p>
+                  <ToggleSwitch
+                    label="{$_('exact')}"
+                    secondLabel="{$_('infinite')}"
+                    on:toggleChange="{() => switchApproval()}"
+                  />
+                </div>
+              </div>
               <ComplexInput
                 bind:inputValue="{bridgeAmount}"
                 supportedTokens="{Object.entries(supportedTokens).map((entry) => {
@@ -486,7 +410,7 @@
                 backgroundColor="{$settings.invertColors ? 'green7' : 'black2'}"
                 hoverColor="green4"
                 height="h-12"
-                on:clicked="{() => startBridge(txData)}"
+                on:clicked="{() => startBridge()}"
               />
             {/if}
           </div>

@@ -18,7 +18,7 @@ export function sidebarSetup() {
       supportedChains: ['0x1', '0xfa', '0xa', '0xa4b1'],
     },
     {
-      label: 'swap',
+      label: 'swap_page.title',
       path: 'swap',
       icon: 'swap_med.svg',
       supportedChains: ['0x1', '0xfa', '0xa4b1', '0xa'],
