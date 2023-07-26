@@ -320,7 +320,7 @@
   "balance": "Balance",
   "swap_page": {
     "title": "Bridge",
-    "subtitle": "Bridge your tokens to other chains",
+    "subtitle": "Transfer your tokens to other chains",
     "bridge": "Connext Bridge"
   },
   "report_bug": "Report bug"

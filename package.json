@@ -8,8 +8,8 @@
     "build": "cross-env NODE_ENV=production vite build",
     "build:gha": "cross-env NODE_OPTIONS=--max-old-space-size=8192 NODE_ENV=ipfs vite build",
     "vercel_debug_build": "echo $DEBUG_MODE; yarn makeEnv && yarn build",
-    "dev:noabi": "node -v && yarn format && cross-env NODE_ENV=development vite --port 5005",
-    "dev": "node -v && yarn abi && yarn format && cross-env NODE_ENV=development vite --port 5005",
+    "dev:noabi": "node -v && yarn format && cross-env NODE_ENV=development NODE_OPTIONS=--max-old-space-size=8192 vite --port 5005",
+    "dev": "node -v && yarn abi && yarn format && cross-env NODE_ENV=development NODE_OPTIONS=--max-old-space-size=8192 vite --port 5005",
     "format": "yarn run prettier && yarn run lint",
     "lint": "yarn run eslint ./src/ --ext .js,.ts,.svelte",
     "prettier": "npx prettier --write src/**/*.{js,svelte,ts,html} --write public/*.html --no-error-on-unmatched-pattern"
@@ -52,7 +52,7 @@
     "vite": "^3.2.7"
   },
   "dependencies": {
-    "@connext/sdk": "^2.1.1",
+    "@connext/sdk": "2.0.3-alpha.11",
     "@lottiefiles/lottie-player": "^1.5.7",
     "@snapshot-labs/snapshot.js": "^0.4.57",
     "@tkh/tailwind-plugin-flex-basis": "^1.4.0",
