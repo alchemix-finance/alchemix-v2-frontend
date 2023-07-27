@@ -15,8 +15,9 @@
   import Dropdown from '@components/elements/Dropdown.svelte';
   import { setError } from '@helpers/setToast';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
-  import { relayerFee, xcall } from '@middleware/connext';
+  import { relayerFee, xcall, statusCheck } from '@middleware/connext';
   import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
+  import { connextReceipts } from '@stores/connextStore';
 
   const supportedTokens = {
     alUSD: {
@@ -152,13 +153,40 @@
       bridgeFees,
     )
       .then((result) => {
-        console.log(result);
-        clear();
+        $connextReceipts = [
+          ...$connextReceipts,
+          {
+            originChain: origin.abiPath,
+            destinationChain: target.abiPath,
+            token: selectedToken,
+            amount: bridgeAmount,
+            txHash: result.transactionHash,
+          },
+        ];
       })
       .catch((error) => {
         console.log(error);
         setError('Something went wrong', error);
+      })
+      .finally(() => {
+        clear();
       });
+  };
+
+  const getStatus = async (txHash: string, origin: string, destination: string) => {
+    return await statusCheck(txHash, origin, destination);
+  };
+
+  const cleanStatus = (status: string) => {
+    enum Status {
+      'XCalled' = 'Pending',
+      'Executed' = 'Success',
+      'Reconciled' = 'Success',
+      'CompletedFast' = 'Success',
+      'CompletedSlow' = 'Success',
+    }
+
+    return Status[status];
   };
 
   const foo = '0xe045ad545c14c149b849a39bc3fd80632169d1215f82fff28dabca9980dea7ea';
@@ -231,7 +259,7 @@
                   : 'bg-grey3'}"
               >
                 {#if fetchingQuote}
-                  <div class="flex justify-center items-center my-4">
+                  <div class="flex w-full justify-center items-center">
                     <BarLoader color="{$settings.invertColors ? '#6C93C7' : '#F5C59F'}" />
                   </div>
                 {:else}
@@ -295,65 +323,89 @@
         class="py-4 px-6 text-sm flex flex-col gap-2 lg:gap-0 lg:flex-row lg:justify-between lg:items-center"
       >
         <p class="text-left w-full">Bridge Receipts</p>
-        <Button label="Clear" borderSize="1" width="w-max" height="h-8" fontSize="text-md" />
+        <Button
+          label="Clear"
+          borderSize="1"
+          width="w-max"
+          height="h-8"
+          fontSize="text-md"
+          on:clicked="{() => ($connextReceipts.length = 0)}"
+        />
       </div>
       <div class="py-4 px-6" slot="body">
         <div class="flex flex-col space-y-4">
-          <!--          begin small component-->
-          <div
-            class="flex flex-col space-y-4 border rounded p-4 w-full relative {$settings.invertColors
-              ? 'bg-grey10inverse border-grey3inverse'
-              : 'bg-grey10 border-grey3'}"
-          >
-            <div class="flex flex-row space-x-4 justify-between">
-              <div class="flex flex-col space-y-2 items-center">
-                <p class="text-sm text-lightgrey10">Route</p>
-                <div class="flex flex-row space-x-2 items-center">
-                  <img src="./images/icons/ethereum.svg" alt="Starting Network" class="h-8" />
-                  <p class="pr-2">⏵</p>
-                  <img src="./images/icons/arbitrum.svg" alt="Destination Network" class="h-8" />
+          {#if $connextReceipts.length > 0}
+            {#each $connextReceipts as receipt}
+              <div
+                class="flex flex-col space-y-4 border rounded p-4 w-full relative {$settings.invertColors
+                  ? 'bg-grey10inverse border-grey3inverse'
+                  : 'bg-grey10 border-grey3'}"
+              >
+                <div class="flex flex-row space-x-4 justify-between">
+                  <div class="flex flex-col space-y-2 items-center">
+                    <p class="text-sm text-lightgrey10">Route</p>
+                    <div class="flex flex-row space-x-2 items-center">
+                      <img
+                        src="./images/icons/{receipt.originChain}.svg"
+                        alt="Starting Network"
+                        class="h-8"
+                      />
+                      <p class="pr-2">⏵</p>
+                      <img
+                        src="./images/icons/{receipt.destinationChain}.svg"
+                        alt="Destination Network"
+                        class="h-8"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col space-y-2 items-center">
+                    <p class="text-sm text-lightgrey10">Transfer Amount</p>
+                    <p>{receipt.amount} {receipt.token}</p>
+                  </div>
+
+                  <div class="flex flex-col space-y-2 items-center">
+                    <p class="text-sm text-lightgrey10">Status</p>
+                    {#await getStatus(receipt.txHash, receipt.originChain, receipt.destinationChain)}
+                      <p class="animate-pulse">¯\_(ツ)_/¯</p>
+                    {:then status}
+                      <p>{cleanStatus(status)}</p>
+                    {/await}
+                  </div>
+                </div>
+                <div class="flex flex-row justify-between items-center">
+                  <p class="text-sm text-lightgrey10 w-full self-center">
+                    Tx Hash: <span class="font-alcxMono">{receipt.txHash}</span>
+                  </p>
+                  <Button
+                    label="Inspect"
+                    borderSize="1"
+                    width="w-max"
+                    fontSize="text-sm"
+                    on:clicked="{() => openExplorer(receipt.txHash)}"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 inline"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      slot="rightSlot"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      ></path>
+                    </svg>
+                  </Button>
                 </div>
               </div>
-
-              <div class="flex flex-col space-y-2 items-center">
-                <p class="text-sm text-lightgrey10">Transfer Amount</p>
-                <p>5 alUSD</p>
-              </div>
-
-              <div class="flex flex-col space-y-2 items-center">
-                <p class="text-sm text-lightgrey10">Status</p>
-                <p>Pending</p>
-              </div>
-            </div>
-            <div class="flex flex-row justify-between items-center">
-              <p class="text-sm text-lightgrey10 w-full self-center">
-                Tx Hash: <span class="font-alcxMono">{foo}</span>
-              </p>
-              <Button
-                label="Inspect"
-                borderSize="1"
-                width="w-max"
-                fontSize="text-sm"
-                on:clicked="{() => openExplorer(foo)}"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 inline"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  slot="rightSlot"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-              </Button>
-            </div>
-          </div>
-          <!--          end small component-->
+            {/each}
+          {:else}
+            <p class="text-center text-sm">No receipts found.</p>
+          {/if}
         </div>
       </div>
     </ContainerWithHeader>

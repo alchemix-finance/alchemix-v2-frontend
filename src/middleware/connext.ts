@@ -9,8 +9,20 @@ import {
   setPendingApproval,
   setError,
 } from '@helpers/setToast';
+import axios from 'axios';
 
 const abiCoder = new utils.AbiCoder();
+const subgraph = {
+  ethereum: 'https://api.thegraph.com/subgraphs/name/connext/amarok-runtime-v0-mainnet',
+  optimism: 'https://api.thegraph.com/subgraphs/name/connext/amarok-runtime-v0-optimism',
+  arbitrum: 'https://api.thegraph.com/subgraphs/name/connext/amarok-runtime-v0-arbitrum-one',
+};
+
+const killRequest = (timeout: number) => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeout || 0);
+  return controller.signal;
+};
 
 const getRpcByConnextId = (id: number) => {
   return chainIds.filter((entry) => entry.connextId === id)[0].apiUrl;
@@ -101,4 +113,30 @@ export const xcall = async (
     console.error(`[xcall]: ${e}`);
     throw Error(e);
   }
+};
+
+export const statusCheck = async (txHash: string, origin: string, destination: string) => {
+  const originData = await axios.post(subgraph[origin], {
+    signal: killRequest(4000),
+    query: `{originTransfers(
+    where: {
+      transactionHash: "${txHash}"
+    }
+  ) {
+    status
+    transferId
+  }}`,
+  });
+  const txId = originData.data.data.originTransfers[0].transferId;
+  const destinationData = await axios.post(subgraph[destination], {
+    signal: killRequest(4000),
+    query: `{destinationTransfers(
+      where: {
+        transferId: "${txId}"
+          }) {
+          status}}`,
+  });
+  return destinationData.data.data.destinationTransfers.length > 0
+    ? destinationData.data.data.destinationTransfers[0].status
+    : originData.data.data.originTransfers[0].status;
 };
