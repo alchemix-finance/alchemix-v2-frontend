@@ -1,6 +1,7 @@
 import { create, SdkConfig } from '@connext/sdk';
 import { chainIds } from '@stores/v2/constants';
-import { utils, Signer } from 'ethers';
+import { utils, Signer, BigNumber } from 'ethers';
+import type { ContractTransaction } from 'ethers';
 import { contractWrapper } from '@helpers/contractWrapper';
 import {
   setPendingWallet,
@@ -136,7 +137,104 @@ export const statusCheck = async (txHash: string, origin: string, destination: s
           }) {
           status}}`,
   });
+  console.log(destinationData);
   return destinationData.data.data.destinationTransfers.length > 0
     ? destinationData.data.data.destinationTransfers[0].status
     : originData.data.data.originTransfers[0].status;
+};
+
+export const gatewayCall = async (
+  origin: string,
+  destinationId: number,
+  amount: BigNumber,
+  targetAddress: string,
+  relayerFee: BigNumber,
+  signer: Signer,
+  selectors: object,
+  callData: string,
+  toEth: boolean,
+  path: string,
+) => {
+  setPendingWallet();
+  try {
+    const { instance: gatewayInstance, address: gatewayAddress } = await contractWrapper(
+      'AlchemixConnextGateway',
+      signer,
+      origin,
+    );
+    const { address: nextAssetAddress } = await contractWrapper(selectors['connext'], signer, origin);
+    const { instance: canonicalInstance } = await contractWrapper(selectors['canonical'], signer, origin);
+    let receiverAddress = targetAddress;
+    if (toEth) {
+      const { address: targetGateway } = await contractWrapper('AlchemixConnextGateway', signer, path);
+      receiverAddress = targetGateway;
+    }
+
+    const allowance = await canonicalInstance.allowance(targetAddress, gatewayAddress);
+    console.log(allowance.toString(), amount.toString());
+    if (allowance.lt(amount)) {
+      setPendingApproval();
+      const sendApe = (await canonicalInstance.approve(gatewayAddress, amount)) as ContractTransaction;
+      await sendApe.wait();
+    }
+
+    setPendingWallet();
+
+    const tx = (await gatewayInstance.bridgeAssets(
+      receiverAddress,
+      nextAssetAddress,
+      amount,
+      destinationId,
+      relayerFee,
+      toEth ? abiCoder.encode(['string'], [callData]) : abiCoder.encode(['address'], [callData]),
+    )) as ContractTransaction;
+    setPendingTx();
+    return await tx.wait().then((transaction) => {
+      setSuccessTx(transaction);
+      return transaction;
+    });
+  } catch (e) {
+    const message = e.data ? await e.data.message : e.message;
+    setError(message, e);
+    console.error(`[gatewayCall]: ${e}`);
+    throw Error(e);
+  }
+};
+
+export const bumpFees = async (txId: string, fee: BigNumber, userAddress: string, signer: Signer) => {
+  setPendingWallet();
+  try {
+    const sdkConfig: SdkConfig = {
+      signerAddress: userAddress,
+      network: 'mainnet',
+      chains: {
+        6648936: {
+          providers: [getRpcByConnextId(6648936)],
+        },
+        1634886255: {
+          providers: [getRpcByConnextId(1634886255)],
+        },
+        1869640809: {
+          providers: [getRpcByConnextId(1869640809)],
+        },
+      },
+    };
+    const { sdkBase } = await create(sdkConfig);
+    const bumpRequest = await sdkBase.bumpTransfer({
+      relayerFee: fee.toString(),
+      transferId: txId,
+      asset: '',
+      domainId: '',
+    });
+    const bumpReceipt = await signer.sendTransaction(bumpRequest);
+    return await bumpReceipt.wait().then((transaction) => {
+      setSuccessTx(transaction);
+      return transaction;
+    });
+  } catch (e) {
+    const message = e.data ? await e.data.message : e.message;
+    setError(message, e);
+    console.error(`[bumpFees]: ${e}`);
+    throw Error(e);
+  }
 };

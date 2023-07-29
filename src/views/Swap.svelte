@@ -15,7 +15,7 @@
   import Dropdown from '@components/elements/Dropdown.svelte';
   import { setError } from '@helpers/setToast';
   import ComplexInput from '@components/composed/Inputs/ComplexInput.svelte';
-  import { relayerFee, xcall, statusCheck } from '@middleware/connext';
+  import { relayerFee, xcall, statusCheck, gatewayCall, bumpFees } from '@middleware/connext';
   import ToggleSwitch from '@components/elements/ToggleSwitch.svelte';
   import { connextReceipts } from '@stores/connextStore';
 
@@ -27,6 +27,10 @@
         arbitrum: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
         optimism: '0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A',
       },
+      selector: {
+        connext: 'NextAlUSD',
+        canonical: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
+      },
     },
     alETH: {
       name: 'alETH',
@@ -34,6 +38,10 @@
         ethereum: '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',
         arbitrum: '0x17573150d67d820542EFb24210371545a4868B03',
         optimism: '0x3E29D3A9316dAB217754d13b28646B76607c5f04',
+      },
+      selector: {
+        connext: 'NextAlETH',
+        canonical: 'CrossChainCanonicalAlchemicTokenV2_alETH',
       },
     },
   };
@@ -129,9 +137,11 @@
         break;
       case 'L2ETH':
         // L2 -> ETH gateway
+        l2any(originChain, targetChain, false);
         break;
       case 'L2L2':
         // L2 -> L2 unwrap, xcall, wrap
+        l2any(originChain, targetChain, false);
         break;
       default:
         console.log('Invalid direction');
@@ -173,6 +183,42 @@
       });
   };
 
+  const l2any = async (origin: object, target: object, toEth: boolean) => {
+    const selectors = supportedTokens[selectedToken].selector;
+
+    await gatewayCall(
+      origin.abiPath,
+      target.connextId,
+      utils.parseEther(bridgeAmount.toString()),
+      $addressStore,
+      utils.parseEther('0'),
+      $signer,
+      selectors,
+      toEth ? '' : $addressStore,
+      toEth,
+      target.abiPath,
+    )
+      .then((result) => {
+        $connextReceipts = [
+          ...$connextReceipts,
+          {
+            originChain: origin.abiPath,
+            destinationChain: target.abiPath,
+            token: selectedToken,
+            amount: bridgeAmount,
+            txHash: result.transactionHash,
+          },
+        ];
+      })
+      .catch((error) => {
+        console.log(error);
+        setError('Something went wrong', error);
+      })
+      .finally(() => {
+        clear();
+      });
+  };
+
   const getStatus = async (txHash: string, origin: string, destination: string) => {
     return await statusCheck(txHash, origin, destination);
   };
@@ -189,7 +235,6 @@
     return Status[status];
   };
 
-  const foo = '0xe045ad545c14c149b849a39bc3fd80632169d1215f82fff28dabca9980dea7ea';
   const openExplorer = (tx) => {
     window.open(`https://connextscan.io/tx/${tx}`, '_blank');
   };
