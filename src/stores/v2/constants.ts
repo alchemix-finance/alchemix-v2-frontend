@@ -581,6 +581,7 @@ export const chainIds = [
       decimals: 18,
     },
     vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
+    connextId: 6648936,
   },
   {
     id: '0xfa',
@@ -597,6 +598,7 @@ export const chainIds = [
       decimals: 18,
     },
     vaultTypes: [VaultTypes.alUSD],
+    connextId: 0,
   },
   {
     id: '0xa4b1',
@@ -613,7 +615,8 @@ export const chainIds = [
       name: 'Ethereum',
       decimals: 18,
     },
-    vaultTypes: [],
+    vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
+    connextId: 1634886255,
   },
   {
     id: '0xa',
@@ -631,5 +634,6 @@ export const chainIds = [
       decimals: 18,
     },
     vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
+    connextId: 1869640809,
   },
 ];
