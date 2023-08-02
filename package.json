@@ -52,7 +52,7 @@
     "vite": "^3.2.7"
   },
   "dependencies": {
-    "@connext/sdk": "2.0.3-alpha.11",
+    "@connext/sdk": "2.1.2",
     "@lottiefiles/lottie-player": "^1.5.7",
     "@snapshot-labs/snapshot.js": "^0.4.57",
     "@tkh/tailwind-plugin-flex-basis": "^1.4.0",
