@@ -32,6 +32,10 @@
         canonical: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
       },
     },
+  };
+
+  // todo: re-enable when pegging issue is resolved by big tiddy goth mommies with fat strap-ons
+  const iaiacthulhufthagn = {
     alETH: {
       name: 'alETH',
       address: {
