@@ -138,13 +138,13 @@
       <p class="uppercase text-sm alcxTitle mb-5">{$_('proudly_using')}</p>
       <ul class="text-sm space-y-3">
         <li class="opacity-50 hover:opacity-100">
-          <a href="https://defillama.com/" target="_blank">
-            <img src="./images/integrations/defillama.svg" class="w-32" alt="The logo of DefiLlama" />
+          <a href="https://www.connext.network/" target="_blank">
+            <img src="./images/integrations/connext.svg" class="w-32" alt="The logo of Connext" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
-          <a href="https://li.fi/" target="_blank">
-            <img src="./images/integrations/lifi.svg" class="w-32" alt="The logo of Li.Fi" />
+          <a href="https://defillama.com/" target="_blank">
+            <img src="./images/integrations/defillama.svg" class="w-32" alt="The logo of DefiLlama" />
           </a>
         </li>
         <li class="opacity-50 hover:opacity-100">
