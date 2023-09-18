@@ -19,5 +19,5 @@ export async function getVaultApy(vaultAddress, networkId) {
   const api = await axios(connector(networkId));
   const vaults = api.data.filter((vault) => vault.address.toUpperCase() === vaultAddress.toUpperCase());
   const vault = vaults[vaults.length - 1];
-  return vault.apy.net_apy;
+  return networkId === '0xa' ? vault.apy.net_apy + vault.apy.staking_rewards_apr : vault.apy.net_apy;
 }

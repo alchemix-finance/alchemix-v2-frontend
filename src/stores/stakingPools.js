@@ -97,6 +97,18 @@ export const additionalTokens = [
     network: '0x1',
     address: '0xC3f279090a47e80990Fe3a9c30d24Cb117EF91a8',
   },
+  {
+    network: '0xa',
+    address: '0x65343F414FFD6c97b0f6add33d16F6845Ac22BAc',
+  },
+  {
+    network: '0xa',
+    address: '0xaD17A225074191d5c8a37B50FdA1AE278a2EE6A2',
+  },
+  {
+    network: '0xa',
+    address: '0x5B977577Eb8a480f63e11FC615D6753adB8652Ae',
+  },
 ];
 
 export const externalLookup = [

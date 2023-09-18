@@ -23,7 +23,9 @@
   import TransmuterEntry from '@components/composed/TransmuterEntry.svelte';
 
   const currentTransmuterCategories = makeSelectorStore([VaultTypes.alUSD, VaultTypes.alETH]);
-
+  const goTo = (url) => {
+    window.open(url, '_blank');
+  };
   let transmutersLoading = true;
 
   function calculateBalanceValue(_tokenAmount, _price) {
@@ -135,6 +137,48 @@
       pageTitle="{$_('transmuter_page.title')}"
       pageSubtitle="{$_('transmuter_page.subtitle')}"
     />
+  </div>
+
+  <div class="w-full mb-8">
+    <ContainerWithHeader>
+      <div slot="header" class="py-4 px-6 text-sm flex justify-between">
+        <p class="inline-block self-center">{$_('transmuter_page.external_swaps')}</p>
+      </div>
+      <div
+        slot="body"
+        class="py-4 px-6 flex flex-col lg:flex-row gap-4 max-h-44 overflow-y-visible lg:overflow-y-hidden"
+      >
+        <Button on:clicked="{() => goTo('https://curve.fi')}" label="Curve" class="w-full lg:w-max" py="py-2">
+          <img src="./images/icons/crv.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Curve" />
+        </Button>
+        <Button
+          on:clicked="{() => goTo('http://app.paraswap.io')}"
+          label="Paraswap"
+          class="w-full lg:w-max"
+          py="py-2"
+        >
+          <img src="./images/icons/paraswap.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Paraswap" />
+        </Button>
+        {#if $networkStore === '0xa'}
+          <Button
+            on:clicked="{() => goTo('https://app.velodrome.finance/swap')}"
+            label="Velodrome"
+            class="w-full lg:w-max"
+            py="py-2"
+          >
+            <img src="./images/icons/velodrome.svg" class="w-5 h-5" slot="leftSlot" alt="Logo of Velodrome" />
+          </Button>
+        {/if}
+        <Button
+          on:clicked="{() => goTo('http://zapper.fi')}"
+          label="Zapper"
+          class="w-full lg:w-max"
+          py="py-2"
+        >
+          <img src="./images/icons/zapper.png" class="w-5 h-5" slot="leftSlot" alt="Logo of Zapper" />
+        </Button>
+      </div>
+    </ContainerWithHeader>
   </div>
 
   <div class="w-full mb-8">

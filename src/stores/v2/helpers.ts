@@ -95,10 +95,13 @@ export async function fetchDataForVault(
   ) {
     try {
       const rAdapter = VaultTypesInfos[vaultType].metaConfig[tokenAddress].rewardAdapter;
-      apy =
-        rAdapter === 'vesper'
-          ? await rewardAdapter(rAdapter, signer, tokenAddress)
-          : await rewardAdapter(rAdapter, signer, tokenParams.underlyingToken);
+      if (rAdapter === 'vesper') {
+        apy = await rewardAdapter(rAdapter, signer, tokenAddress);
+      } else if (rAdapter === 'yearn') {
+        apy = await getVaultApy(VaultTypesInfos[vaultType].metaConfig[tokenAddress].customAddress, network);
+      } else {
+        apy = await rewardAdapter(rAdapter, signer, tokenParams.underlyingToken);
+      }
     } catch (e) {
       console.error(`[fetchDataForVault]:${vaultType}:${tokenAddress}`, e);
     }

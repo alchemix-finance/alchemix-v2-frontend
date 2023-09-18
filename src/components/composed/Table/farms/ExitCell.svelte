@@ -49,7 +49,7 @@
           $signer,
         );
         setPendingWallet();
-        const tx = await crvGaugeInstance.withdraw(castedFarm.userDeposit);
+        const tx = await crvGaugeInstance['withdraw(uint256)'](castedFarm.userDeposit);
         setPendingTx();
         await tx.wait().then((transaction) => {
           setSuccessTx(transaction.hash);
