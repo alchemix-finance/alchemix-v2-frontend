@@ -6,7 +6,7 @@ import { chainIds } from '../stores/v2/constants';
 function connector(networkId) {
   const legacyId = chainIds.filter((entry) => entry.id === networkId)[0].legacyId;
   return {
-    url: `https://api.yearn.finance/v1/chains/${legacyId}/vaults/all`,
+    url: `https://api.yexporter.io/v1/chains/${legacyId}/vaults/all`,
     method: 'GET',
   };
 }
