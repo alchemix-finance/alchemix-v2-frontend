@@ -230,10 +230,10 @@
   const cleanStatus = (status: string) => {
     enum Status {
       'XCalled' = 'Pending',
-      'Executed' = 'Success',
-      'Reconciled' = 'Success',
-      'CompletedFast' = 'Success',
-      'CompletedSlow' = 'Success',
+      'Executed' = 'Success (fast)',
+      'Reconciled' = 'Success (slow)',
+      'CompletedFast' = 'Completed (fast)',
+      'CompletedSlow' = 'Completed (slow)',
     }
 
     return Status[status];
@@ -321,7 +321,7 @@
             </div>
           </div>
           <div class="flex flex-col justify-between">
-            <div class="flex flex-row justify-between  pb-2">
+            <div class="flex flex-row justify-between pb-2">
               <p class="text-sm text-lightgrey10 min-w-max">Token</p>
 
               <div class="flex flex-row space-x-4">
@@ -344,7 +344,7 @@
               supportedTokens="{Object.entries(supportedTokens).map((entry) => {
                 return entry[1].name;
               })}"
-              bind:selectedToken
+              bind:selectedToken="{selectedToken}"
               externalMax="{tokenBalanceRaw}"
             />
           </div>
