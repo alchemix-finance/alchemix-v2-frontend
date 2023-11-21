@@ -22,7 +22,6 @@ so we're re-using the src code instead to be able to support the latest chartJS 
   export let type = 'line';
   export let options = {};
   export let plugins = {};
-  export let canvasClass;
 
   let chartRef;
   let chart = null;

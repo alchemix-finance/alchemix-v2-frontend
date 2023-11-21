@@ -39,7 +39,6 @@
 
   // @dev any balance value submitted through props is of type BigNumber, denoted in wei
 
-  export let borrowLimit;
   export let vault;
 
   let yieldWithdrawAmountShares;
@@ -399,7 +398,7 @@
             ?.maxWithdrawAmount}"
           metaConfig="{metaConfig}"
           externalDecimals="{getTokenDataFromBalancesBySymbol(selectedTokens[i], [$balancesStore])?.decimals}"
-          bind:convertToStatic
+          bind:convertToStatic="{convertToStatic}"
         />
         {#if canAddInputs}
           <Button

@@ -3,7 +3,6 @@
   export let assetTicker = 'alASS';
   export let currency;
   export let assetIcon;
-  export let zapper;
   export let assetPrice;
 
   let formattedNumber;
