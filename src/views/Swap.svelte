@@ -32,6 +32,18 @@
         canonical: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
       },
     },
+    ALCX: {
+      name: 'ALCX',
+      address: {
+        ethereum: '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',
+        arbitrum: '0x27b58D226fe8f792730a795764945Cf146815AA7',
+        optimism: '0xE974B9b31dBFf4369b94a1bAB5e228f35ed44125',
+      },
+      selector: {
+        connext: 'xALCX',
+        canonical: 'ALCX',
+      },
+    },
   };
 
   // todo: re-enable when pegging issue is resolved by big tiddy goth mommies with fat strap-ons
