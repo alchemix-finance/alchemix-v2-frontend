@@ -1,4 +1,4 @@
-import { create, SdkConfig } from '@connext/sdk';
+import { create, SdkConfig } from '@connext/sdk-core';
 import { chainIds } from '@stores/v2/constants';
 import { utils, Signer, BigNumber } from 'ethers';
 import type { ContractTransaction } from 'ethers';

@@ -32,6 +32,18 @@
         canonical: 'CrossChainCanonicalAlchemicTokenV2_alUSD',
       },
     },
+    ALCX: {
+      name: 'ALCX',
+      address: {
+        ethereum: '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',
+        arbitrum: '0x27b58D226fe8f792730a795764945Cf146815AA7',
+        optimism: '0xE974B9b31dBFf4369b94a1bAB5e228f35ed44125',
+      },
+      selector: {
+        connext: 'xALCX',
+        canonical: 'ALCX',
+      },
+    },
   };
 
   // todo: re-enable when pegging issue is resolved by big tiddy goth mommies with fat strap-ons
@@ -230,10 +242,10 @@
   const cleanStatus = (status: string) => {
     enum Status {
       'XCalled' = 'Pending',
-      'Executed' = 'Success',
-      'Reconciled' = 'Success',
-      'CompletedFast' = 'Success',
-      'CompletedSlow' = 'Success',
+      'Executed' = 'Success (fast)',
+      'Reconciled' = 'Success (slow)',
+      'CompletedFast' = 'Completed (fast)',
+      'CompletedSlow' = 'Completed (slow)',
     }
 
     return Status[status];
@@ -321,7 +333,7 @@
             </div>
           </div>
           <div class="flex flex-col justify-between">
-            <div class="flex flex-row justify-between  pb-2">
+            <div class="flex flex-row justify-between pb-2">
               <p class="text-sm text-lightgrey10 min-w-max">Token</p>
 
               <div class="flex flex-row space-x-4">
@@ -344,7 +356,7 @@
               supportedTokens="{Object.entries(supportedTokens).map((entry) => {
                 return entry[1].name;
               })}"
-              bind:selectedToken
+              bind:selectedToken="{selectedToken}"
               externalMax="{tokenBalanceRaw}"
             />
           </div>

@@ -1,12 +1,21 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
-  plugins: ['svelte3', '@typescript-eslint'],
-  ignorePatterns: ['*.cjs'],
-  overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier', 'plugin:svelte/recommended'],
+  plugins: ['@typescript-eslint'],
+  ignorePatterns: ['*.cjs', '*.mjs'],
+  overrides: [{
+    files: ['*.svelte'], parser: 'svelte-eslint-parser', parserOptions: {
+      parser: '@typescript-eslint/parser',
+    },
+  }],
   settings: {
-    'svelte3/typescript': () => require('typescript'),
+    svelte: {
+      ignoreWarnings: [
+        'svelte/valid-compile',
+        'svelte/no-at-html-tags',
+      ],
+    },
   },
   rules: {
     '@typescript-eslint/no-var-requires': 'off',
@@ -29,6 +38,7 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
   },
   parserOptions: {
     sourceType: 'module',

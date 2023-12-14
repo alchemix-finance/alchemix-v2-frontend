@@ -12,7 +12,6 @@ import walletConnectModule from '@web3-onboard/walletconnect';
 import coinbaseWallet from '@web3-onboard/coinbase';
 import tahoWallet from '@web3-onboard/taho';
 import trezor from '@web3-onboard/trezor';
-import ledgerModule from '@web3-onboard/ledger';
 import keystoneModule from '@web3-onboard/keystone';
 
 import { chainIds } from '@stores/v2/constants';
@@ -34,7 +33,6 @@ const walletConnect = walletConnectModule({ projectId: '6266d94f366820b41edbd6a1
 const coinbase = coinbaseWallet();
 const taho = tahoWallet();
 const trezorWallet = trezor({ email: 'n4n0@mail.alchemix.fi', appUrl: 'https://alchemix.fi' });
-const ledger = ledgerModule({ walletConnectVersion: 2, projectId: '6266d94f366820b41edbd6a12180a1cb' });
 const keystone = keystoneModule();
 
 const supportedChains = chainIds.map((chain) => {
@@ -48,7 +46,7 @@ const supportedChains = chainIds.map((chain) => {
 });
 
 const onboard = Onboard({
-  wallets: [injected, walletConnect, coinbase, taho, trezorWallet, ledger, keystone],
+  wallets: [injected, walletConnect, coinbase, taho, trezorWallet, keystone],
   chains: supportedChains,
 
   appMetadata: {
