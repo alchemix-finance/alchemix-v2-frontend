@@ -56,14 +56,12 @@
     )[0];
     const underlyingTokenData = getTokenDataFromBalances(vaultData.underlyingAddress, [$balancesStore]);
 
-    const adapterPrice = $adaptersStore[vaultType].adapters.filter(
-      (adapter) => adapter.yieldToken === yieldTokenData.yieldAddress,
-    )[0].price;
+    const adapterPrice = $adaptersStore[vaultType].adapters
+      .filter((adapter) => adapter.yieldToken === yieldTokenData.yieldAddress)[0]
+      .price.div(BigNumber.from(10).pow(underlyingTokenData.decimals))
+      .mul(BigNumber.from(10).pow(18));
 
-    const adapterYieldAmount = amount
-      .mul(BigNumber.from(10).pow(underlyingTokenData.decimals))
-      .div(BigNumber.from(10).pow(18))
-      .div(adapterPrice);
+    const adapterYieldAmount = amount.div(adapterPrice);
     const subTokens = adapterYieldAmount.mul(BigNumber.from(maximumLoss)).div(100000);
     const minimumOut = adapterYieldAmount.sub(subTokens);
     const vault = vaults.filter((vault) => vault.underlyingAddress === underlyingTokenData.address)[0];
