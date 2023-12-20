@@ -138,7 +138,7 @@
     </div>
 
     <div
-      class="w-full flex relative justify-center text-orange4 h-auto overflow-hidden group cursor-pointer "
+      class="w-full flex relative justify-center text-orange4 h-auto overflow-hidden group cursor-pointer"
       on:click="{() => playVideo()}"
     >
       <img

@@ -241,7 +241,7 @@
       </ContainerWithHeader>
     </div>
 
-    <div class="w-full mb-8 ">
+    <div class="w-full mb-8">
       <ContainerWithHeader>
         <div slot="header" class="py-4 px-6 text-sm">{$_('vaults_page.title')}</div>
         <div slot="body">
@@ -283,7 +283,8 @@
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      ></path>
                     </svg>
                   </Button>
                 </BorderContainer>

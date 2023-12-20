@@ -55,7 +55,7 @@ export const getFlexBasisForColSize = (colSize) =>
     6: 'flex-basis-w-288',
     7: 'flex-basis-w-336',
     8: 'flex-basis-w-384',
-  }[colSize]);
+  })[colSize];
 
 export const getFlexGrowForColSize = (colSize) =>
   /* eslint-disable */
@@ -69,7 +69,7 @@ export const getFlexGrowForColSize = (colSize) =>
     6: 'flex-grow-6',
     7: 'flex-grow-7',
     8: 'flex-grow-8',
-  }[colSize]);
+  })[colSize];
 
 export const getWidthForColSize = (colSize) =>
   /* eslint-disable */
@@ -83,7 +83,7 @@ export const getWidthForColSize = (colSize) =>
     6: 'w-72',
     7: 'w-84',
     8: 'w-96',
-  }[colSize]);
+  })[colSize];
 
 export const getColumnWidth = (colSize) =>
   `${getFlexBasisForColSize(colSize)} ${getFlexGrowForColSize(colSize)} ${getWidthForColSize(colSize)}`; // eslint-disable-line
