@@ -129,7 +129,7 @@
 
 <div class="flex flex-col space-y-4">
   {#if targetVaults?.length > 0}
-    <div class="flex flex-col lg:flex-row space-x-4 ">
+    <div class="flex flex-col lg:flex-row space-x-4">
       <p class="text-sm text-lightgrey10 min-w-max self-center">Target Vault</p>
 
       <Dropdown>
@@ -176,11 +176,6 @@
       externalMax="{vault?.balance}"
       externalDecimals="{vaultDecimals}"
       supportedTokens="{['Shares']}"
-    />
-
-    <VaultMessage
-      message="We are aware of issues with migrating vaults at the moment, causing failed transactions. Use flashbots protection to save your gas. Proceed at your own risk until further notice."
-      level="1"
     />
 
     <Button

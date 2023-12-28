@@ -132,6 +132,12 @@ export async function fetchDataForVault(
   };
 }
 
+async function getMeltedRewards(vault: string, signer: ethers.Signer): Promise<BigNumber> {
+  const { instance: rewardRouter } = await contractWrapper('RewardRouter', signer, 'optimism');
+  const rewardParams = await rewardRouter.getRewardCollector(vault);
+  return rewardParams[2];
+}
+
 async function rewardAdapter(adapter: string, signer: ethers.Signer, token: string) {
   switch (adapter) {
     case 'lido':
