@@ -115,7 +115,7 @@
         return VaultTypesInfos[selectedVaultType].metaConfig[vaultBody.address].token;
       })();
 
-      if (!tokensArr.some((entry) => entry.symbol === tokenSymbol)) {
+      if (!tokensArr.some((entry) => entry.symbol === tokenSymbol && entry.address === vaultBody.address)) {
         tokensArr.push({
           address: vaultBody.address,
           yieldAddress: vaultBody.address,
