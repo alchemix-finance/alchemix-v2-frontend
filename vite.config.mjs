@@ -9,11 +9,14 @@ const development = MODE === 'development';
 export default defineConfig({
   plugins: [
     development &&
-      nodePolyfills({
-        include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
-      }),
+    nodePolyfills({
+      include: ['node_modules/**/*.js', new RegExp('node_modules/.vite/.*js')],
+    }),
     svelte(),
   ],
+  optimizeDeps: {
+    exclude: ['svelte-routing'],
+  },
   resolve: {
     alias: {
       crypto: 'crypto-browserify',
