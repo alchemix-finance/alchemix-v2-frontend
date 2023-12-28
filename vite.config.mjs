@@ -14,9 +14,6 @@ export default defineConfig({
     }),
     svelte(),
   ],
-  optimizeDeps: {
-    exclude: ['svelte-routing'],
-  },
   resolve: {
     alias: {
       crypto: 'crypto-browserify',
