@@ -707,7 +707,7 @@ export const chainIds = [
       name: 'Ethereum',
       decimals: 18,
     },
-    vaultTypes: [],
+    vaultTypes: [VaultTypes.alUSD, VaultTypes.alETH],
     connextId: 1634886255,
   },
   {

@@ -68,7 +68,7 @@ export async function fetchAllBalances([signer, fullTokenList]: [ethers.Signer, 
 export async function fetchBalanceByAddress(address: string, [signer]: [ethers.Signer]) {
   if (!signer) {
     console.error(`[fetchBalanceByAddress]: signer is undefined`);
-    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+    return Promise.reject(`[fetchBalanceByAddress]: signer is undefined`);
   }
 
   if (address === '0xETH') {
@@ -86,8 +86,8 @@ export async function fetchVaultDebt(
   _network: string,
 ) {
   if (!signer) {
-    console.error(`[fetchBalanceByAddress]: signer is undefined`);
-    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+    console.error(`[fetchVaultDebt]: signer is undefined`);
+    return Promise.reject(`[fetchVaultDebt]: signer is undefined`);
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
@@ -101,8 +101,8 @@ export async function fetchVaultDebt(
 
 export async function fetchVaultRatio(vaultId: VaultTypes, [signer]: [ethers.Signer], _network: string) {
   if (!signer) {
-    console.error(`[fetchBalanceByAddress]: signer is undefined`);
-    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+    console.error(`[fetchVaultRatio]: signer is undefined`);
+    return Promise.reject(`[fetchVaultRatio]: signer is undefined`);
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
@@ -119,8 +119,8 @@ export async function fetchVaultDebtTokenAddress(
   _network: string,
 ) {
   if (!signer) {
-    console.error(`[fetchBalanceByAddress]: signer is undefined`);
-    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+    console.error(`[fetchVaultDebtTokenAddress]: signer is undefined`);
+    return Promise.reject(`[fetchVaultDebtTokenAddress]: signer is undefined`);
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
@@ -137,8 +137,8 @@ export async function fetchAllVaultsBodies(
   _network: string,
 ) {
   if (!signer) {
-    console.error(`[fetchBalanceByAddress]: signer is undefined`);
-    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+    console.error(`[fetchAllVaultsBodies]: signer is undefined`);
+    return Promise.reject(`[fetchAllVaultsBodies]: signer is undefined`);
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 
@@ -164,8 +164,8 @@ export async function fetchUpdateVaultByAddress(
   _network: string,
 ) {
   if (!signer) {
-    console.error(`[fetchBalanceByAddress]: signer is undefined`);
-    return Promise.reject(`[fetchAllBalances]: signer is undefined`);
+    console.error(`[fetchUpdateVaultByAddress]: signer is undefined`);
+    return Promise.reject(`[fetchUpdateVaultByAddress]: signer is undefined`);
   }
   const path = chainIds.filter((chain) => chain.id === _network)[0].abiPath;
 

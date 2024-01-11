@@ -41,11 +41,11 @@ export const externalContractWrapper = async (selector: string, signer: ethers.S
 
 /**
  * const setTokenAllowance = async (token, spender, amount) => {
-  console.log('setting allowance', token, spender);
-  const amountInfinite = ethers.constants.MaxUint256;
-  const contract = new ethers.Contract(token, genericAbi, _account.signer);
-  await contract.approve(spender, amount || amountInfinite);
-};
+ console.log('setting allowance', token, spender);
+ const amountInfinite = ethers.constants.MaxUint256;
+ const contract = new ethers.Contract(token, genericAbi, _account.signer);
+ await contract.approve(spender, amount || amountInfinite);
+ };
 
  *
  */

@@ -134,7 +134,7 @@ export async function fetchDataForVault(
 
 async function getMeltedRewards(vault: string, signer: ethers.Signer): Promise<BigNumber> {
   const { instance: rewardRouter } = await contractWrapper('RewardRouter', signer, 'optimism');
-  const rewardParams = await rewardRouter.getRewardCollector(vault);
+  const rewardParams = await rewardRouter.rewardCollectors(vault);
   return rewardParams[2];
 }
 
