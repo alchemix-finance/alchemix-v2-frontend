@@ -223,7 +223,7 @@
             distributionTimeAmount="{bonusTimeAmount}"
             distributionTimeUnit="{bonusTimeUnit}"
             bonusToken="{bonusYieldToken}"
-            isPercentage="{false}"
+            isPercentage="{bonusInPercentage}"
           />
         </div>
       </div>
@@ -240,7 +240,7 @@
           distributionTimeAmount="{bonusTimeAmount}"
           distributionTimeUnit="{bonusTimeUnit}"
           bonusToken="{bonusYieldToken}"
-          isPercentage="{false}"
+          isPercentage="{bonusInPercentage}"
         />
       </div>
     </div>
