@@ -5,6 +5,7 @@ import { Signer, BigNumber } from 'ethers';
 
 const subgraphUrlEth = 'https://api.thegraph.com/subgraphs/name/aave/protocol-v2';
 const subgraphUrlOpt = 'https://api.thegraph.com/subgraphs/name/aave/protocol-v3-optimism';
+const subgraphUrlArb = 'https://api.thegraph.com/subgraphs/name/aave/protocol-v3-arbitrum';
 
 let _reserves;
 reservesStore.subscribe((val) => {
@@ -53,6 +54,47 @@ export async function getReservesOpt() {
   let reserves;
   await axios
     .post(subgraphUrlOpt, {
+      signal: abortRequest(4000),
+      query: `{
+        reserves {
+          name
+          underlyingAsset
+          liquidityRate
+          stableBorrowRate
+          variableBorrowRate
+          totalATokenSupply
+          totalCurrentVariableDebt
+          aToken {
+            rewards {
+              emissionsPerSecond
+            }
+          }
+          vToken {
+            rewards {
+              rewardToken
+              emissionsPerSecond
+            }
+          }
+          price {
+            priceInEth
+          }
+          decimals
+      }
+    }`,
+    })
+    .then((res) => {
+      reserves = res;
+    })
+    .catch((error) => {
+      throw Error(error);
+    });
+  return reserves;
+}
+
+export async function getReservesArb() {
+  let reserves;
+  await axios
+    .post(subgraphUrlArb, {
       signal: abortRequest(4000),
       query: `{
         reserves {
