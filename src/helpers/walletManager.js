@@ -130,16 +130,14 @@ const disconnect = async () => {
 
 function getProvider(chainId) {
   if (!!chainId) {
-    const defaults = ['0xfa', '0xa4b1'];
+    const defaults = ['0xfa'];
     if (defaults.includes(chainId)) {
       return ethers.getDefaultProvider();
     } else {
+      const chain = chainIds.filter((entry) => entry.id === chainId)[0];
       const networkish =
-        chainId === '0x1' ? 'homestead' : chainIds.filter((entry) => entry.id === chainId)[0].abiPath;
-      return ethers.getDefaultProvider(networkish, {
-        infura: import.meta.env.VITE_INFURA_KEY,
-        alchemy: import.meta.env.VITE_ALCHEMY_KEY,
-      });
+        chainId === '0x1' ? 'homestead' : chainIds.filter((entry) => entry.id === chainId)[0].legacyId;
+      return ethers.getDefaultProvider(chain.apiUrl);
     }
   }
 }
