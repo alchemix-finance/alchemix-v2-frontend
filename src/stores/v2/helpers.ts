@@ -132,10 +132,20 @@ export async function fetchDataForVault(
   };
 }
 
-async function getMeltedRewards(vault: string, signer: ethers.Signer): Promise<BigNumber> {
-  const { instance: rewardRouter } = await contractWrapper('RewardRouter', signer, 'optimism');
-  const rewardParams = await rewardRouter.rewardCollectors(vault);
-  return rewardParams[2];
+export async function getMeltedRewards(yieldAsset: string, path: string, signer: ethers.Signer) {
+  try {
+    const { instance: rewardRouter } = await contractWrapper('RewardRouter', signer, path);
+    return rewardRouter.getRewardCollector(yieldAsset);
+  } catch (e) {
+    console.error(`[getMeltedRewards]: failed for ${yieldAsset}`);
+    return [
+      '0x0000000000000000000000000000000000000000',
+      '0x0000000000000000000000000000000000000000',
+      BigNumber.from(0),
+      BigNumber.from(0),
+      BigNumber.from(0),
+    ];
+  }
 }
 
 async function rewardAdapter(adapter: string, signer: ethers.Signer, token: string) {

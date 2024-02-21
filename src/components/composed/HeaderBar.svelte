@@ -1,20 +1,20 @@
 <script>
   import { Link, navigate } from 'svelte-routing';
   import { connect, disconnect } from '@helpers/walletManager';
-  import { setCurrency, setGas } from '@helpers/userSettings';
+  // import { setCurrency, setGas } from '@helpers/userSettings';
   import { _ } from 'svelte-i18n';
 
   import governance from '@stores/governance';
   import account from '@stores/account';
   import settings from '../../stores/settings';
-  import global from '../../stores/global';
+  // import global from '../../stores/global';
   import toastConfig from '../../stores/toast.js';
   import backgroundLoading from '../../stores/backgroundLoading';
   import Toast from '../elements/Toast.svelte';
   import Dropdown from '../elements/Dropdown.svelte';
-  import GasCard from '../elements/GasCard.svelte';
+  // import GasCard from '../elements/GasCard.svelte';
   import LoadingIndicator from '../elements/LoadingIndicator.svelte';
-  import * as LottiePlayer from '@lottiefiles/lottie-player';
+  // import * as LottiePlayer from '@lottiefiles/lottie-player';
 
   let _governance;
   governance.subscribe((val) => {
@@ -100,6 +100,7 @@
         select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
         ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
         : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
+      role="none"
       on:click="{() => goToVote()}"
     >
       <div class="relative">
@@ -143,48 +144,48 @@
       </div>
     </div>
 
-    <Dropdown>
-      <div
-        slot="label"
-        class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors
-          ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'
-          : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"
-      >
-        <svg
-          stroke="currentColor"
-          fill="currentColor"
-          stroke-width="0"
-          viewBox="0 0 24 24"
-          class="h-5 w-5 mr-2"
-          height="1.2em"
-          width="1.2em"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g>
-            <path fill="none" d="M0 0h24v24H0z"></path>
-            <path
-              d="M3 19V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v8h2a2 2 0 0 1 2 2v4a1 1 0 0 0 2 0v-7h-2a1 1 0 0 1-1-1V6.414l-1.657-1.657 1.414-1.414 4.95 4.95A.997.997 0 0 1 22 9v9a3 3 0 0 1-6 0v-4h-2v5h1v2H2v-2h1zM5 5v6h7V5H5z"
-            ></path>
-          </g>
-        </svg>
-        <p class="mr-2">
-          {userGas($global.gasPrices[`${$settings.defaultGas}`])}
-        </p>
-        <p>▾</p>
-      </div>
-      <div slot="options" class="flex flex-col gap-4 justify-between w-60 p-4">
-        {#each Object.entries($global.gasPrices).filter((entry) => entry[0] !== 'eip1559') as gas}
-          <GasCard
-            cardColor="{$global.gasColor[`${gas[0]}`]}"
-            description="{gas[0]}"
-            gasFee="{gas[1]}"
-            isActive="{$settings.defaultGas === gas[0]}"
-            compactView="{true}"
-            on:gasSelected="{() => setGas(gas[0])}"
-          />
-        {/each}
-      </div>
-    </Dropdown>
+    <!--    <Dropdown>-->
+    <!--      <div-->
+    <!--        slot="label"-->
+    <!--        class="h-8 px-3 py-1 flex items-center text-opacity-50 hover:text-opacity-100 select-none font-alcxTitles text-xs uppercase rounded overflow-hidden border {$settings.invertColors-->
+    <!--          ? 'border-grey5inverse text-white2inverse bg-grey10inverse hover:bg-grey1inverse'-->
+    <!--          : 'border-grey5 text-white2 bg-grey10 hover:bg-grey1'}"-->
+    <!--      >-->
+    <!--        <svg-->
+    <!--          stroke="currentColor"-->
+    <!--          fill="currentColor"-->
+    <!--          stroke-width="0"-->
+    <!--          viewBox="0 0 24 24"-->
+    <!--          class="h-5 w-5 mr-2"-->
+    <!--          height="1.2em"-->
+    <!--          width="1.2em"-->
+    <!--          xmlns="http://www.w3.org/2000/svg"-->
+    <!--        >-->
+    <!--          <g>-->
+    <!--            <path fill="none" d="M0 0h24v24H0z"></path>-->
+    <!--            <path-->
+    <!--              d="M3 19V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v8h2a2 2 0 0 1 2 2v4a1 1 0 0 0 2 0v-7h-2a1 1 0 0 1-1-1V6.414l-1.657-1.657 1.414-1.414 4.95 4.95A.997.997 0 0 1 22 9v9a3 3 0 0 1-6 0v-4h-2v5h1v2H2v-2h1zM5 5v6h7V5H5z"-->
+    <!--            ></path>-->
+    <!--          </g>-->
+    <!--        </svg>-->
+    <!--        <p class="mr-2">-->
+    <!--          {userGas($global.gasPrices[`${$settings.defaultGas}`])}-->
+    <!--        </p>-->
+    <!--        <p>▾</p>-->
+    <!--      </div>-->
+    <!--      <div slot="options" class="flex flex-col gap-4 justify-between w-60 p-4">-->
+    <!--        {#each Object.entries($global.gasPrices).filter((entry) => entry[0] !== 'eip1559') as gas}-->
+    <!--          <GasCard-->
+    <!--            cardColor="{$global.gasColor[`${gas[0]}`]}"-->
+    <!--            description="{gas[0]}"-->
+    <!--            gasFee="{gas[1]}"-->
+    <!--            isActive="{$settings.defaultGas === gas[0]}"-->
+    <!--            compactView="{true}"-->
+    <!--            on:gasSelected="{() => setGas(gas[0])}"-->
+    <!--          />-->
+    <!--        {/each}-->
+    <!--      </div>-->
+    <!--    </Dropdown>-->
 
     <Dropdown>
       <div
@@ -217,7 +218,8 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          ></path>
         </svg>
         <p>▾</p>
       </div>
@@ -226,6 +228,7 @@
           class="cursor-pointer h-8 {$settings.invertColors
             ? 'hover:bg-grey10inverse border-grey10inverse'
             : 'hover:bg-grey10 border-grey10'}"
+          role="none"
           on:click="{goToSettings}"
         >
           <p class="text-center">{$_('settings')}</p>
@@ -234,6 +237,7 @@
           class="cursor-pointer h-8 border-t {$settings.invertColors
             ? 'hover:bg-grey10inverse border-grey10inverse'
             : 'hover:bg-grey10 border-grey10'}"
+          role="none"
           on:click="{() => goToHelp()}"
         >
           <p class="text-center">{$_('help')}</p>
@@ -242,6 +246,7 @@
           class="cursor-pointer h-8 border-t {$settings.invertColors
             ? 'hover:bg-grey10inverse border-grey10inverse'
             : 'hover:bg-grey10 border-grey10'}"
+          role="none"
           on:click="{() => reportBug()}"
         >
           <p class="text-center">{$_('report_bug')}</p>
@@ -250,6 +255,7 @@
           class="cursor-pointer h-8 {$settings.invertColors
             ? 'hover:bg-grey10inverse border-grey10inverse'
             : 'hover:bg-grey10 border-grey10'}"
+          role="none"
           on:click="{$account.signer ? disconnect : connect}"
         >
           <p class="text-center">

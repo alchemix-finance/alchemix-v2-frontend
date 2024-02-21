@@ -11,11 +11,13 @@
   import { getTokenPriceInEth } from '@middleware/llama';
   import { reservesStore } from '@stores/aaveReserves';
   import { vesperVaults } from '@stores/vesperVaults';
+  import { getMeltedRewards } from '@stores/v2/helpers';
 
   import FarmNameCell from '@components/composed/Table/farms/FarmNameCell.svelte';
   import CurrencyCell from '@components/composed/Table/CurrencyCell.svelte';
   import VaultCapacityCell from '@components/composed/Table/VaultCapacityCell.svelte';
   import YieldCell from '@components/composed/Table/YieldCell.svelte';
+  import BonusCell from '@components/composed/Table/BonusCell.svelte';
   import Button from '@components/elements/Button.svelte';
   import Deposit from '@components/composed/Modals/vaults/Deposit.svelte';
   import Withdraw from '@components/composed/Modals/vaults/Withdraw.svelte';
@@ -36,8 +38,13 @@
   let bonusYieldRate = '0';
   let bonusYieldValue = '0';
   let bonusYieldToken = '';
+  let bonusTimeLimit = false;
+  let bonusTimeAmount = '0';
+  let bonusTimeUnit = '';
+  let bonusInPercentage = false;
   let aaveReserve;
   let vesperVault;
+  let meltedRewardParams;
   let tokenPriceInEth = 0;
   const WEI_DEC = 10 ** 18;
   const SPY = 31536000;
@@ -64,12 +71,21 @@
             (aaveReserve.totalATokenSupply * tokenPriceInEth * WEI_DEC));
         if (CHAIN_DEC === 6) bonusYieldRate = bonusYieldRate / 10 ** 12;
         bonusYield = true;
+        bonusInPercentage = true;
         break;
       case 'vesper':
         vesperVault = $vesperVaults.filter((entry) => entry.address === strategy.col5.vault.address)[0];
         bonusYieldToken = 'VSP';
         bonusYieldRate = vesperVault['tokenDeltaRates']['30'];
         bonusYield = true;
+        bonusInPercentage = true;
+        break;
+      case 'meltedRewards':
+        meltedRewardParams = await getMeltedRewards(strategy.col5.vault.address, 'optimism', $signer);
+        bonusYieldRate = utils.formatEther(meltedRewardParams[2]);
+        bonusTimeLimit = true;
+        bonusTimeUnit = 'days';
+        bonusTimeAmount = meltedRewardParams[3].mul(12).div(60).div(60).div(24).toString();
         break;
       default:
         break;
@@ -124,6 +140,7 @@
     class="flex flex-col pr-8 border rounded {$settings.invertColors
       ? 'bg-grey10inverse border-grey3inverse'
       : 'bg-grey10 border-grey3'}  py-4 w-full relative"
+    role="application"
     on:mouseenter="{() => (isHovered = true)}"
     on:mouseleave="{() => (isHovered = false)}"
   >
@@ -142,6 +159,7 @@
     </div>
     <div
       class="w-full flex flex-col flex-wrap lg:flex-row gap-5 lg:gap-2 justify-between lg:items-center hover:cursor-pointer"
+      role="none"
       on:click="{() => toggleExpanded()}"
     >
       <div class="w-full lg:w-1/4 flex-2">
@@ -152,6 +170,7 @@
           isBeta="{strategy.col2.isBeta}"
           tokenIcon="{strategy.col2.tokenIcon}"
           isHalted="{false}"
+          farmLtv="{ltv.toString()}"
         />
       </div>
       <div class="lg:hidden flex">
@@ -160,20 +179,25 @@
           <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
         </div>
         <div class="w-full lg:w-1/6 flex-2">
-          <p class="text-center text-sm text-lightgrey10">TVL</p>
-          <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
+          <p class="text-center text-sm text-lightgrey10">TVL / Cap</p>
+          <VaultCapacityCell
+            vaultType="{strategy.limit.vaultType}"
+            signer="{strategy.limit.signer}"
+            yieldTokenAddress="{strategy.limit.yieldTokenAddress}"
+            underlyingPerShare="{strategy.limit.underlyingPerShare}"
+            yieldPerShare="{strategy.limit.yieldPerShare}"
+            decimals="{strategy.limit.decimals}"
+            symbol="{strategy.limit.symbol}"
+            bind:capInfo="{_capInfo}"
+          />
         </div>
       </div>
       <div class="hidden lg:block w-full lg:w-1/6 flex-2">
         <p class="text-center text-sm text-lightgrey10">Deposit</p>
         <CurrencyCell value="{strategy.deposited.value}" token="{strategy.deposited.token}" />
       </div>
-      <div class="hidden lg:block w-full lg:w-1/6 flex-2">
-        <p class="text-center text-sm text-lightgrey10">TVL</p>
-        <CurrencyCell value="{strategy.col3.value}" token="{strategy.col3.token}" />
-      </div>
-      <div class="flex flex-col px-8 lg:w-1/4 flex-2">
-        <p class="text-center text-sm text-lightgrey10">Utilization</p>
+      <div class="hidden lg:block flex-col px-8 lg:w-1/4 flex-2">
+        <p class="text-center text-sm text-lightgrey10">TVL / Cap</p>
         <VaultCapacityCell
           vaultType="{strategy.limit.vaultType}"
           signer="{strategy.limit.signer}"
@@ -187,25 +211,36 @@
       </div>
       <div class="flex lg:hidden">
         <div class="self-start w-full flex-1">
-          <p class="text-center text-sm text-lightgrey10">LTV</p>
-          <YieldCell yieldRate="{ltv}" yieldType="" />
+          <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
+          <YieldCell yieldRate="{strategy.col4.yieldRate}" />
         </div>
         <div class="self-start w-full flex-1">
-          <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
-          <YieldCell yieldRate="{strategy.col4.yieldRate}" yieldType="" />
+          <p class="text-center text-sm text-lightgrey10">Bonus</p>
+          <BonusCell
+            hasBonus="{bonusYield}"
+            bonusAmount="{bonusYieldRate}"
+            limitedTime="{bonusTimeLimit}"
+            distributionTimeAmount="{bonusTimeAmount}"
+            distributionTimeUnit="{bonusTimeUnit}"
+            bonusToken="{bonusYieldToken}"
+            isPercentage="{false}"
+          />
         </div>
-      </div>
-      <div class="self-start hidden lg:block w-full flex-1">
-        <p class="text-center text-sm text-lightgrey10">LTV</p>
-        <YieldCell yieldRate="{ltv}" yieldType="" />
       </div>
       <div class="self-start hidden lg:block w-full flex-1">
         <p class="text-center text-sm text-lightgrey10">{strategy.col4.yieldType}</p>
-        <YieldCell
-          yieldRate="{totalYield}"
-          bonusYield="{bonusYield}"
-          bonusYieldTokenSymbol="{bonusYieldToken}"
-          bonusYieldRate="{bonusYieldRate}"
+        <YieldCell yieldRate="{totalYield}" />
+      </div>
+      <div class="self-start hidden lg:block w-full flex-1">
+        <p class="text-center text-sm text-lightgrey10">Bonus</p>
+        <BonusCell
+          hasBonus="{bonusYield}"
+          bonusAmount="{bonusYieldRate}"
+          limitedTime="{bonusTimeLimit}"
+          distributionTimeAmount="{bonusTimeAmount}"
+          distributionTimeUnit="{bonusTimeUnit}"
+          bonusToken="{bonusYieldToken}"
+          isPercentage="{false}"
         />
       </div>
     </div>

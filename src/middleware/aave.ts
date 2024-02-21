@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { reservesStore } from '@stores/aaveReserves';
+import { contractWrapper } from '@helpers/contractWrapper';
+import { Signer, BigNumber } from 'ethers';
 
 const subgraphUrlEth = 'https://api.thegraph.com/subgraphs/name/aave/protocol-v2';
 const subgraphUrlOpt = 'https://api.thegraph.com/subgraphs/name/aave/protocol-v3-optimism';
@@ -90,10 +92,8 @@ export async function getReservesOpt() {
 
 export async function getAaveApr(underlyingAsset: string) {
   const reserve = [...new Set(_reserves.reduce((prev, next) => prev.concat(next), []))]
-    .filter((reserve) => reserve.underlyingAsset.toLowerCase() === underlyingAsset.toLowerCase())
-    .filter((entry) => entry.aEmissionPerSecond !== '0')[0];
+    .filter((reserve) => reserve['underlyingAsset'].toLowerCase() === underlyingAsset.toLowerCase())
+    .filter((entry) => entry['aEmissionPerSecond'] !== '0')[0];
   const RAY = 10 ** 27;
-  return reserve.liquidityRate / RAY;
+  return reserve['liquidityRate'] / RAY;
 }
-
-export async function getOptimismBonus(underlyingAsset: string) {}

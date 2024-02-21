@@ -416,7 +416,7 @@ export const VaultTypesInfos = {
         acceptWeth: false,
         gateway: 'YTokenGateway_USD',
         strategy: 'https://yearn.finance/vaults/10/0xaD17A225074191d5c8a37B50FdA1AE278a2EE6A2',
-        bonusType: '',
+        bonusType: 'meltedRewards',
       },
       '0x27423e4A9fD2E5860a1b87395503Ca115f231AB6': {
         rewardAdapter: 'aave',
@@ -611,7 +611,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: 'YTokenGateway_ETH',
         strategy: 'https://yearn.finance/vaults/10/0x5B977577Eb8a480f63e11FC615D6753adB8652Ae',
-        bonusType: '',
+        bonusType: 'meltedRewards',
       },
       '0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb': {
         rewardAdapter: 'lido',
@@ -626,7 +626,7 @@ export const VaultTypesInfos = {
         multicall: false,
         gateway: 'WETHGateway',
         strategy: '',
-        bonusType: '',
+        bonusType: 'meltedRewards',
       },
       '0xDC8Eb117A9987cF2ED45E9082Adc13C03922Fa0a': {
         rewardAdapter: 'aave',
