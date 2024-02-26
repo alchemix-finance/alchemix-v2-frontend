@@ -364,7 +364,6 @@ export const VaultTypesInfos = {
         strategy: 'https://app.vesper.finance/eth/pools/0xc14900dFB1Aa54e7674e1eCf9ce02b3b35157ba5',
         bonusType: 'vesper',
       },
-
       '0x318334A6dD21d16A8442aB0b7204E81Aa3FB416E': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
