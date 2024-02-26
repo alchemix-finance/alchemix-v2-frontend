@@ -36,7 +36,7 @@
 
   let bonusYield = false;
   let bonusYieldRate = '0';
-  let bonusYieldValue = '0';
+  let bonusYieldValue = 0;
   let bonusYieldToken = '';
   let bonusTimeLimit = false;
   let bonusTimeAmount = '0';
@@ -82,10 +82,18 @@
         break;
       case 'meltedRewards':
         meltedRewardParams = await getMeltedRewards(strategy.col5.vault.address, 'optimism', $signer);
-        bonusYieldRate = utils.formatEther(meltedRewardParams[2]);
+        bonusYieldToken = 'OP';
         bonusTimeLimit = true;
         bonusTimeUnit = 'days';
         bonusTimeAmount = meltedRewardParams[3].mul(12).div(60).div(60).div(24).toString();
+        bonusYieldValue = await getTokenPriceInEth('optimism', '0x4200000000000000000000000000000000000042');
+        tokenPriceInEth = await getTokenPriceInEth('optimism', strategy?.col3.token.address);
+        bonusYieldRate = (
+          (parseFloat(utils.formatEther(meltedRewardParams[2])) * tokenPriceInEth) /
+          (parseFloat(bonusTimeAmount) * strategy.col3.value)
+        ).toString();
+        bonusYield = bonusTimeAmount !== '0';
+        bonusInPercentage = true;
         break;
       default:
         break;
@@ -108,7 +116,10 @@
       $networkStore,
     ));
   };
-  $: totalYield = ((strategy?.col4.yieldRate * 100 + bonusYieldRate * 100) / 100).toFixed(2);
+  $: totalYield = (
+    (strategy?.col4.yieldRate * 100 + (bonusYieldRate === 'NaN' ? 0 : bonusYieldRate * 100)) /
+    100
+  ).toFixed(2);
 
   $: if (alToken !== undefined) getPausedStatus();
 

@@ -9,7 +9,9 @@
   export let bonusToken = '';
   export let isPercentage = false;
 
-  $: formattedBonusAmount = numeral(parseFloat(bonusAmount).toFixed(2)).format(isPercentage ? '0%' : '0.00a');
+  $: formattedBonusAmount = numeral(parseFloat(bonusAmount).toFixed(4)).format(
+    isPercentage ? '0.00%' : '0.00a',
+  );
 </script>
 
 {#if hasBonus}
