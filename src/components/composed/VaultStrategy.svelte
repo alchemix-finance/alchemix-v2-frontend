@@ -81,22 +81,31 @@
         bonusInPercentage = true;
         break;
       case 'meltedRewards':
-        meltedRewardParams = await getMeltedRewards(strategy.col5.vault.address, 'optimism', $signer);
-        bonusYieldToken = 'OP';
-        bonusTimeLimit = true;
-        bonusTimeUnit = 'days';
-        bonusTimeAmount = meltedRewardParams[3].mul(12).div(60).div(60).div(24).toString();
-        bonusYieldValue = await getTokenPriceInEth('optimism', '0x4200000000000000000000000000000000000042');
-        tokenPriceInEth = await getTokenPriceInEth('optimism', strategy?.col3.token.address);
-        bonusYieldRate = (
-          (parseFloat(utils.formatEther(meltedRewardParams[2])) * tokenPriceInEth) /
-          (parseFloat(bonusTimeAmount) * strategy.col3.value)
-        ).toString();
-        bonusYield = bonusTimeAmount !== '0';
-        bonusInPercentage = true;
+        await meltedRewards();
         break;
       default:
         break;
+    }
+  };
+  const meltedRewards = async () => {
+    meltedRewardParams = await getMeltedRewards(strategy.col5.vault.address, 'optimism', $signer);
+    bonusYieldToken = 'OP';
+    bonusTimeLimit = true;
+    bonusTimeUnit = 'days';
+    bonusTimeAmount = meltedRewardParams[3].mul(12).div(60).div(60).div(24).toString();
+    bonusYieldValue = await getTokenPriceInEth('optimism', '0x4200000000000000000000000000000000000042');
+    tokenPriceInEth = await getTokenPriceInEth('optimism', strategy?.col3.token.address);
+    if (meltedRewardParams[2].gt(BigNumber.from(0))) {
+      bonusYieldRate =
+        ((parseFloat(utils.formatEther(meltedRewardParams[2])) * bonusYieldValue * 2628333) /
+          parseFloat(meltedRewardParams[3].toString()) /
+          parseFloat(utils.formatUnits(strategy.col3.token.balance, strategy.col3.token.decimals))) *
+        tokenPriceInEth;
+      bonusYield = true;
+      bonusInPercentage = true;
+    } else {
+      bonusYieldRate = 0;
+      bonusYield = false;
     }
   };
   $: if (bonusYieldType !== '') getIncentives();
@@ -116,10 +125,7 @@
       $networkStore,
     ));
   };
-  $: totalYield = (
-    (strategy?.col4.yieldRate * 100 + (bonusYieldRate === 'NaN' ? 0 : bonusYieldRate * 100)) /
-    100
-  ).toFixed(2);
+  $: totalYield = ((strategy?.col4.yieldRate * 100 + bonusYieldRate * 100) / 100).toFixed(2);
 
   $: if (alToken !== undefined) getPausedStatus();
 
