@@ -97,10 +97,10 @@
     tokenPriceInEth = await getTokenPriceInEth('optimism', strategy?.col3.token.address);
     if (meltedRewardParams[2].gt(BigNumber.from(0))) {
       bonusYieldRate =
-        (((parseFloat(utils.formatEther(meltedRewardParams[2])) * bonusYieldValue) / tokenPriceInEth) *
-          2628333) /
-        parseFloat(meltedRewardParams[3].toString()) /
-        parseFloat(utils.formatEther(strategy.col3.token.balance));
+        ((parseFloat(utils.formatEther(meltedRewardParams[2])) * bonusYieldValue * 2628333) /
+          parseFloat(meltedRewardParams[3].toString()) /
+          parseFloat(utils.formatUnits(strategy.col3.token.balance, strategy.col3.token.decimals))) *
+        tokenPriceInEth;
       bonusYield = true;
       bonusInPercentage = true;
     } else {
