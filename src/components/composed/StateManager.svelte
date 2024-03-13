@@ -55,9 +55,13 @@
         $reservesStore = [...$reservesStore, aaveReservesArb.data.data.reserves];
       }
 
-      const vesperVaultData = await getVesperData();
-      if (vesperVaultData !== undefined) {
-        $vesperVaults = [...vesperVaultData];
+      if (netId === '0x1') {
+        const vesperVaultData = await getVesperData();
+        if (vesperVaultData !== undefined) {
+          $vesperVaults = [...vesperVaultData];
+        }
+      } else {
+        const vesperVaultData = [];
       }
 
       let vaultTokens = [];
