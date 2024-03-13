@@ -181,6 +181,13 @@
       .div($vaultsStore[vault.type].ratio.div(BigNumber.from(10).pow(18)));
 
     const metaConfig = VaultTypesInfos[vault.type].metaConfig;
+    const hideVault = () => {
+      if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
+        return metaConfig[vaultTokenData.address].hidden;
+      } else {
+        return false;
+      }
+    };
     const vaultName = () => {
       if (metaConfig.hasOwnProperty(vaultTokenData.address)) {
         const yieldToken = metaConfig[vaultTokenData.address].customTokenName
@@ -272,6 +279,7 @@
     return {
       type: vault.balance.gt(BigNumber.from(0)) ? 'used' : 'unused',
       row: {
+        isHidden: hideVault(),
         hasConfig: metaConfig[vaultTokenData.address],
         col2: {
           CellComponent: FarmNameCell,
@@ -476,7 +484,7 @@
               {#each currentRowsOnCurrentStrategyType
                 .map((obj) => obj.row)
                 .filter((obj) => {
-                  return $networkStore === '0x1' ? !!obj.hasConfig : obj;
+                  if (!obj.isHidden) return $networkStore === '0x1' ? !!obj.hasConfig : obj;
                 }) as strategy}
                 <VaultStrategy strategy="{strategy}" />
               {/each}
