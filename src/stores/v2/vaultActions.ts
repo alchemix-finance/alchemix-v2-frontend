@@ -106,7 +106,7 @@ export async function deposit(
       path,
     );
     if (
-      // @dev we're literally just removing yearn's vault from the equation
+      // @dev we're literally just removing some vaults from the equation
       // @dev this is a temporary fix until we can properly refactor the vaults
       tokenAddress !== '0xa258C4606Ca8206D8aA700cE2143D7db854D168c' &&
       tokenAddress !== '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0' &&

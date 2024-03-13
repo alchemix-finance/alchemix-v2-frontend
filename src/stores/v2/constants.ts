@@ -159,6 +159,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0xdA816459F1AB5631232FE5e97a05BBBb94970c95',
         bonusType: '',
+        hidden: false,
       },
       '0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE': {
         rewardAdapter: '',
@@ -174,6 +175,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE',
         bonusType: '',
+        hidden: false,
       },
       '0x7Da96a3891Add058AdA2E826306D812C638D87a7': {
         rewardAdapter: '',
@@ -189,6 +191,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0x7Da96a3891Add058AdA2E826306D812C638D87a7',
         bonusType: '',
+        hidden: false,
       },
       '0x3B27F92C0e212C671EA351827EDF93DB27cc0c65': {
         rewardAdapter: '',
@@ -204,6 +207,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://yearn.finance/#/vault/0x3B27F92C0e212C671EA351827EDF93DB27cc0c65',
         bonusType: '',
+        hidden: false,
       },
       '0x028171bCA77440897B824Ca71D1c56caC55b68A3': {
         gateway: 'ATokenGateway_alUSD',
@@ -229,6 +233,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x6b175474e89094c44da98b954eedeac495271d0f&marketName=proto_mainnet',
         bonusType: '',
+        hidden: false,
       },
       '0xf591D878608e2e5c7D4f1E499330f4AB9BbaE37a': {
         rewardAdapter: 'aave',
@@ -245,6 +250,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&marketName=proto_mainnet',
         bonusType: '',
+        hidden: false,
       },
       '0xBC11De1F20e83F0a6889B8c7A7868E722694E315': {
         rewardAdapter: 'aave',
@@ -261,6 +267,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xdac17f958d2ee523a2206206994597c13d831ec7&marketName=proto_mainnet',
         bonusType: '',
+        hidden: false,
       },
       '0x43A502D7e947c8A2eBBaf7627E104Ddcc253aBc6': {
         rewardAdapter: 'aave',
@@ -277,6 +284,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xda10009cbd5d07dd0cecc66161fc93d7c9000da1&marketName=proto_optimism_v3',
         bonusType: '',
+        hidden: false,
       },
       '0x4186Eb285b1efdf372AC5896a08C346c7E373cC4': {
         rewardAdapter: 'aave',
@@ -293,6 +301,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x7f5c764cbc14f9669b88837ca1490cca17c31607&marketName=proto_optimism_v3',
         bonusType: '',
+        hidden: false,
       },
       '0x2680b58945A31602E4B6122C965c2849Eb76Dd3B': {
         rewardAdapter: 'aave',
@@ -309,6 +318,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x94b008aa00579c1307b0ef2c499ad98a8ce58e58&marketName=proto_optimism_v3',
         bonusType: '',
+        hidden: false,
       },
       '0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452': {
         rewardAdapter: 'vesper',
@@ -324,6 +334,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://app.vesper.finance/eth/pools/0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452',
         bonusType: 'vesper',
+        hidden: false,
       },
       '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee': {
         rewardAdapter: 'vesper',
@@ -339,6 +350,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://app.vesper.finance/eth/pools/0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
         bonusType: 'vesper',
+        hidden: false,
       },
       '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE': {
         gateway: 'ATokenGateway_alUSD',
@@ -363,6 +375,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://app.vesper.finance/eth/pools/0xc14900dFB1Aa54e7674e1eCf9ce02b3b35157ba5',
         bonusType: 'vesper',
+        hidden: false,
       },
       '0x318334A6dD21d16A8442aB0b7204E81Aa3FB416E': {
         rewardAdapter: 'aave',
@@ -379,6 +392,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x853d955acef822db058eb8505911ed77f175b99e&marketName=proto_mainnet',
         bonusType: '',
+        hidden: false,
       },
       '0xd4937682df3C8aEF4FE912A96A74121C0829E664': {
         gateway: 'ATokenGateway_alUSD',
@@ -399,6 +413,7 @@ export const VaultTypesInfos = {
         gateway: 'YTokenGateway_USD',
         strategy: 'https://yearn.finance/vaults/10/0x65343F414FFD6c97b0f6add33d16F6845Ac22BAc',
         bonusType: '',
+        hidden: false,
       },
       '0xaD17A225074191d5c8a37B50FdA1AE278a2EE6A2': {
         gateway: 'YTokenGateway_USD',
@@ -416,6 +431,7 @@ export const VaultTypesInfos = {
         gateway: 'YTokenGateway_USD',
         strategy: 'https://yearn.finance/vaults/10/0xaD17A225074191d5c8a37B50FdA1AE278a2EE6A2',
         bonusType: 'meltedRewards',
+        hidden: false,
       },
       '0x27423e4A9fD2E5860a1b87395503Ca115f231AB6': {
         rewardAdapter: 'aave',
@@ -430,6 +446,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy: '',
         bonusType: '',
+        hidden: true,
       },
       '0x082B50BeC5E85D82b52264dA7Ad24187a235DBC4': {
         rewardAdapter: 'aave',
@@ -444,6 +461,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy: '',
         bonusType: '',
+        hidden: false,
       },
       '0x1d2bE809EE3a0eeACb02d3d234b3eD479e1c4962': {
         rewardAdapter: 'aave',
@@ -458,6 +476,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy: '',
         bonusType: '',
+        hidden: true,
       },
     },
   },
@@ -480,6 +499,7 @@ export const VaultTypesInfos = {
         gateway: 'WETHGateway',
         strategy: 'https://yearn.finance/#/vault/0xa258C4606Ca8206D8aA700cE2143D7db854D168c',
         bonusType: '',
+        hidden: false,
       },
       '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0': {
         rewardAdapter: 'lido',
@@ -495,6 +515,7 @@ export const VaultTypesInfos = {
         gateway: 'WETHGateway',
         strategy: 'https://etherscan.io/token/0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
         bonusType: '',
+        hidden: false,
       },
       '0xae78736Cd615f374D3085123A210448E74Fc6393': {
         rewardAdapter: 'rocketPool',
@@ -510,6 +531,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://stake.rocketpool.net/',
         bonusType: '',
+        hidden: false,
       },
       '0x80Ca99D65A8855Cb20e44A5e9B6C6AbF71E3739d': {
         rewardAdapter: 'rocketPool',
@@ -525,6 +547,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://stake.rocketpool.net/',
         bonusType: '',
+        hidden: false,
       },
       '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e': {
         gateway: 'ATokenGateway_alETH',
@@ -544,6 +567,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&marketName=proto_mainnet',
         bonusType: '',
+        hidden: false,
       },
       '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8': {
         gateway: 'ATokenGateway_alETH',
@@ -563,6 +587,7 @@ export const VaultTypesInfos = {
         strategy:
           'https://app.aave.com/reserve-overview/?underlyingAsset=0x4200000000000000000000000000000000000006&marketName=proto_optimism_v3',
         bonusType: '',
+        hidden: false,
       },
       '0xd1C117319B3595fbc39b471AB1fd485629eb05F2': {
         rewardAdapter: 'vesper',
@@ -578,6 +603,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alETH',
         strategy: 'https://app.vesper.finance/eth/pools/0xd1C117319B3595fbc39b471AB1fd485629eb05F2',
         bonusType: 'vesper',
+        hidden: false,
       },
       '0xac3E018457B222d93114458476f3E3416Abbe38F': {
         rewardAdapter: 'frax',
@@ -593,6 +619,7 @@ export const VaultTypesInfos = {
         gateway: '',
         strategy: 'https://app.frax.finance/frxeth/stake',
         bonusType: '',
+        hidden: false,
       },
       '0x5B977577Eb8a480f63e11FC615D6753adB8652Ae': {
         gateway: 'YTokenGateway_ETH',
@@ -611,6 +638,7 @@ export const VaultTypesInfos = {
         gateway: 'YTokenGateway_ETH',
         strategy: 'https://yearn.finance/vaults/10/0x5B977577Eb8a480f63e11FC615D6753adB8652Ae',
         bonusType: 'meltedRewards',
+        hidden: false,
       },
       '0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb': {
         rewardAdapter: 'lido',
@@ -626,6 +654,7 @@ export const VaultTypesInfos = {
         gateway: 'WETHGateway',
         strategy: '',
         bonusType: 'meltedRewards',
+        hidden: false,
       },
       '0xDC8Eb117A9987cF2ED45E9082Adc13C03922Fa0a': {
         rewardAdapter: 'aave',
@@ -640,6 +669,7 @@ export const VaultTypesInfos = {
         gateway: 'ATokenGateway_alUSD',
         strategy: '',
         bonusType: '',
+        hidden: true,
       },
     },
   },
