@@ -16,7 +16,7 @@
   import { vaultsLoading } from '@stores/v2/loadingStores';
   import { resetStores } from '@stores/v2/methods';
   import { reservesStore } from '@stores/aaveReserves';
-  import { getReservesEth, getReservesOpt } from '@middleware/aave';
+  import { getReservesEth, getReservesOpt, getReservesArb } from '@middleware/aave';
   import { vesperVaults } from '@stores/vesperVaults';
   import { getVesperData } from '@middleware/vesper';
   import { queryOpenProposals } from '@middleware/snapshot';
@@ -50,9 +50,18 @@
         $reservesStore = [...$reservesStore, aaveReservesOpt.data.data.reserves];
       }
 
-      const vesperVaultData = await getVesperData();
-      if (vesperVaultData !== undefined) {
-        $vesperVaults = [...vesperVaultData];
+      const aaveReservesArb = await getReservesArb();
+      if (aaveReservesArb?.data?.data?.reserves) {
+        $reservesStore = [...$reservesStore, aaveReservesArb.data.data.reserves];
+      }
+
+      if (netId === '0x1') {
+        const vesperVaultData = await getVesperData();
+        if (vesperVaultData !== undefined) {
+          $vesperVaults = [...vesperVaultData];
+        }
+      } else {
+        const vesperVaultData = [];
       }
 
       let vaultTokens = [];

@@ -127,8 +127,10 @@
     const targetChain = chainIds.filter((chain) => chain.id === toChain.id)[0].connextId;
     await relayerFee(originChain, targetChain, $addressStore)
       .then((result) => {
-        bridgeFees = result;
-        quoteReceived = true;
+        // bridgeFees = result;
+        // quoteReceived = true;
+        console.info('Bridging is disabled at the moment');
+        setError('Bridging is disabled at the moment');
       })
       .catch((error) => {
         console.log(error);
