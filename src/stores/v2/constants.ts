@@ -138,6 +138,10 @@ export const HiddenVaults = [
   '0xf350C6B7fbe5F6CB53c7D638Dfba9173A5722236',
   '0xC5c0D3e20DF4CA855281B4b5Bcf3bEf8D8068c75',
   '0x400509D00888c46903CF01495BB2eeAfD24F0f80',
+  '0x27423e4A9fD2E5860a1b87395503Ca115f231AB6',
+  '0x082B50BeC5E85D82b52264dA7Ad24187a235DBC4',
+  '0x1d2bE809EE3a0eeACb02d3d234b3eD479e1c4962',
+  '0xDC8Eb117A9987cF2ED45E9082Adc13C03922Fa0a',
 ];
 export const VaultTypesInfos = {
   [VaultTypes.alUSD]: {
@@ -448,7 +452,7 @@ export const VaultTypesInfos = {
         bonusType: '',
         hidden: true,
       },
-      '0x082B50BeC5E85D82b52264dA7Ad24187a235DBC4': {
+      '0x248a431116c6f6FCD5Fe1097d16d0597E24100f5': {
         rewardAdapter: 'aave',
         rewardType: 'APR',
         customTokenName: true,
@@ -462,6 +466,21 @@ export const VaultTypesInfos = {
         strategy: '',
         bonusType: '',
         hidden: false,
+      },
+      '0x082B50BeC5E85D82b52264dA7Ad24187a235DBC4': {
+        rewardAdapter: 'aave',
+        rewardType: 'APR',
+        customTokenName: true,
+        token: 'aArbUSDC',
+        customAddress: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
+        vaultName: 'Old Aave',
+        beta: false,
+        acceptGateway: true,
+        acceptWeth: false,
+        gateway: 'ATokenGateway_alUSD',
+        strategy: '',
+        bonusType: '',
+        hidden: true,
       },
       '0x1d2bE809EE3a0eeACb02d3d234b3eD479e1c4962': {
         rewardAdapter: 'aave',
