@@ -3,7 +3,7 @@ import { reservesStore } from '@stores/aaveReserves';
 import { contractWrapper } from '@helpers/contractWrapper';
 import { Signer, BigNumber } from 'ethers';
 
-const API_KEY = 'b6da9f745ab40e51bfa76f0cb1bc4c82';
+const API_KEY = 'f8818d0c3602050309827e81a1d5b844';
 const subgraphUrlEth = `https://gateway-arbitrum.network.thegraph.com/api/${API_KEY}/subgraphs/id/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N`;
 const subgraphUrlOpt = `https://gateway-arbitrum.network.thegraph.com/api/${API_KEY}/subgraphs/id/DSfLz8oQBUeU5atALgUFQKMTSYV9mZAVYp4noLSXAfvb`;
 const subgraphUrlArb = `https://gateway-arbitrum.network.thegraph.com/api/${API_KEY}/subgraphs/id/DLuE98kEb5pQNXAcKFQGQgfSQ57Xdou4jnVbAEqMfy3B`;
